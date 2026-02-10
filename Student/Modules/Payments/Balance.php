@@ -176,13 +176,33 @@ session_start();
     <div class="main-wrapper">
         <?php include '../../Components/Header.php'; ?>
         <div class="content-area">
-            <h1 class="page-title">Financial Balance</h1>
+            <?php
+            require_once '../../../Database/config.php';
+            $student_email = $_SESSION['email'];
+            $balance = 0;
+            $total_fee = 0;
+            $enrolled = false;
+
+            try {
+                $stmt = $pdo->prepare("SELECT * FROM enrollments WHERE email = ? ORDER BY created_at DESC LIMIT 1");
+                $stmt->execute([$student_email]);
+                $enrollment = $stmt->fetch();
+
+                if ($enrollment) {
+                    $balance = $enrollment->balance;
+                    $total_fee = $enrollment->total_fee;
+                    $enrolled = true;
+                }
+            } catch (PDOException $e) {
+                // error fetching
+            }
+            ?>
             
             <div class="balance-card">
                 <div class="balance-label">Outstanding Balance</div>
                 <div class="balance-amount">
                     <span class="currency">₱</span>
-                    13,200.00
+                    <?php echo number_format($balance, 2); ?>
                 </div>
                 <a href="Upload-Receipt.php" class="pay-btn">
                     Pay Now <i class="fas fa-arrow-right"></i>
@@ -190,33 +210,23 @@ session_start();
             </div>
 
             <div class="breakdown-card">
-                <h3 class="section-title">Fee Breakdown (2nd Semester 2026-2027)</h3>
+                <h3 class="section-title">Fee Breakdown (<?php echo date('Y'); ?>-<?php echo date('Y') + 1; ?>)</h3>
                 
+                <?php if ($enrolled): ?>
                 <div class="fee-row">
-                    <span class="fee-label">Tuition Fee (21 Units)</span>
-                    <span class="fee-val">₱10,500.00</span>
-                </div>
-                <div class="fee-row">
-                    <span class="fee-label">Miscellaneous Fees</span>
-                    <span class="fee-val">₱2,500.00</span>
-                </div>
-                 <div class="fee-row">
-                    <span class="fee-label">Laboratory Fee</span>
-                    <span class="fee-val">₱1,500.00</span>
-                </div>
-                 <div class="fee-row">
-                    <span class="fee-label">Less: Downpayment</span>
-                    <span class="fee-val" style="color: #ef4444;">- ₱4,000.00</span>
-                </div>
-                 <div class="fee-row">
-                    <span class="fee-label">Less: Scholarship Discount (10%)</span>
-                    <span class="fee-val" style="color: #ef4444;">- ₱1,300.00</span>
+                    <span class="fee-label">Total Assessment Fee</span>
+                    <span class="fee-val">₱<?php echo number_format($total_fee, 2); ?></span>
                 </div>
                 
                 <div class="fee-row total">
-                    <span class="fee-label">Total Outstanding</span>
-                    <span class="fee-val">₱9,200.00</span>
+                    <span class="fee-label">Current Outstanding Balance</span>
+                    <span class="fee-val">₱<?php echo number_format($balance, 2); ?></span>
                 </div>
+                <?php else: ?>
+                <div style="text-align:center; padding: 20px; color: var(--secondary);">
+                    No active enrollment record found to display breakdown.
+                </div>
+                <?php endif; ?>
             </div>
 
         </div>

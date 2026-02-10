@@ -146,8 +146,8 @@ try {
     <div id="viewModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 id="modalTitle">Enrollment Details</h2>
-                <span class="close" onclick="closeModal()">&times;</span>
+                <h2 id="modalTitle" style="font-weight: 800; font-size: 1.4rem;">Enrollment Details</h2>
+                <div class="close" onclick="closeModal()"><i class="fas fa-times"></i></div>
             </div>
             <div class="modal-body">
                 <div class="info-grid" id="modalData">
@@ -155,9 +155,16 @@ try {
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn-approve" onclick="updateStatus('Enrolled')">Approve</button>
-                <button class="btn-reject" onclick="updateStatus('Rejected')">Reject</button>
-                <button class="btn-edit-modal" onclick="editEnrollment()">Edit</button>
+                <?php if ($role === 'superadmin'): ?>
+                    <button class="btn-approve" onclick="updateStatus('Enrolled')"><i class="fas fa-check-circle"></i> Approve</button>
+                    <button class="btn-reject" onclick="updateStatus('Rejected')"><i class="fas fa-times-circle"></i> Reject</button>
+                    <button class="btn-edit-modal" onclick="editEnrollment()"><i class="fas fa-edit"></i> Edit</button>
+                <?php else: ?>
+                    <p style="color: #64748b; font-size: 0.85rem; font-style: italic; margin-right: auto;">
+                        <i class="fas fa-info-circle"></i> Account management restricted to Super Admin
+                    </p>
+                    <button class="btn-view" style="background: #e2e8f0; color: #475569; box-shadow: none;" onclick="closeModal()">Close Details</button>
+                <?php endif; ?>
             </div>
         </div>
     </div>

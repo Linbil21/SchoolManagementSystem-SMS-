@@ -15,35 +15,8 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'superadmin') {
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../assets/super-admin.css">
     <style>
-        :root {
-            --primary: #1648bc;
-            --bg: #f8fafc;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
-
-        body {
-            background: var(--bg);
-            display: flex;
-            min-height: 100vh;
-        }
-
-        .main-wrapper {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .content-area {
-            padding: 40px;
-        }
-
         .id-card-preview {
             background: white;
             width: 350px;

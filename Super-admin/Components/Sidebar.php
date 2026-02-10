@@ -43,18 +43,18 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admin@sms.com';
         <p class="menu-label">ADMISSION CONTROL</p>
         <ul class="main-menu">
             <!-- Admission Summary Dropdown -->
-            <li class="has-dropdown">
+            <li class="has-dropdown <?php echo (strpos($_SERVER['PHP_SELF'], 'submodules/') !== false) ? 'active open' : ''; ?>">
                 <a href="javascript:void(0)" class="dropdown-toggle">
                     <i class="fas fa-user-graduate"></i>
                     <span>Admission Hub</span>
                     <i class="fas fa-chevron-right arrow-icon"></i>
                 </a>
                 <ul class="sub-menu">
-                    <li><a href="/sms/Super-admin/submodules/Admission-Dashboard.php">Admission Dashboard</a></li>
-                    <li><a href="/sms/Super-admin/submodules/Applications-Manager.php">Applications Manager</a></li>
-                    <li><a href="/sms/Super-admin/submodules/Evaluation-Desk.php">Evaluation Desk</a></li>
-                    <li><a href="/sms/Super-admin/submodules/Student-ID-Center.php">Student ID Center</a></li>
-                    <li><a href="/sms/Super-admin/submodules/Requirements-Config.php">Requirements Config</a></li>
+                    <li class="<?php echo ($current_page == 'Admission-Dashboard.php') ? 'active' : ''; ?>"><a href="/sms/Super-admin/submodules/Admission-Dashboard.php">Admission Dashboard</a></li>
+                    <li class="<?php echo ($current_page == 'Applications-Manager.php') ? 'active' : ''; ?>"><a href="/sms/Super-admin/submodules/Applications-Manager.php">Applications Manager</a></li>
+                    <li class="<?php echo ($current_page == 'Evaluation-Desk.php') ? 'active' : ''; ?>"><a href="/sms/Super-admin/submodules/Evaluation-Desk.php">Evaluation Desk</a></li>
+                    <li class="<?php echo ($current_page == 'Student-ID-Center.php') ? 'active' : ''; ?>"><a href="/sms/Super-admin/submodules/Student-ID-Center.php">Student ID Center</a></li>
+                    <li class="<?php echo ($current_page == 'Requirements-Config.php') ? 'active' : ''; ?>"><a href="/sms/Super-admin/submodules/Requirements-Config.php">Requirements Config</a></li>
                 </ul>
             </li>
         </ul>
@@ -98,23 +98,15 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admin@sms.com';
     </div>
 </div>
 
-<style>
-    :root {
-        --primary-blue: #1648bc;
-        --sidebar-bg: #ffffff;
-        --text-gray: #718096;
-        --text-dark: #2d3748;
-        --hover-bg: #f8fafc;
-        --active-blue: #eef2ff;
-    }
 
+<style>
     .sidebar {
         width: 280px;
         height: 100vh;
         background: var(--sidebar-bg);
         display: flex;
         flex-direction: column;
-        border-right: 1px solid #edf2f7;
+        border-right: 1px solid var(--border-color);
         position: sticky;
         top: 0;
         z-index: 1000;
@@ -133,141 +125,155 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admin@sms.com';
     }
 
     .sidebar-logo {
-        width: 42px;
-        height: 42px;
+        width: 40px;
+        height: 40px;
         object-fit: contain;
+        filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
     }
 
     .sidebar-brand h2 {
-        color: var(--primary-blue);
-        font-size: 1.4rem;
+        color: var(--accent-color);
+        font-size: 1.3rem;
         font-weight: 800;
         letter-spacing: -0.5px;
+        text-transform: uppercase;
     }
 
     .sidebar-menu {
         flex: 1;
         padding: 0 15px;
         overflow-y: auto;
-    }
-
-    .sidebar-menu::-webkit-scrollbar {
-        width: 5px;
-    }
-
-    .sidebar-menu::-webkit-scrollbar-thumb {
-        background: #edf2f7;
-        border-radius: 10px;
+        scrollbar-width: thin;
+        scrollbar-color: var(--border-color) transparent;
     }
 
     .menu-label {
-        font-size: 0.7rem;
-        font-weight: 700;
-        color: #a0aec0;
+        font-size: 0.72rem;
+        font-weight: 800;
+        color: var(--text-muted);
         margin: 25px 0 10px 15px;
         letter-spacing: 1.2px;
         text-transform: uppercase;
     }
 
-    .sidebar-menu ul {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-
-    .sidebar-menu li {
-        margin-bottom: 4px;
-    }
-
+    .sidebar-menu ul { list-style: none; padding: 0; }
+    
     .sidebar-menu a {
         display: flex;
         align-items: center;
         gap: 12px;
         padding: 12px 15px;
         text-decoration: none;
-        color: var(--text-dark);
+        color: var(--text-color);
         font-size: 0.92rem;
         font-weight: 500;
         border-radius: 12px;
-        transition: 0.2s ease;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    .sidebar-menu a:hover {
+    .sidebar-menu a:hover,
+    .sidebar-menu li.active > a {
         background: var(--hover-bg);
-        color: var(--primary-blue);
-    }
-
-    .sidebar-menu li.active>a {
-        background: var(--active-blue);
-        color: var(--primary-blue);
+        color: var(--accent-color);
         font-weight: 600;
     }
 
-    .sidebar-menu a i {
-        width: 20px;
-        font-size: 1.1rem;
-        opacity: 0.8;
+    .sidebar-menu li.active > a {
+        border-left: 4px solid var(--accent-color);
+        border-radius: 0 12px 12px 0;
     }
 
-    /* Dropdown Logic */
     .has-dropdown .sub-menu {
-        display: none;
+        max-height: 0;
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         padding-left: 20px;
-        margin-top: 5px;
     }
 
     .has-dropdown.open .sub-menu {
-        display: block;
-    }
-
-    .has-dropdown .arrow-icon {
-        margin-left: auto;
-        font-size: 0.75rem;
-        transition: transform 0.3s;
-    }
-
-    .has-dropdown.open .arrow-icon {
-        transform: rotate(90deg);
+        max-height: 500px;
+        margin-top: 5px;
+        margin-bottom: 10px;
     }
 
     .sub-menu a {
-        padding: 10px 15px;
+        padding: 8px 15px;
         font-size: 0.85rem;
+        color: var(--text-muted);
+    }
+
+    .arrow-icon {
+        margin-left: auto;
+        font-size: 0.7rem;
+        transition: 0.3s;
+    }
+
+    .open > a .arrow-icon {
+        transform: rotate(90deg);
     }
 
     .sidebar-footer {
         padding: 20px;
-        border-top: 1px solid #edf2f7;
+        border-top: 1px solid var(--border-color);
     }
 
     .user-peek {
+        background: var(--hover-bg);
+        padding: 12px;
+        border-radius: 16px;
         display: flex;
         align-items: center;
         gap: 12px;
-        padding: 12px;
-        background: var(--hover-bg);
-        border-radius: 16px;
+        position: relative;
+        transition: 0.3s;
     }
 
     .user-peek img {
-        width: 40px;
-        height: 40px;
+        width: 38px;
+        height: 38px;
         border-radius: 12px;
+        border: 2px solid white;
     }
 
     .user-peek-info h4 {
         font-size: 0.85rem;
         font-weight: 700;
-        color: var(--text-dark);
+        color: var(--text-color);
+        margin: 0;
     }
 
     .user-peek-info p {
         font-size: 0.75rem;
-        color: var(--text-gray);
-        white-space: nowrap;
+        color: var(--text-muted);
+        margin: 0;
+    }
+
+    /* Modal Styles */
+    .modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(4px);
+        z-index: 2000;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .modal-content {
+        background: var(--surface-color);
+        border-radius: 24px;
+        width: 100%;
+        max-width: 400px;
         overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 140px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        animation: modalSlide 0.3s ease-out;
+    }
+
+    @keyframes modalSlide {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
     }
 </style>
 
@@ -280,35 +286,31 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admin@sms.com';
     });
 
     function openLogoutModal() {
-        if (document.getElementById('logoutModal')) {
-            document.getElementById('logoutModal').style.display = 'block';
-        } else {
-            alert('Logout clicked');
-        }
+        document.getElementById('logoutModal').style.display = 'flex';
     }
 
     function closeLogoutModal() {
         document.getElementById('logoutModal').style.display = 'none';
     }
+
+    window.onclick = function(e) {
+        if (e.target.id === 'logoutModal') closeLogoutModal();
+    }
 </script>
 
 <!-- Logout Modal -->
-<div id="logoutModal" class="modal"
-    style="display:none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);">
-    <div
-        style="background: white; width: 90%; max-width: 400px; margin: 15vh auto; border-radius: 24px; padding: 40px; text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);">
-        <div
-            style="width: 80px; height: 80px; background: #fee2e2; color: #ef4444; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; font-size: 2rem;">
-            <i class="fas fa-sign-out-alt"></i>
-        </div>
-        <h2 style="font-weight: 800; color: #1e293b; margin-bottom: 12px;">End Session?</h2>
-        <p style="color: #64748b; margin-bottom: 32px; line-height: 1.6;">Are you sure you want to log out of the Super
-            Admin panel?</p>
-        <div style="display: flex; gap: 16px;">
-            <button onclick="closeLogoutModal()"
-                style="flex: 1; padding: 14px; border-radius: 14px; border: 1px solid #e2e8f0; background: white; color: #64748b; font-weight: 600; cursor: pointer;">Cancel</button>
-            <a href="/sms/auth/logout.php"
-                style="flex: 1; padding: 14px; border-radius: 14px; background: #ef4444; color: white; font-weight: 600; text-decoration: none;">Logout</a>
+<div id="logoutModal" class="modal">
+    <div class="modal-content">
+        <div style="text-align: center; padding: 40px;">
+            <div style="width: 70px; height: 70px; background: #fee2e2; color: #ef4444; border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; font-size: 1.8rem; transform: rotate(-10deg);">
+                <i class="fas fa-power-off"></i>
+            </div>
+            <h2 style="font-weight: 800; color: var(--text-color); margin-bottom: 12px; font-size: 1.5rem;">End Session?</h2>
+            <p style="color: var(--text-muted); margin-bottom: 32px; line-height: 1.6; font-size: 0.95rem;">Are you sure you want to log out of the Super Admin panel?</p>
+            <div style="display: flex; gap: 12px;">
+                <button onclick="closeLogoutModal()" style="flex: 1; padding: 14px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--surface-color); color: var(--text-color); font-weight: 700; cursor: pointer; transition: 0.3s;">Cancel</button>
+                <a href="/sms/auth/logout.php" style="flex: 1; padding: 14px; border-radius: 12px; background: #ef4444; color: white; font-weight: 700; text-decoration: none; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2); transition: 0.3s;">Logout</a>
+            </div>
         </div>
     </div>
 </div>

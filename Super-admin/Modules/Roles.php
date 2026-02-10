@@ -15,47 +15,8 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'superadmin') {
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../assets/super-admin.css">
     <style>
-        :root {
-            --primary-blue: #1648bc;
-            --bg-light: #f8fafc;
-            --text-dark: #1e293b;
-            --text-gray: #64748b;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
-
-        body {
-            background: var(--bg-light);
-            display: flex;
-            min-height: 100vh;
-        }
-
-        .main-wrapper {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .content-area {
-            padding: 40px;
-        }
-
-        .header {
-            margin-bottom: 30px;
-        }
-
-        .header h1 {
-            font-size: 2rem;
-            font-weight: 800;
-            color: var(--text-dark);
-        }
-
         .roles-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
@@ -63,11 +24,11 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'superadmin') {
         }
 
         .role-card {
-            background: white;
+            background: var(--surface-color);
             border-radius: 24px;
             padding: 30px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-            border: 1px solid #edf2f7;
+            border: 1px solid var(--border-color);
             transition: 0.3s;
         }
 
@@ -118,7 +79,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'superadmin') {
             padding: 12px;
             border-radius: 12px;
             border: 1px solid var(--primary-blue);
-            background: white;
+            background: transparent;
             color: var(--primary-blue);
             font-weight: 600;
             cursor: pointer;
@@ -128,62 +89,6 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'superadmin') {
         .btn-manage:hover {
             background: var(--primary-blue);
             color: white;
-        }
-
-        /* Modal Styles */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 2000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(5px);
-        }
-
-        .modal-content {
-            background: white;
-            margin: 5vh auto;
-            width: 90%;
-            max-width: 600px;
-            border-radius: 24px;
-            overflow: hidden;
-            animation: modalSlide 0.3s ease-out;
-        }
-
-        @keyframes modalSlide {
-            from {
-                transform: translateY(-30px);
-                opacity: 0;
-            }
-
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        .modal-header {
-            padding: 25px 30px;
-            border-bottom: 1px solid #edf2f7;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .modal-body {
-            padding: 30px;
-        }
-
-        .modal-footer {
-            padding: 25px 30px;
-            background: #f8fafc;
-            border-top: 1px solid #edf2f7;
-            display: flex;
-            justify-content: flex-end;
-            gap: 15px;
         }
 
         .checkbox-group {
@@ -197,9 +102,9 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'superadmin') {
             align-items: center;
             gap: 10px;
             padding: 12px;
-            background: #f8fafc;
+            background: var(--bg-light);
             border-radius: 12px;
-            border: 1px solid #edf2f7;
+            border: 1px solid var(--border-color);
             cursor: pointer;
         }
     </style>
@@ -210,9 +115,11 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'superadmin') {
     <div class="main-wrapper">
         <?php include '../Components/header.php'; ?>
         <div class="content-area">
-            <div class="header">
-                <h1>Roles & Permissions</h1>
-                <p style="color: var(--text-gray);">Define access levels for different system roles.</p>
+            <div class="module-header">
+                <div>
+                    <h1>Roles & Permissions</h1>
+                    <p style="color: var(--text-gray);">Define access levels for different system roles.</p>
+                </div>
             </div>
 
             <div class="roles-grid">
@@ -268,8 +175,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'superadmin') {
                     onclick="closeRolesModal()"></i>
             </div>
             <div class="modal-body">
-                <p style="margin-bottom: 20px; font-size: 0.9rem; color: var(--text-gray);">Select the modules and
-                    actions this role has access to.</p>
+                <p style="margin-bottom: 25px; font-size: 0.9rem; color: var(--text-gray); font-weight: 500;">Select the modules and actions this role has access to.</p>
                 <div class="checkbox-group">
                     <label class="checkbox-item"><input type="checkbox" checked> Dashboard Access</label>
                     <label class="checkbox-item"><input type="checkbox" checked> User Management</label>
@@ -280,11 +186,8 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'superadmin') {
                 </div>
             </div>
             <div class="modal-footer">
-                <button onclick="closeRolesModal()"
-                    style="padding: 12px 24px; border-radius: 12px; border: 1px solid #e2e8f0; background: white; font-weight: 600; cursor: pointer;">Cancel</button>
-                <button onclick="saveRoles()"
-                    style="padding: 12px 24px; border-radius: 12px; background: var(--primary-blue); color: white; border: none; font-weight: 600; cursor: pointer;">Save
-                    Permissions</button>
+                <button onclick="closeRolesModal()" style="padding: 12px 24px; border-radius: 12px; border: 1px solid var(--border-color); background: white; font-weight: 600; cursor: pointer; color: var(--text-gray);">Cancel</button>
+                <button onclick="saveRoles()" class="btn-primary">Save Permissions</button>
             </div>
         </div>
     </div>

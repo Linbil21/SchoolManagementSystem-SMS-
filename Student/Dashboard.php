@@ -367,7 +367,7 @@ if ($current_day !== 'Sunday') {
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title">Today's Schedule (<?php echo $current_day; ?>)</h3>
-                    <a href="javascript:void(0)" onclick="viewFullSchedule()"
+                    <a href="/sms/Student/Modules/Academic/Schedule.php"
                         style="font-size: 0.85rem; color: var(--primary); text-decoration: none; font-weight: 600;">View
                         Full</a>
                 </div>
@@ -453,11 +453,49 @@ if ($current_day !== 'Sunday') {
                 }
             </script>
 
-            <!-- Announcements -->
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">Announcements</h3>
+            <!-- Sidebar Content (Calendar & Announcements) -->
+            <div style="display: flex; flex-direction: column; gap: 24px;">
+                <!-- Mini Calendar -->
+                <div class="card" style="padding: 20px;">
+                    <div class="card-header" style="margin-bottom: 15px;">
+                        <h3 class="card-title">Calendar</h3>
+                    </div>
+                    <?php
+                    $month = date('F Y');
+                    $days_in_month = date('t');
+                    $today = date('j');
+                    $first_day = date('w', strtotime(date('Y-m-01')));
+                    ?>
+                    <div style="text-align: center; margin-bottom: 15px;">
+                        <span style="font-weight: 700; color: var(--primary); font-size: 0.9rem;"><?php echo $month; ?></span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center;">
+                        <?php foreach (['S','M','T','W','T','F','S'] as $d): ?>
+                            <span style="font-size: 0.7rem; font-weight: 700; color: #94a3b8;"><?php echo $d; ?></span>
+                        <?php endforeach; ?>
+                        
+                        <?php for ($i = 0; $i < $first_day; $i++): ?>
+                            <span></span>
+                        <?php endfor; ?>
+                        
+                        <?php for ($d = 1; $d <= $days_in_month; $d++): ?>
+                            <span style="
+                                font-size: 0.8rem; 
+                                padding: 8px 0; 
+                                border-radius: 8px; 
+                                <?php echo ($d == $today) ? 'background: var(--primary); color: white; font-weight: 700;' : 'color: #64748b;'; ?>
+                            ">
+                                <?php echo $d; ?>
+                            </span>
+                        <?php endfor; ?>
+                    </div>
                 </div>
+
+                <!-- Announcements -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Announcements</h3>
+                    </div>
 
                 <div class="announcement-item">
                     <div style="display: flex; gap: 10px; margin-bottom: 5px;">
@@ -478,10 +516,11 @@ if ($current_day !== 'Sunday') {
                     <p style="font-size: 0.85rem; color: #64748b; line-height: 1.5;">Join us for a week of fun and
                         activities starting next Monday! Don't miss out.</p>
                 </div>
-            </div>
-        </div>
-
-    </div>
+                </div> <!-- Close Announcements Card -->
+            </div> <!-- Close Right Column Wrapper -->
+        </div> <!-- Close Dashboard Grid -->
+    </div> <!-- Close Content Area -->
+</div> <!-- Close Main Wrapper -->
 
     <!-- Schedule Modal -->
     <div id="scheduleModal" class="modal-overlay">

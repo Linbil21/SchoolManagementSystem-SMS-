@@ -18,14 +18,22 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admission@sms.com';
         <ul class="main-menu">
             <li class="has-dropdown <?php echo ($current_page == 'Dashboard.php') ? 'active open' : ''; ?>">
                 <a href="javascript:void(0)" class="dropdown-toggle">
-                    <i class="fas fa-th-large"></i>
+                    <div class="icon-box">
+                        <i class="fas fa-th-large"></i>
+                    </div>
                     <span>Dashboard</span>
-                    <i class="fas fa-chevron-right arrow-icon"></i>
+                    <i class="fas fa-chevron-down arrow-icon"></i>
                 </a>
                 <ul class="sub-menu">
-                    <li><a href="/sms/Admission/Dashboard.php?view=summary">Application Summary</a></li>
-                    <li><a href="/sms/Admission/Dashboard.php?view=pending">Pending Evaluation</a></li>
-                    <li><a href="/sms/Admission/Dashboard.php?view=notifications">Notifications</a></li>
+                    <li class="<?php echo (isset($_GET['view']) && $_GET['view'] == 'summary') ? 'active' : ''; ?>">
+                        <a href="/sms/Admission/Dashboard.php?view=summary">Application Summary</a>
+                    </li>
+                    <li class="<?php echo (isset($_GET['view']) && $_GET['view'] == 'pending') ? 'active' : ''; ?>">
+                        <a href="/sms/Admission/Dashboard.php?view=pending">Pending Evaluation</a>
+                    </li>
+                    <li class="<?php echo (isset($_GET['view']) && $_GET['view'] == 'notifications') ? 'active' : ''; ?>">
+                        <a href="/sms/Admission/Dashboard.php?view=notifications">Notifications</a>
+                    </li>
                 </ul>
             </li>
         </ul>
@@ -34,48 +42,56 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admission@sms.com';
         <p class="menu-label">ADMISSION PROCESS</p>
         <ul class="main-menu">
             <!-- Applications Dropdown -->
-            <li class="has-dropdown">
+            <li class="has-dropdown <?php echo (in_array($current_page, ['New-Applications.php', 'For-Evaluation.php', 'Approved.php', 'Rejected.php', 'Archived.php'])) ? 'active open' : ''; ?>">
                 <a href="javascript:void(0)" class="dropdown-toggle">
-                    <i class="fas fa-file-alt"></i>
+                    <div class="icon-box">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
                     <span>Applications</span>
-                    <i class="fas fa-chevron-right arrow-icon"></i>
+                    <i class="fas fa-chevron-down arrow-icon"></i>
                 </a>
                 <ul class="sub-menu">
-                    <li><a href="/sms/Admission/Modules/New-Applications.php">New Applications</a></li>
-                    <li><a href="/sms/Admission/Modules/For-Evaluation.php">For Evaluation</a></li>
-                    <li><a href="/sms/Admission/Modules/Approved.php">Approved</a></li>
-                    <li><a href="/sms/Admission/Modules/Rejected.php">Rejected</a></li>
-                    <li><a href="/sms/Admission/Modules/Archived.php">Archived</a></li>
+                    <li class="<?php echo ($current_page == 'New-Applications.php') ? 'active' : ''; ?>"><a href="/sms/Admission/Modules/New-Applications.php">New Applications</a></li>
+                    <li class="<?php echo ($current_page == 'For-Evaluation.php') ? 'active' : ''; ?>"><a href="/sms/Admission/Modules/For-Evaluation.php">For Evaluation</a></li>
+                    <li class="<?php echo ($current_page == 'Approved.php') ? 'active' : ''; ?>"><a href="/sms/Admission/Modules/Approved.php">Approved</a></li>
+                    <li class="<?php echo ($current_page == 'Rejected.php') ? 'active' : ''; ?>"><a href="/sms/Admission/Modules/Rejected.php">Rejected</a></li>
+                    <li class="<?php echo ($current_page == 'Archived.php') ? 'active' : ''; ?>"><a href="/sms/Admission/Modules/Archived.php">Archived</a></li>
                 </ul>
             </li>
 
             <!-- Application Evaluation Dropdown -->
-            <li class="has-dropdown">
+            <li class="has-dropdown <?php echo (in_array($current_page, ['Document-Review.php', 'Exam-Results.php', 'Interview-Assessment.php', 'Evaluation-Summary.php'])) ? 'active open' : ''; ?>">
                 <a href="javascript:void(0)" class="dropdown-toggle">
-                    <i class="fas fa-tasks"></i>
+                    <div class="icon-box">
+                        <i class="fas fa-tasks"></i>
+                    </div>
                     <span>Application Evaluation</span>
-                    <i class="fas fa-chevron-right arrow-icon"></i>
+                    <i class="fas fa-chevron-down arrow-icon"></i>
                 </a>
                 <ul class="sub-menu">
-                    <li><a href="/sms/Admission/Modules/Document-Review.php">Document Review</a></li>
-                    <li><a href="/sms/Admission/Modules/Exam-Results.php">Entrance Exam Results</a></li>
-                    <li><a href="/sms/Admission/Modules/Interview-Assessment.php">Interview Assessment</a></li>
-                    <li><a href="/sms/Admission/Modules/Evaluation-Summary.php">Evaluation Summary</a></li>
+                    <li class="<?php echo ($current_page == 'Document-Review.php') ? 'active' : ''; ?>"><a href="/sms/Admission/Modules/Document-Review.php">Document Review</a></li>
+                    <li class="<?php echo ($current_page == 'Exam-Results.php') ? 'active' : ''; ?>"><a href="/sms/Admission/Modules/Exam-Results.php">Entrance Exam Results</a></li>
+                    <li class="<?php echo ($current_page == 'Interview-Assessment.php') ? 'active' : ''; ?>"><a href="/sms/Admission/Modules/Interview-Assessment.php">Interview Assessment</a></li>
+                    <li class="<?php echo ($current_page == 'Evaluation-Summary.php') ? 'active' : ''; ?>"><a href="/sms/Admission/Modules/Evaluation-Summary.php">Evaluation Summary</a></li>
                 </ul>
             </li>
 
-            <!-- Student ID Management -->
-            <li class="has-dropdown">
+            <!-- Student Management -->
+            <li class="has-dropdown <?php echo (in_array($current_page, ['Generate-ID.php', 'ID-Verification.php', 'Print-Export-ID.php', 'Lost-Replacement-IDs.php', 'Student-Grades.php', 'Student-Attendance.php'])) ? 'active open' : ''; ?>">
                 <a href="javascript:void(0)" class="dropdown-toggle">
-                    <i class="fas fa-id-card"></i>
-                    <span>Student ID Management</span>
-                    <i class="fas fa-chevron-right arrow-icon"></i>
+                    <div class="icon-box">
+                        <i class="fas fa-id-card"></i>
+                    </div>
+                    <span>Student Management</span>
+                    <i class="fas fa-chevron-down arrow-icon"></i>
                 </a>
                 <ul class="sub-menu">
-                    <li><a href="/sms/Admission/Modules/Generate-ID.php">Generate Student ID</a></li>
-                    <li><a href="/sms/Admission/Modules/ID-Verification.php">ID Verification</a></li>
-                    <li><a href="/sms/Admission/Modules/Print-Export-ID.php">Print / Export ID</a></li>
-                    <li><a href="/sms/Admission/Modules/Lost-Replacement-IDs.php">Lost / Replacement IDs</a></li>
+                    <li class="<?php echo ($current_page == 'Generate-ID.php') ? 'active' : ''; ?>"><a href="/sms/Admission/Modules/Generate-ID.php">Generate Student ID</a></li>
+                    <li class="<?php echo ($current_page == 'ID-Verification.php') ? 'active' : ''; ?>"><a href="/sms/Admission/Modules/ID-Verification.php">ID Verification</a></li>
+                    <li class="<?php echo ($current_page == 'Print-Export-ID.php') ? 'active' : ''; ?>"><a href="/sms/Admission/Modules/Print-Export-ID.php">Print / Export ID</a></li>
+                    <li class="<?php echo ($current_page == 'Lost-Replacement-IDs.php') ? 'active' : ''; ?>"><a href="/sms/Admission/Modules/Lost-Replacement-IDs.php">Lost / Replacement IDs</a></li>
+                    <li class="<?php echo ($current_page == 'Student-Grades.php') ? 'active' : ''; ?>"><a href="/sms/Admission/Modules/Student-Grades.php">My Grades</a></li>
+                    <li class="<?php echo ($current_page == 'Student-Attendance.php') ? 'active' : ''; ?>"><a href="/sms/Admission/Modules/Student-Attendance.php">Attendance</a></li>
                 </ul>
             </li>
         </ul>
@@ -84,30 +100,34 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admission@sms.com';
         <p class="menu-label">MANAGEMENT</p>
         <ul class="main-menu">
             <!-- Admission Requirements -->
-            <li class="has-dropdown">
+            <li class="has-dropdown <?php echo (in_array($current_page, ['Requirement-List.php', 'Submission-Status.php', 'Validation-Rules.php'])) ? 'active open' : ''; ?>">
                 <a href="javascript:void(0)" class="dropdown-toggle">
-                    <i class="fas fa-clipboard-list"></i>
+                    <div class="icon-box">
+                        <i class="fas fa-clipboard-list"></i>
+                    </div>
                     <span>Admission Requirements</span>
-                    <i class="fas fa-chevron-right arrow-icon"></i>
+                    <i class="fas fa-chevron-down arrow-icon"></i>
                 </a>
                 <ul class="sub-menu">
-                    <li><a href="/sms/Admission/Modules/Requirement-List.php">Requirement List</a></li>
-                    <li><a href="/sms/Admission/Modules/Submission-Status.php">Submission Status</a></li>
-                    <li><a href="/sms/Admission/Modules/Validation-Rules.php">Validation Rules</a></li>
+                    <li class="<?php echo ($current_page == 'Requirement-List.php') ? 'active' : ''; ?>"><a href="/sms/Admission/Modules/Requirement-List.php">Requirement List</a></li>
+                    <li class="<?php echo ($current_page == 'Submission-Status.php') ? 'active' : ''; ?>"><a href="/sms/Admission/Modules/Submission-Status.php">Submission Status</a></li>
+                    <li class="<?php echo ($current_page == 'Validation-Rules.php') ? 'active' : ''; ?>"><a href="/sms/Admission/Modules/Validation-Rules.php">Validation Rules</a></li>
                 </ul>
             </li>
 
             <!-- Admission Results -->
-            <li class="has-dropdown">
+            <li class="has-dropdown <?php echo (in_array($current_page, ['Passers-List.php', 'Waitlisted.php', 'Result-Notifications.php'])) ? 'active open' : ''; ?>">
                 <a href="javascript:void(0)" class="dropdown-toggle">
-                    <i class="fas fa-poll"></i>
+                    <div class="icon-box">
+                        <i class="fas fa-poll"></i>
+                    </div>
                     <span>Admission Results</span>
-                    <i class="fas fa-chevron-right arrow-icon"></i>
+                    <i class="fas fa-chevron-down arrow-icon"></i>
                 </a>
                 <ul class="sub-menu">
-                    <li><a href="/sms/Admission/Modules/Passers-List.php">Passers List</a></li>
-                    <li><a href="/sms/Admission/Modules/Waitlisted.php">Waitlisted</a></li>
-                    <li><a href="/sms/Admission/Modules/Result-Notifications.php">Notifications</a></li>
+                    <li class="<?php echo ($current_page == 'Passers-List.php') ? 'active' : ''; ?>"><a href="/sms/Admission/Modules/Passers-List.php">Passers List</a></li>
+                    <li class="<?php echo ($current_page == 'Waitlisted.php') ? 'active' : ''; ?>"><a href="/sms/Admission/Modules/Waitlisted.php">Waitlisted</a></li>
+                    <li class="<?php echo ($current_page == 'Result-Notifications.php') ? 'active' : ''; ?>"><a href="/sms/Admission/Modules/Result-Notifications.php">Notifications</a></li>
                 </ul>
             </li>
         </ul>
@@ -115,16 +135,18 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admission@sms.com';
         <!-- Reports & Analytics -->
         <p class="menu-label">REPORTS & ANALYTICS</p>
         <ul class="main-menu">
-            <li class="has-dropdown">
+            <li class="has-dropdown <?php echo (in_array($current_page, ['Applications-Summary.php', 'Evaluation-Statistics.php', 'ID-Reports.php'])) ? 'active open' : ''; ?>">
                 <a href="javascript:void(0)" class="dropdown-toggle">
-                    <i class="fas fa-chart-bar"></i>
+                    <div class="icon-box">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
                     <span>Reports</span>
-                    <i class="fas fa-chevron-right arrow-icon"></i>
+                    <i class="fas fa-chevron-down arrow-icon"></i>
                 </a>
                 <ul class="sub-menu">
-                    <li><a href="/sms/Admission/Modules/Applications-Summary.php">Applications Summary</a></li>
-                    <li><a href="/sms/Admission/Modules/Evaluation-Statistics.php">Evaluation Statistics</a></li>
-                    <li><a href="/sms/Admission/Modules/ID-Reports.php">Student ID Reports</a></li>
+                    <li class="<?php echo ($current_page == 'Applications-Summary.php') ? 'active' : ''; ?>"><a href="/sms/Admission/Modules/Applications-Summary.php">Applications Summary</a></li>
+                    <li class="<?php echo ($current_page == 'Evaluation-Statistics.php') ? 'active' : ''; ?>"><a href="/sms/Admission/Modules/Evaluation-Statistics.php">Evaluation Statistics</a></li>
+                    <li class="<?php echo ($current_page == 'ID-Reports.php') ? 'active' : ''; ?>"><a href="/sms/Admission/Modules/ID-Reports.php">Student ID Reports</a></li>
                 </ul>
             </li>
         </ul>
@@ -132,16 +154,18 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admission@sms.com';
         <!-- Settings Section -->
         <p class="menu-label">SYSTEM CONFIG</p>
         <ul class="main-menu">
-            <li class="has-dropdown">
+            <li class="has-dropdown <?php echo (in_array($current_page, ['Admission-Year.php', 'Cut-off-Score.php', 'Notification-Templates.php'])) ? 'active open' : ''; ?>">
                 <a href="javascript:void(0)" class="dropdown-toggle">
-                    <i class="fas fa-cog"></i>
+                    <div class="icon-box">
+                        <i class="fas fa-cog"></i>
+                    </div>
                     <span>Settings</span>
-                    <i class="fas fa-chevron-right arrow-icon"></i>
+                    <i class="fas fa-chevron-down arrow-icon"></i>
                 </a>
                 <ul class="sub-menu">
-                    <li><a href="/sms/Admission/Modules/Admission-Year.php">Admission Year</a></li>
-                    <li><a href="/sms/Admission/Modules/Cut-off-Score.php">Cut-off Score</a></li>
-                    <li><a href="/sms/Admission/Modules/Notification-Templates.php">Notification Templates</a></li>
+                    <li class="<?php echo ($current_page == 'Admission-Year.php') ? 'active' : ''; ?>"><a href="/sms/Admission/Modules/Admission-Year.php">Admission Year</a></li>
+                    <li class="<?php echo ($current_page == 'Cut-off-Score.php') ? 'active' : ''; ?>"><a href="/sms/Admission/Modules/Cut-off-Score.php">Cut-off Score</a></li>
+                    <li class="<?php echo ($current_page == 'Notification-Templates.php') ? 'active' : ''; ?>"><a href="/sms/Admission/Modules/Notification-Templates.php">Notification Templates</a></li>
                 </ul>
             </li>
             <li class="<?php echo ($current_page == 'Profile.php') ? 'active' : ''; ?>">
@@ -167,11 +191,19 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admission@sms.com';
 
     <div class="sidebar-profile">
         <div class="profile-card">
-            <img src="https://ui-avatars.com/api/?name=<?php echo urlencode($email); ?>&background=1648bc&color=fff"
-                alt="Profile">
+            <?php 
+            $initials = "AD"; // Standard for Admission
+            if(isset($_SESSION['fullname'])) {
+                $names = explode(' ', $_SESSION['fullname']);
+                $initials = strtoupper(substr($names[0], 0, 1) . (isset($names[1]) ? substr($names[1], 0, 1) : ''));
+            }
+            ?>
+            <div class="avatar-circle">
+                <?php echo $initials; ?>
+            </div>
             <div class="profile-info">
                 <h4>Admission Staff</h4>
-                <p><?php echo ucfirst($role); ?></p>
+                <p>Admission Office</p>
             </div>
             <span class="status-dot"></span>
         </div>
@@ -182,13 +214,13 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admission@sms.com';
     .sidebar {
         width: 260px;
         height: 100vh;
-        background: white;
+        background: var(--sidebar-bg);
         display: flex;
         flex-direction: column;
-        border-right: 1px solid #edf2f7;
+        border-right: 1px solid var(--border-color);
         position: sticky;
         top: 0;
-        transition: width 0.3s ease;
+        transition: all 0.3s ease;
         z-index: 1000;
     }
 
@@ -211,12 +243,12 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admission@sms.com';
         width: 45px;
         height: auto;
         border-radius: 8px;
-        border: 1px solid #000;
+        border: 1px solid var(--border-color);
         filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.05));
     }
 
     .sidebar-brand h2 {
-        color: #1648bc;
+        color: var(--accent-color);
         font-size: 1.2rem;
         font-weight: 800;
         margin: 0;
@@ -239,7 +271,7 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admission@sms.com';
     .menu-label {
         font-size: 0.7rem;
         font-weight: 700;
-        color: #94a3b8;
+        color: var(--text-muted);
         margin: 20px 0 10px 10px;
         letter-spacing: 1px;
         text-transform: uppercase;
@@ -261,7 +293,7 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admission@sms.com';
         gap: 12px;
         padding: 10px 15px;
         text-decoration: none;
-        color: #64748b;
+        color: var(--text-muted);
         font-size: 0.9rem;
         font-weight: 500;
         border-radius: 10px;
@@ -269,29 +301,43 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admission@sms.com';
     }
 
     .sidebar-menu ul li.active>a {
-        background: #f1f5f9;
-        color: #1648bc;
-        font-weight: 600;
+        background: var(--hover-bg);
+        color: var(--accent-color);
+        font-weight: 700;
     }
 
     .sidebar-menu ul li a:hover {
-        background: #f8fafc;
-        color: #1648bc;
+        background: var(--hover-bg);
+        color: var(--accent-color);
     }
 
-    .sidebar-menu ul li a i {
-        width: 20px;
-        font-size: 1.1rem;
+    .icon-box {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
         transition: 0.3s;
+        color: var(--text-muted);
     }
 
-    /* Sub-menu Styles */
+    .has-dropdown.active.open > a {
+        background: var(--hover-bg);
+        color: var(--accent-color);
+    }
+
+    .has-dropdown.active.open .icon-box {
+        background: var(--accent-color);
+        color: white;
+    }
+
     .sub-menu {
         list-style: none;
         padding-left: 15px;
         margin-top: 2px;
         margin-bottom: 5px;
-        border-left: 1px dashed #e2e8f0;
+        border-left: 1px dashed var(--border-color);
         margin-left: 24px;
         display: none;
     }
@@ -302,76 +348,60 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admission@sms.com';
     }
 
     @keyframes slideDown {
-        from {
-            opacity: 0;
-            transform: translateY(-10px);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
     }
 
     .arrow-icon {
         margin-left: auto;
-        font-size: 0.7rem !important;
+        font-size: 0.8rem !important;
         transition: transform 0.3s ease;
+        color: var(--text-muted);
     }
 
     .has-dropdown.open .arrow-icon {
-        transform: rotate(90deg);
+        transform: rotate(180deg);
+        color: var(--accent-color);
     }
 
     .sub-menu li a {
         padding: 8px 15px !important;
         font-size: 0.8rem !important;
-        color: #64748b !important;
+        color: var(--text-muted) !important;
     }
 
-    .sub-menu li a:hover {
-        color: #1648bc !important;
+    .sub-menu li a:hover, .sub-menu li.active a {
+        color: var(--accent-color) !important;
         background: transparent !important;
-    }
-
-    .sub-menu li a i {
-        font-size: 0.9rem !important;
     }
 
     /* Profile Section */
     .sidebar-profile {
         padding: 20px;
-        border-top: 1px solid #edf2f7;
+        border-top: 1px solid var(--border-color);
     }
 
     .profile-card {
-        background: #f8fafc;
+        background: var(--hover-bg);
         padding: 12px;
         border-radius: 12px;
         display: flex;
         align-items: center;
         gap: 12px;
         position: relative;
-        border: 1px solid #f1f5f9;
-    }
-
-    .profile-card img {
-        width: 38px;
-        height: 38px;
-        border-radius: 10px;
-        object-fit: cover;
+        border: 1px solid var(--border-color);
     }
 
     .profile-info h4 {
         font-size: 0.8rem;
         font-weight: 700;
-        color: #1e293b;
+        color: var(--text-color);
         margin: 0;
     }
 
     .profile-info p {
         font-size: 0.7rem;
-        color: #64748b;
+        color: var(--text-muted);
         margin: 0;
     }
 
@@ -379,11 +409,12 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admission@sms.com';
         position: absolute;
         bottom: 12px;
         left: 42px;
-        width: 8px;
-        height: 8px;
+        width: 10px;
+        height: 10px;
         background: #22c55e;
-        border: 2px solid white;
+        border: 2px solid var(--surface-color);
         border-radius: 50%;
+        box-shadow: 0 0 10px rgba(34, 197, 94, 0.4);
     }
 
     /* Collapsed State */
@@ -400,7 +431,6 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admission@sms.com';
     .sidebar.collapsed .sub-menu {
         display: none !important;
     }
-
     .sidebar.collapsed .sidebar-brand {
         padding: 20px 10px;
     }
@@ -467,17 +497,17 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admission@sms.com';
 <div id="logoutModal" class="modal"
     style="display:none; z-index: 9999; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); position: fixed; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden;">
     <div class="modal-content"
-        style="max-width: 400px; text-align: center; border-radius: 24px; padding: 40px; margin: 15% auto; position: relative; background-color: #ffffff; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); border: none; font-family: 'Poppins', sans-serif;">
+        style="max-width: 400px; text-align: center; border-radius: 24px; padding: 40px; margin: 15% auto; position: relative; background-color: var(--surface-color); color: var(--text-color); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); border: 1px solid var(--border-color); font-family: 'Poppins', sans-serif;">
         <div
             style="width: 70px; height: 70px; background: #fee2e2; color: #ef4444; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 1.8rem;">
             <i class="fas fa-sign-out-alt"></i>
         </div>
-        <h2 style="margin-bottom: 12px; color: #0f172a; font-weight: 700; font-size: 1.5rem;">Confirm Logout</h2>
-        <p style="color: #64748b; margin-bottom: 32px; line-height: 1.6; font-size: 0.95rem;">Are you sure you want to
+        <h2 style="margin-bottom: 12px; color: var(--text-color); font-weight: 700; font-size: 1.5rem;">Confirm Logout</h2>
+        <p style="color: var(--text-muted); margin-bottom: 32px; line-height: 1.6; font-size: 0.95rem;">Are you sure you want to
             end your session? Any unsaved changes might be lost.</p>
         <div style="display: flex; gap: 12px; justify-content: center;">
             <button onclick="closeLogoutModal()"
-                style="flex: 1; padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0; background: white; color: #475569; font-weight: 600; cursor: pointer; transition: 0.3s; font-family: inherit;">Stay
+                style="flex: 1; padding: 12px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--hover-bg); color: var(--text-color); font-weight: 600; cursor: pointer; transition: 0.3s; font-family: inherit;">Stay
                 Here</button>
             <a href="/sms/auth/logout.php"
                 style="flex: 1; padding: 12px; border-radius: 12px; background: #ef4444; color: white; font-weight: 600; text-decoration: none; display: inline-block; transition: 0.3s; font-family: inherit; font-size: 0.95rem; border: none; box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.2);">Sign

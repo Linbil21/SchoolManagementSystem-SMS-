@@ -14,14 +14,8 @@ $role = $_SESSION['role'];
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/sms/Assets/css/theme.css">
     <style>
-        :root {
-            --primary-blue: #1648bc;
-            --bg-light: #f7fafc;
-            --text-dark: #2d3748;
-            --text-gray: #718096;
-        }
-
         * {
             margin: 0;
             padding: 0;
@@ -30,9 +24,11 @@ $role = $_SESSION['role'];
         }
 
         body {
-            background: var(--bg-light);
+            background: var(--bg-color);
+            color: var(--text-color);
             display: flex;
             min-height: 100vh;
+            transition: all 0.3s ease;
         }
 
         .main-wrapper {
@@ -40,31 +36,55 @@ $role = $_SESSION['role'];
             display: flex;
             flex-direction: column;
             overflow-x: hidden;
+            background: var(--bg-color);
         }
 
         .content-area {
             padding: 30px;
             flex: 1;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .banner {
-            background: linear-gradient(135deg, #1648bc 0%, #3b82f6 50%, #06b6d4 100%);
+            background: linear-gradient(135deg, var(--accent-color) 0%, #3b82f6 50%, #06b6d4 100%);
             padding: 40px;
-            border-radius: 20px;
+            border-radius: 24px;
             color: white;
             margin-bottom: 30px;
             box-shadow: 0 10px 25px rgba(22, 72, 188, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .banner::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 300px;
+            height: 300px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
         }
 
         .banner h1 {
             font-size: 2.2rem;
             font-weight: 800;
             margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
         }
 
         .banner p {
             font-size: 1rem;
             opacity: 0.9;
+            position: relative;
+            z-index: 1;
         }
 
         .stats-grid {
@@ -74,45 +94,164 @@ $role = $_SESSION['role'];
         }
 
         .stat-card {
-            background: white;
+            background: var(--surface-color);
             padding: 25px;
-            border-radius: 15px;
+            border-radius: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
-            border-left: 5px solid #1648bc;
-            transition: 0.3s;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
         }
 
         .stat-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            border-color: var(--accent-color);
         }
 
         .stat-info span {
             font-size: 0.85rem;
-            color: var(--text-gray);
+            color: var(--text-muted);
             font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .stat-info h2 {
             font-size: 1.8rem;
             font-weight: 800;
-            color: var(--text-dark);
+            color: var(--text-color);
             margin-top: 5px;
         }
 
         .stat-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 12px;
+            width: 54px;
+            height: 54px;
+            border-radius: 16px;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 1.2rem;
-            background: #eef2ff;
-            color: #1648bc;
+            font-size: 1.4rem;
+            background: var(--hover-bg);
+            color: var(--accent-color);
+            transition: 0.3s;
+        }
+
+        .stat-card:hover .stat-icon {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .dashboard-grid {
+            margin-top: 30px;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 25px;
+        }
+
+        @media (max-width: 1200px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
+        }
+
+        .data-card {
+            background: var(--surface-color);
+            padding: 25px;
+            border-radius: 24px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .data-card h3 {
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .transaction-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 10px;
+        }
+
+        .transaction-table th {
+            text-align: left;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 0 15px 10px;
+        }
+
+        .transaction-table tr:not(:first-child) {
+            background: var(--hover-bg);
+            transition: 0.2s;
+        }
+
+        .transaction-table td {
+            padding: 15px;
+            color: var(--text-color);
+            font-size: 0.9rem;
+        }
+
+        .transaction-table tr td:first-child { border-radius: 12px 0 0 12px; }
+        .transaction-table tr td:last-child { border-radius: 0 12px 12px 0; }
+
+        .status-badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .status-success { background: rgba(34, 197, 94, 0.1); color: #22c55e; }
+
+        .action-card {
+            background: linear-gradient(135deg, var(--accent-color) 0%, #0a2e7a 100%);
+            padding: 25px;
+            border-radius: 24px;
+            color: white;
+            height: fit-content;
+        }
+
+        .quick-actions-list {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px;
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.05);
+            color: white;
+            cursor: pointer;
+            text-align: left;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: 0.3s;
+            text-decoration: none;
+        }
+
+        .action-btn:hover {
+            background: rgba(255,255,255,0.15);
+            transform: translateX(5px);
+        }
+
+        .action-btn i {
+            font-size: 1.1rem;
+            width: 20px;
+            text-align: center;
         }
     </style>
 </head>
@@ -124,7 +263,7 @@ $role = $_SESSION['role'];
         <div class="content-area">
             <div class="banner">
                 <h1>Finance Overview</h1>
-                <p>Welcome back! Here's a summary of today's financial activities.</p>
+                <p>Welcome back! Monitor and manage institutional financial records with precision.</p>
             </div>
 
             <div class="stats-grid">
@@ -140,7 +279,8 @@ $role = $_SESSION['role'];
                         <span>Pending Verification</span>
                         <h2>12</h2>
                     </div>
-                    <div class="stat-icon" style="background: #fff7ed; color: #c2410c;"><i class="fas fa-clock"></i>
+                    <div class="stat-icon" style="background: rgba(249, 115, 22, 0.1); color: #f97316;">
+                        <i class="fas fa-clock"></i>
                     </div>
                 </div>
                 <div class="stat-card">
@@ -148,49 +288,51 @@ $role = $_SESSION['role'];
                         <span>New Assessments</span>
                         <h2>45</h2>
                     </div>
-                    <div class="stat-icon" style="background: #f0fdf4; color: #15803d;"><i
-                            class="fas fa-file-invoice"></i></div>
+                    <div class="stat-icon" style="background: rgba(34, 197, 94, 0.1); color: #22c55e;">
+                        <i class="fas fa-file-invoice"></i>
+                    </div>
                 </div>
             </div>
 
-            <div style="margin-top: 30px; display: grid; grid-template-columns: 2fr 1fr; gap: 20px;">
-                <div
-                    style="background: white; padding: 25px; border-radius: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
-                    <h3 style="margin-bottom: 20px;">Recent Transactions</h3>
-                    <table style="width: 100%; border-collapse: collapse;">
+            <div class="dashboard-grid">
+                <div class="data-card">
+                    <h3><i class="fas fa-history"></i> Recent Transactions</h3>
+                    <table class="transaction-table">
                         <thead>
-                            <tr style="text-align: left; color: #64748b; font-size: 0.85rem;">
-                                <th style="padding: 10px;">STUDENT</th>
-                                <th style="padding: 10px;">TYPE</th>
-                                <th style="padding: 10px;">AMOUNT</th>
-                                <th style="padding: 10px;">STATUS</th>
+                            <tr>
+                                <th>Student</th>
+                                <th>Type</th>
+                                <th>Amount</th>
+                                <th>Status</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr style="border-top: 1px solid #f1f5f9;">
-                                <td style="padding: 15px;">John Doe</td>
-                                <td style="padding: 15px;">Tuition Fee</td>
-                                <td style="padding: 15px; font-weight: 700;">₱15,000.00</td>
-                                <td style="padding: 15px;"><span
-                                        style="padding: 5px 12px; border-radius: 15px; background: #f0fdf4; color: #15803d; font-size: 0.75rem; font-weight: 600;">Success</span>
-                                </td>
+                            <tr>
+                                <td style="font-weight: 600;">John Doe</td>
+                                <td>Tuition Fee</td>
+                                <td style="font-weight: 700; color: var(--accent-color);">₱15,000.00</td>
+                                <td><span class="status-badge status-success">Success</span></td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
-                <div style="background: #1648bc; padding: 25px; border-radius: 20px; color: white;">
-                    <h3>Quick Actions</h3>
-                    <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px;">
-                        <button
-                            style="padding: 12px; border-radius: 12px; border: none; background: rgba(255,255,255,0.1); color: white; cursor: pointer; text-align: left;"><i
-                                class="fas fa-plus-circle" style="margin-right: 10px;"></i> Record Walk-in</button>
-                        <button
-                            style="padding: 12px; border-radius: 12px; border: none; background: rgba(255,255,255,0.1); color: white; cursor: pointer; text-align: left;"><i
-                                class="fas fa-search" style="margin-right: 10px;"></i> Find Student Account</button>
+
+                <div class="action-card">
+                    <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
+                    <div class="quick-actions-list">
+                        <a href="/sms/Cashier/Modules/Walk-in-Payments.php" class="action-btn">
+                            <i class="fas fa-plus-circle"></i> Record Walk-in
+                        </a>
+                        <a href="/sms/Cashier/Submodules/Payment-Status.php" class="action-btn">
+                            <i class="fas fa-search"></i> Find Student Account
+                        </a>
+                        <a href="/sms/Cashier/Modules/Issue-Receipt.php" class="action-btn">
+                            <i class="fas fa-file-invoice-dollar"></i> Generate Billing
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 </body>
-
 </html>

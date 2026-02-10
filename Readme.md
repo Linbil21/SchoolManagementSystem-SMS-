@@ -12,3 +12,9 @@ superadmin123
 
 Student@example.com
 student123
+
+ADMIN OKS NA
+SUPER ADMIN OKS NA
+CHIN KID OKS NA 
+ADMISSION OKS NA 
+CASHIER OKS NA 

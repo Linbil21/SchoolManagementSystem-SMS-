@@ -213,6 +213,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'cashier') {
             cursor: pointer;
         }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
@@ -237,24 +238,54 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'cashier') {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>
-                                <div style="display: flex; align-items: center; gap: 12px;">
-                                    <img src="https://ui-avatars.com/api/?name=Mark+Lee&background=1648bc&color=fff"
-                                        style="width: 36px; height: 36px; border-radius: 10px;">
-                                    <div>
-                                        <p style="font-weight: 700;">Mark Lee</p>
-                                        <p style="font-size: 0.75rem; color: var(--text-gray);">2024-1002</p>
-                                    </div>
-                                </div>
-                            </td>
-                            <td style="font-family: monospace; font-weight: 600;">REF-9921004</td>
-                            <td style="font-weight: 700; color: var(--primary);">₱12,500.00</td>
-                            <td>Jan 11, 2024</td>
-                            <td><button class="btn-view"
-                                    onclick="openVerifyModal('Mark Lee', 'REF-9921004', '₱12,500.00', 'GCash')">Verify
-                                    Payment</button></td>
-                        </tr>
+                        <?php
+                        try {
+                            $stmt = $pdo->prepare("
+                                SELECT p.*, e.first_name, e.last_name, IFNULL(s.student_id, e.reference_code) as student_id 
+                                FROM payments p 
+                                JOIN enrollments e ON p.enrollment_id = e.enrollmentId 
+                                LEFT JOIN students s ON e.email = s.email
+                                WHERE p.proof_of_payment IS NOT NULL AND p.status = 'Pending'
+                                ORDER BY p.created_at DESC
+                            ");
+                            $stmt->execute();
+                            $uploaded = $stmt->fetchAll();
+                            
+                            if (empty($uploaded)) {
+                                echo '<tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--text-gray);">No pending receipts to verify.</td></tr>';
+                            } else {
+                                foreach ($uploaded as $row) {
+                                    $name = htmlspecialchars($row->first_name . " " . $row->last_name);
+                                    $student_id = htmlspecialchars($row->student_id);
+                                    $ref = htmlspecialchars($row->transaction_id);
+                                    $amount = number_format($row->amount, 2);
+                                    $date = date('M d, Y', strtotime($row->created_at));
+                                    $method = htmlspecialchars($row->payment_method);
+                                    $img = "/sms/" . htmlspecialchars($row->proof_of_payment);
+                                    $purpose = htmlspecialchars($row->purpose ?? "");
+                                    echo "<tr>
+                                            <td>
+                                                <div style='display: flex; align-items: center; gap: 12px;'>
+                                                    <div style='width: 36px; height: 36px; border-radius: 10px; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700;'>
+                                                        " . substr($row->first_name, 0, 1) . "
+                                                    </div>
+                                                    <div>
+                                                        <p style='font-weight: 700;'>$name</p>
+                                                        <p style='font-size: 0.75rem; color: var(--text-gray);'>$student_id</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td style='font-family: monospace; font-weight: 600;'>$ref</td>
+                                            <td style='font-weight: 700; color: var(--primary);'>₱$amount</td>
+                                            <td>$date</td>
+                                            <td><button class='btn-view' onclick=\"openVerifyModal('$name', '$ref', '₱$amount', '$method', '$img', '{$row->payment_id}')\">Verify Payment</button></td>
+                                        </tr>";
+                                }
+                            }
+                        } catch (PDOException $e) {
+                            echo "<tr><td colspan='5' style='color: red; padding: 20px;'>Error: " . $e->getMessage() . "</td></tr>";
+                        }
+                        ?>
                     </tbody>
                 </table>
             </div>
@@ -270,7 +301,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'cashier') {
                     onclick="closeVerifyModal()"></i>
             </div>
             <div class="modal-body">
-                <div class="receipt-preview">
+                <div class="receipt-preview" id="modalPreview">
                     <i class="fas fa-file-invoice-dollar"></i>
                     <p style="position: absolute; margin-top: 60px; color: #94a3b8; font-weight: 500;">Proof of Payment
                         Preview</p>
@@ -292,6 +323,10 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'cashier') {
                         <label>Payment Method</label>
                         <p id="modalMethod">GCash</p>
                     </div>
+                    <div class="info-group">
+                        <label>Specific Purpose / Remarks</label>
+                        <p id="modalPurpose">---</p>
+                    </div>
 
                     <div style="margin-top: 20px;">
                         <label
@@ -304,18 +339,29 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'cashier') {
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn-reject" onclick="closeVerifyModal()">Reject Payment</button>
-                <button class="btn-approve" onclick="closeVerifyModal()">Approve & Post</button>
+                <button class="btn-reject" onclick="processStatus('Rejected')">Reject Payment</button>
+                <button class="btn-approve" onclick="processStatus('Verified')">Approve & Post</button>
             </div>
         </div>
     </div>
 
     <script>
-        function openVerifyModal(name, ref, amount, method) {
+        let currentPaymentId = null;
+
+        function openVerifyModal(name, ref, amount, method, img, id, purpose) {
+            currentPaymentId = id;
             document.getElementById('modalName').textContent = name;
             document.getElementById('modalRef').textContent = ref;
             document.getElementById('modalAmount').textContent = amount;
             document.getElementById('modalMethod').textContent = method;
+            document.getElementById('modalPurpose').textContent = purpose || 'None provided';
+            
+            if (img && img !== '/sms/') {
+                document.getElementById('modalPreview').innerHTML = `<img src="${img}" style="max-width: 100%; max-height: 100%; object-fit: contain;">`;
+            } else {
+                document.getElementById('modalPreview').innerHTML = `<i class="fas fa-file-invoice-dollar"></i><p style="position: absolute; margin-top: 60px; color: #94a3b8; font-weight: 500;">No Preview Available</p>`;
+            }
+
             document.getElementById('verifyModal').style.display = 'block';
             document.body.style.overflow = 'hidden';
         }
@@ -323,6 +369,40 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'cashier') {
         function closeVerifyModal() {
             document.getElementById('verifyModal').style.display = 'none';
             document.body.style.overflow = 'auto';
+        }
+
+        function processStatus(status) {
+            const remarks = document.querySelector('textarea[placeholder="Add remarks..."]').value;
+            
+            Swal.fire({
+                title: 'Confirm ' + status,
+                text: "Are you sure you want to mark this receipt as " + status + "?",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: status === 'Verified' ? '#10b981' : '#ef4444'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({ title: 'Processing...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+                    const formData = new FormData();
+                    formData.append('payment_id', currentPaymentId);
+                    formData.append('status', status);
+                    formData.append('remarks', remarks);
+
+                    fetch('../api/verify_payment.php', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire('Success!', data.message, 'success').then(() => location.reload());
+                        } else {
+                            Swal.fire('Error', data.message, 'error');
+                        }
+                    });
+                }
+            });
         }
 
         window.onclick = function (event) {

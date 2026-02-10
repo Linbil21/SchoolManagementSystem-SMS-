@@ -142,14 +142,16 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'cashier@sms.com';
     </div>
 </div>
 
+<link rel="stylesheet" href="/sms/Assets/css/theme.css">
+
 <style>
     .sidebar {
         width: 280px;
         height: 100vh;
-        background: white;
+        background: var(--sidebar-bg);
         display: flex;
         flex-direction: column;
-        border-right: 1px solid #edf2f7;
+        border-right: 1px solid var(--border-color);
         position: sticky;
         top: 0;
         z-index: 1000;
@@ -173,7 +175,7 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'cashier@sms.com';
     }
 
     .sidebar-brand h2 {
-        color: #1648bc;
+        color: var(--accent-color);
         font-size: 1.4rem;
         font-weight: 800;
         text-transform: uppercase;
@@ -198,7 +200,7 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'cashier@sms.com';
     .menu-label {
         font-size: 0.75rem;
         font-weight: 700;
-        color: #94a3b8;
+        color: var(--text-muted);
         margin: 25px 0 10px 15px;
         letter-spacing: 1.2px;
         text-transform: uppercase;
@@ -220,7 +222,7 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'cashier@sms.com';
         gap: 12px;
         padding: 12px 15px;
         text-decoration: none;
-        color: #475569;
+        color: var(--text-color);
         font-size: 0.92rem;
         font-weight: 500;
         border-radius: 12px;
@@ -228,14 +230,16 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'cashier@sms.com';
     }
 
     .main-menu a:hover {
-        background: #f8fafc;
-        color: #1648bc;
+        background: var(--hover-bg);
+        color: var(--accent-color);
     }
 
     .main-menu li.active>a {
-        background: #eef2ff;
-        color: #1648bc;
+        background: var(--hover-bg);
+        color: var(--accent-color);
         font-weight: 600;
+        border-left: 4px solid var(--accent-color);
+        border-radius: 0 12px 12px 0;
     }
 
     .main-menu a i {
@@ -285,16 +289,16 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'cashier@sms.com';
     .sub-menu a {
         padding: 10px 15px;
         font-size: 0.85rem;
-        color: #64748b;
+        color: var(--text-muted);
     }
 
     .sidebar-profile {
         padding: 20px;
-        border-top: 1px solid #edf2f7;
+        border-top: 1px solid var(--border-color);
     }
 
     .profile-card {
-        background: #f8fafc;
+        background: var(--hover-bg);
         padding: 12px;
         border-radius: 16px;
         display: flex;
@@ -312,12 +316,12 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'cashier@sms.com';
     .profile-info h4 {
         font-size: 0.85rem;
         font-weight: 700;
-        color: #1e293b;
+        color: var(--text-color);
     }
 
     .profile-info p {
         font-size: 0.75rem;
-        color: #64748b;
+        color: var(--text-muted);
     }
 
     .status-dot {
@@ -327,7 +331,7 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'cashier@sms.com';
         width: 10px;
         height: 10px;
         background: #22c55e;
-        border: 2px solid white;
+        border: 2px solid var(--sidebar-bg);
         border-radius: 50%;
     }
 </style>
@@ -363,16 +367,16 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'cashier@sms.com';
 <div id="logoutModal" class="modal"
     style="display:none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);">
     <div
-        style="background: white; width: 90%; max-width: 400px; margin: 15vh auto; border-radius: 24px; padding: 40px; text-align: center;">
+        style="background: var(--surface-color); width: 90%; max-width: 400px; margin: 15vh auto; border-radius: 24px; padding: 40px; text-align: center; border: 1px solid var(--border-color);">
         <div
             style="width: 70px; height: 70px; background: #fee2e2; color: #ef4444; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 1.8rem;">
             <i class="fas fa-sign-out-alt"></i>
         </div>
-        <h2 style="font-weight: 800; color: #1e293b; margin-bottom: 10px;">End Session?</h2>
-        <p style="color: #64748b; margin-bottom: 30px;">Are you sure you want to log out of the Cashier panel?</p>
+        <h2 style="font-weight: 800; color: var(--text-color); margin-bottom: 10px;">End Session?</h2>
+        <p style="color: var(--text-muted); margin-bottom: 30px;">Are you sure you want to log out of the Cashier panel?</p>
         <div style="display: flex; gap: 12px;">
             <button onclick="closeLogoutModal()"
-                style="flex: 1; padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0; background: white; color: #475569; font-weight: 600; cursor: pointer;">Cancel</button>
+                style="flex: 1; padding: 12px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--hover-bg); color: var(--text-color); font-weight: 600; cursor: pointer;">Cancel</button>
             <a href="/sms/auth/logout.php"
                 style="flex: 1; padding: 12px; border-radius: 12px; background: #ef4444; color: white; font-weight: 600; text-decoration: none;">Log
                 Out</a>

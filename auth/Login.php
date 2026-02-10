@@ -3,7 +3,7 @@ require_once 'Security.php';
 $csrf_token = generateCsrfToken();
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 
 <head>
     <meta charset="UTF-8">
@@ -136,276 +136,306 @@ $csrf_token = generateCsrfToken();
                     </div>
                 </form>
 
-                <!-- REGISTRATION FORM (Multi-Step Wizard) -->
+                <!-- REGISTRATION FORM (Modern Modern Split Design) -->
                 <form action="auth_process.php" method="POST" class="sign-up-form" enctype="multipart/form-data">
                     <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
-                    <div class="logo-circle">
-                        <img src="../Assets/image/logo.png" alt="Logo">
-                    </div>
-                    <h2 class="title" style="margin-bottom: 5px;">Student Registration</h2>
-
-                    <!-- Form Content with Scroll for large registration steps -->
-                    <div class="register-container-scroll">
-                        <!-- Progress Bar (Visible at Top) -->
-                        <div class="progressbar">
-                            <div class="progress" id="progress"></div>
-                            <div class="progress-step progress-step-active" data-title="Enrollment"></div>
-                            <div class="progress-step" data-title="Info"></div>
-                            <div class="progress-step" data-title="Docs"></div>
-                            <div class="progress-step" data-title="Guardian"></div>
-                            <div class="progress-step" data-title="Education"></div>
-                        </div>
-
-                        <!-- Step 1: Enrollment Information -->
-                        <div class="form-step form-step-active">
-                            <h3 style="margin-bottom: 15px; color: var(--primary-blue);">Enrollment Information</h3>
-                            <div class="row">
-                                <div class="col input-group">
-                                    <label>Admission Type <span>*</span></label>
-                                    <select name="admission_type" required>
-                                        <option value="Freshman">Freshman</option>
-                                        <option value="Transferee">Transferee</option>
-                                    </select>
-                                </div>
-                                <div class="col input-group">
-                                    <label>Course <span>*</span></label>
-                                    <select name="course" required>
-                                        <option value="">Select...</option>
-                                        <option value="BSIT">BS Information Technology</option>
-                                        <option value="BSCS">BS Computer Science</option>
-                                        <option value="BSBA">BS Business Administration</option>
-                                    </select>
-                                </div>
-                                <div class="col input-group">
-                                    <label>Year Level <span>*</span></label>
-                                    <select name="year_level" required>
-                                        <option value="First Year">First Year</option>
-                                        <option value="Second Year">Second Year</option>
-                                        <option value="Third Year">Third Year</option>
-                                        <option value="Fourth Year">Fourth Year</option>
-                                    </select>
+                    
+                    <div class="registration-layout">
+                        <!-- Left Panel: The Form -->
+                        <div class="reg-left-panel">
+                            <div class="reg-header">
+                                <h2 class="form-title">Enrollment Form</h2>
+                                <div class="step-indicator-wrapper">
+                                    <div class="h-progress-steps">
+                                        <div class="h-step active" data-step="1">1</div>
+                                        <div class="h-step-line"></div>
+                                        <div class="h-step" data-step="2">2</div>
+                                        <div class="h-step-line"></div>
+                                        <div class="h-step" data-step="3">3</div>
+                                        <div class="h-step-line"></div>
+                                        <div class="h-step" data-step="4">4</div>
+                                        <div class="h-step-line"></div>
+                                        <div class="h-step" data-step="5">5</div>
+                                    </div>
+                                    <span class="step-text" id="step-text">Part 1 of 5: Enrollment Information</span>
                                 </div>
                             </div>
 
-                            <h4 style="margin: 15px 0 10px; color: var(--primary-blue); font-size: 0.9rem;">Primary
-                                Documents</h4>
-                            <div class="row">
-                                <div class="col input-group">
-                                    <label>Birth Certificate (PSA)</label>
-                                    <input type="file" name="birth_cert">
-                                </div>
-                                <div class="col input-group">
-                                    <label>Form 138 (Report Card)</label>
-                                    <input type="file" name="form_138">
-                                </div>
-                                <div class="col input-group">
-                                    <label>Passport Size ID Picture <span>*</span></label>
-                                    <input type="file" name="id_picture" required>
-                                    <small>(White Background, Formal Attire)</small>
-                                </div>
-                            </div>
+                            <!-- Form Content with Scroll -->
+                            <div class="register-container-scroll">
+                                <!-- Step 1: Enrollment Information -->
+                                <div class="form-step form-step-active">
+                                    <h3 class="step-title">Enrollment Information</h3>
+                                    
+                                    <div class="row">
+                                        <div class="col col-full input-group">
+                                            <label>Year Level <span>*</span></label>
+                                            <select name="year_level" required>
+                                                <option value="First Year">First Year</option>
+                                                <option value="Second Year">Second Year</option>
+                                                <option value="Third Year">Third Year</option>
+                                                <option value="Fourth Year">Fourth Year</option>
+                                            </select>
+                                        </div>
+                                    </div>
 
-                            <div class="row" style="margin-top: 10px;">
-                                <div class="col input-group">
-                                    <label style="color: var(--primary-blue); font-weight: 600;">Secondary Documents
-                                        Requirements? <span>*</span></label>
-                                    <div style="display: flex; gap: 20px; margin-top: 5px;">
-                                        <label
-                                            style="font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 8px;">
-                                            <input type="radio" name="has_secondary_docs" value="yes" checked
-                                                style="width: auto;"> Meron
-                                        </label>
-                                        <label
-                                            style="font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 8px;">
-                                            <input type="radio" name="has_secondary_docs" value="no"
-                                                style="width: auto;"> Wala
-                                        </label>
+                                    <div class="row">
+                                        <div class="col col-2 input-group">
+                                            <label>Admission Type <span>*</span></label>
+                                            <select name="admission_type" required>
+                                                <option value="Freshman">Freshman</option>
+                                                <option value="Transferee">Transferee</option>
+                                            </select>
+                                        </div>
+                                        <div class="col col-2 input-group">
+                                            <label>Course <span>*</span></label>
+                                            <select name="course" required>
+                                                <option value="">Select...</option>
+                                                <option value="BSIT">BS Information Technology</option>
+                                                <option value="BSCS">BS Computer Science</option>
+                                                <option value="BSBA">BS Business Administration</option>
+                                                <option value="BS Crim">BS Criminology</option>
+                                                <option value="BSHM">BS Hospitality Management</option>
+                                                <option value="BSA">BS Accountancy</option>
+                                                <option value="BSCE">BS Civil Engineering</option>
+                                                <option value="BEED">Bachelor of Elementary Education</option>
+                                                <option value="BSED">Bachelor of Secondary Education</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <h4 class="sub-step-title">Other Documents (If Available)</h4>
+                                    <div class="row row-3">
+                                        <div class="col input-group">
+                                            <label>Birth Cert (PSA)</label>
+                                            <input type="file" name="birth_cert">
+                                        </div>
+                                        <div class="col input-group">
+                                            <label>Form 138</label>
+                                            <input type="file" name="form_138">
+                                        </div>
+                                        <div class="col input-group">
+                                            <label>Passport Size ID <span>*</span></label>
+                                            <input type="file" name="id_picture" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="row" style="margin-top: 5px;">
+                                        <div class="col input-group col-full">
+                                            <label style="color: var(--primary-blue); font-weight: 600;">Secondary Documents Requirements? <span>*</span></label>
+                                            <div style="display: flex; gap: 30px; margin-top: 10px; background: #f8fafc; padding: 15px; border-radius: 10px; border: 1px dashed #e2e8f0; width: fit-content;">
+                                                <label style="font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 10px; margin-bottom: 0;">
+                                                    <input type="radio" name="has_secondary_docs" value="yes" checked style="width: 18px; height: 18px;"> Meron
+                                                </label>
+                                                <label style="font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 10px; margin-bottom: 0;">
+                                                    <input type="radio" name="has_secondary_docs" value="no" style="width: 18px; height: 18px;"> Wala
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="btns-group">
+                                        <a href="../Student/auth/login.php" style="margin-right: auto; text-decoration: none; color: #64748b; font-weight: 700; font-size: 0.85rem;">Already Enrolled?</a>
+                                        <a href="#" class="btn btn-next">CONTINUE <i class="fas fa-chevron-right" style="margin-left: 10px;"></i></a>
+                                    </div>
+                                </div>
+
+                                <!-- Step 2: Student Information -->
+                                <div class="form-step">
+                                    <h3 class="step-title">Student Information</h3>
+                                    <div class="row">
+                                        <div class="col input-group">
+                                            <label>First Name <span>*</span></label>
+                                            <input type="text" name="first_name" placeholder="John" required>
+                                        </div>
+                                        <div class="col input-group">
+                                            <label>Middle Name</label>
+                                            <input type="text" name="middle_name" placeholder="Quincy">
+                                        </div>
+                                        <div class="col input-group">
+                                            <label>Last Name <span>*</span></label>
+                                            <input type="text" name="last_name" placeholder="Doe" required>
+                                        </div>
+                                        <div class="col input-group">
+                                            <label>Gender <span>*</span></label>
+                                            <select name="gender" required>
+                                                <option value="">Select...</option>
+                                                <option value="Male">Male</option>
+                                                <option value="Female">Female</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col col-2 input-group">
+                                            <label>Birthdate <span>*</span></label>
+                                            <input type="date" name="birthdate" value="2010-01-10" required>
+                                        </div>
+                                        <div class="col col-2 input-group">
+                                            <label>Contact Num <span>*</span></label>
+                                            <input type="text" name="contact_number" placeholder="09123456789" required maxlength="12" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col col-full input-group">
+                                            <label>Email Address <span>*</span></label>
+                                            <input type="email" name="reg_email" placeholder="example@email.com" required>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col col-full input-group">
+                                            <label>Complete Address <span>*</span></label>
+                                            <input type="text" name="address" placeholder="123 Street, City, Province" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="btns-group">
+                                        <a href="#" class="btn btn-prev"><i class="fas fa-chevron-left" style="margin-right: 10px;"></i> BACK</a>
+                                        <a href="#" class="btn btn-next">CONTINUE <i class="fas fa-chevron-right" style="margin-left: 10px;"></i></a>
+                                    </div>
+                                </div>
+
+                                <!-- Step 3: Secondary Documents -->
+                                <div class="form-step">
+                                    <h3 class="step-title">Secondary Documents</h3>
+                                    <div class="row row-3">
+                                        <div class="col input-group">
+                                            <label>Form 137</label>
+                                            <input type="file" name="form_137">
+                                        </div>
+                                        <div class="col input-group">
+                                            <label>Good Moral</label>
+                                            <input type="file" name="good_moral">
+                                        </div>
+                                        <div class="col input-group">
+                                            <label>Brgy Clearance</label>
+                                            <input type="file" name="barangay_clearance">
+                                        </div>
+                                    </div>
+
+                                    <div class="btns-group">
+                                        <a href="#" class="btn btn-prev"><i class="fas fa-chevron-left" style="margin-right: 10px;"></i> BACK</a>
+                                        <a href="#" class="btn btn-next">CONTINUE <i class="fas fa-chevron-right" style="margin-left: 10px;"></i></a>
+                                    </div>
+                                </div>
+
+                                <!-- Step 4: Parent/Guardian Information -->
+                                <div class="form-step">
+                                    <h3 class="step-title">Parent/Guardian Information</h3>
+                                    <div class="row">
+                                        <div class="col input-group">
+                                            <label>First Name <span>*</span></label>
+                                            <input type="text" name="guardian_first" required>
+                                        </div>
+                                        <div class="col input-group">
+                                            <label>Middle Name</label>
+                                            <input type="text" name="guardian_middle">
+                                        </div>
+                                        <div class="col input-group">
+                                            <label>Last Name <span>*</span></label>
+                                            <input type="text" name="guardian_last" required>
+                                        </div>
+                                        <div class="col input-group">
+                                            <label>Relationship <span>*</span></label>
+                                            <input type="text" name="relationship" required>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col col-2 input-group">
+                                            <label>Guardian Email <span>*</span></label>
+                                            <input type="email" name="guardian_email" required>
+                                        </div>
+                                        <div class="col col-2 input-group">
+                                            <label>Contact Num <span>*</span></label>
+                                            <input type="text" name="guardian_contact" required maxlength="12" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col col-full input-group">
+                                            <label>Guardian Address <span>*</span></label>
+                                            <input type="text" name="guardian_address" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="btns-group">
+                                        <a href="#" class="btn btn-prev"><i class="fas fa-chevron-left" style="margin-right: 10px;"></i> BACK</a>
+                                        <a href="#" class="btn btn-next">CONTINUE <i class="fas fa-chevron-right" style="margin-left: 10px;"></i></a>
+                                    </div>
+                                </div>
+
+                                <!-- Step 5: Educational Background -->
+                                <div class="form-step">
+                                    <h3 class="step-title">Educational Background</h3>
+                                    <div class="row">
+                                        <div class="col input-group">
+                                            <label>Primary School <span>*</span></label>
+                                            <input type="text" name="primary_school" required>
+                                        </div>
+                                        <div class="col input-group">
+                                            <label>Graduated <span>*</span></label>
+                                            <input type="text" name="primary_year" placeholder="20XX" required oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                                        </div>
+                                        <div class="col input-group">
+                                            <label>Secondary School <span>*</span></label>
+                                            <input type="text" name="secondary_school" required>
+                                        </div>
+                                        <div class="col input-group">
+                                            <label>Graduated <span>*</span></label>
+                                            <input type="text" name="secondary_year" placeholder="20XX" required oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col col-2 input-group">
+                                            <label>Account Password <span>*</span></label>
+                                            <div class="password-container">
+                                                <input type="password" name="reg_password" placeholder="********" required>
+                                                <i class="fas fa-eye toggle-password"></i>
+                                            </div>
+                                        </div>
+                                        <div class="col col-2 input-group">
+                                            <label>Confirm Password <span>*</span></label>
+                                            <div class="password-container">
+                                                <input type="password" name="confirm_password" placeholder="********" required>
+                                                <i class="fas fa-eye toggle-password"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="btns-group" style="justify-content: center;">
+                                        <a href="#" class="btn btn-prev"><i class="fas fa-chevron-left" style="margin-right: 10px;"></i> BACK</a>
+                                        <button type="submit" class="btn">FINISH <i class="fas fa-check-circle" style="margin-left: 10px;"></i></button>
                                     </div>
                                 </div>
                             </div>
-
-                            <div class="btns-group">
-                                <a href="../Student/auth/login.php" class="btn-already-enrolled">Already Enrolled?</a>
-                                <a href="#" class="btn btn-next">Next</a>
-                            </div>
                         </div>
 
-                        <!-- Step 2: Student Information -->
-                        <div class="form-step">
-                            <h3 style="margin-bottom: 15px; color: var(--primary-blue);">Student Information</h3>
-                            <div class="row">
-                                <div class="col input-group">
-                                    <label>First Name <span>*</span></label>
-                                    <input type="text" name="first_name" placeholder="John" required>
-                                </div>
-                                <div class="col input-group">
-                                    <label>Middle Name</label>
-                                    <input type="text" name="middle_name" placeholder="Quincy">
-                                </div>
-                                <div class="col input-group">
-                                    <label>Last Name <span>*</span></label>
-                                    <input type="text" name="last_name" placeholder="Doe" required>
-                                </div>
+                        <!-- Right Panel: Branding & Vertical Progress -->
+                        <div class="reg-right-panel">
+                            <div class="brand-side">
+                                <a href="Login.php" id="sign-in-link-logo-trigger" class="reg-logo">
+                                    <img src="../Assets/image/logo.png" alt="Logo">
+                                </a>
+                                <h3 class="brand-name">SMS</h3>
+                                <p class="brand-tagline">Quality education and lifelong learning through a modern school management system.</p>
                             </div>
-                            <div class="row">
-                                <div class="col input-group">
-                                    <label>Gender <span>*</span></label>
-                                    <select name="gender" required>
-                                        <option value="">Select...</option>
-                                        <option value="Male">Male</option>
-                                        <option value="Female">Female</option>
-                                    </select>
-                                </div>
-                                <div class="col input-group">
-                                    <label>Birthdate <span>*</span></label>
-                                    <input type="date" name="birthdate" value="2010-01-10" required>
-                                </div>
-                                <div class="col input-group">
-                                    <label>Contact Number <span>*</span></label>
-                                    <input type="text" name="contact_number" placeholder="09123456789" required
-                                        oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col input-group">
-                                    <label>Email <span>*</span></label>
-                                    <input type="email" name="reg_email" placeholder="example@email.com" required>
-                                </div>
-                                <div class="col input-group">
-                                    <label>Password <span>*</span></label>
-                                    <div class="password-container">
-                                        <input type="password" name="reg_password" placeholder="********" required>
-                                        <i class="fas fa-eye toggle-password"></i>
-                                    </div>
-                                </div>
-                                <div class="col input-group">
-                                    <label>Confirm Password <span>*</span></label>
-                                    <div class="password-container">
-                                        <input type="password" name="confirm_password" placeholder="********" required>
-                                        <i class="fas fa-eye toggle-password"></i>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="input-group">
-                                <label>Address <span>*</span></label>
-                                <input type="text" name="address" placeholder="123 Street, City, Province" required>
-                            </div>
-
-                            <div class="btns-group">
-                                <a href="#" class="btn btn-prev">Previous</a>
-                                <a href="#" class="btn btn-next">Next</a>
-                            </div>
+                            
+                            <ul class="vertical-progressbar">
+                                <li class="v-step active-v-step" data-step="0">
+                                    <span class="v-dot"></span> Enrollment Details
+                                </li>
+                                <li class="v-step" data-step="1">
+                                    <span class="v-dot"></span> Personal Details
+                                </li>
+                                <li class="v-step" data-step="2">
+                                    <span class="v-dot"></span> Secondary Documents
+                                </li>
+                                <li class="v-step" data-step="3">
+                                    <span class="v-dot"></span> Guardian Background
+                                </li>
+                                <li class="v-step" data-step="4">
+                                    <span class="v-dot"></span> Educational History
+                                </li>
+                            </ul>
                         </div>
-
-                        <!-- Step 3: Secondary Documents -->
-                        <div class="form-step">
-                            <h3 style="margin-bottom: 15px; color: var(--primary-blue);">Secondary Documents</h3>
-                            <div class="row">
-                                <div class="col input-group">
-                                    <label>Form 137</label>
-                                    <input type="file" name="form_137">
-                                </div>
-                                <div class="col input-group">
-                                    <label>Certificate of Good Moral</label>
-                                    <input type="file" name="good_moral">
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col input-group">
-                                    <label>Barangay Clearance</label>
-                                    <input type="file" name="barangay_clearance">
-                                </div>
-                                <div class="col"></div> <!-- Empty for spacing -->
-                            </div>
-
-                            <div class="btns-group">
-                                <a href="#" class="btn btn-prev">Previous</a>
-                                <a href="#" class="btn btn-next">Next</a>
-                            </div>
-                        </div>
-
-                        <!-- Step 4: Parent/Guardian Information -->
-                        <div class="form-step">
-                            <h3 style="margin-bottom: 15px; color: var(--primary-blue);">Parent/Guardian Information
-                            </h3>
-                            <div class="row">
-                                <div class="col input-group">
-                                    <label>Guardian First Name <span>*</span></label>
-                                    <input type="text" name="guardian_first" required>
-                                </div>
-                                <div class="col input-group">
-                                    <label>Guardian Middle Name</label>
-                                    <input type="text" name="guardian_middle">
-                                </div>
-                                <div class="col input-group">
-                                    <label>Guardian Last Name <span>*</span></label>
-                                    <input type="text" name="guardian_last" required>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col input-group">
-                                    <label>Guardian Email <span>*</span></label>
-                                    <input type="email" name="guardian_email" required>
-                                </div>
-                                <div class="col input-group">
-                                    <label>Guardian Contact Number <span>*</span></label>
-                                    <input type="text" name="guardian_contact" required
-                                        oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-                                </div>
-                                <div class="col input-group">
-                                    <label>Relationship to Student <span>*</span></label>
-                                    <input type="text" name="relationship" required>
-                                </div>
-                            </div>
-                            <div class="input-group">
-                                <label>Address <span>*</span></label>
-                                <input type="text" name="guardian_address" required>
-                            </div>
-
-                            <div class="btns-group">
-                                <a href="#" class="btn btn-prev">Previous</a>
-                                <a href="#" class="btn btn-next">Next</a>
-                            </div>
-                        </div>
-
-                        <!-- Step 5: Educational Background -->
-                        <div class="form-step">
-                            <h3 style="margin-bottom: 15px; color: var(--primary-blue);">Educational Background</h3>
-                            <div class="row">
-                                <div class="col input-group">
-                                    <label>Primary School <span>*</span></label>
-                                    <input type="text" name="primary_school" required>
-                                </div>
-                                <div class="col input-group">
-                                    <label>Year Graduated <span>*</span></label>
-                                    <input type="text" name="primary_year" placeholder="20XX" required
-                                        oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col input-group">
-                                    <label>Secondary School <span>*</span></label>
-                                    <input type="text" name="secondary_school" required>
-                                </div>
-                                <div class="col input-group">
-                                    <label>Year Graduated <span>*</span></label>
-                                    <input type="text" name="secondary_year" placeholder="20XX" required
-                                        oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-                                </div>
-                            </div>
-
-                            <div class="btns-group">
-                                <a href="#" class="btn btn-prev">Previous</a>
-                                <button type="submit" class="btn">Submit</button>
-                            </div>
-                        </div>
-
-                    </div>
-                    <!-- Back to Login Text Link -->
-                    <div style="margin-top: 10px; text-align: center;">
-                        <a href="#" id="sign-in-link-trigger"
-                            style="color: var(--primary-blue); font-size: 0.9rem; text-decoration: none; font-weight: 600;">Back
-                            to Login</a>
                     </div>
                 </form>
             </div>
@@ -438,6 +468,7 @@ $csrf_token = generateCsrfToken();
 
     <script src="../Assets/javascript/log-reg.js"></script>
     <script>
+
         document.querySelectorAll('.toggle-password').forEach(icon => {
             icon.addEventListener('click', function () {
                 const input = this.parentElement.querySelector('input');

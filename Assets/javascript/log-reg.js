@@ -5,6 +5,7 @@ const container = document.querySelector(".container");
 // Trigger links inside forms
 const sign_up_link = document.querySelector("#sign-up-link-trigger");
 const sign_in_link = document.querySelector("#sign-in-link-trigger");
+const sign_in_logo = document.querySelector("#sign-in-link-logo-trigger");
 const prev_to_login_btns = document.querySelectorAll(".btn-prev-to-login");
 
 // Swap Animation Logic
@@ -36,6 +37,13 @@ if (sign_in_btn) {
 
 if (sign_in_link) {
     sign_in_link.addEventListener("click", (e) => {
+        e.preventDefault();
+        container.classList.remove("sign-up-mode");
+    });
+}
+
+if (sign_in_logo) {
+    sign_in_logo.addEventListener("click", (e) => {
         e.preventDefault();
         container.classList.remove("sign-up-mode");
     });
@@ -144,6 +152,57 @@ function updateFormSteps() {
 }
 
 function updateProgressbar() {
+    // Current Step Labels Mapping
+    const stepLabels = [
+        "Enrollment Information",
+        "Student Information",
+        "Secondary Documents",
+        "Guardian Information",
+        "Educational Background"
+    ];
+
+    // Update Part X of 5 Text
+    const stepText = document.getElementById("step-text");
+    if (stepText) {
+        stepText.innerText = `Part ${formStepsNum + 1} of 5: ${stepLabels[formStepsNum]}`;
+    }
+
+    // Update Horizontal Progress Bar
+    const horizontalProgress = document.getElementById("progress");
+    if (horizontalProgress) {
+        const progressPercent = ((formStepsNum + 1) / 5) * 100;
+        horizontalProgress.style.width = progressPercent + "%";
+    }
+
+    // Update Vertical Progress Bar Highlights
+    const vSteps = document.querySelectorAll(".v-step");
+    vSteps.forEach((vStep, idx) => {
+        if (idx === formStepsNum) {
+            vStep.classList.add("active-v-step");
+        } else {
+            vStep.classList.remove("active-v-step");
+        }
+    });
+
+    // Update Horizontal Numbered Steps
+    const hSteps = document.querySelectorAll(".h-step");
+    hSteps.forEach((hStep, idx) => {
+        if (idx < formStepsNum) {
+            hStep.classList.remove("active");
+            hStep.classList.add("completed");
+            hStep.innerHTML = '<i class="fas fa-check"></i>';
+        } else if (idx === formStepsNum) {
+            hStep.classList.add("active");
+            hStep.classList.remove("completed");
+            hStep.innerHTML = idx + 1;
+        } else {
+            hStep.classList.remove("active");
+            hStep.classList.remove("completed");
+            hStep.innerHTML = idx + 1;
+        }
+    });
+
+    // Retroactive support for dots if visible (mobile/old)
     progressSteps.forEach((progressStep, idx) => {
         if (idx < formStepsNum + 1) {
             progressStep.classList.add("progress-step-active");
@@ -151,10 +210,4 @@ function updateProgressbar() {
             progressStep.classList.remove("progress-step-active");
         }
     });
-
-    const progressActive = document.querySelectorAll(".progress-step-active");
-
-    // progress bar line width calculation
-    progress.style.width =
-        ((progressActive.length - 1) / (progressSteps.length - 1)) * 100 + "%";
 }

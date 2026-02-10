@@ -87,19 +87,24 @@ $current_page = basename($_SERVER['PHP_SELF']);
     </div>
 
     <div class="sidebar-profile">
+        <?php
+        if (!isset($_SESSION['role']) || ($_SESSION['role'] !== 'admin' && $_SESSION['role'] !== 'superadmin')) {
+            if (!headers_sent()) {
+                header("Location: /sms/auth/Login.php");
+            } else {
+                echo '<script>window.location.href = "/sms/auth/Login.php";</script>';
+            }
+            exit();
+        }
+        $profile_email = $_SESSION['email'] ?? 'admin@sms.com';
+        ?>
         <div class="profile-card">
-            <img src="https://ui-avatars.com/api/?name=<?php echo urlencode($_SESSION['email']); ?>&background=1648bc&color=fff"
+            <img src="https://ui-avatars.com/api/?name=<?php echo urlencode($profile_email); ?>&background=1648bc&color=fff"
                 alt="Profile">
             <div class="profile-info">
                 <h4>Sample Admin</h4>
                 <p>
-                    <?php
-                    if (!isset($_SESSION['role']) || ($_SESSION['role'] !== 'admin' && $_SESSION['role'] !== 'superadmin')) {
-                        header("Location: /sms/auth/Login.php");
-                        exit();
-                    }
-                    echo ucfirst($_SESSION['role']);
-                    ?>
+                    <?php echo ucfirst($_SESSION['role']); ?>
                 </p>
             </div>
             <span class="status-dot"></span>
@@ -183,7 +188,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
     .menu-label {
         font-size: 0.7rem;
         font-weight: 700;
-        color: #a0aec0;
+        color: var(--text-muted);
         margin: 20px 0 10px 10px;
         letter-spacing: 1px;
     }
@@ -202,7 +207,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         gap: 12px;
         padding: 12px 15px;
         text-decoration: none;
-        color: #4a5568;
+        color: var(--text-color);
         font-size: 0.95rem;
         font-weight: 500;
         border-radius: 10px;
@@ -210,13 +215,14 @@ $current_page = basename($_SERVER['PHP_SELF']);
     }
 
     .sidebar-menu ul li.active a {
-        background: #eef2ff;
-        color: #1648bc;
+        background: transparent;
+        color: var(--accent-color);
+        font-weight: 700;
     }
 
     .sidebar-menu ul li a:hover {
-        background: #f7fafc;
-        color: #1648bc;
+        background: transparent;
+        color: var(--accent-color);
     }
 
     .sidebar-menu ul li a i {
@@ -230,7 +236,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         padding-left: 15px;
         margin-top: 2px;
         margin-bottom: 5px;
-        border-left: 1px dashed #edf2f7;
+        border-left: 1px dashed var(--border-color);
         margin-left: 24px;
         display: none;
         /* Initially hidden */
@@ -253,11 +259,11 @@ $current_page = basename($_SERVER['PHP_SELF']);
     .sub-menu li a {
         padding: 8px 15px !important;
         font-size: 0.85rem !important;
-        color: #718096 !important;
+        color: var(--text-muted) !important;
     }
 
     .sub-menu li a:hover {
-        color: #1648bc !important;
+        color: var(--accent-color) !important;
         background: transparent !important;
     }
 
@@ -273,18 +279,17 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
     .sidebar-profile {
         padding: 20px;
-        border-top: 1px solid #edf2f7;
+        border-top: 1px solid var(--border-color);
     }
 
     .profile-card {
-        background: #f8fafc;
-        padding: 15px;
-        border-radius: 12px;
+        background: transparent; /* Removed background */
+        padding: 15px 0;
         display: flex;
         align-items: center;
         gap: 12px;
         position: relative;
-        border: 1px solid #edf2f7;
+        border: none; /* Removed border */
     }
 
     .profile-card img {
@@ -296,12 +301,12 @@ $current_page = basename($_SERVER['PHP_SELF']);
     .profile-info h4 {
         font-size: 0.85rem;
         font-weight: 700;
-        color: #2d3748;
+        color: var(--text-color);
     }
 
     .profile-info p {
         font-size: 0.75rem;
-        color: #718096;
+        color: var(--text-muted);
     }
 
     .status-dot {
@@ -311,7 +316,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         width: 10px;
         height: 10px;
         background: #48bb78;
-        border: 2px solid white;
+        border: 2px solid var(--surface-color);
         border-radius: 50%;
     }
 
@@ -330,6 +335,68 @@ $current_page = basename($_SERVER['PHP_SELF']);
     .sidebar {
         transition: width 0.3s ease;
     }
+
+    /* Modal Styling */
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        z-index: 9999;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(4px);
+        animation: fadeIn 0.3s ease;
+    }
+
+    .confirm-modal {
+        max-width: 400px;
+        background: var(--surface-color, white);
+        margin: 15vh auto;
+        padding: 40px;
+        border-radius: 24px;
+        text-align: center;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        border: 1px solid var(--border-color, #e2e8f0);
+        animation: modalScale 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .modal-icon {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        font-size: 2rem;
+    }
+
+    .modal-icon.warning { background: #fee2e2; color: #ef4444; }
+
+    .confirm-modal h2 { margin-bottom: 12px; font-weight: 800; color: var(--text-color, #1e293b); }
+    .confirm-modal p { color: var(--text-muted, #64748b); margin-bottom: 30px; line-height: 1.6; }
+
+    .modal-actions { display: flex; gap: 12px; }
+    .modal-actions button, .modal-actions a {
+        flex: 1;
+        padding: 12px;
+        border-radius: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.3s;
+        text-decoration: none;
+        border: none;
+    }
+
+    .btn-cancel { background: #f1f5f9; color: #475569; }
+    .btn-cancel:hover { background: #e2e8f0; }
+    .btn-confirm-delete { background: #ef4444; color: white; }
+    .btn-confirm-delete:hover { background: #dc2626; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2); }
+
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes modalScale { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
 </style>
 
 <script>
@@ -379,22 +446,16 @@ $current_page = basename($_SERVER['PHP_SELF']);
 </script>
 
 <!-- Logout Confirmation Modal -->
-<div id="logoutModal" class="modal"
-    style="display:none; z-index: 9999; background: rgba(0,0,0,0.5); position: fixed; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden;">
-    <div class="modal-content"
-        style="max-width: 400px; text-align: center; border-radius: 20px; padding: 40px; margin: 15% auto; position: relative; background-color: #fefefe; border: 1px solid #888;">
-        <div
-            style="width: 80px; height: 80px; background: #fee2e2; color: #ef4444; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 2rem;">
+<div id="logoutModal" class="modal-overlay">
+    <div class="modal-content confirm-modal">
+        <div class="modal-icon warning">
             <i class="fas fa-power-off"></i>
         </div>
-        <h2 style="margin-bottom: 10px; color: #1e1e1e; font-weight: 700;">Confirm Logout</h2>
-        <p style="color: #666; margin-bottom: 30px; line-height: 1.5;">Are you sure you want to log out? Your current
-            session will be ended.</p>
-        <div style="display: flex; gap: 15px; justify-content: center;">
-            <button onclick="closeLogoutModal()"
-                style="flex: 1; padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0; background: white; color: #4a5568; font-weight: 600; cursor: pointer; transition: 0.3s;">Cancel</button>
-            <a href="/sms/auth/logout.php"
-                style="flex: 1; padding: 12px; border-radius: 10px; background: #ef4444; color: white; font-weight: 600; text-decoration: none; display: inline-block; transition: 0.3s;">Logout</a>
+        <h2>Confirm Logout</h2>
+        <p>Are you sure you want to log out? Your current session will be ended.</p>
+        <div class="modal-actions">
+            <button onclick="closeLogoutModal()" class="btn-cancel">Cancel</button>
+            <a href="/sms/auth/logout.php" class="btn-confirm-delete">Logout</a>
         </div>
     </div>
 </div>

@@ -7,8 +7,14 @@ if (!isset($_SESSION['role']) || ($_SESSION['role'] !== 'admin' && $_SESSION['ro
     exit();
 }
 
-// 1. Handle Add Section POST
+$role = $_SESSION['role'];
+
+// 1. Handle Add Section POST (Super Admin Only)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_section'])) {
+    if ($role !== 'superadmin') {
+        header("Location: Section-Assignment.php?error=unauthorized");
+        exit();
+    }
     $name = $_POST['section_name'];
     $courseId = $_POST['course_id'];
     $year = $_POST['year_level'];
@@ -24,8 +30,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_section'])) {
     }
 }
 
-// 2. Handle Edit Section POST
+// 2. Handle Edit Section POST (Super Admin Only)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_section'])) {
+    if ($role !== 'superadmin') {
+        header("Location: Section-Assignment.php?error=unauthorized");
+        exit();
+    }
     $id = $_POST['sectionId'];
     $name = $_POST['section_name'];
     $courseId = $_POST['course_id'];
@@ -42,8 +52,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_section'])) {
     }
 }
 
-// 3. Handle Delete Section
+// 3. Handle Delete Section (Super Admin Only)
 if (isset($_GET['delete'])) {
+    if ($role !== 'superadmin') {
+        header("Location: Section-Assignment.php?error=unauthorized");
+        exit();
+    }
     try {
         $stmt = $pdo->prepare("DELETE FROM sections WHERE sectionId = ?");
         $stmt->execute([$_GET['delete']]);
@@ -103,7 +117,9 @@ try {
             <div class="table-container">
                 <div class="table-header">
                     <h2>Section Management</h2>
-                    <button class="btn-view" id="btnCreateSection"><i class="fas fa-plus"></i> Create Section</button>
+                    <?php if ($role === 'superadmin'): ?>
+                        <button class="btn-view" id="btnCreateSection"><i class="fas fa-plus"></i> Create Section</button>
+                    <?php endif; ?>
                 </div>
                 <div class="table-responsive">
                     <table>
@@ -124,10 +140,16 @@ try {
                                     <td><?php echo htmlspecialchars($section->year_level); ?></td>
                                     <td><?php echo htmlspecialchars($section->capacity); ?> students</td>
                                     <td>
-                                        <button class="btn-view" style="padding: 6px 12px; font-size: 0.8rem;"
-                                            onclick='openEditModal(<?php echo json_encode($section); ?>)'>Edit</button>
-                                        <button class="btn-reject" style="padding: 6px 12px; font-size: 0.8rem;"
-                                            onclick="confirmDelete(<?php echo $section->sectionId; ?>)">Delete</button>
+                                        <?php if ($role === 'superadmin'): ?>
+                                            <button class="btn-view" style="padding: 6px 12px; font-size: 0.8rem;"
+                                                onclick='openEditModal(<?php echo json_encode($section); ?>)'><i class="fas fa-edit"></i> Edit</button>
+                                            <button class="btn-reject" style="padding: 6px 12px; font-size: 0.8rem;"
+                                                onclick="confirmDelete(<?php echo $section->sectionId; ?>)"><i class="fas fa-trash"></i> Delete</button>
+                                        <?php else: ?>
+                                            <span style="color: #64748b; font-size: 0.75rem; font-style: italic;">
+                                                <i class="fas fa-eye"></i> View Only
+                                            </span>
+                                        <?php endif; ?>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>

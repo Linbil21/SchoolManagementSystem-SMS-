@@ -33,22 +33,38 @@
  /* Banner Style */
  .banner {
      background: linear-gradient(135deg, #1648bc 0%, #3b82f6 50%, #06b6d4 100%);
-     padding: 40px;
-     border-radius: 20px;
+     padding: 40px 50px;
+     border-radius: 24px;
      color: white;
-     margin-bottom: 30px;
-     box-shadow: 0 10px 25px rgba(22, 72, 188, 0.2);
+     margin-bottom: 35px;
+     display: flex;
+     justify-content: space-between;
+     align-items: center;
+     box-shadow: 0 10px 25px rgba(22, 72, 188, 0.15);
+     position: relative;
+     overflow: hidden;
+ }
+
+ .banner-img {
+     font-size: 5rem;
+     opacity: 0.2;
+     position: absolute;
+     right: 30px;
+     top: 50%;
+     transform: translateY(-50%);
  }
 
  .banner h1 {
-     font-size: 2.2rem;
+     font-size: 2.5rem;
      font-weight: 800;
-     margin-bottom: 10px;
+     margin-bottom: 8px;
+     letter-spacing: -0.5px;
  }
 
  .banner p {
-     font-size: 1rem;
-     opacity: 0.9;
+     font-size: 1.1rem;
+     opacity: 0.85;
+     font-weight: 400;
  }
 
  /* Cards Grid */
@@ -71,8 +87,16 @@
  }
 
  .stat-card:hover {
-     transform: translateY(-5px);
-     box-shadow: 0 8px 15px rgba(0, 0, 0, 0.05);
+     border-left-color: var(--primary-blue);
+ }
+
+ .stat-card:hover h2 {
+     color: var(--primary-blue);
+ }
+
+ .stat-card:hover .stat-info span {
+     color: var(--primary-blue);
+     opacity: 0.8;
  }
 
  .stat-info span {
@@ -142,4 +166,82 @@
  .card-total .stat-icon {
      background: #ebf8ff;
      color: #4299e1;
+ }
+
+ /* Charts Section */
+ .charts-section {
+     display: grid;
+     grid-template-columns: 1fr 1fr;
+     gap: 25px;
+     margin-top: 35px;
+ }
+
+ .chart-container {
+     background: var(--surface-color, white);
+     padding: 24px;
+     border-radius: 20px;
+     border: 1px solid var(--border-color, #edf2f7);
+     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+     height: 380px;
+     display: flex;
+     flex-direction: column;
+     transition: 0.3s ease;
+ }
+
+ .chart-container:hover {
+     border-color: var(--primary-blue);
+     box-shadow: 0 20px 25px -5px rgba(22, 72, 188, 0.05);
+ }
+
+ .chart-wrapper {
+     flex: 1;
+     position: relative;
+     min-height: 0;
+     width: 100%;
+     padding: 10px 0;
+ }
+
+ .chart-header {
+     display: flex;
+     justify-content: space-between;
+     align-items: center;
+     margin-bottom: 15px;
+     flex-shrink: 0;
+ }
+
+ .chart-header h3 {
+     font-size: 1rem;
+     font-weight: 800;
+     color: var(--text-color, #2d3748);
+     letter-spacing: 0.3px;
+ }
+
+ .chart-filter {
+     padding: 8px 16px;
+     border-radius: 12px;
+     border: 1px solid var(--border-color, #edf2f7);
+     background: var(--hover-bg, #f7fafc);
+     color: var(--text-color, #4a5568);
+     font-size: 0.8rem;
+     font-weight: 600;
+     outline: none;
+     cursor: pointer;
+     appearance: none;
+     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%234a5568'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+     background-repeat: no-repeat;
+     background-position: right 10px center;
+     background-size: 14px;
+     padding-right: 35px;
+     transition: 0.3s;
+ }
+
+ .chart-filter:hover {
+     border-color: var(--primary-blue);
+     background-color: var(--bg-color);
+ }
+
+ @media (max-width: 992px) {
+     .charts-section {
+         grid-template-columns: 1fr;
+     }
  }

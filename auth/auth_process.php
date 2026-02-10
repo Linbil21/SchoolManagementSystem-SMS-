@@ -186,7 +186,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
                 try {
-                     $student_stmt = $pdo->prepare("INSERT INTO students (student_id, first_name, middle_name, last_name, email, password, course, year_level, status, profile_image) 
+                     $student_stmt = $pdo->prepare("INSERT INTO students (student_id, first_name, mid_name, last_name, email, password, course, year_level, status, profile_image) 
                                               VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Regular', ?)");
                      $student_stmt->execute([$student_id, $first_name, $middle_name, $last_name, $email, $hashed_password, $full_course_name, $year_level, $profile_image_path]);
                 } catch (PDOException $e) {
@@ -197,7 +197,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 try {
                      $enroll_stmt = $pdo->prepare("INSERT INTO enrollments (
                         reference_code, admission_type, course_id, year_level, 
-                        first_name, middle_name, last_name, gender, birthdate, contact_number, email, address,
+                        first_name, mid_name, last_name, gender, birthdate, contact_number, email, address,
                         id_picture, guardian_first, guardian_middle, guardian_last, guardian_email, guardian_contact, relationship, guardian_address,
                         primary_school, primary_year, secondary_school, secondary_year
                     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
@@ -213,6 +213,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 }
 
                 $pdo->commit();
+
+                // Create notification for admins about new student registration
+                try {
+                    $notif_title = "New Student Registration";
+                    $notif_message = htmlspecialchars($first_name . " " . $last_name) . " has registered successfully.";
+                    $notif_stmt = $pdo->prepare("
+                        INSERT INTO notifications (user_id, type, title, message, profile_image, icon, icon_bg, icon_color, link) 
+                        VALUES (NULL, 'student_registration', ?, ?, ?, 'fa-user-plus', '#d1fae5', '#059669', '/SMS/Admin/submodules/Student-Accounts.php')
+                    ");
+                    $notif_stmt->execute([$notif_title, $notif_message, $profile_image_path]);
+                } catch (PDOException $e) {
+                    // Log error but don't block registration
+                    error_log("Failed to create notification: " . $e->getMessage());
+                }
+
 
                 // Send Enrolment Email
                 sendEnrolmentEmail($email);

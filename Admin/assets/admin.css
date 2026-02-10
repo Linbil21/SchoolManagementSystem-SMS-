@@ -1,9 +1,9 @@
 :root {
     --primary-blue: #1648bc;
-    --bg-light: #f7fafc;
-    --text-dark: #2d3748;
-    --text-gray: #718096;
-    --border-color: #edf2f7;
+    --bg-light: var(--bg-color);
+    --text-dark: var(--text-color);
+    --text-gray: var(--text-muted);
+    --border-color: var(--border-color);
 }
 
 * {
@@ -33,9 +33,9 @@ body {
 
 /* Table Card Container */
 .table-container {
-    background: white;
+    background: var(--surface-color);
     border-radius: 15px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+    box-shadow: var(--shadow-sm);
     overflow: hidden;
     margin-top: 20px;
     border: 1px solid var(--border-color);
@@ -67,11 +67,11 @@ table {
 }
 
 thead th {
-    background: #f8fafc;
+    background: var(--hover-bg);
     padding: 15px 25px;
     font-size: 0.75rem;
     font-weight: 700;
-    color: var(--text-gray);
+    color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.5px;
     border-bottom: 1px solid var(--border-color);
@@ -85,13 +85,15 @@ tbody td {
     vertical-align: middle;
 }
 
-tbody tr:last-child td {
-    border-bottom: none;
+tbody tr:hover {
+    background: transparent;
 }
 
-tbody tr:hover {
-    background: #f8fafc;
+tbody tr:hover td {
+    color: var(--primary-blue);
 }
+
+
 
 /* Custom Styles for columns */
 .ref-code {
@@ -105,11 +107,79 @@ tbody tr:hover {
 }
 
 /* Status Badges */
+/* Action Buttons */
+.btn-view,
+.btn-approve,
+.btn-reject,
+.btn-edit-modal {
+    padding: 10px 22px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: none;
+    cursor: pointer;
+}
+
+.btn-view {
+    background: linear-gradient(135deg, #1648bc 0%, #3b82f6 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(22, 72, 188, 0.2);
+}
+
+.btn-view:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(22, 72, 188, 0.3);
+    color: white;
+    /* Ensure text stays white on hover */
+}
+
+.btn-approve {
+    background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+}
+
+.btn-approve:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+}
+
+.btn-reject {
+    background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+}
+
+.btn-reject:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
+}
+
+.btn-edit-modal {
+    background: linear-gradient(135deg, #1d4ed8 0%, #3b82f6 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(29, 78, 216, 0.2);
+}
+
+.btn-edit-modal:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(29, 78, 216, 0.3);
+}
+
+/* Status Badges refinement */
 .status-badge {
-    padding: 6px 16px;
-    border-radius: 20px;
-    font-size: 0.75rem;
-    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
     display: inline-block;
 }
 
@@ -128,47 +198,72 @@ tbody tr:hover {
     color: #ecc94b;
 }
 
-/* Action Buttons */
-.btn-view {
-    background: var(--primary-blue);
-    color: white;
-    padding: 8px 24px;
-    border-radius: 6px;
-    text-decoration: none;
-    font-size: 0.85rem;
-    font-weight: 600;
-    transition: 0.3s;
-    display: inline-block;
-}
-
-.btn-view:hover {
-    background: #1034a6;
-    box-shadow: 0 4px 10px rgba(22, 72, 188, 0.2);
-}
 
 .modal {
     display: none;
     position: fixed;
-    z-index: 1000;
+    z-index: 99999 !important;
+    /* Force to the absolute top layer */
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.6);
+    background-color: rgba(15, 23, 42, 0.85) !important;
+    /* Prominent overlay */
+    backdrop-filter: blur(8px) !important;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    pointer-events: auto;
+}
+
+/* When modal is shown via JS */
+.modal[style*="display: block"] {
+    display: flex !important;
 }
 
 .modal-content {
-    background-color: #fefefe;
-    margin: 2% auto;
-    /* Move it higher */
+    background-color: var(--surface-color, #ffffff);
+    margin: 0;
+    /* Centered by parent flex */
     padding: 0;
-    border: none;
-    width: 80%;
-    max-width: 900px;
-    border-radius: 15px;
+    border: 1px solid var(--border-color, #e2e8f0);
+    width: 100%;
+    max-width: 950px;
+    max-height: 90vh;
+    /* Keep within viewport */
+    border-radius: 24px;
+    /* More rounded premium corners */
     overflow: hidden;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
-    animation: slideDown 0.3s ease-out;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    animation: modalScaleUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    display: flex;
+    flex-direction: column;
+}
+
+@keyframes modalScaleUp {
+    from {
+        transform: scale(0.95);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes modalFadeDown {
+    from {
+        transform: translateY(-30px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
 }
 
 @keyframes slideDown {
@@ -193,18 +288,31 @@ tbody tr:hover {
 }
 
 .modal-body {
-    padding: 25px 30px;
-    max-height: 75vh;
-    /* Increased height */
+    padding: 30px 40px;
+    flex: 1;
     overflow-y: auto;
+    background-color: var(--card-bg, #ffffff);
+    color: var(--text-color, #2d3748);
     scrollbar-width: thin;
 }
 
 .close {
     color: white;
-    font-size: 28px;
-    font-weight: bold;
+    font-size: 22px;
     cursor: pointer;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    transition: 0.3s;
+}
+
+.close:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: rotate(90deg);
 }
 
 .info-grid {
@@ -218,26 +326,30 @@ tbody tr:hover {
 }
 
 .info-label {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     font-weight: 700;
-    color: var(--text-gray);
+    color: var(--text-muted, #718096);
     text-transform: uppercase;
-    margin-bottom: 5px;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
 }
 
 .info-value {
-    font-size: 1rem;
-    font-weight: 500;
-    color: var(--text-dark);
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-color, #2d3748);
 }
 
 .section-title {
     grid-column: span 2;
-    padding-bottom: 10px;
-    margin-top: 20px;
-    border-bottom: 2px solid var(--border-color);
+    padding: 25px 0 12px;
+    margin-top: 15px;
+    border-bottom: 2px solid #f1f5f9;
     color: var(--primary-blue);
-    font-weight: 700;
+    font-weight: 800;
+    font-size: 0.85rem;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
 }
 
 /* Profile Image in Modal */
@@ -249,12 +361,12 @@ tbody tr:hover {
 }
 
 .student-profile-img {
-    width: 120px;
-    height: 120px;
-    border-radius: 12px;
+    width: 140px;
+    height: 140px;
+    border-radius: 20px;
     object-fit: cover;
-    border: 4px solid white;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border: 5px solid var(--card-bg, white);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
 /* Document & Action Buttons */
@@ -282,63 +394,162 @@ tbody tr:hover {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #fff;
-    padding: 10px 15px;
-    border-radius: 8px;
-    border: 1px solid var(--border-color);
-    margin-bottom: 10px;
+    background: var(--hover-bg, #f8fafc);
+    padding: 12px 20px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color, #edf2f7);
+    margin-bottom: 12px;
+    transition: 0.3s;
+}
+
+.doc-item:hover {
+    border-color: var(--primary-blue);
+    background: transparent;
+    color: var(--primary-blue);
+}
+
+.doc-item:hover .btn-doc-view {
+    color: var(--primary-blue);
+    border-color: var(--primary-blue);
 }
 
 .modal-footer {
-    padding: 20px 30px;
-    border-top: 1px solid var(--border-color);
+    padding: 20px 40px;
+    border-top: 1px solid var(--border-color, #e2e8f0);
     display: flex;
     justify-content: flex-end;
     gap: 15px;
+    background: var(--hover-bg, #f8fafc);
+}
+
+/* Notification Styling Shared */
+.notification-wrapper {
+    position: relative;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    top: 55px;
+    right: 0;
+    background-color: white;
+    min-width: 320px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+        0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+    z-index: 1000;
+    animation: dropSlide 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+@keyframes dropSlide {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.dropdown-content.show {
+    display: block;
+}
+
+.dropdown-header {
+    padding: 15px 20px;
+    border-bottom: 1px solid var(--border-color);
+    background: #f8fafc;
+    color: var(--text-dark);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.dropdown-header h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.mark-all {
+    font-size: 0.75rem;
+    color: var(--primary-blue);
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.dropdown-body {
+    padding: 5px 0;
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 12px 20px;
+    transition: 0.3s;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.dropdown-item:last-child {
+    border-bottom: none;
+}
+
+.dropdown-item:hover {
     background: #f8fafc;
 }
 
-.btn-approve {
-    background: #10b981;
-    color: white;
-    border: none;
-    padding: 10px 25px;
-    border-radius: 6px;
-    font-weight: 600;
-    cursor: pointer;
+.dropdown-item.unread {
+    background: rgba(22, 72, 188, 0.03);
+}
+
+.notif-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 1.1rem;
+}
+
+.notif-profile-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    object-fit: cover;
+    flex-shrink: 0;
+    border: 2px solid #f1f5f9;
     transition: 0.3s;
 }
 
-.btn-approve:hover {
-    background: #059669;
+.dropdown-item:hover .notif-profile-img {
+    transform: scale(1.1);
+    border-color: var(--primary-blue);
 }
 
-.btn-reject {
-    background: #ef4444;
-    color: white;
-    border: none;
-    padding: 10px 25px;
-    border-radius: 6px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.3s;
+.notif-info {
+    flex: 1;
 }
 
-.btn-reject:hover {
-    background: #dc2626;
+.notif-info p {
+    font-size: 0.85rem;
+    color: var(--text-dark);
+    line-height: 1.4;
+    margin-bottom: 4px;
 }
 
-.btn-edit-modal {
-    background: #1d4ed8;
-    color: white;
-    border: none;
-    padding: 10px 25px;
-    border-radius: 6px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.3s;
+.notif-info p strong {
+    font-weight: 700;
 }
 
-.btn-edit-modal:hover {
-    background: #1e40af;
+.notif-info span {
+    font-size: 0.75rem;
+    color: var(--text-gray);
 }

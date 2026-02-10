@@ -75,6 +75,22 @@ function isDropdownOpen($searchStrings)
                     <li><a href="/sms/Student/Modules/Enrollment/History.php">Enrollment History</a></li>
                 </ul>
             </li>
+
+            <!-- My Studies -->
+            <li class="has-dropdown <?php echo isDropdownOpen(['Schedule.php', 'Grades.php', 'Attendance.php']); ?>">
+                <a href="javascript:void(0)" class="dropdown-toggle">
+                    <i class="fas fa-user-graduate"></i>
+                    <span>My Studies</span>
+                    <i class="fas fa-chevron-right arrow-icon"></i>
+                </a>
+                <ul class="sub-menu">
+                    <li class="<?php echo ($current_page == 'Schedule.php') ? 'active' : ''; ?>">
+                        <a href="/sms/Student/Modules/Academic/Schedule.php">Class Schedule</a>
+                    </li>
+                    <li><a href="javascript:void(0)" style="opacity: 0.5;">My Grades (Soon)</a></li>
+                    <li><a href="javascript:void(0)" style="opacity: 0.5;">Attendance (Soon)</a></li>
+                </ul>
+            </li>
         </ul>
 
         <p class="menu-label">FINANCIAL</p>
@@ -171,10 +187,10 @@ function isDropdownOpen($searchStrings)
     .sidebar {
         width: 280px;
         height: 100vh;
-        background: white;
+        background: var(--sidebar-bg);
         display: flex;
         flex-direction: column;
-        border-right: 1px solid #edf2f7;
+        border-right: 1px solid var(--border-color);
         position: sticky;
         top: 0;
         z-index: 1000;
@@ -193,7 +209,7 @@ function isDropdownOpen($searchStrings)
     }
 
     .sidebar-brand h2 {
-        color: #1e293b;
+        color: var(--text-color);
         font-size: 1.3rem;
         font-weight: 800;
         letter-spacing: -0.5px;
@@ -212,14 +228,14 @@ function isDropdownOpen($searchStrings)
     }
 
     .sidebar-menu::-webkit-scrollbar-thumb {
-        background: #edf2f7;
+        background: var(--border-color);
         border-radius: 10px;
     }
 
     .menu-label {
         font-size: 0.75rem;
         font-weight: 700;
-        color: #94a3b8;
+        color: var(--text-muted);
         margin: 25px 0 10px 15px;
         letter-spacing: 1.2px;
         text-transform: uppercase;
@@ -241,7 +257,7 @@ function isDropdownOpen($searchStrings)
         gap: 12px;
         padding: 12px 15px;
         text-decoration: none;
-        color: #475569;
+        color: var(--text-color);
         font-size: 0.92rem;
         font-weight: 500;
         border-radius: 12px;
@@ -249,13 +265,13 @@ function isDropdownOpen($searchStrings)
     }
 
     .main-menu a:hover {
-        background: #f8fafc;
-        color: #2563eb;
+        background: var(--hover-bg);
+        color: var(--accent-color);
     }
 
     .main-menu li.active>a {
-        background: #eff6ff;
-        color: #2563eb;
+        background: var(--hover-bg);
+        color: var(--accent-color);
         font-weight: 600;
     }
 
@@ -282,40 +298,39 @@ function isDropdownOpen($searchStrings)
     }
 
     @keyframes slideIn {
-        from {
-            opacity: 0;
-            transform: translateY(-10px);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
     }
 
     .arrow-icon {
         margin-left: auto;
         font-size: 0.75rem;
         transition: transform 0.3s;
+        color: var(--text-muted);
     }
 
     .has-dropdown.open .arrow-icon {
         transform: rotate(90deg);
+        color: var(--accent-color);
     }
 
     .sub-menu a {
         padding: 10px 15px;
         font-size: 0.85rem;
-        color: #64748b;
+        color: var(--text-muted);
+    }
+
+    .sub-menu a:hover {
+        color: var(--accent-color);
     }
 
     .sidebar-profile {
         padding: 20px;
-        border-top: 1px solid #edf2f7;
+        border-top: 1px solid var(--border-color);
     }
 
     .profile-card {
-        background: #f8fafc;
+        background: var(--hover-bg);
         padding: 12px;
         border-radius: 16px;
         display: flex;
@@ -333,7 +348,7 @@ function isDropdownOpen($searchStrings)
     .profile-info h4 {
         font-size: 0.85rem;
         font-weight: 700;
-        color: #1e293b;
+        color: var(--text-color);
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -342,7 +357,7 @@ function isDropdownOpen($searchStrings)
 
     .profile-info p {
         font-size: 0.75rem;
-        color: #64748b;
+        color: var(--text-muted);
     }
 
     .status-dot {
@@ -352,7 +367,7 @@ function isDropdownOpen($searchStrings)
         width: 10px;
         height: 10px;
         background: #22c55e;
-        border: 2px solid white;
+        border: 2px solid var(--surface-color);
         border-radius: 50%;
     }
 </style>
@@ -388,17 +403,17 @@ function isDropdownOpen($searchStrings)
 <!-- Logout Modal -->
 <div id="logoutModal" class="modal"
     style="display:none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);">
-    <div
-        style="background: white; width: 90%; max-width: 400px; margin: 15vh auto; border-radius: 24px; padding: 40px; text-align: center;">
+    <div class="sidebar-modal-content"
+        style="background: var(--surface-color); width: 90%; max-width: 400px; margin: 15vh auto; border-radius: 24px; padding: 40px; text-align: center; border: 1px solid var(--border-color);">
         <div
             style="width: 70px; height: 70px; background: #fee2e2; color: #ef4444; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 1.8rem;">
             <i class="fas fa-sign-out-alt"></i>
         </div>
-        <h2 style="font-weight: 800; color: #1e293b; margin-bottom: 10px;">End Session?</h2>
-        <p style="color: #64748b; margin-bottom: 30px;">Are you sure you want to log out of the Student Portal?</p>
+        <h2 class="sidebar-modal-title" style="font-weight: 800; color: var(--text-color); margin-bottom: 10px;">End Session?</h2>
+        <p style="color: var(--text-muted); margin-bottom: 30px;">Are you sure you want to log out of the Student Portal?</p>
         <div style="display: flex; gap: 12px;">
-            <button onclick="closeLogoutModal()"
-                style="flex: 1; padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0; background: white; color: #475569; font-weight: 600; cursor: pointer;">Cancel</button>
+            <button onclick="closeLogoutModal()" class="sidebar-modal-btn-cancel"
+                style="flex: 1; padding: 12px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--hover-bg); color: var(--text-color); font-weight: 600; cursor: pointer;">Cancel</button>
             <a href="/sms/Student/auth/logout.php"
                 style="flex: 1; padding: 12px; border-radius: 12px; background: #ef4444; color: white; font-weight: 600; text-decoration: none;">Log
                 Out</a>

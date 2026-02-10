@@ -7,11 +7,30 @@ if (!isset($_SESSION['role']) || ($_SESSION['role'] !== 'admin' && $_SESSION['ro
     exit();
 }
 
-// Fetch Enrolled Students for Account Management
+// Fetch Registered Students from 'students' table
 try {
-    $stmt = $pdo->query("SELECT e.*, c.course_code, c.course_name FROM enrollments e LEFT JOIN courses c ON e.course_id = c.courseId WHERE e.status = 'Enrolled' ORDER BY e.created_at DESC");
+    $stmt = $pdo->query("
+        SELECT 
+            s.student_id, 
+            s.first_name, 
+            s.last_name, 
+            s.email, 
+            s.contact_number, 
+            s.address, 
+            s.profile_image,
+            s.year_level,
+            s.created_at,
+            c.course_code, 
+            c.course_name,
+            'Active' as account_status
+        FROM students s 
+        LEFT JOIN courses c ON s.course_id = c.courseId 
+        ORDER BY s.created_at DESC
+    ");
     $students = $stmt->fetchAll();
-} catch (PDOException $e) { $students = []; }
+} catch (PDOException $e) { 
+    $students = []; 
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -48,9 +67,9 @@ try {
                         <tbody>
                             <?php foreach ($students as $s): ?>
                                 <tr>
-                                    <td class="ref-code"><?php echo str_replace('ENR', 'STU', $s->reference_code); ?></td>
+                                    <td class="ref-code"><?php echo htmlspecialchars($s->student_id); ?></td>
                                     <td class="student-name"><?php echo htmlspecialchars($s->last_name . ", " . $s->first_name); ?></td>
-                                    <td><?php echo htmlspecialchars($s->course_code); ?></td>
+                                    <td><?php echo htmlspecialchars($s->course_code ?? 'N/A'); ?></td>
                                     <td><?php echo htmlspecialchars($s->year_level); ?></td>
                                     <td><span class="status-badge status-enrolled">Active</span></td>
                                     <td>
@@ -89,11 +108,11 @@ try {
         function viewProfile(data) {
             const modal = document.getElementById('profileModal');
             const container = document.getElementById('profileData');
-            const studentId = data.reference_code.replace('ENR', 'STU');
+            const studentId = data.student_id;
 
             container.innerHTML = `
                 <div style="display: flex; gap: 30px; align-items: center; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid #eee;">
-                    <img src="/sms/${data.id_picture}" style="width: 120px; height: 120px; border-radius: 15px; object-fit: cover; border: 4px solid #f1f5f9;" onerror="this.src='https://ui-avatars.com/api/?name=${data.first_name}+${data.last_name}&background=1648bc&color=fff&size=128'">
+                    <img src="/SMS/${data.profile_image}" style="width: 120px; height: 120px; border-radius: 15px; object-fit: cover; border: 4px solid #f1f5f9;" onerror="this.src='https://ui-avatars.com/api/?name=${data.first_name}+${data.last_name}&background=1648bc&color=fff&size=128'">
                     <div>
                         <h2 style="margin: 0; color: #1648bc;">${data.last_name}, ${data.first_name}</h2>
                         <p style="color: #718096; margin: 5px 0; font-weight: 600;">ID: ${studentId}</p>

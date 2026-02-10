@@ -7,8 +7,14 @@ if (!isset($_SESSION['role']) || ($_SESSION['role'] !== 'admin' && $_SESSION['ro
     exit();
 }
 
-// 1. Handle Add Subject POST
+$role = $_SESSION['role'];
+
+// 1. Handle Add Subject POST (Super Admin Only)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_subject'])) {
+    if ($role !== 'superadmin') {
+        header("Location: Subject-Enrollment.php?error=unauthorized");
+        exit();
+    }
     $code = $_POST['subject_code'];
     $name = $_POST['subject_name'];
     $units = $_POST['units'];
@@ -25,8 +31,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_subject'])) {
     }
 }
 
-// 2. Handle Edit Subject POST
+// 2. Handle Edit Subject POST (Super Admin Only)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_subject'])) {
+    if ($role !== 'superadmin') {
+        header("Location: Subject-Enrollment.php?error=unauthorized");
+        exit();
+    }
     $id = $_POST['subjectId'];
     $code = $_POST['subject_code'];
     $name = $_POST['subject_name'];
@@ -44,8 +54,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_subject'])) {
     }
 }
 
-// 3. Handle Delete Subject
+// 3. Handle Delete Subject (Super Admin Only)
 if (isset($_GET['delete'])) {
+    if ($role !== 'superadmin') {
+        header("Location: Subject-Enrollment.php?error=unauthorized");
+        exit();
+    }
     try {
         $stmt = $pdo->prepare("DELETE FROM subjects WHERE subjectId = ?");
         $stmt->execute([$_GET['delete']]);
@@ -97,7 +111,9 @@ try {
             <div class="table-container">
                 <div class="table-header">
                     <h2>Subject Enrollment</h2>
-                    <button class="btn-view" id="btnAddSubject"><i class="fas fa-plus"></i> Add Subject</button>
+                    <?php if ($role === 'superadmin'): ?>
+                        <button class="btn-view" id="btnAddSubject"><i class="fas fa-plus"></i> Add Subject</button>
+                    <?php endif; ?>
                 </div>
                 <div class="table-responsive">
                     <table>
@@ -120,10 +136,16 @@ try {
                                             style="background:#f1f5f9; color:#475569;"><?php echo htmlspecialchars($subject->year_level . " | " . $subject->semester); ?></span>
                                     </td>
                                     <td>
-                                        <button class="btn-view" style="padding: 6px 12px; font-size: 0.8rem;"
-                                            onclick='openEditModal(<?php echo json_encode($subject); ?>)'>Edit</button>
-                                        <button class="btn-reject" style="padding: 6px 12px; font-size: 0.8rem;"
-                                            onclick="confirmDelete(<?php echo $subject->subjectId; ?>)">Delete</button>
+                                        <?php if ($role === 'superadmin'): ?>
+                                            <button class="btn-view" style="padding: 6px 12px; font-size: 0.8rem;"
+                                                onclick='openEditModal(<?php echo json_encode($subject); ?>)'><i class="fas fa-edit"></i> Edit</button>
+                                            <button class="btn-reject" style="padding: 6px 12px; font-size: 0.8rem;"
+                                                onclick="confirmDelete(<?php echo $subject->subjectId; ?>)"><i class="fas fa-trash"></i> Delete</button>
+                                        <?php else: ?>
+                                            <span style="color: #64748b; font-size: 0.75rem; font-style: italic;">
+                                                <i class="fas fa-eye"></i> View Only
+                                            </span>
+                                        <?php endif; ?>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>

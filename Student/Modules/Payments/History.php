@@ -250,28 +250,50 @@ session_start();
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- Row 1 -->
-                        <tr>
-                            <td>Jan 15, 2026</td>
-                            <td>TRX-987654321</td>
-                            <td>GCash</td>
-                            <td style="font-weight: 600;">₱4,000.00</td>
-                            <td><span class="status-badge status-verified">Verified</span></td>
-                            <td><button class="view-btn"
-                                    onclick="openModal('TRX-987654321', 'GCash', '4,000.00', 'Jan 15, 2026', 'Verified')">View
-                                    Details</button></td>
-                        </tr>
-                        <!-- Row 2 -->
-                        <tr>
-                            <td>Jan 18, 2026</td>
-                            <td>BDO-12345678</td>
-                            <td>Bank Transfer</td>
-                            <td style="font-weight: 600;">₱3,000.00</td>
-                            <td><span class="status-badge status-pending">Pending</span></td>
-                            <td><button class="view-btn"
-                                    onclick="openModal('BDO-12345678', 'Bank Transfer', '3,000.00', 'Jan 18, 2026', 'Pending')">View
-                                    Details</button></td>
-                        </tr>
+                        <?php
+                        require_once '../../../Database/config.php';
+                        $student_email = $_SESSION['email'];
+                        
+                        try {
+                            $stmt = $pdo->prepare("SELECT p.* FROM payments p JOIN enrollments e ON p.enrollment_id = e.enrollmentId WHERE e.email = ? ORDER BY p.created_at DESC");
+                            $stmt->execute([$student_email]);
+                            $payments = $stmt->fetchAll();
+
+                            if (count($payments) > 0) {
+                                foreach ($payments as $payment) {
+                                    $date = date('M d, Y', strtotime($payment->payment_date ?: $payment->created_at));
+                                    $status_class = '';
+                                    if ($payment->status === 'Completed' || $payment->status === 'Verified') {
+                                        $status_class = 'status-verified';
+                                    } elseif ($payment->status === 'Rejected') {
+                                        $status_class = 'status-rejected';
+                                    } else {
+                                        $status_class = 'status-pending';
+                                    }
+                                    
+                                    echo "<tr>";
+                                    echo "<td>" . htmlspecialchars($date) . "</td>";
+                                    echo "<td>" . htmlspecialchars($payment->transaction_id) . "</td>";
+                                    echo "<td>" . htmlspecialchars($payment->payment_method) . "</td>";
+                                    echo "<td style='font-weight: 600;'>₱" . number_format($payment->amount, 2) . "</td>";
+                                    echo "<td><span class='status-badge {$status_class}'>" . htmlspecialchars($payment->status) . "</span></td>";
+                                    echo "<td>
+                                        <div style='display: flex; gap: 8px;'>
+                                            <button class='view-btn' onclick=\"openModal('" . htmlspecialchars($payment->transaction_id) . "', '" . htmlspecialchars($payment->payment_method) . "', '" . number_format($payment->amount, 2) . "', '" . htmlspecialchars($date) . "', '" . htmlspecialchars($payment->status) . "', '/sms/" . htmlspecialchars($payment->proof_of_payment) . "')\">View</button>
+                                            <a href='Print-Receipt.php?id=" . htmlspecialchars($payment->transaction_id) . "' target='_blank' class='view-btn' style='text-decoration: none; display: flex; align-items: center; gap: 5px; background: #f8fafc; border-color: #2563eb; color: #2563eb;'>
+                                                <i class='fas fa-print'></i> Receipt
+                                            </a>
+                                        </div>
+                                    </td>";
+                                    echo "</tr>";
+                                }
+                            } else {
+                                echo "<tr><td colspan='6' style='text-align:center; padding: 50px;'>No payment history found.</td></tr>";
+                            }
+                        } catch (PDOException $e) {
+                            echo "<tr><td colspan='6' style='text-align:center; color:red;'>Error fetching data.</td></tr>";
+                        }
+                        ?>
                     </tbody>
                 </table>
             </div>
@@ -314,21 +336,32 @@ session_start();
                 <span class="detail-value" id="modalStatus">--</span>
             </div>
 
-            <button
-                style="width: 100%; background: #1e293b; color: white; border: none; padding: 12px; border-radius: 10px; font-weight: 600; margin-top: 20px; cursor: pointer;"
-                onclick="closeModal()">Close</button>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button style="flex: 1; background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; padding: 12px; border-radius: 10px; font-weight: 600; cursor: pointer;" onclick="closeModal()">Close</button>
+                <a id="modalPrintBtn" href="#" target="_blank" style="flex: 1; background: #1648bc; color: white; border: none; padding: 12px; border-radius: 10px; font-weight: 600; cursor: pointer; text-decoration: none; text-align: center; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <i class="fas fa-print"></i> Print Receipt
+                </a>
+            </div>
         </div>
     </div>
 
     <script>
         const modal = document.getElementById('receiptModal');
 
-        function openModal(ref, channel, amount, date, status) {
+        function openModal(ref, channel, amount, date, status, image) {
             document.getElementById('modalRef').textContent = ref;
             document.getElementById('modalChannel').textContent = channel;
             document.getElementById('modalAmount').textContent = amount;
             document.getElementById('modalDate').textContent = date;
             document.getElementById('modalStatus').textContent = status;
+            document.getElementById('modalPrintBtn').href = 'Print-Receipt.php?id=' + ref;
+            
+            const preview = document.querySelector('.receipt-preview');
+            if (image && image !== '/sms/') {
+                preview.innerHTML = `<img src="${image}" alt="Receipt" style="width: 100%; height: 100%; object-fit: contain; cursor: pointer;" onclick="window.open('${image}', '_blank')">`;
+            } else {
+                preview.innerHTML = `<i class="fas fa-image" style="font-size: 3rem;"></i>`;
+            }
 
             modal.classList.add('active');
         }

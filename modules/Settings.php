@@ -1,5 +1,8 @@
 <?php
-session_start();
+require_once '../auth/Security.php';
+// Allowed roles for Settings page
+checkRole(['admin', 'superadmin', 'admission', 'cashier']);
+
 require_once '../Database/config.php';
 
 // Mock user data
@@ -14,23 +17,28 @@ $css_path = '';
 switch ($role) {
     case 'admin':
         $sidebar_path = '../Admin/Components/Side-bar.php';
+        $header_path = '../Admin/Components/Head-bar.php';
         $css_path = '../Admin/assets/admin.css';
         break;
     case 'superadmin':
     case 'super-admin':
         $sidebar_path = '../Super-admin/Components/Sidebar.php';
-        $css_path = '../Super-admin/assets/admin.css';
+        $header_path = '../Super-admin/Components/header.php';
+        $css_path = '../Super-admin/assets/super-admin.css';
         break;
     case 'admission':
         $sidebar_path = '../Admission/Components/Sidebar.php';
+        $header_path = '../Admission/Components/header.php';
         $css_path = '../Admin/assets/admin.css';
         break;
     case 'cashier':
         $sidebar_path = '../Cashier/Components/Sidebar.php';
+        $header_path = '../Cashier/Components/header.php';
         $css_path = '../Admin/assets/admin.css';
         break;
     default:
         $sidebar_path = '../Admin/Components/Side-bar.php';
+        $header_path = '../Admin/Components/Head-bar.php';
         $css_path = '../Admin/assets/admin.css';
 }
 ?>
@@ -47,19 +55,33 @@ switch ($role) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <link rel="stylesheet" href="<?php echo htmlspecialchars($css_path); ?>">
+    <link rel="stylesheet" href="/sms/Assets/css/theme.css">
 
     <style>
+        body {
+            background: var(--bg-color);
+            color: var(--text-color);
+            transition: background 0.3s;
+        }
+
+        .main-wrapper {
+            background: var(--bg-color);
+            min-height: 100vh;
+        }
+
         .settings-container {
             max-width: 900px;
             margin: 0 auto;
         }
 
         .settings-card {
-            background: white;
+            background: var(--surface-color);
             border-radius: 16px;
             padding: 30px;
+            border: 1px solid var(--border-color);
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
             margin-bottom: 25px;
+            transition: 0.3s;
         }
 
         .card-header {
@@ -67,14 +89,14 @@ switch ($role) {
             align-items: center;
             gap: 15px;
             margin-bottom: 25px;
-            border-bottom: 1px solid #f1f5f9;
+            border-bottom: 1px solid var(--border-color);
             padding-bottom: 15px;
         }
 
         .card-title {
             font-size: 1.2rem;
             font-weight: 700;
-            color: #1e293b;
+            color: var(--text-color);
             margin: 0;
         }
 
@@ -106,13 +128,15 @@ switch ($role) {
             display: block;
             margin-bottom: 8px;
             font-weight: 500;
-            color: #475569;
+            color: var(--text-muted);
         }
 
         .form-control {
             width: 100%;
             padding: 12px 15px;
-            border: 1px solid #cbd5e1;
+            border: 1px solid var(--border-color);
+            background: var(--bg-color);
+            color: var(--text-color);
             border-radius: 8px;
             font-family: inherit;
         }
@@ -122,7 +146,7 @@ switch ($role) {
             justify-content: space-between;
             align-items: center;
             padding: 15px 0;
-            border-bottom: 1px solid #f1f5f9;
+            border-bottom: 1px solid var(--border-color);
         }
 
         .toggle-item:last-child {
@@ -131,13 +155,13 @@ switch ($role) {
 
         .toggle-info h4 {
             margin: 0 0 5px 0;
-            color: #1e293b;
+            color: var(--text-color);
             font-size: 1rem;
         }
 
         .toggle-info p {
             margin: 0;
-            color: #64748b;
+            color: var(--text-muted);
             font-size: 0.85rem;
         }
 
@@ -162,7 +186,7 @@ switch ($role) {
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: #cbd5e1;
+            background-color: var(--border-color);
             transition: .4s;
             border-radius: 34px;
         }
@@ -206,13 +230,13 @@ switch ($role) {
         }
 
         .btn-outline {
-            background: white;
-            border: 1px solid #cbd5e1;
-            color: #475569;
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
         }
 
         .btn-outline:hover {
-            background: #f8fafc;
+            background: var(--hover-bg);
         }
 
         /* PIN Input Styles */
@@ -227,9 +251,10 @@ switch ($role) {
             text-align: center;
             font-size: 1.25rem;
             font-weight: 600;
-            border: 1px solid #cbd5e1;
+            border: 1px solid var(--border-color);
             border-radius: 8px;
-            background: #fff;
+            background: var(--bg-color);
+            color: var(--text-color);
             transition: all 0.2s;
         }
 
@@ -252,19 +277,21 @@ switch ($role) {
     ?>
 
     <div class="main-wrapper">
-        <div
-            style="background: white; padding: 15px 30px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: flex-end; align-items: center;">
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <span style="font-weight: 600; color: #1e293b;">
-                    <?php echo htmlspecialchars($user_name); ?>
-                </span>
-                <img src="https://ui-avatars.com/api/?name=<?php echo urlencode($user_name); ?>"
-                    style="width: 35px; height: 35px; border-radius: 50%;" alt="Profile">
-            </div>
-        </div>
+        <?php
+        if (file_exists($header_path)) {
+            include $header_path;
+        } else {
+            // Minimal internal header if component missing
+            echo '<div style="background: var(--header-bg); padding: 15px 30px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: flex-end; align-items: center; height: 70px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-weight: 600; color: var(--text-color);">'.htmlspecialchars($user_name).'</span>
+                </div>
+            </div>';
+        }
+        ?>
 
         <div class="content-area">
-            <h1 style="font-size: 1.8rem; font-weight: 800; color: #1e293b; margin-bottom: 30px;">Settings</h1>
+            <h1 style="font-size: 1.8rem; font-weight: 800; color: var(--text-color); margin-bottom: 30px;">Settings</h1>
 
             <div class="settings-container">
 
@@ -428,6 +455,13 @@ switch ($role) {
             </div>
         </div>
     </div>
+    <script>
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        }
+        initTheme();
+    </script>
 </body>
 
 </html>
