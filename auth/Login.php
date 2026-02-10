@@ -1,6 +1,10 @@
 <?php
 require_once 'Security.php';
 $csrf_token = generateCsrfToken();
+
+// Determine if we should show the login form or the role selection page
+// Show login form if 'action' is set or if there is an error
+$show_login = isset($_GET['action']) || isset($_GET['error']);
 ?>
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
@@ -74,10 +78,160 @@ $csrf_token = generateCsrfToken();
             width: 100%;
             padding-right: 45px !important;
         }
+        
+        /* New Role Selection Styles */
+        .role-selection-wrapper { 
+            min-height: 100vh; 
+            background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%); 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 20px; 
+            font-family: 'Poppins', sans-serif; 
+        }
+        .role-card { 
+            background: white; 
+            border-radius: 24px; 
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1); 
+            display: flex; 
+            overflow: hidden; 
+            max-width: 1100px; 
+            width: 100%; 
+            min-height: 650px; 
+        }
+        .role-left { 
+            flex: 1.2; 
+            padding: 60px; 
+            background: #f8fafc; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            position: relative; 
+            overflow: hidden; 
+        }
+        .role-right { 
+            flex: 1; 
+            padding: 60px; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            background: white; 
+        }
+        .role-btn { 
+            display: flex; 
+            align-items: center; 
+            padding: 16px; 
+            border-radius: 12px; 
+            text-decoration: none; 
+            transition: all 0.2s ease; 
+            margin-bottom: 15px; 
+            position: relative; 
+            overflow: hidden; 
+        }
+        .role-btn:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1); 
+        }
+        .role-icon { 
+            width: 48px; 
+            height: 48px; 
+            border-radius: 10px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            margin-right: 15px; 
+            font-size: 1.2rem; 
+            color: white; 
+        }
+        
+        @media (max-width: 900px) {
+            .role-card { flex-direction: column; height: auto; }
+            .role-left { padding: 40px; text-align: center; }
+            .role-right { padding: 40px; }
+        }
     </style>
 </head>
 
 <body>
+    <?php if (!$show_login): ?>
+    <!-- ROLE SELECTION SCREEN -->
+    <div class="role-selection-wrapper">
+        <div class="role-card">
+            <!-- Left Side -->
+            <div class="role-left">
+                <!-- Decorative background elements could be added here -->
+                
+                <div style="position: relative; z-index: 1;">
+                    <img src="../Assets/image/logo.png" alt="Logo" style="width: 80px; margin-bottom: 30px; display: block;">
+                    <h1 style="font-size: 3.5rem; font-weight: 800; line-height: 1.1; color: #1e3a8a; margin-bottom: 25px;">
+                        Welcome to <br><span style="color: #3b82f6;">School Management System</span>
+                    </h1>
+                    <p style="font-size: 1.1rem; color: #64748b; line-height: 1.6; margin-bottom: 40px; max-width: 90%;">
+                        Empowering education through a unified academic management system that enhances learning, streamlines processes, and connects the academic community.
+                    </p>
+                    <a href="Login.php?action=login" style="background: #1e3a8a; color: white; padding: 15px 40px; border-radius: 50px; font-weight: 600; text-decoration: none; display: inline-block; transition: all 0.3s; box-shadow: 0 4px 14px 0 rgba(30, 58, 138, 0.39);">
+                        Learn More <i class="fas fa-arrow-right" style="margin-left: 8px;"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Right Side -->
+            <div class="role-right">
+                <div style="text-align: center; margin-bottom: 40px;">
+                    <div style="width: 80px; height: 80px; background: white; border-radius: 50%; box-shadow: 0 4px 20px rgba(0,0,0,0.08); display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                        <img src="../Assets/image/logo.png" alt="SIS" style="width: 40px;">
+                    </div>
+                    <span style="color: #3b82f6; font-weight: 700; letter-spacing: 2px; font-size: 0.8rem; text-transform: uppercase;">SIS Portal</span>
+                    <h2 style="font-size: 1.5rem; font-weight: 800; color: #0f172a; margin: 10px 0;">Choose Your Role</h2>
+                    <p style="font-size: 0.9rem; color: #64748b;">Select your portal to continue</p>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 10px; max-width: 380px; margin: 0 auto; width: 100%;">
+                    <!-- Administrator -->
+                    <a href="Login.php?action=login&role=admin" class="role-btn" style="background: white; border: 2px solid #eff6ff;">
+                        <div class="role-icon" style="background: #3b82f6;">
+                            <i class="fas fa-user-shield"></i>
+                        </div>
+                        <div>
+                            <div style="font-weight: 700; font-size: 1rem; color: #1e293b;">Administrator</div>
+                            <div style="font-size: 0.8rem; color: #64748b;">System Management</div>
+                        </div>
+                        <i class="fas fa-chevron-right" style="margin-left: auto; color: #cbd5e1;"></i>
+                    </a>
+
+                    <!-- Staff -->
+                    <a href="Login.php?action=login&role=staff" class="role-btn" style="background: white; border: 2px solid #f3e8ff;">
+                        <div class="role-icon" style="background: #8b5cf6;">
+                            <i class="fas fa-user-gear"></i>
+                        </div>
+                        <div>
+                            <div style="font-weight: 700; font-size: 1rem; color: #1e293b;">Staff</div>
+                            <div style="font-size: 0.8rem; color: #64748b;">Administrative Tasks</div>
+                        </div>
+                        <i class="fas fa-chevron-right" style="margin-left: auto; color: #cbd5e1;"></i>
+                    </a>
+
+                    <!-- Teacher -->
+                    <a href="Login.php?action=login&role=teacher" class="role-btn" style="background: white; border: 2px solid #ffedd5;">
+                        <div class="role-icon" style="background: #f97316;">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                        </div>
+                        <div>
+                            <div style="font-weight: 700; font-size: 1rem; color: #1e293b;">Teacher</div>
+                            <div style="font-size: 0.8rem; color: #64748b;">Academic Portal</div>
+                        </div>
+                        <i class="fas fa-chevron-right" style="margin-left: auto; color: #cbd5e1;"></i>
+                    </a>
+                </div>
+
+                <div style="text-align: center; margin-top: 40px; color: #94a3b8; font-size: 0.85rem;">
+                    Need help? <a href="#" style="color: #3b82f6; text-decoration: none; font-weight: 600;">Contact support</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php else: ?>
+    <!-- ORIGINAL LOGIN/REGISTER FORM -->
     <div class="container" id="main-container">
         <div class="forms-container">
             <div class="signin-signup">
@@ -484,6 +638,7 @@ $csrf_token = generateCsrfToken();
             });
         });
     </script>
+    <?php endif; ?>
 </body>
 
 </html>

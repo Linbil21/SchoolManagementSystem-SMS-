@@ -143,7 +143,7 @@
                             href="#contact">CONTACT</a></li>
                 </ul>
                 <a class="bg-primary-600 text-white px-8 py-2.5 rounded-full font-bold hover:bg-primary-700 hover:shadow-xl hover:shadow-primary-200 transition-all active:scale-95"
-                    href="../html/dashboard.html">
+                    href="../auth/Login.php">
                     Get Started
                 </a>
             </div>
@@ -172,7 +172,7 @@
                         unified, intelligent platform designed for the future of education.
                     </p>
                     <div class="flex flex-col sm:flex-row gap-4">
-                        <a href="../html/dashboard.html"
+                        <a href="../auth/Login.php"
                             class="bg-primary-600 text-white px-10 py-4 rounded-xl font-bold text-center hover:bg-primary-700 shadow-2xl shadow-primary-200 transition-all hover:-translate-y-1">
                             Launch Dashboard
                         </a>
