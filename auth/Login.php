@@ -21,6 +21,13 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
     <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
+        /* Override body background from log-reg.css for a cleaner look */
+        body {
+            background: #f8fafc !important; /* Clean light background */
+            display: block !important; /* Reset flex to allow normal flow */
+            overflow-y: auto !important; /* Allow scrolling if needed */
+        }
+
         /* Floating logo for registration to save space and move it up */
         .sign-up-form .logo-circle {
             margin: 10px auto 15px;
@@ -82,33 +89,53 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
         /* New Role Selection Styles */
         .role-selection-wrapper { 
             min-height: 100vh; 
-            background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%); 
+            background: #f8fafc; /* Replaced blue gradient with clean light gray */
             display: flex; 
             align-items: center; 
             justify-content: center; 
             padding: 20px; 
             font-family: 'Poppins', sans-serif; 
         }
+        
         .role-card { 
             background: white; 
             border-radius: 24px; 
-            box-shadow: 0 20px 60px rgba(0,0,0,0.1); 
+            box-shadow: 0 20px 60px rgba(0,0,0,0.05); /* Softer shadow */
             display: flex; 
             overflow: hidden; 
             max-width: 1100px; 
             width: 100%; 
             min-height: 650px; 
+            opacity: 0;
+            animation: fadeIn 0.8s ease-out forwards;
         }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         .role-left { 
             flex: 1.2; 
             padding: 60px; 
-            background: #f8fafc; 
+            background: #ffffff; 
             display: flex; 
             flex-direction: column; 
             justify-content: center; 
             position: relative; 
             overflow: hidden; 
         }
+        
+        .role-left-content {
+            opacity: 0;
+            animation: slideRight 0.8s ease-out 0.3s forwards;
+        }
+        
+        @keyframes slideRight {
+            from { opacity: 0; transform: translateX(-30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
         .role-right { 
             flex: 1; 
             padding: 60px; 
@@ -116,21 +143,45 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
             flex-direction: column; 
             justify-content: center; 
             background: white; 
+            border-left: 1px solid #f1f5f9;
         }
+        
+        .role-right-content {
+            opacity: 0;
+            animation: slideLeft 0.8s ease-out 0.5s forwards;
+        }
+
+        @keyframes slideLeft {
+            from { opacity: 0; transform: translateX(30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
         .role-btn { 
             display: flex; 
             align-items: center; 
             padding: 16px; 
             border-radius: 12px; 
             text-decoration: none; 
-            transition: all 0.2s ease; 
+            transition: all 0.3s ease; 
             margin-bottom: 15px; 
             position: relative; 
             overflow: hidden; 
+            opacity: 0;
+            animation: fadeInUp 0.5s ease-out forwards;
         }
+        
+        .role-btn:nth-child(1) { animation-delay: 0.6s; }
+        .role-btn:nth-child(2) { animation-delay: 0.7s; }
+        .role-btn:nth-child(3) { animation-delay: 0.8s; }
+        
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         .role-btn:hover { 
-            transform: translateY(-2px); 
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1); 
+            transform: translateY(-4px); 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08); 
         }
         .role-icon { 
             width: 48px; 
@@ -142,12 +193,17 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
             margin-right: 15px; 
             font-size: 1.2rem; 
             color: white; 
+            transition: transform 0.3s ease;
+        }
+        
+        .role-btn:hover .role-icon {
+            transform: scale(1.1);
         }
         
         @media (max-width: 900px) {
             .role-card { flex-direction: column; height: auto; }
             .role-left { padding: 40px; text-align: center; }
-            .role-right { padding: 40px; }
+            .role-right { padding: 40px; border-left: none; border-top: 1px solid #f1f5f9; }
         }
     </style>
 </head>
@@ -161,7 +217,7 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
             <div class="role-left">
                 <!-- Decorative background elements could be added here -->
                 
-                <div style="position: relative; z-index: 1;">
+                <div class="role-left-content" style="position: relative; z-index: 1;">
                     <img src="../Assets/image/logo.png" alt="Logo" style="width: 80px; margin-bottom: 30px; display: block;">
                     <h1 style="font-size: 3.5rem; font-weight: 800; line-height: 1.1; color: #1e3a8a; margin-bottom: 25px;">
                         Welcome to <br><span style="color: #3b82f6;">School Management System</span>
@@ -177,55 +233,57 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
 
             <!-- Right Side -->
             <div class="role-right">
-                <div style="text-align: center; margin-bottom: 40px;">
-                    <div style="width: 80px; height: 80px; background: white; border-radius: 50%; box-shadow: 0 4px 20px rgba(0,0,0,0.08); display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
-                        <img src="../Assets/image/logo.png" alt="SIS" style="width: 40px;">
+                <div class="role-right-content">
+                    <div style="text-align: center; margin-bottom: 40px;">
+                        <div style="width: 80px; height: 80px; background: white; border-radius: 50%; box-shadow: 0 4px 20px rgba(0,0,0,0.08); display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                            <img src="../Assets/image/logo.png" alt="SIS" style="width: 40px;">
+                        </div>
+                        <span style="color: #3b82f6; font-weight: 700; letter-spacing: 2px; font-size: 0.8rem; text-transform: uppercase;">SIS Portal</span>
+                        <h2 style="font-size: 1.5rem; font-weight: 800; color: #0f172a; margin: 10px 0;">Choose Your Role</h2>
+                        <p style="font-size: 0.9rem; color: #64748b;">Select your portal to continue</p>
                     </div>
-                    <span style="color: #3b82f6; font-weight: 700; letter-spacing: 2px; font-size: 0.8rem; text-transform: uppercase;">SIS Portal</span>
-                    <h2 style="font-size: 1.5rem; font-weight: 800; color: #0f172a; margin: 10px 0;">Choose Your Role</h2>
-                    <p style="font-size: 0.9rem; color: #64748b;">Select your portal to continue</p>
-                </div>
 
-                <div style="display: flex; flex-direction: column; gap: 10px; max-width: 380px; margin: 0 auto; width: 100%;">
-                    <!-- Administrator -->
-                    <a href="Login.php?action=login&role=admin" class="role-btn" style="background: white; border: 2px solid #eff6ff;">
-                        <div class="role-icon" style="background: #3b82f6;">
-                            <i class="fas fa-user-shield"></i>
-                        </div>
-                        <div>
-                            <div style="font-weight: 700; font-size: 1rem; color: #1e293b;">Administrator</div>
-                            <div style="font-size: 0.8rem; color: #64748b;">System Management</div>
-                        </div>
-                        <i class="fas fa-chevron-right" style="margin-left: auto; color: #cbd5e1;"></i>
-                    </a>
+                    <div style="display: flex; flex-direction: column; gap: 10px; max-width: 380px; margin: 0 auto; width: 100%;">
+                        <!-- Administrator -->
+                        <a href="Login.php?action=login&role=admin" class="role-btn" style="background: white; border: 2px solid #eff6ff;">
+                            <div class="role-icon" style="background: #3b82f6;">
+                                <i class="fas fa-user-shield"></i>
+                            </div>
+                            <div>
+                                <div style="font-weight: 700; font-size: 1rem; color: #1e293b;">Administrator</div>
+                                <div style="font-size: 0.8rem; color: #64748b;">System Management</div>
+                            </div>
+                            <i class="fas fa-chevron-right" style="margin-left: auto; color: #cbd5e1;"></i>
+                        </a>
 
-                    <!-- Staff -->
-                    <a href="Login.php?action=login&role=staff" class="role-btn" style="background: white; border: 2px solid #f3e8ff;">
-                        <div class="role-icon" style="background: #8b5cf6;">
-                            <i class="fas fa-user-gear"></i>
-                        </div>
-                        <div>
-                            <div style="font-weight: 700; font-size: 1rem; color: #1e293b;">Staff</div>
-                            <div style="font-size: 0.8rem; color: #64748b;">Administrative Tasks</div>
-                        </div>
-                        <i class="fas fa-chevron-right" style="margin-left: auto; color: #cbd5e1;"></i>
-                    </a>
+                        <!-- Staff -->
+                        <a href="Login.php?action=login&role=staff" class="role-btn" style="background: white; border: 2px solid #f3e8ff;">
+                            <div class="role-icon" style="background: #8b5cf6;">
+                                <i class="fas fa-user-gear"></i>
+                            </div>
+                            <div>
+                                <div style="font-weight: 700; font-size: 1rem; color: #1e293b;">Staff</div>
+                                <div style="font-size: 0.8rem; color: #64748b;">Administrative Tasks</div>
+                            </div>
+                            <i class="fas fa-chevron-right" style="margin-left: auto; color: #cbd5e1;"></i>
+                        </a>
 
-                    <!-- Teacher -->
-                    <a href="Login.php?action=login&role=teacher" class="role-btn" style="background: white; border: 2px solid #ffedd5;">
-                        <div class="role-icon" style="background: #f97316;">
-                            <i class="fas fa-chalkboard-teacher"></i>
-                        </div>
-                        <div>
-                            <div style="font-weight: 700; font-size: 1rem; color: #1e293b;">Teacher</div>
-                            <div style="font-size: 0.8rem; color: #64748b;">Academic Portal</div>
-                        </div>
-                        <i class="fas fa-chevron-right" style="margin-left: auto; color: #cbd5e1;"></i>
-                    </a>
-                </div>
+                        <!-- Teacher -->
+                        <a href="Login.php?action=login&role=teacher" class="role-btn" style="background: white; border: 2px solid #ffedd5;">
+                            <div class="role-icon" style="background: #f97316;">
+                                <i class="fas fa-chalkboard-teacher"></i>
+                            </div>
+                            <div>
+                                <div style="font-weight: 700; font-size: 1rem; color: #1e293b;">Teacher</div>
+                                <div style="font-size: 0.8rem; color: #64748b;">Academic Portal</div>
+                            </div>
+                            <i class="fas fa-chevron-right" style="margin-left: auto; color: #cbd5e1;"></i>
+                        </a>
+                    </div>
 
-                <div style="text-align: center; margin-top: 40px; color: #94a3b8; font-size: 0.85rem;">
-                    Need help? <a href="#" style="color: #3b82f6; text-decoration: none; font-weight: 600;">Contact support</a>
+                    <div style="text-align: center; margin-top: 40px; color: #94a3b8; font-size: 0.85rem;">
+                        Need help? <a href="#" style="color: #3b82f6; text-decoration: none; font-weight: 600;">Contact support</a>
+                    </div>
                 </div>
             </div>
         </div>
