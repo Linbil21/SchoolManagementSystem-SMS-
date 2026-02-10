@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS students (
     id INT AUTO_INCREMENT PRIMARY KEY,
     student_id VARCHAR(20) NOT NULL UNIQUE,
     first_name VARCHAR(100) NOT NULL,
-    middle_name VARCHAR(100),
+    mid_name VARCHAR(100),
     last_name VARCHAR(100) NOT NULL,
     email VARCHAR(150) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS enrollments (
     course_id INT,
     year_level VARCHAR(50) NOT NULL,
     first_name VARCHAR(100) NOT NULL,
-    middle_name VARCHAR(100),
+    mid_name VARCHAR(100),
     last_name VARCHAR(100) NOT NULL,
     gender VARCHAR(10) NOT NULL,
     birthdate DATE NOT NULL,
@@ -89,7 +89,11 @@ CREATE TABLE IF NOT EXISTS enrollments (
 INSERT IGNORE INTO courses (courseId, course_name, course_code, department) VALUES 
 (1, 'BS Information Technology', 'BSIT', 'College of Computer Studies'),
 (2, 'BS Computer Science', 'BSCS', 'College of Computer Studies'),
-(3, 'BS Business Administration', 'BSBA', 'College of Business');
+(3, 'BS Business Administration', 'BSBA', 'College of Business'),
+(4, 'BS Criminology', 'BS Crim', 'College of Criminology'),
+(5, 'BS Hospitality Management', 'BSHM', 'College of Hospitality'),
+(6, 'BS Accountancy', 'BSA', 'College of Accountancy'),
+(7, 'BS Civil Engineering', 'BSCE', 'College of Engineering');
 
 INSERT IGNORE INTO users (email, password, role, status) VALUES 
 ('admin@example.com', 'admin123', 'admin', 'offline'),
@@ -100,6 +104,24 @@ INSERT IGNORE INTO users (email, password, role, status) VALUES
 -- Example Enrollment Record (matches Picture 1)
 INSERT IGNORE INTO enrollments (reference_code, admission_type, course_id, year_level, first_name, last_name, gender, birthdate, contact_number, email, address, id_picture, guardian_first, guardian_last, guardian_email, guardian_contact, relationship, guardian_address, primary_school, primary_year, secondary_school, secondary_year, status) 
 VALUES ('ENR25000001', 'Freshman', 1, 'First Year', 'Miguel Enrique', 'UY', 'Male', '2005-05-15', '09123456789', 'miguel@example.com', '123 Manila St', 'uploads/id/enr25000001.png', 'Juan', 'UY', 'juan@example.com', '09998887766', 'Father', '123 Manila St', 'Manila Primary', '2017', 'Manila Secondary', '2023', 'Enrolled');
+
+-- Notifications Table
+CREATE TABLE IF NOT EXISTS notifications (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NULL,
+  type VARCHAR(50) NOT NULL,
+  title VARCHAR(255) NOT NULL,
+  message TEXT NOT NULL,
+  profile_image VARCHAR(255) DEFAULT NULL,
+  icon VARCHAR(100) DEFAULT 'fa-bell',
+  icon_bg VARCHAR(50) DEFAULT '#eef2ff',
+  icon_color VARCHAR(50) DEFAULT '#1648bc',
+  is_read TINYINT(1) DEFAULT 0,
+  link VARCHAR(255) NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_user_read (user_id, is_read),
+  INDEX idx_created (created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- New Tables for Advanced Modules
 CREATE TABLE IF NOT EXISTS subjects (

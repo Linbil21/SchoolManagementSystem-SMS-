@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS `notifications` (
   `type` VARCHAR(50) NOT NULL,
   `title` VARCHAR(255) NOT NULL,
   `message` TEXT NOT NULL,
+  `profile_image` VARCHAR(255) DEFAULT NULL,
   `icon` VARCHAR(100) DEFAULT 'fa-bell',
   `icon_bg` VARCHAR(50) DEFAULT '#eef2ff',
   `icon_color` VARCHAR(50) DEFAULT '#1648bc',
