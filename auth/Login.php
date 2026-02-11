@@ -316,6 +316,14 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                         style="color: #1034a6; font-weight: 700; font-size: 1.15rem; margin-top: 10px;">Log in to your
                         account</div>
 
+                    <?php if (isset($_GET['registered']) && $_GET['registered'] == 'true'): ?>
+                        <div
+                            style="color: #059669; background: #d1fae5; padding: 10px; border-radius: 6px; margin-top: 15px; font-size: 0.85rem; text-align: center; font-weight: 600;">
+                            <i class="fas fa-check-circle" style="margin-right: 8px;"></i>
+                            OFFICIAL ENROLLED - You can now log in to your account.
+                        </div>
+                    <?php endif; ?>
+
                     <?php if (isset($_GET['error'])): ?>
                         <div
                             style="color: #ef4444; background: #fee2e2; padding: 10px; border-radius: 6px; margin-top: 15px; font-size: 0.85rem; text-align: center; font-weight: 600;">
@@ -461,7 +469,7 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                                     </div>
 
                                     <div class="btns-group">
-                                        <a href="../Student/auth/Login.php" style="margin-right: auto; text-decoration: none; color: #64748b; font-weight: 700; font-size: 0.85rem;">Already Enrolled?</a>
+                                        <a href="#" id="sign-in-link-trigger" style="margin-right: auto; text-decoration: none; color: #64748b; font-weight: 700; font-size: 0.85rem;">Already Enrolled?</a>
                                         <a href="#" class="btn btn-next">CONTINUE <i class="fas fa-chevron-right" style="margin-left: 10px;"></i></a>
                                     </div>
                                 </div>

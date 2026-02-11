@@ -9,7 +9,7 @@ require_once '../../Database/config.php';
 
 // Only process POST requests
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
-    header("Location: login.php");
+    header("Location: Login.php");
     exit();
 }
 
@@ -22,7 +22,7 @@ $password = $_POST['password'] ?? '';
 
 // Basic Validation
 if (empty($identifier) || empty($password)) {
-    header("Location: login.php?error=empty_fields");
+    header("Location: Login.php?error=empty_fields");
     exit();
 }
 
@@ -90,13 +90,13 @@ try {
     }
 
     // PHASE 3: Authentication Failed
-    header("Location: login.php?error=invalid_credentials");
+    header("Location: Login.php?error=invalid_credentials");
     exit();
 
 } catch (PDOException $e) {
     // Log system errors and show generic message to user
     error_log("Login Error: " . $e->getMessage());
-    header("Location: login.php?error=system_error");
+    header("Location: Login.php?error=system_error");
     exit();
 }
 ?>

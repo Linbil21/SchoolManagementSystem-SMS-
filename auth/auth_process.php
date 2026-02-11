@@ -37,7 +37,7 @@ function sendEnrolmentEmail($recipientEmail)
         // Dynamic absolute URL detection for email compatibility
         $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https://" : "http://";
         $host = $_SERVER['HTTP_HOST'];
-        $login_url = $protocol . $host . "/Student/auth/Login.php?registered=true";
+        $login_url = $protocol . $host . "/auth/Login.php?action=login&role=student&registered=true";
 
         // Email Body with Button
         $mail->Body = "
@@ -233,7 +233,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 sendEnrolmentEmail($email);
 
                 // Redirect to Student Portal login as success
-                header("Location: ../Student/auth/Login.php?registered=true");
+                header("Location: Login.php?action=login&role=student&registered=true");
                 exit();
 
             } catch (Exception $e) {
