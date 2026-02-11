@@ -279,6 +279,18 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                             </div>
                             <i class="fas fa-chevron-right" style="margin-left: auto; color: #cbd5e1;"></i>
                         </a>
+
+                        <!-- Student -->
+                        <a href="Login.php?action=login&role=student" class="role-btn" style="background: white; border: 2px solid #dcfce7;">
+                            <div class="role-icon" style="background: #22c55e;">
+                                <i class="fas fa-user-graduate"></i>
+                            </div>
+                            <div>
+                                <div style="font-weight: 700; font-size: 1rem; color: #1e293b;">Student</div>
+                                <div style="font-size: 0.8rem; color: #64748b;">Student Portal</div>
+                            </div>
+                            <i class="fas fa-chevron-right" style="margin-left: auto; color: #cbd5e1;"></i>
+                        </a>
                     </div>
 
                     <div style="text-align: center; margin-top: 40px; color: #94a3b8; font-size: 0.85rem;">
