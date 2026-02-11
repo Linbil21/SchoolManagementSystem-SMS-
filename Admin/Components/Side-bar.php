@@ -212,6 +212,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         font-weight: 500;
         border-radius: 10px;
         transition: 0.3s;
+        white-space: nowrap;
     }
 
     .sidebar-menu ul li.active a {
