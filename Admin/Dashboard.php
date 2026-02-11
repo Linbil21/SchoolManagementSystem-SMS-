@@ -20,7 +20,7 @@ $role = $_SESSION['role'];
         rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="./Assets/Dashboard.css">
+    <link rel="stylesheet" href="/Admin/Assets/Dashboard.css">
 </head>
 
 <body>
@@ -28,7 +28,7 @@ $role = $_SESSION['role'];
     <!-- Sidebar -->
     <?php include 'Components/Side-bar.php'; ?>
 
-    <div class="main-wrapper">
+    <div class="main-wrapper" style="flex: 1; display: flex; flex-direction: column; min-width: 0;">
         <!-- Head-bar -->
         <?php include 'Components/Head-bar.php'; ?>
 
