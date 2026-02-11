@@ -11,10 +11,10 @@ if ($_SERVER['HTTP_HOST'] == 'localhost' || $_SERVER['HTTP_HOST'] == '127.0.0.1'
 } else {
     // Live Server Credentials (ems.jampzdev.com)
     // Sinubukan nating gayahin ang settings ng localhost mo:
-    define('DB_HOST', 'localhost'); 
-    define('DB_USER', 'root'); // Binago ko mula u123456_change_me papuntang root
-    define('DB_PASS', '');     // Walang password
-    define('DB_NAME', 'SMS');  // Siguraduhin na 'SMS' ang pangalan ng DB sa live
+    define('DB_HOST', '153.92.15.81'); 
+    define('DB_USER', 'u514031374_ems'); // Binago ko mula u123456_change_me papuntang root
+    define('DB_PASS', 'emsP@55w0rd');     // Walang password
+    define('DB_NAME', 'u514031374_ems');  // Siguraduhin na 'SMS' ang pangalan ng DB sa live
 }
 
 try {
