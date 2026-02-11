@@ -76,7 +76,7 @@ try {
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- External CSS -->
-    <link rel="stylesheet" href="../Assets/admin.css">
+    <link rel="stylesheet" href="/Admin/Assets/layout.css">
 </head>
 
 <body>
