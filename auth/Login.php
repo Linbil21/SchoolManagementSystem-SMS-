@@ -289,6 +289,8 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
         </div>
     </div>
     <?php else: ?>
+    <!-- CENTER WRAPPER FOR LOGIN -->
+    <div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px;">
     <!-- ORIGINAL LOGIN/REGISTER FORM -->
     <div class="container" id="main-container">
         <div class="forms-container">
@@ -676,6 +678,7 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
 
 
         </div>
+    </div>
     </div>
 
     <script src="../Assets/javascript/log-reg.js"></script>
