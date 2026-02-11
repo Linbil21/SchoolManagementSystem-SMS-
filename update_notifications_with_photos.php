@@ -21,7 +21,7 @@ try {
             
             $stmt = $pdo->prepare("
                 INSERT INTO notifications (user_id, type, title, message, profile_image, icon, icon_bg, icon_color, link) 
-                VALUES (NULL, 'student_registration', ?, ?, ?, 'fa-user-plus', '#d1fae5', '#059669', '/SMS/Admin/submodules/Student-Accounts.php')
+                VALUES (NULL, 'student_registration', ?, ?, ?, 'fa-user-plus', '#d1fae5', '#059669', '/sms/Admin/Submodules/Student-Accounts.php')
             ");
             $stmt->execute([$title, $message, $student->profile_image]);
             

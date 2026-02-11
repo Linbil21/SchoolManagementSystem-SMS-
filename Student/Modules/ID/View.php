@@ -3,7 +3,7 @@ session_start();
 require_once '../../../Database/config.php';
 
 if (!isset($_SESSION['student_id'])) {
-    header("Location: ../../auth/login.php");
+    header("Location: ../../auth/Login.php");
     exit();
 }
 
@@ -24,7 +24,7 @@ try {
         'year' => strtoupper($student_data->year_level),
         'school_year' => '2025-2026',
         'profile_image' => $student_data->profile_image
-            ? "/SMS/" . $student_data->profile_image
+            ? "/sms/" . $student_data->profile_image
             : "https://ui-avatars.com/api/?name=" . urlencode($student_data->first_name . ' ' . $student_data->last_name) . "&background=random&size=128"
     ];
 } catch (PDOException $e) {

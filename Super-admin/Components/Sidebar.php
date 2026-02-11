@@ -43,18 +43,18 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admin@sms.com';
         <p class="menu-label">ADMISSION CONTROL</p>
         <ul class="main-menu">
             <!-- Admission Summary Dropdown -->
-            <li class="has-dropdown <?php echo (strpos($_SERVER['PHP_SELF'], 'submodules/') !== false) ? 'active open' : ''; ?>">
+            <li class="has-dropdown <?php echo (strpos($_SERVER['PHP_SELF'], 'Submodules/') !== false) ? 'active open' : ''; ?>">
                 <a href="javascript:void(0)" class="dropdown-toggle">
                     <i class="fas fa-user-graduate"></i>
                     <span>Admission Hub</span>
                     <i class="fas fa-chevron-right arrow-icon"></i>
                 </a>
                 <ul class="sub-menu">
-                    <li class="<?php echo ($current_page == 'Admission-Dashboard.php') ? 'active' : ''; ?>"><a href="/sms/Super-admin/submodules/Admission-Dashboard.php">Admission Dashboard</a></li>
-                    <li class="<?php echo ($current_page == 'Applications-Manager.php') ? 'active' : ''; ?>"><a href="/sms/Super-admin/submodules/Applications-Manager.php">Applications Manager</a></li>
-                    <li class="<?php echo ($current_page == 'Evaluation-Desk.php') ? 'active' : ''; ?>"><a href="/sms/Super-admin/submodules/Evaluation-Desk.php">Evaluation Desk</a></li>
-                    <li class="<?php echo ($current_page == 'Student-ID-Center.php') ? 'active' : ''; ?>"><a href="/sms/Super-admin/submodules/Student-ID-Center.php">Student ID Center</a></li>
-                    <li class="<?php echo ($current_page == 'Requirements-Config.php') ? 'active' : ''; ?>"><a href="/sms/Super-admin/submodules/Requirements-Config.php">Requirements Config</a></li>
+                    <li class="<?php echo ($current_page == 'Admission-Dashboard.php') ? 'active' : ''; ?>"><a href="/sms/Super-admin/Submodules/Admission-Dashboard.php">Admission Dashboard</a></li>
+                    <li class="<?php echo ($current_page == 'Applications-Manager.php') ? 'active' : ''; ?>"><a href="/sms/Super-admin/Submodules/Applications-Manager.php">Applications Manager</a></li>
+                    <li class="<?php echo ($current_page == 'Evaluation-Desk.php') ? 'active' : ''; ?>"><a href="/sms/Super-admin/Submodules/Evaluation-Desk.php">Evaluation Desk</a></li>
+                    <li class="<?php echo ($current_page == 'Student-ID-Center.php') ? 'active' : ''; ?>"><a href="/sms/Super-admin/Submodules/Student-ID-Center.php">Student ID Center</a></li>
+                    <li class="<?php echo ($current_page == 'Requirements-Config.php') ? 'active' : ''; ?>"><a href="/sms/Super-admin/Submodules/Requirements-Config.php">Requirements Config</a></li>
                 </ul>
             </li>
         </ul>

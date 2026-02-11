@@ -1,7 +1,7 @@
 <?php
 session_start();
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'cashier') {
-    header("Location: ../../auth/log-reg.php");
+    header("Location: ../../auth/Login.php");
     exit();
 }
 // This is a Master Template for Cashier Modules

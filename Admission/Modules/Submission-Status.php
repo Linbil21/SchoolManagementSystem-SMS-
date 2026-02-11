@@ -1,7 +1,7 @@
 <?php
 session_start();
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admission') {
-    header("Location: ../../Auth/log-reg.php");
+    header("Location: ../../auth/Login.php");
     exit();
 }
 ?>

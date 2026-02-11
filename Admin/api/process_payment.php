@@ -43,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $student_mail = $stmt->fetch()->email ?? null;
             
             if ($student_mail) {
-                $notif_stmt = $pdo->prepare("INSERT INTO notifications (type, title, message, link, icon, icon_bg, icon_color) VALUES ('payment', 'Payment Verified', 'Your payment with Ref: " . $payment->transaction_id . " has been verified.', '/SMS/Student/Modules/Payments/History.php', 'fa-check-circle', '#dcfce7', '#16a34a')");
+                $notif_stmt = $pdo->prepare("INSERT INTO notifications (type, title, message, link, icon, icon_bg, icon_color) VALUES ('payment', 'Payment Verified', 'Your payment with Ref: " . $payment->transaction_id . " has been verified.', '/sms/Student/Modules/Payments/History.php', 'fa-check-circle', '#dcfce7', '#16a34a')");
                 // Wait, notifications usually link to a user. In this system, user_id might be used.
                 // Let's check notifications table structure.
             }

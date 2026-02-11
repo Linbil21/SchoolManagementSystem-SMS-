@@ -472,7 +472,7 @@ $notifications = getRecentNotifications($pdo);
     updateClock();
 
     function markAllAsRead() {
-        fetch('/SMS/Admin/api/mark_notifications_read.php', {
+        fetch('/sms/Admin/api/mark_notifications_read.php', {
             method: 'POST'
         }).then(() => location.reload());
     }

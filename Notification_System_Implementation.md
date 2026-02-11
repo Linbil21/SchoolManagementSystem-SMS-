@@ -43,10 +43,10 @@ Implemented a comprehensive, real-time notification system across **all user por
   - Title: "New Student Registration"
   - Message: "[Student Name] has registered successfully"
   - Icon: `fa-user-plus` (Green)
-  - Link: `/SMS/Admin/submodules/Student-Accounts.php`
+  - Link: `/sms/Admin/submodules/Student-Accounts.php`
 
 ### 5. **Mark as Read Functionality**
-- Created API endpoint: `/SMS/Admin/api/mark_notifications_read.php`
+- Created API endpoint: `/sms/Admin/api/mark_notifications_read.php`
 - "Mark all" button in notification dropdown
 - Auto-refresh after marking all as read
 
@@ -106,7 +106,7 @@ createNotification(
     'fa-user-edit',                       // icon
     '#fef3c7',                            // icon background (yellow)
     '#f59e0b',                            // icon color (orange)
-    '/SMS/Admin/submodules/Student-Accounts.php' // link
+    '/sms/Admin/submodules/Student-Accounts.php' // link
 );
 ```
 

@@ -170,7 +170,7 @@ function isDropdownOpen($searchStrings)
         <div class="profile-card">
             <?php
             $profile_img = isset($_SESSION['profile_image']) && !empty($_SESSION['profile_image'])
-                ? "/SMS/" . $_SESSION['profile_image']
+                ? "/sms/" . $_SESSION['profile_image']
                 : "https://ui-avatars.com/api/?name=" . urlencode($student_name) . "&background=2563eb&color=fff";
             ?>
             <img src="<?php echo $profile_img; ?>" alt="Profile" style="object-fit: cover;">

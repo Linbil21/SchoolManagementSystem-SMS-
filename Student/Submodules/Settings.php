@@ -3,7 +3,7 @@ session_start();
 require_once '../../Database/config.php';
 
 if (!isset($_SESSION['student_id'])) {
-    header("Location: ../auth/login.php");
+    header("Location: ../auth/Login.php");
     exit();
 }
 

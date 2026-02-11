@@ -449,7 +449,7 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                                     </div>
 
                                     <div class="btns-group">
-                                        <a href="../Student/auth/login.php" style="margin-right: auto; text-decoration: none; color: #64748b; font-weight: 700; font-size: 0.85rem;">Already Enrolled?</a>
+                                        <a href="../Student/auth/Login.php" style="margin-right: auto; text-decoration: none; color: #64748b; font-weight: 700; font-size: 0.85rem;">Already Enrolled?</a>
                                         <a href="#" class="btn btn-next">CONTINUE <i class="fas fa-chevron-right" style="margin-left: 10px;"></i></a>
                                     </div>
                                 </div>

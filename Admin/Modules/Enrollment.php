@@ -4,7 +4,7 @@ require_once '../../Database/config.php';
 
 // Check if user is logged in
 if (!isset($_SESSION['role']) || ($_SESSION['role'] !== 'admin' && $_SESSION['role'] !== 'superadmin')) {
-    header("Location: ../../Auth/log-reg.php");
+    header("Location: ../../auth/Login.php");
     exit();
 }
 
@@ -76,7 +76,7 @@ try {
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- External CSS -->
-    <link rel="stylesheet" href="../assets/admin.css">
+    <link rel="stylesheet" href="../Assets/admin.css">
 </head>
 
 <body>

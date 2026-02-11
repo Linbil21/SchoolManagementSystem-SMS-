@@ -3,7 +3,7 @@ session_start();
 require_once '../../Database/config.php';
 
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'cashier') {
-    header("Location: ../../auth/log-reg.php");
+    header("Location: ../../auth/Login.php");
     exit();
 }
 

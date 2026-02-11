@@ -3,7 +3,7 @@ session_start();
 require_once '../../Database/config.php';
 
 if (!isset($_SESSION['role']) || ($_SESSION['role'] !== 'admin' && $_SESSION['role'] !== 'superadmin')) {
-    header("Location: ../../Auth/log-reg.php");
+    header("Location: ../../auth/Login.php");
     exit();
 }
 
@@ -34,7 +34,7 @@ try {
     <title>Reports & Stats - SMS</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="../assets/admin.css">
+    <link rel="stylesheet" href="../Assets/admin.css">
     <style>
         .stats-grid {
             display: grid;

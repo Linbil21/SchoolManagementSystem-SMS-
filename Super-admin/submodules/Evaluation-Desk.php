@@ -1,7 +1,7 @@
 <?php
 session_start();
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'superadmin') {
-    header("Location: ../../Auth/log-reg.php");
+    header("Location: ../../auth/Login.php");
     exit();
 }
 ?>
@@ -15,7 +15,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'superadmin') {
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="../assets/super-admin.css">
+    <link rel="stylesheet" href="../Assets/super-admin.css">
 </head>
 
 <body>

@@ -19,28 +19,28 @@ switch ($role) {
     case 'admin':
         $sidebar_path = '../Admin/Components/Side-bar.php';
         $header_path = '../Admin/Components/Head-bar.php';
-        $css_path = '../Admin/assets/admin.css';
+        $css_path = '../Admin/Assets/admin.css';
         break;
     case 'superadmin':
     case 'super-admin':
         $sidebar_path = '../Super-admin/Components/Sidebar.php';
         $header_path = '../Super-admin/Components/header.php';
-        $css_path = '../Super-admin/assets/super-admin.css';
+        $css_path = '../Super-admin/Assets/super-admin.css';
         break;
     case 'admission':
         $sidebar_path = '../Admission/Components/Sidebar.php';
         $header_path = '../Admission/Components/header.php';
-        $css_path = '../Admin/assets/admin.css';
+        $css_path = '../Admin/Assets/admin.css';
         break;
     case 'cashier':
         $sidebar_path = '../Cashier/Components/Sidebar.php';
         $header_path = '../Cashier/Components/header.php';
-        $css_path = '../Admin/assets/admin.css';
+        $css_path = '../Admin/Assets/admin.css';
         break;
     default:
         $sidebar_path = '../Admin/Components/Side-bar.php';
         $header_path = '../Admin/Components/Head-bar.php';
-        $css_path = '../Admin/assets/admin.css';
+        $css_path = '../Admin/Assets/admin.css';
 }
 
 ?>

@@ -37,7 +37,7 @@ function sendEnrolmentEmail($recipientEmail)
         // Dynamic absolute URL detection for email compatibility
         $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https://" : "http://";
         $host = $_SERVER['HTTP_HOST'];
-        $login_url = $protocol . $host . "/SMS/Student/auth/login.php?registered=true";
+        $login_url = $protocol . $host . "/sms/Student/auth/Login.php?registered=true";
 
         // Email Body with Button
         $mail->Body = "
@@ -220,7 +220,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $notif_message = htmlspecialchars($first_name . " " . $last_name) . " has registered successfully.";
                     $notif_stmt = $pdo->prepare("
                         INSERT INTO notifications (user_id, type, title, message, profile_image, icon, icon_bg, icon_color, link) 
-                        VALUES (NULL, 'student_registration', ?, ?, ?, 'fa-user-plus', '#d1fae5', '#059669', '/SMS/Admin/submodules/Student-Accounts.php')
+                        VALUES (NULL, 'student_registration', ?, ?, ?, 'fa-user-plus', '#d1fae5', '#059669', '/sms/Admin/Submodules/Student-Accounts.php')
                     ");
                     $notif_stmt->execute([$notif_title, $notif_message, $profile_image_path]);
                 } catch (PDOException $e) {
@@ -233,7 +233,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 sendEnrolmentEmail($email);
 
                 // Redirect to Student Portal login as success
-                header("Location: ../Student/auth/login.php?registered=true");
+                header("Location: ../Student/auth/Login.php?registered=true");
                 exit();
 
             } catch (Exception $e) {

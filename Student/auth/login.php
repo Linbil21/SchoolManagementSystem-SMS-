@@ -245,7 +245,7 @@ $csrf_token = generateCsrfToken();
                 <p>Sign in to access your student portal</p>
             </div>
 
-            <form action="login_process.php" method="POST">
+            <form action="Login_process.php" method="POST">
                 <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
                 <div class="form-group">
                     <label>Student ID or Email</label>

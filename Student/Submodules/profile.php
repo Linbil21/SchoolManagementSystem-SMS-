@@ -3,7 +3,7 @@ session_start();
 require_once '../../Database/config.php';
 
 if (!isset($_SESSION['student_id'])) {
-    header("Location: ../auth/login.php");
+    header("Location: ../auth/Login.php");
     exit();
 }
 
@@ -21,7 +21,7 @@ try {
 
 $student_name = $student->first_name . ' ' . $student->last_name;
 $profile_img = !empty($student->profile_image)
-    ? "/SMS/" . $student->profile_image
+    ? "/sms/" . $student->profile_image
     : "https://ui-avatars.com/api/?name=" . urlencode($student_name) . "&background=2563eb&color=fff";
 ?>
 <!DOCTYPE html>

@@ -11,7 +11,7 @@ try {
             'icon' => 'fa-user-plus',
             'icon_bg' => '#d1fae5',
             'icon_color' => '#059669',
-            'link' => '/SMS/Admin/submodules/Student-Accounts.php'
+            'link' => '/sms/Admin/Submodules/Student-Accounts.php'
         ],
         [
             'type' => 'student_registration',
@@ -20,7 +20,7 @@ try {
             'icon' => 'fa-user-plus',
             'icon_bg' => '#d1fae5',
             'icon_color' => '#059669',
-            'link' => '/SMS/Admin/submodules/Student-Accounts.php'
+            'link' => '/sms/Admin/Submodules/Student-Accounts.php'
         ]
     ];
     
