@@ -71,7 +71,7 @@ if (count($name_parts) >= 2) {
                 </div>
                 <div class="avatar-circle">
                     <?php if (!empty($profile_pic) && $profile_pic !== 'default.jpg'): ?>
-                        <img src="/SMS/<?php echo $profile_pic; ?>" alt="Profile">
+                        <img src="/sms/<?php echo $profile_pic; ?>" alt="Profile">
                     <?php else: ?>
                         <?php echo $initials; ?>
                     <?php endif; ?>
@@ -81,7 +81,7 @@ if (count($name_parts) >= 2) {
                 <div class="dropdown-header profile-head">
                     <div class="avatar-circle large">
                         <?php if (!empty($profile_pic) && $profile_pic !== 'default.jpg'): ?>
-                            <img src="/SMS/<?php echo $profile_pic; ?>" alt="Profile">
+                            <img src="/sms/<?php echo $profile_pic; ?>" alt="Profile">
                         <?php else: ?>
                             <?php echo $initials; ?>
                         <?php endif; ?>

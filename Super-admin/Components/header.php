@@ -152,7 +152,7 @@ $notifications = getRecentNotifications($pdo);
 
     // Mark all notifications as read
     function markAllAsRead() {
-        fetch('/SMS/Admin/api/mark_notifications_read.php', {
+        fetch('/sms/Admin/api/mark_notifications_read.php', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'}
         })
