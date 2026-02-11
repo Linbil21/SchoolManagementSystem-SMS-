@@ -27,19 +27,19 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     <i class="fas fa-chevron-right arrow-icon"></i>
                 </a>
                 <ul class="sub-menu">
-                    <li><a href="/sms/Admin/Module/Enrollment-Queue.php"><i class="fas fa-list-ol"></i> <span>Enrollment
+                    <li><a href="/sms/Admin/Modules/Enrollment-Queue.php"><i class="fas fa-list-ol"></i> <span>Enrollment
                                 Queue</span></a></li>
-                    <li><a href="/sms/Admin/Module/Enrollment.php"><i class="fas fa-clipboard-list"></i>
+                    <li><a href="/sms/Admin/Modules/Enrollment.php"><i class="fas fa-clipboard-list"></i>
                             <span>Enrollment List</span></a></li>
-                    <li><a href="/sms/Admin/Module/Subject-Enrollment.php"><i class="fas fa-book"></i> <span>Subject
+                    <li><a href="/sms/Admin/Modules/Subject-Enrollment.php"><i class="fas fa-book"></i> <span>Subject
                                 Enrollment</span></a></li>
-                    <li><a href="/sms/Admin/Module/Section-Assignment.php"><i class="fas fa-users-viewfinder"></i>
+                    <li><a href="/sms/Admin/Modules/Section-Assignment.php"><i class="fas fa-users-viewfinder"></i>
                             <span>Section Assignment</span></a></li>
-                    <li><a href="/sms/Admin/Module/Payments-Fees.php"><i class="fas fa-file-invoice-dollar"></i>
+                    <li><a href="/sms/Admin/Modules/Payments-Fees.php"><i class="fas fa-file-invoice-dollar"></i>
                             <span>Payments & Fees</span></a></li>
-                    <li><a href="/sms/Admin/Module/Enrollment-History.php"><i class="fas fa-history"></i>
+                    <li><a href="/sms/Admin/Modules/Enrollment-History.php"><i class="fas fa-history"></i>
                             <span>Enrollment History</span></a></li>
-                    <li><a href="/sms/Admin/Module/Reports.php"><i class="fas fa-chart-line"></i>
+                    <li><a href="/sms/Admin/Modules/Reports.php"><i class="fas fa-chart-line"></i>
                             <span>Reports</span></a></li>
                 </ul>
             </li>

@@ -2,7 +2,7 @@
 
 This document serves as the technical overview for the School Management System (SMS) admin panel and its database structure.
 
-## 🏛️ Enrollment Modules (`Admin/Module`)
+## 🏛️ Enrollment Modules (`Admin/Modules`)
 
 These modules handle the lifecycle of student admission and academic organization.
 
