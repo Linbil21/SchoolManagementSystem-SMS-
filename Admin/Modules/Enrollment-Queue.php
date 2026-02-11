@@ -32,7 +32,7 @@ try {
         .empty-state i { font-size: 3rem; margin-bottom: 15px; opacity: 0.3; }
     </style>
 </head>
-<body>
+<body style="background: #f8fafc;">
     <?php include '../Components/Side-bar.php'; ?>
     <div class="main-wrapper">
         <?php include '../Components/Head-bar.php'; ?>
