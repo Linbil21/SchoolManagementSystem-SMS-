@@ -23,7 +23,7 @@ try {
     <link rel="icon" type="image/x-icon" href="../../Assets/image/logo.png">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="/Admin/Assets/layout.css">
+    <link rel="stylesheet" href="../Assets/layout.css">
     <style>
         .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
         .btn-back { background: var(--primary-blue); color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; transition: 0.3s; }
