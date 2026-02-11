@@ -503,7 +503,7 @@ session_start();
                     </div>
                     <div class="watermark">PREVIEW</div>
                     <div style="text-align: center; margin-bottom: 25px;">
-                        <img src="/sms/Assets/image/logo.png" style="width: 50px; margin-bottom: 10px;">
+                        <img src="/Assets/image/logo.png" style="width: 50px; margin-bottom: 10px;">
                         <h4 style="color: #1648bc; text-transform: uppercase; font-weight: 800; letter-spacing: 1px;">SMS Academy</h4>
                         <p style="font-size: 0.65rem; color: #64748b;">OFFICIAL E-RECEIPT PREVIEW</p>
                     </div>

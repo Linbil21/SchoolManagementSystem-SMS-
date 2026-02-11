@@ -279,7 +279,7 @@ session_start();
                                     echo "<td><span class='status-badge {$status_class}'>" . htmlspecialchars($payment->status) . "</span></td>";
                                     echo "<td>
                                         <div style='display: flex; gap: 8px;'>
-                                            <button class='view-btn' onclick=\"openModal('" . htmlspecialchars($payment->transaction_id) . "', '" . htmlspecialchars($payment->payment_method) . "', '" . number_format($payment->amount, 2) . "', '" . htmlspecialchars($date) . "', '" . htmlspecialchars($payment->status) . "', '/sms/" . htmlspecialchars($payment->proof_of_payment) . "')\">View</button>
+                                            <button class='view-btn' onclick=\"openModal('" . htmlspecialchars($payment->transaction_id) . "', '" . htmlspecialchars($payment->payment_method) . "', '" . number_format($payment->amount, 2) . "', '" . htmlspecialchars($date) . "', '" . htmlspecialchars($payment->status) . "', '/" . htmlspecialchars($payment->proof_of_payment) . "')\">View</button>
                                             <a href='Print-Receipt.php?id=" . htmlspecialchars($payment->transaction_id) . "' target='_blank' class='view-btn' style='text-decoration: none; display: flex; align-items: center; gap: 5px; background: #f8fafc; border-color: #2563eb; color: #2563eb;'>
                                                 <i class='fas fa-print'></i> Receipt
                                             </a>
@@ -357,7 +357,7 @@ session_start();
             document.getElementById('modalPrintBtn').href = 'Print-Receipt.php?id=' + ref;
             
             const preview = document.querySelector('.receipt-preview');
-            if (image && image !== '/sms/') {
+            if (image && image !== '/') {
                 preview.innerHTML = `<img src="${image}" alt="Receipt" style="width: 100%; height: 100%; object-fit: contain; cursor: pointer;" onclick="window.open('${image}', '_blank')">`;
             } else {
                 preview.innerHTML = `<i class="fas fa-image" style="font-size: 3rem;"></i>`;

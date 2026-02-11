@@ -6,8 +6,8 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'cashier@sms.com';
 ?>
 <div class="sidebar">
     <div class="sidebar-brand">
-        <a href="/sms/Cashier/Dashboard.php" class="brand-wrapper">
-            <img src="/sms/Assets/image/logo.png" alt="Logo" class="sidebar-logo">
+        <a href="/Cashier/Dashboard.php" class="brand-wrapper">
+            <img src="/Assets/image/logo.png" alt="Logo" class="sidebar-logo">
             <h2>Cashier</h2>
         </a>
     </div>
@@ -16,7 +16,7 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'cashier@sms.com';
         <p class="menu-label">MAIN</p>
         <ul class="main-menu">
             <li class="<?php echo ($current_page == 'Dashboard.php') ? 'active' : ''; ?>">
-                <a href="/sms/Cashier/Dashboard.php">
+                <a href="/Cashier/Dashboard.php">
                     <i class="fas fa-th-large"></i>
                     <span>Dashboard</span>
                 </a>
@@ -34,9 +34,9 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'cashier@sms.com';
                     <i class="fas fa-chevron-right arrow-icon"></i>
                 </a>
                 <ul class="sub-menu">
-                    <li><a href="/sms/Cashier/Modules/Uploaded-Receipts.php">Uploaded Receipts</a></li>
-                    <li><a href="/sms/Cashier/Modules/Walk-in-Payments.php">Walk-in Payments</a></li>
-                    <li><a href="/sms/Cashier/Modules/Online-Payments.php">Online Payments</a></li>
+                    <li><a href="/Cashier/Modules/Uploaded-Receipts.php">Uploaded Receipts</a></li>
+                    <li><a href="/Cashier/Modules/Walk-in-Payments.php">Walk-in Payments</a></li>
+                    <li><a href="/Cashier/Modules/Online-Payments.php">Online Payments</a></li>
                 </ul>
             </li>
 
@@ -49,9 +49,9 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'cashier@sms.com';
                     <i class="fas fa-chevron-right arrow-icon"></i>
                 </a>
                 <ul class="sub-menu">
-                    <li><a href="/sms/Cashier/Modules/Student-Assessment.php">Student Assessment</a></li>
-                    <li><a href="/sms/Cashier/Submodules/Fee-Breakdown.php">Fee Breakdown</a></li>
-                    <li><a href="/sms/Cashier/Submodules/Discounts.php">Discounts / Scholarships</a></li>
+                    <li><a href="/Cashier/Modules/Student-Assessment.php">Student Assessment</a></li>
+                    <li><a href="/Cashier/Submodules/Fee-Breakdown.php">Fee Breakdown</a></li>
+                    <li><a href="/Cashier/Submodules/Discounts.php">Discounts / Scholarships</a></li>
                 </ul>
             </li>
 
@@ -64,9 +64,9 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'cashier@sms.com';
                     <i class="fas fa-chevron-right arrow-icon"></i>
                 </a>
                 <ul class="sub-menu">
-                    <li><a href="/sms/Cashier/Modules/Issue-Receipt.php">Issue Receipt</a></li>
-                    <li><a href="/sms/Cashier/Modules/Receipt-History.php">Receipt History</a></li>
-                    <li><a href="/sms/Cashier/Modules/Refund-Requests.php">Void / Refund</a></li>
+                    <li><a href="/Cashier/Modules/Issue-Receipt.php">Issue Receipt</a></li>
+                    <li><a href="/Cashier/Modules/Receipt-History.php">Receipt History</a></li>
+                    <li><a href="/Cashier/Modules/Refund-Requests.php">Void / Refund</a></li>
                 </ul>
             </li>
         </ul>
@@ -81,9 +81,9 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'cashier@sms.com';
                     <i class="fas fa-chevron-right arrow-icon"></i>
                 </a>
                 <ul class="sub-menu">
-                    <li><a href="/sms/Cashier/Submodules/Payment-Status.php">Payment Status</a></li>
-                    <li><a href="/sms/Cashier/Submodules/Outstanding-Balances.php">Outstanding Balances</a></li>
-                    <li><a href="/sms/Cashier/Submodules/Payment-History.php">Payment History</a></li>
+                    <li><a href="/Cashier/Submodules/Payment-Status.php">Payment Status</a></li>
+                    <li><a href="/Cashier/Submodules/Outstanding-Balances.php">Outstanding Balances</a></li>
+                    <li><a href="/Cashier/Submodules/Payment-History.php">Payment History</a></li>
                 </ul>
             </li>
         </ul>
@@ -98,10 +98,10 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'cashier@sms.com';
                     <i class="fas fa-chevron-right arrow-icon"></i>
                 </a>
                 <ul class="sub-menu">
-                    <li><a href="/sms/Cashier/Submodules/Daily-Collection.php">Daily Collection</a></li>
-                    <li><a href="/sms/Cashier/Submodules/Monthly-Summary.php">Monthly Summary</a></li>
-                    <li><a href="/sms/Cashier/Submodules/Method-Reports.php">Payment Methods</a></li>
-                    <li><a href="/sms/Cashier/Submodules/Outstanding-Report.php">Outstanding Report</a></li>
+                    <li><a href="/Cashier/Submodules/Daily-Collection.php">Daily Collection</a></li>
+                    <li><a href="/Cashier/Submodules/Monthly-Summary.php">Monthly Summary</a></li>
+                    <li><a href="/Cashier/Submodules/Method-Reports.php">Payment Methods</a></li>
+                    <li><a href="/Cashier/Submodules/Outstanding-Report.php">Outstanding Report</a></li>
                 </ul>
             </li>
         </ul>
@@ -109,13 +109,13 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'cashier@sms.com';
         <p class="menu-label">ACCOUNT & SETTINGS</p>
         <ul class="main-menu">
             <li class="<?php echo ($current_page == 'Profile.php') ? 'active' : ''; ?>">
-                <a href="/sms/modules/Profile.php">
+                <a href="/modules/Profile.php">
                     <i class="fas fa-user-circle"></i>
                     <span>Profile</span>
                 </a>
             </li>
             <li class="<?php echo ($current_page == 'Settings.php') ? 'active' : ''; ?>">
-                <a href="/sms/modules/Settings.php">
+                <a href="/modules/Settings.php">
                     <i class="fas fa-cogs"></i>
                     <span>Settings</span>
                 </a>
@@ -142,7 +142,7 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'cashier@sms.com';
     </div>
 </div>
 
-<link rel="stylesheet" href="/sms/Assets/css/theme.css">
+<link rel="stylesheet" href="/Assets/css/theme.css">
 
 <style>
     .sidebar {
@@ -377,7 +377,7 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'cashier@sms.com';
         <div style="display: flex; gap: 12px;">
             <button onclick="closeLogoutModal()"
                 style="flex: 1; padding: 12px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--hover-bg); color: var(--text-color); font-weight: 600; cursor: pointer;">Cancel</button>
-            <a href="/sms/auth/logout.php"
+            <a href="/auth/logout.php"
                 style="flex: 1; padding: 12px; border-radius: 12px; background: #ef4444; color: white; font-weight: 600; text-decoration: none;">Log
                 Out</a>
         </div>

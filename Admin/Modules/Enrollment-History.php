@@ -111,7 +111,7 @@ try {
 
             container.innerHTML = `
                 <div style="text-align: center; margin-bottom: 20px;">
-                    <img src="/sms/${data.id_picture}" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; background: #f8fafc;" onerror="this.src='https://ui-avatars.com/api/?name=${data.first_name}+${data.last_name}&background=64748b&color=fff'">
+                    <img src="/${data.id_picture}" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; background: #f8fafc;" onerror="this.src='https://ui-avatars.com/api/?name=${data.first_name}+${data.last_name}&background=64748b&color=fff'">
                     <h3 style="margin: 10px 0 5px 0;">${data.last_name}, ${data.first_name}</h3>
                     <p style="color: #64748b; font-size: 0.9rem; margin: 0;">Ref: ${data.reference_code}</p>
                 </div>

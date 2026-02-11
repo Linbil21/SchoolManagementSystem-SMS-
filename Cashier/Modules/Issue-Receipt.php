@@ -266,7 +266,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'cashier') {
                 <div>
                     <div class="receipt-preview">
                         <div class="receipt-header">
-                            <img src="/sms/Assets/image/logo.png" alt="Logo">
+                            <img src="/Assets/image/logo.png" alt="Logo">
                             <h2>SMS School Management</h2>
                             <p style="font-size: 0.75rem; color: var(--text-muted);">Official Receipt of Payment</p>
                         </div>

@@ -104,7 +104,7 @@ try {
             const container = document.getElementById('queueData');
             container.innerHTML = `
                 <div style="display: flex; gap: 20px; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #f1f5f9;">
-                    <img src="/sms/${data.id_picture}" style="width: 80px; height: 80px; border-radius: 10px; object-fit: cover;" onerror="this.src='https://ui-avatars.com/api/?name=${data.first_name}+${data.last_name}&background=1648bc&color=fff'">
+                    <img src="/${data.id_picture}" style="width: 80px; height: 80px; border-radius: 10px; object-fit: cover;" onerror="this.src='https://ui-avatars.com/api/?name=${data.first_name}+${data.last_name}&background=1648bc&color=fff'">
                     <div>
                         <h3 style="margin: 0; color: #1648bc;">${data.last_name}, ${data.first_name}</h3>
                         <p style="color: #64748b; margin: 3px 0;">Ref: ${data.reference_code}</p>

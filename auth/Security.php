@@ -25,7 +25,7 @@ function checkRole($allowed_roles) {
     // 1. Check if logged in
     if (!isset($_SESSION['role'])) {
         // Use absolute path for reliability
-        header("Location: /sms/auth/Login.php");
+        header("Location: /auth/Login.php");
         exit();
     }
 
@@ -36,22 +36,22 @@ function checkRole($allowed_roles) {
         // Redirect based on their ACTUAL role
         switch ($current_role) {
             case 'superadmin':
-                header("Location: /sms/Super-admin/Dashboard.php");
+                header("Location: /Super-admin/Dashboard.php");
                 break;
             case 'admin':
-                header("Location: /sms/Admin/Dashboard.php");
+                header("Location: /Admin/Dashboard.php");
                 break;
             case 'admission':
-                header("Location: /sms/Admission/Dashboard.php");
+                header("Location: /Admission/Dashboard.php");
                 break;
             case 'cashier':
-                header("Location: /sms/Cashier/Dashboard.php");
+                header("Location: /Cashier/Dashboard.php");
                 break;
             case 'student':
-                header("Location: /sms/Student/Dashboard.php");
+                header("Location: /Student/Dashboard.php");
                 break;
             default:
-                header("Location: /sms/auth/Login.php");
+                header("Location: /auth/Login.php");
                 break;
         }
         exit();

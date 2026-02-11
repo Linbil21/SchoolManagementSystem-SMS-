@@ -71,7 +71,7 @@ if (count($name_parts) >= 2) {
                 </div>
                 <div class="avatar-circle">
                     <?php if (!empty($profile_pic) && $profile_pic !== 'default.jpg'): ?>
-                        <img src="/sms/<?php echo $profile_pic; ?>" alt="Profile">
+                        <img src="/<?php echo $profile_pic; ?>" alt="Profile">
                     <?php else: ?>
                         <?php echo $initials; ?>
                     <?php endif; ?>
@@ -81,7 +81,7 @@ if (count($name_parts) >= 2) {
                 <div class="dropdown-header profile-head">
                     <div class="avatar-circle large">
                         <?php if (!empty($profile_pic) && $profile_pic !== 'default.jpg'): ?>
-                            <img src="/sms/<?php echo $profile_pic; ?>" alt="Profile">
+                            <img src="/<?php echo $profile_pic; ?>" alt="Profile">
                         <?php else: ?>
                             <?php echo $initials; ?>
                         <?php endif; ?>
@@ -92,10 +92,10 @@ if (count($name_parts) >= 2) {
                     </div>
                 </div>
                 <div class="dropdown-body">
-                    <a href="/sms/Student/Submodules/profile.php" class="dropdown-link">
+                    <a href="/Student/Submodules/profile.php" class="dropdown-link">
                         <i class="fas fa-user-circle"></i> My Profile
                     </a>
-                    <a href="/sms/Student/auth/logout.php" class="dropdown-link logout-link">
+                    <a href="/Student/auth/logout.php" class="dropdown-link logout-link">
                         <i class="fas fa-power-off"></i> Sign Out
                     </a>
                 </div>
@@ -104,7 +104,7 @@ if (count($name_parts) >= 2) {
     </div>
 </div>
 
-<link rel="stylesheet" href="/sms/Assets/css/theme.css">
+<link rel="stylesheet" href="/Assets/css/theme.css">
 
 <style>
     .header {
@@ -446,7 +446,7 @@ if (count($name_parts) >= 2) {
     function markAllRead() {
         const badge = document.querySelector('.notification-btn .badge');
         
-        fetch('/sms/Student/api/mark_notifications_read.php')
+        fetch('/Student/api/mark_notifications_read.php')
             .then(response => response.json())
             .then(data => {
                 if (data.success) {

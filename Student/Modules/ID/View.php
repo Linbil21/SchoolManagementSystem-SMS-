@@ -24,7 +24,7 @@ try {
         'year' => strtoupper($student_data->year_level),
         'school_year' => '2025-2026',
         'profile_image' => $student_data->profile_image
-            ? "/sms/" . $student_data->profile_image
+            ? "/" . $student_data->profile_image
             : "https://ui-avatars.com/api/?name=" . urlencode($student_data->first_name . ' ' . $student_data->last_name) . "&background=random&size=128"
     ];
 } catch (PDOException $e) {

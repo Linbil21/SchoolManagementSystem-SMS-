@@ -1,5 +1,5 @@
 <?php
-$file = 'c:/xampp/htdocs/sms/Cashier/Modules/Online-Payments.php';
+$file = 'c:/xampp/htdocs/Cashier/Modules/Online-Payments.php';
 $content = file_get_contents($file);
 $content = str_replace(
     "currentPaymentId = data.payment_id;",

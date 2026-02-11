@@ -282,7 +282,7 @@ $weekly_schedule = [
             <!-- Professional COR Print Layout (Hidden on Screen) -->
             <div class="cor-print-only">
                 <div class="cor-header">
-                    <img src="/sms/Assets/image/logo.png" style="width: 80px; height: 80px; margin-bottom: 10px;" alt="Logo">
+                    <img src="/Assets/image/logo.png" style="width: 80px; height: 80px; margin-bottom: 10px;" alt="Logo">
                     <h2>Modern State University</h2>
                     <p>University Avenue, Knowledge Link, Philippines</p>
                     <p>Contact: info@msu.edu.ph | Tel: (02) 888-1234</p>

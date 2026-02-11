@@ -14,7 +14,7 @@ $role = $_SESSION['role'];
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="/sms/Assets/css/theme.css">
+    <link rel="stylesheet" href="/Assets/css/theme.css">
     <style>
         * {
             margin: 0;
@@ -320,13 +320,13 @@ $role = $_SESSION['role'];
                 <div class="action-card">
                     <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
                     <div class="quick-actions-list">
-                        <a href="/sms/Cashier/Modules/Walk-in-Payments.php" class="action-btn">
+                        <a href="/Cashier/Modules/Walk-in-Payments.php" class="action-btn">
                             <i class="fas fa-plus-circle"></i> Record Walk-in
                         </a>
-                        <a href="/sms/Cashier/Submodules/Payment-Status.php" class="action-btn">
+                        <a href="/Cashier/Submodules/Payment-Status.php" class="action-btn">
                             <i class="fas fa-search"></i> Find Student Account
                         </a>
-                        <a href="/sms/Cashier/Modules/Issue-Receipt.php" class="action-btn">
+                        <a href="/Cashier/Modules/Issue-Receipt.php" class="action-btn">
                             <i class="fas fa-file-invoice-dollar"></i> Generate Billing
                         </a>
                     </div>

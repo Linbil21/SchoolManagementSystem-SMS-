@@ -21,7 +21,7 @@ function isDropdownOpen($searchStrings)
 ?>
 <div class="sidebar">
     <div class="sidebar-brand">
-        <a href="/sms/Student/Dashboard.php" class="brand-wrapper">
+        <a href="/Student/Dashboard.php" class="brand-wrapper">
             <i class="fas fa-graduation-cap" style="font-size: 1.8rem; color: #2563eb;"></i>
             <h2>Student<span style="color: #64748b; font-weight: 400; font-size: 1rem; margin-left: 5px;">Portal</span>
             </h2>
@@ -32,7 +32,7 @@ function isDropdownOpen($searchStrings)
         <p class="menu-label">MAIN</p>
         <ul class="main-menu">
             <li class="<?php echo ($current_page == 'Dashboard.php') ? 'active' : ''; ?>">
-                <a href="/sms/Student/Dashboard.php">
+                <a href="/Student/Dashboard.php">
                     <i class="fas fa-th-large"></i>
                     <span>Dashboard</span>
                 </a>
@@ -50,12 +50,12 @@ function isDropdownOpen($searchStrings)
                     <i class="fas fa-chevron-right arrow-icon"></i>
                 </a>
                 <ul class="sub-menu">
-                    <li><a href="/sms/Student/Modules/Admission/Apply.php">Apply for Admission</a></li>
-                    <li><a href="/sms/Student/Modules/Admission/Requirements.php">Upload Requirements</a></li>
-                    <li><a href="/sms/Student/Modules/Admission/Exam-Schedule.php">Entrance Exam Schedule</a></li>
-                    <li><a href="/sms/Student/Modules/Admission/Interview.php">Interview Schedule</a></li>
-                    <li><a href="/sms/Student/Modules/Admission/Result.php">View Admission Result</a></li>
-                    <li><a href="/sms/Student/Modules/Admission/History.php">Admission History</a></li>
+                    <li><a href="/Student/Modules/Admission/Apply.php">Apply for Admission</a></li>
+                    <li><a href="/Student/Modules/Admission/Requirements.php">Upload Requirements</a></li>
+                    <li><a href="/Student/Modules/Admission/Exam-Schedule.php">Entrance Exam Schedule</a></li>
+                    <li><a href="/Student/Modules/Admission/Interview.php">Interview Schedule</a></li>
+                    <li><a href="/Student/Modules/Admission/Result.php">View Admission Result</a></li>
+                    <li><a href="/Student/Modules/Admission/History.php">Admission History</a></li>
                 </ul>
             </li>
 
@@ -68,11 +68,11 @@ function isDropdownOpen($searchStrings)
                     <i class="fas fa-chevron-right arrow-icon"></i>
                 </a>
                 <ul class="sub-menu">
-                    <li><a href="/sms/Student/Modules/Enrollment/Subject-Selection.php">Subject Selection</a></li>
-                    <li><a href="/sms/Student/Modules/Enrollment/View-Assessment.php">View Assessment</a></li>
-                    <li><a href="/sms/Student/Modules/Enrollment/Enrollment-Status.php">Enrollment Status</a></li>
-                    <li><a href="/sms/Student/Modules/Enrollment/Upload-Payment.php">Upload Payment</a></li>
-                    <li><a href="/sms/Student/Modules/Enrollment/History.php">Enrollment History</a></li>
+                    <li><a href="/Student/Modules/Enrollment/Subject-Selection.php">Subject Selection</a></li>
+                    <li><a href="/Student/Modules/Enrollment/View-Assessment.php">View Assessment</a></li>
+                    <li><a href="/Student/Modules/Enrollment/Enrollment-Status.php">Enrollment Status</a></li>
+                    <li><a href="/Student/Modules/Enrollment/Upload-Payment.php">Upload Payment</a></li>
+                    <li><a href="/Student/Modules/Enrollment/History.php">Enrollment History</a></li>
                 </ul>
             </li>
 
@@ -85,7 +85,7 @@ function isDropdownOpen($searchStrings)
                 </a>
                 <ul class="sub-menu">
                     <li class="<?php echo ($current_page == 'Schedule.php') ? 'active' : ''; ?>">
-                        <a href="/sms/Student/Modules/Academic/Schedule.php">Class Schedule</a>
+                        <a href="/Student/Modules/Academic/Schedule.php">Class Schedule</a>
                     </li>
                     <li><a href="javascript:void(0)" style="opacity: 0.5;">My Grades (Soon)</a></li>
                     <li><a href="javascript:void(0)" style="opacity: 0.5;">Attendance (Soon)</a></li>
@@ -103,9 +103,9 @@ function isDropdownOpen($searchStrings)
                     <i class="fas fa-chevron-right arrow-icon"></i>
                 </a>
                 <ul class="sub-menu">
-                    <li><a href="/sms/Student/Modules/Payments/Balance.php">View Balance</a></li>
-                    <li><a href="/sms/Student/Modules/Payments/History.php">Payment History</a></li>
-                    <li><a href="/sms/Student/Modules/Payments/Upload-Receipt.php">Upload Receipt</a></li>
+                    <li><a href="/Student/Modules/Payments/Balance.php">View Balance</a></li>
+                    <li><a href="/Student/Modules/Payments/History.php">Payment History</a></li>
+                    <li><a href="/Student/Modules/Payments/Upload-Receipt.php">Upload Receipt</a></li>
                 </ul>
             </li>
         </ul>
@@ -120,9 +120,9 @@ function isDropdownOpen($searchStrings)
                     <i class="fas fa-chevron-right arrow-icon"></i>
                 </a>
                 <ul class="sub-menu">
-                    <li><a href="/sms/Student/Modules/ID/View.php">View Student ID</a></li>
-                    <li><a href="/sms/Student/Modules/ID/Download.php">Download / Print ID</a></li>
-                    <li><a href="/sms/Student/Modules/ID/Replacement.php">Replacement Request</a></li>
+                    <li><a href="/Student/Modules/ID/View.php">View Student ID</a></li>
+                    <li><a href="/Student/Modules/ID/Download.php">Download / Print ID</a></li>
+                    <li><a href="/Student/Modules/ID/Replacement.php">Replacement Request</a></li>
                 </ul>
             </li>
 
@@ -134,9 +134,9 @@ function isDropdownOpen($searchStrings)
                     <i class="fas fa-chevron-right arrow-icon"></i>
                 </a>
                 <ul class="sub-menu">
-                    <li><a href="/sms/Student/Modules/Support/Announcements.php">Announcements</a></li>
-                    <li><a href="/sms/Student/Modules/Support/Messages.php">Messages</a></li>
-                    <li><a href="/sms/Student/Modules/Support/Help.php">Help / FAQs</a></li>
+                    <li><a href="/Student/Modules/Support/Announcements.php">Announcements</a></li>
+                    <li><a href="/Student/Modules/Support/Messages.php">Messages</a></li>
+                    <li><a href="/Student/Modules/Support/Help.php">Help / FAQs</a></li>
                 </ul>
             </li>
         </ul>
@@ -151,9 +151,9 @@ function isDropdownOpen($searchStrings)
                     <i class="fas fa-chevron-right arrow-icon"></i>
                 </a>
                 <ul class="sub-menu">
-                    <li><a href="/sms/Student/Submodules/profile.php">Personal Information</a></li>
-                    <li><a href="/sms/Student/Submodules/Change-Password.php">Change Password</a></li>
-                    <li><a href="/sms/Student/Submodules/Settings.php">Account Settings</a></li>
+                    <li><a href="/Student/Submodules/profile.php">Personal Information</a></li>
+                    <li><a href="/Student/Submodules/Change-Password.php">Change Password</a></li>
+                    <li><a href="/Student/Submodules/Settings.php">Account Settings</a></li>
                 </ul>
             </li>
 
@@ -170,7 +170,7 @@ function isDropdownOpen($searchStrings)
         <div class="profile-card">
             <?php
             $profile_img = isset($_SESSION['profile_image']) && !empty($_SESSION['profile_image'])
-                ? "/sms/" . $_SESSION['profile_image']
+                ? "/" . $_SESSION['profile_image']
                 : "https://ui-avatars.com/api/?name=" . urlencode($student_name) . "&background=2563eb&color=fff";
             ?>
             <img src="<?php echo $profile_img; ?>" alt="Profile" style="object-fit: cover;">
@@ -414,7 +414,7 @@ function isDropdownOpen($searchStrings)
         <div style="display: flex; gap: 12px;">
             <button onclick="closeLogoutModal()" class="sidebar-modal-btn-cancel"
                 style="flex: 1; padding: 12px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--hover-bg); color: var(--text-color); font-weight: 600; cursor: pointer;">Cancel</button>
-            <a href="/sms/Student/auth/logout.php"
+            <a href="/Student/auth/logout.php"
                 style="flex: 1; padding: 12px; border-radius: 12px; background: #ef4444; color: white; font-weight: 600; text-decoration: none;">Log
                 Out</a>
         </div>

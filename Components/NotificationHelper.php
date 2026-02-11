@@ -88,7 +88,7 @@ function getNotificationsHtml($notifications) {
         $imageHtml = '';
         if (!empty($notif->profile_image) && $notif->profile_image !== 'default.jpg') {
             $imageHtml = "
-                <img src=\"/sms/" . htmlspecialchars($notif->profile_image) . "\" 
+                <img src=\"/" . htmlspecialchars($notif->profile_image) . "\" 
                      class=\"notif-profile-img\" 
                      onerror=\"this.onerror=null; this.src='" . $fallbackAvatar . "';\"
                      alt=\"Profile\">

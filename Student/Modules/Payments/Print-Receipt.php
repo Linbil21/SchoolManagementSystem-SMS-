@@ -124,7 +124,7 @@ try {
         <div class="status-watermark"><?php echo $payment->status; ?></div>
         
         <div class="receipt-header">
-            <img src="/sms/Assets/image/logo.png" alt="Logo" class="school-logo">
+            <img src="/Assets/image/logo.png" alt="Logo" class="school-logo">
             <div class="school-name">SMS ACADEMY</div>
             <div class="receipt-title">Official Electronic Receipt</div>
         </div>

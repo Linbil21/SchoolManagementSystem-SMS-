@@ -78,7 +78,7 @@ $notifications = getRecentNotifications($pdo);
                     </div>
                 </div>
                 <div class="dropdown-body">
-                    <a href="/sms/modules/Profile.php" class="dropdown-link">
+                    <a href="/modules/Profile.php" class="dropdown-link">
                         <i class="fas fa-user-cog"></i> Admin Settings
                     </a>
                     <a href="javascript:void(0)" onclick="openLogoutModal()" class="dropdown-link logout-link">
@@ -90,7 +90,7 @@ $notifications = getRecentNotifications($pdo);
     </div>
 </div>
 
-<link rel="stylesheet" href="/sms/Assets/css/theme.css">
+<link rel="stylesheet" href="/Assets/css/theme.css">
 
 <style>
     .head-bar {
@@ -518,7 +518,7 @@ $notifications = getRecentNotifications($pdo);
 
     // Mark all notifications as read
     function markAllAsRead() {
-        fetch('/sms/Admin/api/mark_notifications_read.php', {
+        fetch('/Admin/api/mark_notifications_read.php', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'}
         })

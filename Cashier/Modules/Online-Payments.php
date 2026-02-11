@@ -360,7 +360,7 @@ try {
             
             const img = document.getElementById('modalImg');
             if (data.proof_of_payment) {
-                img.src = '/sms/' + data.proof_of_payment;
+                img.src = '/' + data.proof_of_payment;
                 img.style.display = 'block';
             } else {
                 img.style.display = 'none';

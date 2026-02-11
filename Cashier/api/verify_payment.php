@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $notif_title = "Payment " . $status;
             $notif_message = "Your payment of ₱" . number_format($payment->amount, 2) . " has been " . strtolower($status) . ".";
             
-            $notif_stmt = $pdo->prepare("INSERT INTO notifications (user_id, type, title, message, link, icon, icon_bg, icon_color) VALUES (NULL, 'payment', ?, ?, '/sms/Student/Modules/Payments/History.php', 'fa-receipt', ?, ?)");
+            $notif_stmt = $pdo->prepare("INSERT INTO notifications (user_id, type, title, message, link, icon, icon_bg, icon_color) VALUES (NULL, 'payment', ?, ?, '/Student/Modules/Payments/History.php', 'fa-receipt', ?, ?)");
             
             $bg = ($status === 'Verified') ? '#dcfce7' : '#fee2e2';
             $color = ($status === 'Verified') ? '#16a34a' : '#ef4444';

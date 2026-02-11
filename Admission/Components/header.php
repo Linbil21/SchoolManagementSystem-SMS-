@@ -78,10 +78,10 @@ $notifications = getRecentNotifications($pdo);
                     </div>
                 </div>
                 <div class="dropdown-body">
-                    <a href="/sms/modules/Profile.php" class="dropdown-link">
+                    <a href="/modules/Profile.php" class="dropdown-link">
                         <i class="fas fa-user-circle"></i> My Profile
                     </a>
-                    <a href="/sms/modules/Settings.php" class="dropdown-link">
+                    <a href="/modules/Settings.php" class="dropdown-link">
                         <i class="fas fa-cog"></i> Account Settings
                     </a>
                     <hr>
@@ -94,7 +94,7 @@ $notifications = getRecentNotifications($pdo);
     </div>
 </div>
 
-<link rel="stylesheet" href="/sms/Assets/css/theme.css">
+<link rel="stylesheet" href="/Assets/css/theme.css">
 
 <style>
 /* Admission Header Styles */
@@ -663,7 +663,7 @@ $notifications = getRecentNotifications($pdo);
 
     // Mark all notifications as read
     function markAllAsRead() {
-        fetch('/sms/Admin/api/mark_notifications_read.php', {
+        fetch('/Admin/api/mark_notifications_read.php', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'}
         })

@@ -6,8 +6,8 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admin@sms.com';
 ?>
 <div class="sidebar">
     <div class="sidebar-brand">
-        <a href="/sms/Super-admin/Dashboard.php" class="brand-wrapper">
-            <img src="/sms/Assets/image/logo.png" alt="Logo" class="sidebar-logo">
+        <a href="/Super-admin/Dashboard.php" class="brand-wrapper">
+            <img src="/Assets/image/logo.png" alt="Logo" class="sidebar-logo">
             <h2>Super Admin</h2>
         </a>
     </div>
@@ -16,7 +16,7 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admin@sms.com';
         <p class="menu-label">MAIN</p>
         <ul>
             <li class="<?php echo ($current_page == 'Dashboard.php') ? 'active' : ''; ?>">
-                <a href="/sms/Super-admin/Dashboard.php">
+                <a href="/Super-admin/Dashboard.php">
                     <i class="fas fa-th-large"></i>
                     <span>Dashboard</span>
                 </a>
@@ -34,8 +34,8 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admin@sms.com';
                     <i class="fas fa-chevron-right arrow-icon"></i>
                 </a>
                 <ul class="sub-menu">
-                    <li><a href="/sms/Super-admin/Modules/User-Management.php">Staff Accounts</a></li>
-                    <li><a href="/sms/Super-admin/Modules/Roles.php">Roles & Permissions</a></li>
+                    <li><a href="/Super-admin/Modules/User-Management.php">Staff Accounts</a></li>
+                    <li><a href="/Super-admin/Modules/Roles.php">Roles & Permissions</a></li>
                 </ul>
             </li>
         </ul>
@@ -50,11 +50,11 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admin@sms.com';
                     <i class="fas fa-chevron-right arrow-icon"></i>
                 </a>
                 <ul class="sub-menu">
-                    <li class="<?php echo ($current_page == 'Admission-Dashboard.php') ? 'active' : ''; ?>"><a href="/sms/Super-admin/Submodules/Admission-Dashboard.php">Admission Dashboard</a></li>
-                    <li class="<?php echo ($current_page == 'Applications-Manager.php') ? 'active' : ''; ?>"><a href="/sms/Super-admin/Submodules/Applications-Manager.php">Applications Manager</a></li>
-                    <li class="<?php echo ($current_page == 'Evaluation-Desk.php') ? 'active' : ''; ?>"><a href="/sms/Super-admin/Submodules/Evaluation-Desk.php">Evaluation Desk</a></li>
-                    <li class="<?php echo ($current_page == 'Student-ID-Center.php') ? 'active' : ''; ?>"><a href="/sms/Super-admin/Submodules/Student-ID-Center.php">Student ID Center</a></li>
-                    <li class="<?php echo ($current_page == 'Requirements-Config.php') ? 'active' : ''; ?>"><a href="/sms/Super-admin/Submodules/Requirements-Config.php">Requirements Config</a></li>
+                    <li class="<?php echo ($current_page == 'Admission-Dashboard.php') ? 'active' : ''; ?>"><a href="/Super-admin/Submodules/Admission-Dashboard.php">Admission Dashboard</a></li>
+                    <li class="<?php echo ($current_page == 'Applications-Manager.php') ? 'active' : ''; ?>"><a href="/Super-admin/Submodules/Applications-Manager.php">Applications Manager</a></li>
+                    <li class="<?php echo ($current_page == 'Evaluation-Desk.php') ? 'active' : ''; ?>"><a href="/Super-admin/Submodules/Evaluation-Desk.php">Evaluation Desk</a></li>
+                    <li class="<?php echo ($current_page == 'Student-ID-Center.php') ? 'active' : ''; ?>"><a href="/Super-admin/Submodules/Student-ID-Center.php">Student ID Center</a></li>
+                    <li class="<?php echo ($current_page == 'Requirements-Config.php') ? 'active' : ''; ?>"><a href="/Super-admin/Submodules/Requirements-Config.php">Requirements Config</a></li>
                 </ul>
             </li>
         </ul>
@@ -62,7 +62,7 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admin@sms.com';
         <p class="menu-label">ACCOUNT & SETTINGS</p>
         <ul>
             <li>
-                <a href="/sms/modules/Profile.php"
+                <a href="/modules/Profile.php"
                     class="<?php echo ($current_page == 'Profile.php') ? 'active' : ''; ?>">
                     <i class="fas fa-user-circle"></i>
                     <span>My Profile</span>
@@ -70,7 +70,7 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admin@sms.com';
             </li>
 
             <li>
-                <a href="/sms/modules/Settings.php"
+                <a href="/modules/Settings.php"
                     class="<?php echo ($current_page == 'Settings.php') ? 'active' : ''; ?>">
                     <i class="fas fa-cog"></i>
                     <span>Settings</span>
@@ -309,7 +309,7 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admin@sms.com';
             <p style="color: var(--text-muted); margin-bottom: 32px; line-height: 1.6; font-size: 0.95rem;">Are you sure you want to log out of the Super Admin panel?</p>
             <div style="display: flex; gap: 12px;">
                 <button onclick="closeLogoutModal()" style="flex: 1; padding: 14px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--surface-color); color: var(--text-color); font-weight: 700; cursor: pointer; transition: 0.3s;">Cancel</button>
-                <a href="/sms/auth/logout.php" style="flex: 1; padding: 14px; border-radius: 12px; background: #ef4444; color: white; font-weight: 700; text-decoration: none; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2); transition: 0.3s;">Logout</a>
+                <a href="/auth/logout.php" style="flex: 1; padding: 14px; border-radius: 12px; background: #ef4444; color: white; font-weight: 700; text-decoration: none; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2); transition: 0.3s;">Logout</a>
             </div>
         </div>
     </div>

@@ -261,7 +261,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'cashier') {
                                     $amount = number_format($row->amount, 2);
                                     $date = date('M d, Y', strtotime($row->created_at));
                                     $method = htmlspecialchars($row->payment_method);
-                                    $img = "/sms/" . htmlspecialchars($row->proof_of_payment);
+                                    $img = "/" . htmlspecialchars($row->proof_of_payment);
                                     $purpose = htmlspecialchars($row->purpose ?? "");
                                     echo "<tr>
                                             <td>
@@ -278,7 +278,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'cashier') {
                                             <td style='font-family: monospace; font-weight: 600;'>$ref</td>
                                             <td style='font-weight: 700; color: var(--primary);'>₱$amount</td>
                                             <td>$date</td>
-                                            <td><button class='btn-view' onclick=\"openVerifyModal('$name', '$ref', '₱$amount', '$method', '$img', '{$row->payment_id}')\">Verify Payment</button></td>
+                                            <td><button class='btn-view' onclick=\"openVerifyModal('$name', '$ref', '₱$amount', '$method', '$img', '{$row->payment_id}', '$purpose')\">Verify Payment</button></td>
                                         </tr>";
                                 }
                             }
@@ -356,7 +356,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'cashier') {
             document.getElementById('modalMethod').textContent = method;
             document.getElementById('modalPurpose').textContent = purpose || 'None provided';
             
-            if (img && img !== '/sms/') {
+            if (img && img !== '/') {
                 document.getElementById('modalPreview').innerHTML = `<img src="${img}" style="max-width: 100%; max-height: 100%; object-fit: contain;">`;
             } else {
                 document.getElementById('modalPreview').innerHTML = `<i class="fas fa-file-invoice-dollar"></i><p style="position: absolute; margin-top: 60px; color: #94a3b8; font-weight: 500;">No Preview Available</p>`;

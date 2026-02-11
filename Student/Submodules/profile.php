@@ -21,7 +21,7 @@ try {
 
 $student_name = $student->first_name . ' ' . $student->last_name;
 $profile_img = !empty($student->profile_image)
-    ? "/sms/" . $student->profile_image
+    ? "/" . $student->profile_image
     : "https://ui-avatars.com/api/?name=" . urlencode($student_name) . "&background=2563eb&color=fff";
 ?>
 <!DOCTYPE html>

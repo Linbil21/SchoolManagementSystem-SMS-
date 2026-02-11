@@ -89,7 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $notif_message = $_SESSION['fullname'] . " has submitted a payment of ₱" . number_format($amount, 2);
         $profile_image = $_SESSION['profile_image'] ?? null;
         
-        $notif_stmt = $pdo->prepare("INSERT INTO notifications (type, title, message, link, icon, icon_bg, icon_color, profile_image) VALUES ('payment', ?, ?, '/sms/Cashier/Modules/Online-Payments.php', 'fa-receipt', '#dbeafe', '#2563eb', ?)");
+        $notif_stmt = $pdo->prepare("INSERT INTO notifications (type, title, message, link, icon, icon_bg, icon_color, profile_image) VALUES ('payment', ?, ?, '/Cashier/Modules/Online-Payments.php', 'fa-receipt', '#dbeafe', '#2563eb', ?)");
         $notif_stmt->execute([$notif_title, $notif_message, $profile_image]);
 
         $pdo->commit();

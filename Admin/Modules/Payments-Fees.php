@@ -124,7 +124,7 @@ try {
             const proofHtml = data.proof_of_payment ? `
                 <div style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px;">
                     <p style="color: #718096; font-size: 0.85rem; margin-bottom: 10px;">Proof of Payment:</p>
-                    <img src="/sms/${data.proof_of_payment}" alt="Receipt" style="width: 100%; border-radius: 12px; border: 1px solid #eee; cursor: pointer;" onclick="window.open('/sms/${data.proof_of_payment}', '_blank')">
+                    <img src="/${data.proof_of_payment}" alt="Receipt" style="width: 100%; border-radius: 12px; border: 1px solid #eee; cursor: pointer;" onclick="window.open('/${data.proof_of_payment}', '_blank')">
                     <p style="font-size: 0.75rem; color: #94a3b8; text-align: center; margin-top: 5px;">Click image to enlarge</p>
                 </div>
             ` : '<p style="text-align: center; color: #94a3b8; padding: 20px;">No receipt uploaded.</p>';

@@ -195,7 +195,7 @@ try {
 
             let html = `
                 <div class="profile-pic-container">
-                    <img src="/sms/${data.id_picture}" alt="Profile" class="student-profile-img" onerror="this.src='https://ui-avatars.com/api/?name=${data.first_name}+${data.last_name}&background=1648bc&color=fff'">
+                    <img src="/${data.id_picture}" alt="Profile" class="student-profile-img" onerror="this.src='https://ui-avatars.com/api/?name=${data.first_name}+${data.last_name}&background=1648bc&color=fff'">
                 </div>
                 <div class="section-title">ENROLLMENT INFORMATION</div>
                 <div class="info-item"><div class="info-label">Reference Code</div><div class="info-value">${data.reference_code}</div></div>
@@ -229,11 +229,11 @@ try {
 
                 <div class="section-title">DOCUMENTS</div>
                 <div class="info-item" style="grid-column: span 2;">
-                    ${data.birth_cert ? `<div class="doc-item"><span>Birth Certificate (PSA)</span> <a href="/sms/${data.birth_cert}" target="_blank" class="btn-doc-view"><i class="fas fa-eye"></i> View</a></div>` : ''}
-                    ${data.form_138 ? `<div class="doc-item"><span>Form 138 (Report Card)</span> <a href="/sms/${data.form_138}" target="_blank" class="btn-doc-view"><i class="fas fa-eye"></i> View</a></div>` : ''}
-                    ${data.form_137 ? `<div class="doc-item"><span>Form 137</span> <a href="/sms/${data.form_137}" target="_blank" class="btn-doc-view"><i class="fas fa-eye"></i> View</a></div>` : ''}
-                    ${data.good_moral ? `<div class="doc-item"><span>Good Moral</span> <a href="/sms/${data.good_moral}" target="_blank" class="btn-doc-view"><i class="fas fa-eye"></i> View</a></div>` : ''}
-                    ${data.barangay_clearance ? `<div class="doc-item"><span>Barangay Clearance</span> <a href="/sms/${data.barangay_clearance}" target="_blank" class="btn-doc-view"><i class="fas fa-eye"></i> View</a></div>` : ''}
+                    ${data.birth_cert ? `<div class="doc-item"><span>Birth Certificate (PSA)</span> <a href="/${data.birth_cert}" target="_blank" class="btn-doc-view"><i class="fas fa-eye"></i> View</a></div>` : ''}
+                    ${data.form_138 ? `<div class="doc-item"><span>Form 138 (Report Card)</span> <a href="/${data.form_138}" target="_blank" class="btn-doc-view"><i class="fas fa-eye"></i> View</a></div>` : ''}
+                    ${data.form_137 ? `<div class="doc-item"><span>Form 137</span> <a href="/${data.form_137}" target="_blank" class="btn-doc-view"><i class="fas fa-eye"></i> View</a></div>` : ''}
+                    ${data.good_moral ? `<div class="doc-item"><span>Good Moral</span> <a href="/${data.good_moral}" target="_blank" class="btn-doc-view"><i class="fas fa-eye"></i> View</a></div>` : ''}
+                    ${data.barangay_clearance ? `<div class="doc-item"><span>Barangay Clearance</span> <a href="/${data.barangay_clearance}" target="_blank" class="btn-doc-view"><i class="fas fa-eye"></i> View</a></div>` : ''}
                 </div>
 
                 <div class="section-title">GUARDIAN INFORMATION</div>

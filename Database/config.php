@@ -7,7 +7,7 @@ if ($_SERVER['HTTP_HOST'] == 'localhost' || $_SERVER['HTTP_HOST'] == '127.0.0.1'
     define('DB_HOST', 'localhost');
     define('DB_USER', 'root');
     define('DB_PASS', '');
-    define('DB_NAME', 'SMS');
+    define('DB_NAME', 'sms');
 } else {
     // Live Server Credentials (ems.jampzdev.com)
     define('DB_HOST', '153.92.15.81'); 
@@ -40,10 +40,10 @@ try {
                 Kapag lumabas pa rin ang <i>'Access denied for user root'</i>, ibig sabihin ay hindi pwede ang walang password sa hosting mo. <br><br>
                 1. Pumunta sa <b>Hosting Panel</b> (Hostinger/cPanel).<br>
                 2. Gumawa ng <b>Database User</b> at <b>Password</b>.<br>
-                3. Ilagay ang details na iyon sa <code>/sms/Database/config.php</code> sa bandang dulo.
+                3. Ilagay ang details na iyon sa <code>/Database/config.php</code> sa bandang dulo.
             </div>
             <br>
-            <a href='Login.php' style='text-decoration: none; background: #0f172a; color: white; padding: 10px 20px; border-radius: 5px;'>Return to Home</a>
+            <a href='/auth/Login.php' style='text-decoration: none; background: #0f172a; color: white; padding: 10px 20px; border-radius: 5px;'>Return to Home</a>
         </div>
     ");
 }
