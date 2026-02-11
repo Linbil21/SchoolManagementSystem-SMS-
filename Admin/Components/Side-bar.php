@@ -234,11 +234,12 @@ $current_page = basename($_SERVER['PHP_SELF']);
     /* Sub-menu Styles */
     .sub-menu {
         list-style: none;
-        padding-left: 15px;
-        margin-top: 2px;
+        padding-left: 0;
+        margin-top: 5px;
         margin-bottom: 5px;
-        border-left: 1px dashed var(--border-color);
-        margin-left: 24px;
+        background: var(--hover-bg, #f8fafc);
+        border-radius: 8px;
+        overflow: hidden;
         display: none;
         /* Initially hidden */
     }
