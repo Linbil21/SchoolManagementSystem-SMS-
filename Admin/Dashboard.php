@@ -23,16 +23,15 @@ $role = $_SESSION['role'];
     <link rel="stylesheet" href="/Admin/Assets/Dashboard.css">
 </head>
 
-<body style="margin: 0; padding: 0; min-height: 100vh; display: flex; background: #f8fafc;">
-
+<body>
     <!-- Sidebar -->
     <?php include 'Components/Side-bar.php'; ?>
 
-    <div class="main-wrapper" style="flex: 1; display: flex; flex-direction: column; min-width: 0; min-height: 100vh;">
+    <div class="main-wrapper">
         <!-- Head-bar -->
         <?php include 'Components/Head-bar.php'; ?>
 
-        <div class="content-area" style="padding: 30px; flex: 1; overflow-y: auto;">
+        <div class="content-area">
             
             <!-- Welcome Banner -->
             <div class="banner">
