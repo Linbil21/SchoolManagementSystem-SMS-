@@ -12,8 +12,10 @@ $root = $is_sub ? '../../' : '../'; // Relative to project root
 <div class="sidebar">
     <div class="sidebar-brand">
         <a href="<?php echo $base; ?>Dashboard.php" class="brand-wrapper">
-            <img src="<?php echo $root; ?>Assets/image/logo.png" alt="Logo" class="sidebar-logo">
-            <h2>Super Admin</h2>
+            <div class="logo-box">
+                <img src="<?php echo $root; ?>Assets/image/logo.png" alt="Logo" class="sidebar-logo">
+            </div>
+            <span class="brand-name">Super Admin</span>
         </a>
     </div>
 
@@ -83,7 +85,7 @@ $root = $is_sub ? '../../' : '../'; // Relative to project root
             </li>
 
             <li>
-                <a href="javascript:void(0)" onclick="openLogoutModal()" style="color: #ef4444;">
+                <a href="javascript:void(0)" onclick="openLogoutModal()" class="logout-link">
                     <i class="fas fa-sign-out-alt"></i>
                     <span>Logout</span>
                 </a>
