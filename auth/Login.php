@@ -29,7 +29,12 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
             background-repeat: no-repeat !important;
             background-attachment: fixed !important;
             display: block !important; /* Reset flex to allow normal flow */
-            overflow: hidden !important; /* Remove scrollbar */
+            overflow-y: auto !important; /* Allow scrolling if card is taller than screen */
+            scrollbar-width: none; /* Hide for body but keep functionality */
+        }
+        
+        body::-webkit-scrollbar {
+            display: none;
         }
 
         /* Floating logo for registration to save space and move it up */
@@ -143,7 +148,7 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
             flex-direction: column; 
             justify-content: center; 
             position: relative; 
-            overflow: hidden; 
+            overflow-y: auto; 
         }
         
         .role-left-content {
@@ -164,6 +169,8 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
             justify-content: center; 
             background: white; 
             border-left: 1px solid #f1f5f9;
+            overflow-y: auto;
+            max-height: 100vh;
         }
         
         .role-right-content {
@@ -238,7 +245,7 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
             border: 1px solid #f8fafc;
         }
         .roles-scroll-container::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
+            background: #1e40af;
         }
         
         .roles-scroll-container {
@@ -1057,6 +1064,147 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                 }
             });
         });
+
+        // AJAX LOGIN HANDLER
+        document.querySelector(".sign-in-form")?.addEventListener("submit", async function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            formData.append('ajax', '1');
+            const btn = this.querySelector("button[type='submit']");
+            const originalText = btn.innerHTML;
+            
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking...';
+            
+            try {
+                const response = await fetch('auth_process.php', {
+                    method: 'POST',
+                    body: formData,
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                });
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    window.location.href = result.redirect;
+                } else if (result.status === 'otp_required') {
+                    showOTPModal(result.email, result.masked_email, result.type || 'login');
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                } else {
+                    Swal.fire('Error', result.message, 'error');
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                }
+            } catch (err) {
+                console.error(err);
+                Swal.fire('Error', 'An unexpected error occurred.', 'error');
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        });
+
+        // AJAX REGISTRATION HANDLER
+        document.querySelector(".sign-up-form")?.addEventListener("submit", async function(e) {
+            // Check if we are on the final step
+            if (formStepsNum !== formSteps.length - 1) return; 
+
+            e.preventDefault();
+            const formData = new FormData(this);
+            formData.append('ajax', '1');
+            
+            Swal.fire({
+                title: 'Submitting Enrollment...',
+                text: 'Please wait while we process your documents.',
+                allowOutsideClick: false,
+                didOpen: () => { Swal.showLoading(); }
+            });
+            
+            try {
+                const response = await fetch('auth_process.php', {
+                    method: 'POST',
+                    body: formData,
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                });
+                const result = await response.json();
+                
+                if (result.status === 'otp_required') {
+                    showOTPModal(result.email, result.masked_email, 'register');
+                } else if (result.status === 'error') {
+                    Swal.fire('Registration Failed', result.message, 'error');
+                }
+            } catch (err) {
+                console.error(err);
+                Swal.fire('Error', 'Registration failed. Please check your inputs.', 'error');
+            }
+        });
+
+        function showOTPModal(email, maskedEmail, type = 'login') {
+            Swal.fire({
+                title: 'Verification Code',
+                html: `
+                    <div style="text-align: center;">
+                        <p style="font-size: 0.9rem; color: #64748b; margin-bottom: 15px;">
+                            We've sent a 6-digit code to <br>
+                            <b style="color: #1e40af;">${maskedEmail}</b>
+                        </p>
+                        <div style="display: flex; gap: 8px; justify-content: center; margin-bottom: 20px;">
+                            <input type="text" maxlength="6" id="otp-input" placeholder="000000" 
+                                style="width: 100%; max-width: 200px; height: 50px; text-align: center; font-size: 1.5rem; font-weight: 700; border: 2px solid #e2e8f0; border-radius: 12px; outline: none;">
+                        </div>
+                    </div>
+                `,
+                showCancelButton: true,
+                confirmButtonText: 'Verify Now',
+                confirmButtonColor: '#1e40af',
+                preConfirm: () => {
+                    const otp = document.getElementById('otp-input').value;
+                    if (!otp || otp.length < 6) {
+                        Swal.showValidationMessage('Please enter 6 digits');
+                        return false;
+                    }
+                    return otp;
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    verifyOTP(email, result.value, type);
+                }
+            });
+        }
+
+        async function verifyOTP(email, otp, type) {
+            Swal.fire({
+                title: 'Verifying...',
+                allowOutsideClick: false,
+                didOpen: () => { Swal.showLoading(); }
+            });
+
+            const formData = new FormData();
+            formData.append('email', email);
+            otp.split('').forEach(digit => formData.append('otp[]', digit));
+            formData.append('type', type);
+
+            try {
+                const response = await fetch('Verification.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (response.redirected) {
+                    window.location.href = response.url;
+                } else {
+                    const text = await response.text();
+                    if (text.includes('invalid_otp')) {
+                        Swal.fire('Invalid Code', 'The code you entered is incorrect.', 'error').then(() => {
+                            showOTPModal(email, '***', type); // Simple retry
+                        });
+                    } else {
+                        window.location.href = type === 'register' ? '../student/Dashboard.php' : '../student/Dashboard.php';
+                    }
+                }
+            } catch (err) {
+                Swal.fire('Error', 'Verification failed.', 'error');
+            }
+        }
     </script>
     <?php endif; ?>
 </body>

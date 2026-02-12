@@ -377,12 +377,12 @@ form.sign-in-form {
     overflow-x: hidden;
     padding: 0 15px;
     scrollbar-width: thin;
-    scrollbar-color: #cbd5e1 transparent;
+    scrollbar-color: var(--primary-blue) transparent;
 }
 
 .register-container-scroll::-webkit-scrollbar {
     width: 6px;
-    display: block;
+    display: block !important;
 }
 
 .register-container-scroll::-webkit-scrollbar-track {
@@ -390,7 +390,7 @@ form.sign-in-form {
 }
 
 .register-container-scroll::-webkit-scrollbar-thumb {
-    background-color: #cbd5e1;
+    background-color: var(--primary-blue);
     border-radius: 10px;
 }
 
@@ -552,7 +552,7 @@ form.sign-in-form {
 }
 
 .register-container-scroll::-webkit-scrollbar {
-    display: none;
+    display: block !important;
 }
 
 /* Override global form padding for reg layout */

@@ -8,8 +8,21 @@ require_once 'mail_helper.php';
 // Check which form was submitted (Login or Register)
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     require_once 'Security.php';
+    
+    // Check if it's an AJAX request
+    $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest' || (isset($_POST['ajax']) && $_POST['ajax'] == 1);
+
     // Validate CSRF Token
-    verifyCsrfToken($_POST['csrf_token'] ?? '');
+    try {
+        verifyCsrfToken($_POST['csrf_token'] ?? '');
+    } catch (Exception $e) {
+        if ($isAjax) {
+            header('Content-Type: application/json');
+            echo json_encode(['status' => 'error', 'message' => 'Security token expired. Please refresh.']);
+            exit();
+        }
+        die("Security Violation");
+    }
 
     // 1. Check for REGISTRATION
     if (isset($_POST['reg_email'])) {
@@ -35,7 +48,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             if ($student) {
                 // Already registered - Proceed to log them in (will trigger OTP if student)
-                process_login($email, $password, $pdo);
+                process_login($email, $password, $pdo, $isAjax);
                 exit();
             }
 
@@ -118,13 +131,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 // Send OTP
                 if (sendOTP($email, $otp, 'Registration Verification')) {
+                    if ($isAjax) {
+                        header('Content-Type: application/json');
+                        echo json_encode(['status' => 'otp_required', 'email' => $email, 'type' => 'register', 'masked_email' => maskEmail($email)]);
+                        exit();
+                    }
                     header("Location: Verification.php?email=" . urlencode($email) . "&type=register");
                 } else {
+                    if ($isAjax) {
+                        header('Content-Type: application/json');
+                        echo json_encode(['status' => 'error', 'message' => 'Failed to send OTP.']);
+                        exit();
+                    }
                     header("Location: Login.php?error=mail_error");
                 }
                 exit();
             } catch (Exception $e) {
                 $pdo->rollBack();
+                if ($isAjax) {
+                    header('Content-Type: application/json');
+                    echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+                    exit();
+                }
                 header("Location: Login.php?error=system_error&msg=" . urlencode($e->getMessage()));
                 exit();
             }
@@ -137,7 +165,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     elseif (isset($_POST['email'])) {
         $email = trim($_POST['email']);
         $password = trim($_POST['password']);
-        process_login($email, $password, $pdo);
+        process_login($email, $password, $pdo, $isAjax);
         exit();
     }
 } else {
@@ -148,9 +176,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 /**
  * Handle Login UI Logic
  */
-function process_login($email, $password, $pdo)
+function process_login($email, $password, $pdo, $isAjax = false)
 {
     if (empty($email) || empty($password)) {
+        if ($isAjax) {
+            header('Content-Type: application/json');
+            echo json_encode(['status' => 'error', 'message' => 'Empty fields.']);
+            exit();
+        }
         header("Location: Login.php?error=empty_fields");
         exit();
     }
@@ -167,7 +200,7 @@ function process_login($email, $password, $pdo)
                 // Automatic verification for admins
                 $_SESSION['userId'] = $user->userId;
                 $_SESSION['email'] = $user->email;
-                $_SESSION['role'] = $user->role;
+                $_SESSION['role'] = strtolower($user->role);
 
                 $updateStmt = $pdo->prepare("UPDATE users SET status = 'online', last_login = CURRENT_TIMESTAMP WHERE userId = ?");
                 $updateStmt->execute([$user->userId]);
@@ -183,9 +216,21 @@ function process_login($email, $password, $pdo)
                     'cashier' => '../Cashier/Dashboard.php',
                     'student' => '../student/Dashboard.php'
                 ];
-                header("Location: " . ($redirects[$user->role] ?? '../auth/Login.php?error=unauthorized'));
+                
+                $redirect = $redirects[$_SESSION['role']] ?? '../auth/Login.php?error=unauthorized';
+                if ($isAjax) {
+                    header('Content-Type: application/json');
+                    echo json_encode(['status' => 'success', 'redirect' => $redirect]);
+                    exit();
+                }
+                header("Location: " . $redirect);
                 exit();
             } else {
+                if ($isAjax) {
+                    header('Content-Type: application/json');
+                    echo json_encode(['status' => 'error', 'message' => 'Invalid password.']);
+                    exit();
+                }
                 header("Location: Login.php?error=invalid_password");
                 exit();
             }
@@ -203,24 +248,39 @@ function process_login($email, $password, $pdo)
                 $updateStmt = $pdo->prepare("UPDATE students SET verification_code = ? WHERE id = ?");
                 $updateStmt->execute([$otp, $student->id]);
 
-                // Notification for Student Login attempt
-                $notif_stmt = $pdo->prepare("INSERT INTO notifications (user_id, type, title, message, profile_image, icon, icon_bg, icon_color) VALUES (NULL, 'login_attempt', 'Student Login Attempt', ?, ?, 'fa-sign-in-alt', '#fef3c7', '#d97706')");
-                $notif_stmt->execute([$student->first_name . " " . $student->last_name . " is trying to log in.", $student->profile_image]);
-
                 if (sendOTP($student->email, $otp, 'Login Verification')) {
+                    if ($isAjax) {
+                        header('Content-Type: application/json');
+                        echo json_encode(['status' => 'otp_required', 'email' => $student->email, 'type' => 'login', 'masked_email' => maskEmail($student->email)]);
+                        exit();
+                    }
                     header("Location: Verification.php?email=" . urlencode($student->email) . "&type=login");
                 } else {
+                    if ($isAjax) {
+                        header('Content-Type: application/json');
+                        echo json_encode(['status' => 'error', 'message' => 'Failed to send OTP.']);
+                        exit();
+                    }
                     header("Location: Login.php?error=mail_error");
                 }
                 exit();
             } else {
+                if ($isAjax) {
+                    header('Content-Type: application/json');
+                    echo json_encode(['status' => 'error', 'message' => 'User not found or invalid password.']);
+                    exit();
+                }
                 header("Location: Login.php?error=" . ($student ? "invalid_password" : "user_not_found"));
                 exit();
             }
         }
     } catch (PDOException $e) {
+        if ($isAjax) {
+            header('Content-Type: application/json');
+            echo json_encode(['status' => 'error', 'message' => 'Database error.']);
+            exit();
+        }
         die("Database error: " . $e->getMessage());
     }
 }
-
 ?>

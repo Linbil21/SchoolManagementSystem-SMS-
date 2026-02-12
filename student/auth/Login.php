@@ -40,7 +40,8 @@ $csrf_token = generateCsrfToken();
             background-position: center;
             background-attachment: fixed;
             position: relative;
-            overflow: hidden;
+            overflow-y: auto;
+            padding: 40px 0;
         }
 
         /* Animated Particles Background */
@@ -392,7 +393,146 @@ $csrf_token = generateCsrfToken();
         <p class="footer-copyright">© 2026 SMS Student Portal. Powered by SMS Intelligence.</p>
     </div>
 
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
+        document.querySelector("form").addEventListener("submit", async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const btn = document.querySelector(".login-btn");
+            const originalBtnText = btn.innerHTML;
+            
+            // UI Loading state
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Authenticating...';
+            
+            try {
+                const response = await fetch('Login_process.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    window.location.href = result.redirect;
+                } 
+                else if (result.status === 'otp_required') {
+                    // SHOW OTP MODAL
+                    showOTPModal(result.email, result.masked_email);
+                    btn.disabled = false;
+                    btn.innerHTML = originalBtnText;
+                }
+                else {
+                    Swal.fire({
+                        title: 'Login Failed',
+                        text: result.message,
+                        icon: 'error',
+                        confirmButtonColor: '#1e40af'
+                    });
+                    btn.disabled = false;
+                    btn.innerHTML = originalBtnText;
+                }
+            } catch (err) {
+                console.error(err);
+                Swal.fire({
+                    title: 'System Error',
+                    text: 'An unexpected error occurred. Please try again.',
+                    icon: 'error',
+                    confirmButtonColor: '#1e40af'
+                });
+                btn.disabled = false;
+                btn.innerHTML = originalBtnText;
+            }
+        });
+
+        function showOTPModal(email, maskedEmail) {
+            Swal.fire({
+                title: 'Verification Code',
+                html: `
+                    <div style="text-align: center;">
+                        <p style="font-size: 0.9rem; color: #64748b; margin-bottom: 15px;">
+                            We've sent a 6-digit code to <br>
+                            <b style="color: #1e40af;">${maskedEmail}</b>
+                        </p>
+                        <div style="display: flex; gap: 8px; justify-content: center; margin-bottom: 20px;">
+                            <input type="text" maxlength="6" id="otp-input" placeholder="000000" 
+                                style="width: 100%; max-width: 200px; height: 50px; text-align: center; font-size: 1.5rem; font-weight: 700; border: 2px solid #e2e8f0; border-radius: 12px; outline: none;">
+                        </div>
+                        <p style="font-size: 0.8rem; color: #94a3b8;">Please enter the code sent to your email to continue.</p>
+                    </div>
+                `,
+                showCancelButton: true,
+                confirmButtonText: 'Verify Now',
+                confirmButtonColor: '#1e40af',
+                cancelButtonText: 'Cancel',
+                preConfirm: () => {
+                    const otp = document.getElementById('otp-input').value;
+                    if (!otp || otp.length < 6) {
+                        Swal.showValidationMessage('Please enter the 6-digit code');
+                        return false;
+                    }
+                    return otp;
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    verifyOTP(email, result.value);
+                }
+            });
+        }
+
+        async function verifyOTP(email, otp) {
+            // Show loading overlay
+            Swal.fire({
+                title: 'Verifying...',
+                allowOutsideClick: false,
+                didOpen: () => { Swal.showLoading(); }
+            });
+
+            const formData = new FormData();
+            formData.append('email', email);
+            formData.append('otp[]', otp[0]); // Compatibility with Verification.php format if needed
+            formData.append('otp[]', otp[1]);
+            formData.append('otp[]', otp[2]);
+            formData.append('otp[]', otp[3]);
+            formData.append('otp[]', otp[4]);
+            formData.append('otp[]', otp[5]);
+            formData.append('type', 'login');
+
+            try {
+                const response = await fetch('../../auth/Verification.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                // If the redirect happens, window.location will change. 
+                // But Verification.php might return a raw redirect header which fetch doesn't follow automatically for navigation
+                if (response.redirected) {
+                    window.location.href = response.url;
+                } else {
+                    const text = await response.text();
+                    if (text.includes('invalid_otp')) {
+                         Swal.fire({
+                            title: 'Invalid Code',
+                            text: 'The code you entered is incorrect. Please try again.',
+                            icon: 'error',
+                            confirmButtonColor: '#1e40af'
+                        }).then(() => {
+                             // Show modal again
+                             // showOTPModal(email, maskedEmail); 
+                             // For now just allow retry
+                        });
+                    } else {
+                        // Assuming success if it contains dashboard or similar
+                         window.location.href = '../Dashboard.php';
+                    }
+                }
+            } catch (err) {
+                Swal.fire('Error', 'Verification failed.', 'error');
+            }
+        }
+
         const togglePassword = document.querySelector("#togglePassword");
         const password = document.querySelector("#student_password");
 

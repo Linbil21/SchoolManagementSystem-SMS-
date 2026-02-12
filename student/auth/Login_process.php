@@ -1,24 +1,31 @@
 <?php
 /**
- * Student Portal Login Process
+ * Student Portal Login Process - AJAX Enabled
  */
 session_start();
+header('Content-Type: application/json');
+
 require_once '../../Database/config.php';
 require_once '../../auth/mail_helper.php';
+require_once '../../auth/Security.php';
 
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
-    header("Location: Login.php");
+    echo json_encode(['status' => 'error', 'message' => 'Invalid request method.']);
     exit();
 }
 
-require_once '../../auth/Security.php';
-verifyCsrfToken($_POST['csrf_token'] ?? '');
+try {
+    verifyCsrfToken($_POST['csrf_token'] ?? '');
+} catch (Exception $e) {
+    echo json_encode(['status' => 'error', 'message' => 'Security token expired. Please refresh.']);
+    exit();
+}
 
 $identifier = trim($_POST['student_identifier'] ?? '');
 $password = $_POST['password'] ?? '';
 
 if (empty($identifier) || empty($password)) {
-    header("Location: Login.php?error=empty_fields");
+    echo json_encode(['status' => 'error', 'message' => 'Please fill in all fields.']);
     exit();
 }
 
@@ -35,7 +42,6 @@ try {
             (isset($user->password_hash) && password_verify($password, $user->password_hash));
 
         if ($isValidPassword) {
-            // Automatic verification for admins
             $_SESSION['userId'] = $user->userId;
             $_SESSION['email'] = $user->email;
             $_SESSION['role'] = strtolower($user->role);
@@ -51,7 +57,8 @@ try {
                 'admission' => '../../Admission/Dashboard.php',
                 'cashier' => '../../Cashier/Dashboard.php'
             ];
-            header("Location: " . ($redirectMap[$_SESSION['role']] ?? '../../auth/Login.php?error=unauthorized'));
+            $redirect = $redirectMap[$_SESSION['role']] ?? '../../auth/Login.php?error=unauthorized';
+            echo json_encode(['status' => 'success', 'redirect' => $redirect]);
             exit();
         }
     }
@@ -70,24 +77,23 @@ try {
         $updateStmt = $pdo->prepare("UPDATE students SET verification_code = ? WHERE id = ?");
         $updateStmt->execute([$otp, $student->id]);
 
-        // Notification for Student Login attempt
-        $notif_stmt = $pdo->prepare("INSERT INTO notifications (user_id, type, title, message, profile_image, icon, icon_bg, icon_color) VALUES (NULL, 'login_attempt', 'Student Login Attempt', ?, ?, 'fa-sign-in-alt', '#fef3c7', '#d97706')");
-        $notif_stmt->execute([$student->first_name . " " . $student->last_name . " is trying to log in.", $student->profile_image]);
-
         if (sendOTP($student->email, $otp, 'Login Verification')) {
-            header("Location: ../../auth/Verification.php?email=" . urlencode($student->email) . "&type=login");
+            echo json_encode([
+                'status' => 'otp_required',
+                'email' => $student->email,
+                'masked_email' => maskEmail($student->email)
+            ]);
         } else {
-            header("Location: Login.php?error=mail_error");
+            echo json_encode(['status' => 'error', 'message' => 'Failed to send verification code.']);
         }
         exit();
     }
 
-    header("Location: Login.php?error=invalid_credentials");
+    echo json_encode(['status' => 'error', 'message' => 'Invalid credentials.']);
     exit();
 
 } catch (PDOException $e) {
-    error_log("Login Error: " . $e->getMessage());
-    header("Location: Login.php?error=system_error");
+    echo json_encode(['status' => 'error', 'message' => 'System error. Please try again.']);
     exit();
 }
 ?>
