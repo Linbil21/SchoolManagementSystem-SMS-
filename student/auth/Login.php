@@ -467,13 +467,15 @@ $csrf_token = generateCsrfToken();
                 title: 'Verification Code',
                 html: `
                     <div style="text-align: center;">
-                        <p style="font-size: 0.9rem; color: #64748b; margin-bottom: 15px;">
-                            We've sent a 6-digit code to <br>
+                        <p style="font-size: 0.9rem; color: #64748b; margin-bottom: 25px;">
+                            We've sent a 4-digit code to <br>
                             <b style="color: #1e40af;">${maskedEmail}</b>
                         </p>
-                        <div style="display: flex; gap: 8px; justify-content: center; margin-bottom: 20px;">
-                            <input type="text" maxlength="6" id="otp-input" placeholder="000000" 
-                                style="width: 100%; max-width: 200px; height: 50px; text-align: center; font-size: 1.5rem; font-weight: 700; border: 2px solid #e2e8f0; border-radius: 12px; outline: none;">
+                        <div style="display: flex; gap: 12px; justify-content: center; margin-bottom: 25px;">
+                            <input type="text" maxlength="1" class="otp-box" style="width: 55px; height: 65px; text-align: center; font-size: 1.8rem; font-weight: 700; border: 2px solid #e2e8f0; border-radius: 12px; outline: none; transition: all 0.3s;" autofocus>
+                            <input type="text" maxlength="1" class="otp-box" style="width: 55px; height: 65px; text-align: center; font-size: 1.8rem; font-weight: 700; border: 2px solid #e2e8f0; border-radius: 12px; outline: none; transition: all 0.3s;">
+                            <input type="text" maxlength="1" class="otp-box" style="width: 55px; height: 65px; text-align: center; font-size: 1.8rem; font-weight: 700; border: 2px solid #e2e8f0; border-radius: 12px; outline: none; transition: all 0.3s;">
+                            <input type="text" maxlength="1" class="otp-box" style="width: 55px; height: 65px; text-align: center; font-size: 1.8rem; font-weight: 700; border: 2px solid #e2e8f0; border-radius: 12px; outline: none; transition: all 0.3s;">
                         </div>
                         <p style="font-size: 0.8rem; color: #94a3b8;">Please enter the code sent to your email to continue.</p>
                     </div>
@@ -481,11 +483,36 @@ $csrf_token = generateCsrfToken();
                 showCancelButton: true,
                 confirmButtonText: 'Verify Now',
                 confirmButtonColor: '#1e40af',
-                cancelButtonText: 'Cancel',
+                didOpen: () => {
+                    const inputs = document.querySelectorAll('.otp-box');
+                    inputs.forEach((input, index) => {
+                        input.addEventListener('input', (e) => {
+                            if (e.target.value.length === 1 && index < inputs.length - 1) {
+                                inputs[index + 1].focus();
+                            }
+                        });
+                        input.addEventListener('keydown', (e) => {
+                            if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                                inputs[index - 1].focus();
+                            }
+                        });
+                        // Add blue border on focus
+                        input.addEventListener('focus', () => {
+                            input.style.borderColor = '#3b82f6';
+                            input.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)';
+                        });
+                        input.addEventListener('blur', () => {
+                            input.style.borderColor = '#e2e8f0';
+                            input.style.boxShadow = 'none';
+                        });
+                    });
+                },
                 preConfirm: () => {
-                    const otp = document.getElementById('otp-input').value;
-                    if (!otp || otp.length < 6) {
-                        Swal.showValidationMessage('Please enter the 6-digit code');
+                    const inputs = document.querySelectorAll('.otp-box');
+                    let otp = '';
+                    inputs.forEach(input => otp += input.value);
+                    if (otp.length < 4) {
+                        Swal.showValidationMessage('Please enter all 4 digits');
                         return false;
                     }
                     return otp;
