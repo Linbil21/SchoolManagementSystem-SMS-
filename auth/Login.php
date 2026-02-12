@@ -206,6 +206,32 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
             transform: scale(1.1) rotate(5deg);
         }
 
+        /* Custom Scrollbar for Roles */
+        .roles-scroll-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        .roles-scroll-container::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 10px;
+        }
+        .roles-scroll-container::-webkit-scrollbar-thumb {
+            background: #3b82f6;
+            border-radius: 10px;
+        }
+        .roles-scroll-container::-webkit-scrollbar-thumb:hover {
+            background: #1d4ed8;
+        }
+        
+        .roles-scroll-container {
+            max-height: 420px;
+            overflow-y: auto;
+            padding-right: 8px;
+            margin: 0 auto;
+            width: 100%;
+            scrollbar-width: thin;
+            scrollbar-color: #3b82f6 #f1f5f9;
+        }
+
         @media (max-width: 900px) {
             .role-card { flex-direction: column; height: auto; }
             .role-left { padding: 40px; text-align: center; }
@@ -256,67 +282,59 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                         <p style="font-size: 0.9rem; color: #64748b;">Select your portal to continue</p>
                     </div>
 
-                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; max-width: 600px; margin: 0 auto; width: 100%;">
-                        <!-- Administrator -->
-                        <a href="Login.php?action=login&role=admin" class="role-btn" style="background: white; border: 2px solid #eff6ff;">
-                            <div class="role-icon" style="background: #3b82f6;">
-                                <i class="fas fa-user-shield"></i>
-                            </div>
-                            <div>
-                                <div style="font-weight: 700; font-size: 1rem; color: #1e293b;">Administrator</div>
-                                <div style="font-size: 0.8rem; color: #64748b;">System Management</div>
-                            </div>
-                            <i class="fas fa-chevron-right" style="margin-left: auto; color: #cbd5e1;"></i>
-                        </a>
+                    <div class="roles-scroll-container">
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; width: 100%;">
+                            <!-- Administrator -->
+                            <a href="Login.php?action=login&role=admin" class="role-btn" style="background: white; border: 2px solid #eff6ff;">
+                                <div class="role-icon" style="background: #3b82f6;">
+                                    <i class="fas fa-user-shield"></i>
+                                </div>
+                                <div>
+                                    <div style="font-weight: 700; font-size: 1rem; color: #1e293b;">Administrator</div>
+                                    <div style="font-size: 0.8rem; color: #64748b;">System Management</div>
+                                </div>
+                                <i class="fas fa-chevron-right" style="margin-left: auto; color: #cbd5e1;"></i>
+                            </a>
 
-                        <!-- Staff -->
-                        <a href="Login.php?action=login&role=staff" class="role-btn" style="background: white; border: 2px solid #f3e8ff;">
-                            <div class="role-icon" style="background: #8b5cf6;">
-                                <i class="fas fa-user-gear"></i>
-                            </div>
-                            <div>
-                                <div style="font-weight: 700; font-size: 1rem; color: #1e293b;">Staff</div>
-                                <div style="font-size: 0.8rem; color: #64748b;">Administrative Tasks</div>
-                            </div>
-                            <i class="fas fa-chevron-right" style="margin-left: auto; color: #cbd5e1;"></i>
-                        </a>
+                            <!-- Staff -->
+                            <a href="Login.php?action=login&role=staff" class="role-btn" style="background: white; border: 2px solid #f3e8ff;">
+                                <div class="role-icon" style="background: #8b5cf6;">
+                                    <i class="fas fa-user-gear"></i>
+                                </div>
+                                <div>
+                                    <div style="font-weight: 700; font-size: 1rem; color: #1e293b;">Staff</div>
+                                    <div style="font-size: 0.8rem; color: #64748b;">Administrative Tasks</div>
+                                </div>
+                                <i class="fas fa-chevron-right" style="margin-left: auto; color: #cbd5e1;"></i>
+                            </a>
 
-                        <!-- Teacher -->
-                        <a href="Login.php?action=login&role=teacher" class="role-btn" style="background: white; border: 2px solid #ffedd5;">
-                            <div class="role-icon" style="background: #f97316;">
-                                <i class="fas fa-chalkboard-teacher"></i>
-                            </div>
-                            <div>
-                                <div style="font-weight: 700; font-size: 1rem; color: #1e293b;">Teacher</div>
-                                <div style="font-size: 0.8rem; color: #64748b;">Academic Portal</div>
-                            </div>
-                            <i class="fas fa-chevron-right" style="margin-left: auto; color: #cbd5e1;"></i>
-                        </a>
+                            <!-- Teacher -->
+                            <a href="Login.php?action=login&role=teacher" class="role-btn" style="background: white; border: 2px solid #ffedd5;">
+                                <div class="role-icon" style="background: #f97316;">
+                                    <i class="fas fa-chalkboard-teacher"></i>
+                                </div>
+                                <div>
+                                    <div style="font-weight: 700; font-size: 1rem; color: #1e293b;">Teacher</div>
+                                    <div style="font-size: 0.8rem; color: #64748b;">Academic Portal</div>
+                                </div>
+                                <i class="fas fa-chevron-right" style="margin-left: auto; color: #cbd5e1;"></i>
+                            </a>
 
-                        <!-- Student -->
-                        <a href="Login.php?action=login&role=student" class="role-btn" style="background: white; border: 2px solid #dcfce7;">
-                            <div class="role-icon" style="background: #22c55e;">
-                                <i class="fas fa-user-graduate"></i>
-                            </div>
-                            <div>
-                                <div style="font-weight: 700; font-size: 1rem; color: #1e293b;">Student</div>
-                                <div style="font-size: 0.8rem; color: #64748b;">Student Portal</div>
-                            </div>
-                            <i class="fas fa-chevron-right" style="margin-left: auto; color: #cbd5e1;"></i>
-                        </a>
-                    </div>
-
-                    <div style="margin-top: 40px; padding: 20px; background: #f8fafc; border-radius: 16px; border: 1px dashed #cbd5e1;">
-                        <h4 style="font-size: 0.8rem; font-weight: 700; color: #1e3a8a; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; text-align: center;">Demo Access Accounts</h4>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.75rem;">
-                            <div style="color: #64748b;"><strong>Admin:</strong> admin@example.com <br> (pass: admin123)</div>
-                            <div style="color: #64748b;"><strong>Staff:</strong> admission@example.com <br> (pass: admission123)</div>
-                            <div style="color: #64748b;"><strong>Cashier:</strong> cashier@example.com <br> (pass: cashier123)</div>
-                            <div style="color: #64748b;"><strong>Super:</strong> superadmin@example.com <br> (pass: superadmin123)</div>
+                            <!-- Student -->
+                            <a href="Login.php?action=login&role=student" class="role-btn" style="background: white; border: 2px solid #dcfce7;">
+                                <div class="role-icon" style="background: #22c55e;">
+                                    <i class="fas fa-user-graduate"></i>
+                                </div>
+                                <div>
+                                    <div style="font-weight: 700; font-size: 1rem; color: #1e293b;">Student</div>
+                                    <div style="font-size: 0.8rem; color: #64748b;">Student Portal</div>
+                                </div>
+                                <i class="fas fa-chevron-right" style="margin-left: auto; color: #cbd5e1;"></i>
+                            </a>
                         </div>
                     </div>
                     
-                    <div style="text-align: center; margin-top: 20px; color: #94a3b8; font-size: 0.85rem;">
+                    <div style="text-align: center; margin-top: 30px; color: #94a3b8; font-size: 0.85rem;">
                         Need help? <a href="#" style="color: #3b82f6; text-decoration: none; font-weight: 600;">Contact support</a>
                     </div>
                 </div>
