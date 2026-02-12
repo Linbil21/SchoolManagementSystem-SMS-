@@ -9,6 +9,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'superadmin') {
 <html lang="en">
 
 <head>
+    <link rel='icon' type='image/png' href='/Assets/image/logo.png'>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Roles & Permissions - Super Admin</title>
@@ -127,3 +128,4 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'superadmin') {
 </body>
 
 </html>
+
