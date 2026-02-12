@@ -42,10 +42,16 @@ $root = $is_sub ? '../../' : '../'; // Relative to project root
                 </a>
                 <ul class="sub-menu">
                     <li class="<?php echo ($current_page == 'User-Management.php') ? 'active' : ''; ?>">
-                        <a href="<?php echo $base; ?>Modules/User-Management.php">Staff Accounts</a>
+                        <a href="<?php echo $base; ?>Modules/User-Management.php">
+                            <i class="fas fa-users-cog"></i>
+                            <span>Staff Accounts</span>
+                        </a>
                     </li>
                     <li class="<?php echo ($current_page == 'Roles.php') ? 'active' : ''; ?>">
-                        <a href="<?php echo $base; ?>Modules/Roles.php">Roles & Permissions</a>
+                        <a href="<?php echo $base; ?>Modules/Roles.php">
+                            <i class="fas fa-user-tag"></i>
+                            <span>Roles & Permissions</span>
+                        </a>
                     </li>
                 </ul>
             </li>
@@ -62,19 +68,34 @@ $root = $is_sub ? '../../' : '../'; // Relative to project root
                 </a>
                 <ul class="sub-menu">
                     <li class="<?php echo ($current_page == 'Admission-Dashboard.php') ? 'active' : ''; ?>">
-                        <a href="<?php echo $base; ?>Submodules/Admission-Dashboard.php">Admission Dashboard</a>
+                        <a href="<?php echo $base; ?>Submodules/Admission-Dashboard.php">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Admission Dashboard</span>
+                        </a>
                     </li>
                     <li class="<?php echo ($current_page == 'Applications-Manager.php') ? 'active' : ''; ?>">
-                        <a href="<?php echo $base; ?>Submodules/Applications-Manager.php">Applications Manager</a>
+                        <a href="<?php echo $base; ?>Submodules/Applications-Manager.php">
+                            <i class="fas fa-file-invoice"></i>
+                            <span>Applications Manager</span>
+                        </a>
                     </li>
                     <li class="<?php echo ($current_page == 'Evaluation-Desk.php') ? 'active' : ''; ?>">
-                        <a href="<?php echo $base; ?>Submodules/Evaluation-Desk.php">Evaluation Desk</a>
+                        <a href="<?php echo $base; ?>Submodules/Evaluation-Desk.php">
+                            <i class="fas fa-clipboard-check"></i>
+                            <span>Evaluation Desk</span>
+                        </a>
                     </li>
                     <li class="<?php echo ($current_page == 'Student-ID-Center.php') ? 'active' : ''; ?>">
-                        <a href="<?php echo $base; ?>Submodules/Student-ID-Center.php">Student ID Center</a>
+                        <a href="<?php echo $base; ?>Submodules/Student-ID-Center.php">
+                            <i class="fas fa-id-card"></i>
+                            <span>Student ID Center</span>
+                        </a>
                     </li>
                     <li class="<?php echo ($current_page == 'Requirements-Config.php') ? 'active' : ''; ?>">
-                        <a href="<?php echo $base; ?>Submodules/Requirements-Config.php">Requirements Config</a>
+                        <a href="<?php echo $base; ?>Submodules/Requirements-Config.php">
+                            <i class="fas fa-cogs"></i>
+                            <span>Requirements Config</span>
+                        </a>
                     </li>
                 </ul>
             </li>
@@ -157,7 +178,7 @@ $root = $is_sub ? '../../' : '../'; // Relative to project root
                 
                 <div style="display: flex; gap: 12px;">
                     <button onclick="closeLogoutModal()" style="flex: 1; padding: 15px; border-radius: 16px; border: 1.5px solid var(--border-color); background: var(--surface-color); color: var(--text-color); font-weight: 700; cursor: pointer; transition: 0.3s; font-size: 0.95rem;" onmouseover="this.style.background='var(--hover-bg)'" onmouseout="this.style.background='var(--surface-color)'">No, Stay</button>
-                    <a href="/auth/logout.php" style="flex: 1; padding: 15px; border-radius: 16px; background: #0f172a; color: white; font-weight: 700; text-decoration: none; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 15px rgba(15, 23, 42, 0.2); transition: 0.3s; font-size: 0.95rem;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 15px 25px rgba(15, 23, 42, 0.3)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 10px 15px rgba(15, 23, 42, 0.2)'">Yes, Log Out</a>
+                    <a href="<?php echo $root; ?>auth/logout.php" style="flex: 1; padding: 15px; border-radius: 16px; background: #0f172a; color: white; font-weight: 700; text-decoration: none; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 15px rgba(15, 23, 42, 0.2); transition: 0.3s; font-size: 0.95rem;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 15px 25px rgba(15, 23, 42, 0.3)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 10px 15px rgba(15, 23, 42, 0.2)'">Yes, Log Out</a>
                 </div>
             </div>
         </div>
