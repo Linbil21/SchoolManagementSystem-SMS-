@@ -220,23 +220,7 @@ if (!empty($student_id)) {
     <?php include '../Components/Sidebar.php'; ?>
     <div class="main-wrapper">
         <?php include '../Components/header.php'; ?>
-        <div class="content-area">
-            <div class="page-header">
-                <div class="live-badge">
-                    <span class="pulse"></span> LIVE API ACCESS
-                </div>
-                <h1>Student Academic Sync</h1>
-                <p>Fetch real-time subject and schedule data directly from the central repository.</p>
-            </div>
-
-            <div class="search-container">
-                <form method="GET" class="search-box">
-                    <input type="text" name="student_id" placeholder="Enter Student ID (e.g., 2026-0001)" value="<?php echo htmlspecialchars($student_id); ?>" required>
-                    <button type="submit" class="btn-fetch">
-                        <i class="fas fa-satellite-dish"></i> Fetch Live Data
-                    </button>
-                </form>
-            </div>
+       
 
             <?php if ($error): ?>
                 <div class="error-msg">
@@ -255,7 +239,6 @@ if (!empty($student_id)) {
                                 <th>Room</th>
                                 <th>Instructor</th>
                                 <th>Section</th>
-                                <th>Status</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -263,24 +246,21 @@ if (!empty($student_id)) {
                                 <tr>
                                     <td>
                                         <div style="font-weight: 700; color: var(--text-main);"><?php echo htmlspecialchars($subject['subjectName'] ?? $subject['subject_name']); ?></div>
-                                        <div style="font-size: 0.75rem; color: var(--text-muted);">CODE: <?php echo $subject['subjectID'] ?? 'N/A'; ?></div>
+                                        <div style="font-size: 0.75rem; color: var(--text-muted);"><?php echo $subject['subjectID'] ?? 'N/A'; ?></div>
                                     </td>
                                     <td>
                                         <div style="font-weight: 600;"><?php echo $subject['startTime'] ?? $subject['start_time']; ?> - <?php echo $subject['endTime'] ?? $subject['end_time']; ?></div>
                                         <span class="day-tag"><?php echo $subject['day'] ?? $subject['days']; ?></span>
                                     </td>
                                     <td>
-                                        <div class="sub-badge"><i class="fas fa-door-open" style="margin-right: 5px;"></i><?php echo htmlspecialchars($subject['roomName'] ?? $subject['room_name']); ?></div>
+                                        <div class="sub-badge"><?php echo htmlspecialchars($subject['roomName'] ?? $subject['room_name']); ?></div>
                                     </td>
                                     <td>
                                         <div style="font-weight: 600;"><?php echo htmlspecialchars($subject['teacherName'] ?? $subject['instructor']); ?></div>
-                                        <div style="font-size: 0.75rem; color: var(--text-muted);">Prof. ID: <?php echo $subject['teacherID'] ?? 'N/A'; ?></div>
+                                        <div style="font-size: 0.75rem; color: var(--text-muted);"><?php echo $subject['teacherID'] ?? 'N/A'; ?></div>
                                     </td>
                                     <td>
                                         <div style="font-weight: 600;"><?php echo htmlspecialchars($subject['sectionName'] ?? $subject['section_name']); ?></div>
-                                    </td>
-                                    <td>
-                                        <div class="status-badge">Active Sync</div>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>

@@ -236,18 +236,7 @@ $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     <div class="main-wrapper">
         <?php include '../../Components/Header.php'; ?>
         <div class="content-area">
-            <!-- Normal UI Area -->
-            <div class="page-header">
-                <div class="page-title">
-                    <h1>Weekly Schedule</h1>
-                    <p>Track your academic activities for the current semester.</p>
-                </div>
-                <div class="header-actions">
-                    <button onclick="window.print()" style="padding: 12px 20px; background: var(--primary); color: white; border: none; border-radius: 15px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;">
-                        <i class="fas fa-print"></i> Print Schedule
-                    </button>
-                </div>
-            </div>
+            <!-- Professional Data Table Area -->
 
             <div class="data-table-container">
                 <table class="data-table">
