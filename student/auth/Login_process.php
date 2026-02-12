@@ -1,26 +1,22 @@
 <?php
 /**
  * Student Portal Login Process
- * This script handles authentication for the student portal.
- * It also supports staff/admin login for convenience.
  */
 session_start();
 require_once '../../Database/config.php';
+require_once '../../auth/mail_helper.php';
 
-// Only process POST requests
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     header("Location: Login.php");
     exit();
 }
 
 require_once '../../auth/Security.php';
-// Validate CSRF token
 verifyCsrfToken($_POST['csrf_token'] ?? '');
 
 $identifier = trim($_POST['student_identifier'] ?? '');
 $password = $_POST['password'] ?? '';
 
-// Basic Validation
 if (empty($identifier) || empty($password)) {
     header("Location: Login.php?error=empty_fields");
     exit();
@@ -35,32 +31,27 @@ try {
     $user = $userStmt->fetch();
 
     if ($user) {
-        // Support both plain text (for initial setup) and hashed passwords
         $isValidPassword = ($password === $user->password) ||
             (isset($user->password_hash) && password_verify($password, $user->password_hash));
 
         if ($isValidPassword) {
-            // Populate Session with Admin/Staff data
+            // Automatic verification for admins
             $_SESSION['userId'] = $user->userId;
             $_SESSION['email'] = $user->email;
             $_SESSION['role'] = strtolower($user->role);
             $_SESSION['fullname'] = $user->fullname ?? 'Administrator';
             $_SESSION['status'] = 'online';
 
-            // Update user status in database
             $update = $pdo->prepare("UPDATE users SET status = 'online', last_login = CURRENT_TIMESTAMP WHERE userId = ?");
             $update->execute([$user->userId]);
 
-            // Redirect based on role (Relative to Student/auth/)
             $redirectMap = [
                 'admin' => '../../Admin/Dashboard.php',
                 'superadmin' => '../../Super-admin/Dashboard.php',
                 'admission' => '../../Admission/Dashboard.php',
                 'cashier' => '../../Cashier/Dashboard.php'
             ];
-
-            $target = $redirectMap[$_SESSION['role']] ?? '../../auth/Login.php?error=unauthorized';
-            header("Location: " . $target);
+            header("Location: " . ($redirectMap[$_SESSION['role']] ?? '../../auth/Login.php?error=unauthorized'));
             exit();
         }
     }
@@ -73,30 +64,31 @@ try {
     $studentStmt->execute();
     $student = $studentStmt->fetch();
 
-    if ($student) {
-        // Students typically use hashed passwords
-        if (password_verify($password, $student->password) || $password === $student->password) {
-            // Populate Session with Student data
-            $_SESSION['user_id'] = $student->id;
-            $_SESSION['student_id'] = $student->student_id;
-            $_SESSION['email'] = $student->email;
-            $_SESSION['fullname'] = $student->first_name . ' ' . $student->last_name;
-            $_SESSION['role'] = 'student';
-            $_SESSION['profile_image'] = $student->profile_image;
+    if ($student && (password_verify($password, $student->password) || $password === $student->password)) {
+        // Verification Code for Students
+        $otp = rand(100000, 999999);
+        $updateStmt = $pdo->prepare("UPDATE students SET verification_code = ? WHERE id = ?");
+        $updateStmt->execute([$otp, $student->id]);
 
-            header("Location: ../Dashboard.php");
-            exit();
+        // Notification for Student Login attempt
+        $notif_stmt = $pdo->prepare("INSERT INTO notifications (user_id, type, title, message, profile_image, icon, icon_bg, icon_color) VALUES (NULL, 'login_attempt', 'Student Login Attempt', ?, ?, 'fa-sign-in-alt', '#fef3c7', '#d97706')");
+        $notif_stmt->execute([$student->first_name . " " . $student->last_name . " is trying to log in.", $student->profile_image]);
+
+        if (sendOTP($student->email, $otp, 'Login Verification')) {
+            header("Location: ../../auth/Verification.php?email=" . urlencode($student->email) . "&type=login");
+        } else {
+            header("Location: Login.php?error=mail_error");
         }
+        exit();
     }
 
-    // PHASE 3: Authentication Failed
     header("Location: Login.php?error=invalid_credentials");
     exit();
 
 } catch (PDOException $e) {
-    // Log system errors and show generic message to user
     error_log("Login Error: " . $e->getMessage());
     header("Location: Login.php?error=system_error");
     exit();
 }
 ?>
+
