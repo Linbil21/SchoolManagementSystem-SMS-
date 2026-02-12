@@ -92,6 +92,7 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admission@sms.com';
                     <li class="<?php echo ($current_page == 'Lost-Replacement-IDs.php') ? 'active' : ''; ?>"><a href="/Admission/Modules/Lost-Replacement-IDs.php">Lost / Replacement IDs</a></li>
                     <li class="<?php echo ($current_page == 'Student-Grades.php') ? 'active' : ''; ?>"><a href="/Admission/Modules/Student-Grades.php">My Grades</a></li>
                     <li class="<?php echo ($current_page == 'Student-Attendance.php') ? 'active' : ''; ?>"><a href="/Admission/Modules/Student-Attendance.php">Attendance</a></li>
+                    <li class="<?php echo ($current_page == 'Student-Live-Sync.php') ? 'active' : ''; ?>"><a href="/Admission/Modules/Student-Live-Sync.php"><i class="fas fa-sync-alt" style="font-size: 0.75rem; color: #10b981;"></i> Current Subject Fetcher</a></li>
                 </ul>
             </li>
         </ul>
