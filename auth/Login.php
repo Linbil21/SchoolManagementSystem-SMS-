@@ -245,6 +245,58 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
         .container {
             box-shadow: 0 0 50px rgba(50, 100, 255, 0.4) !important; /* Soft, glowing blue shadow */
         }
+        /* OCR UI Styles */
+        .ocr-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: #eff6ff;
+            color: #3b82f6;
+            padding: 4px 10px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+            border: 1px solid #dbeafe;
+        }
+
+        .ocr-badge:hover {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .ocr-scanning {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ocr-scanning::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.2), transparent);
+            animation: scan-line 1.5s infinite;
+        }
+
+        @keyframes scan-line {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .ocr-status {
+            font-size: 0.7rem;
+            margin-top: 4px;
+            font-weight: 500;
+        }
+
+        .ocr-status.success { color: #059669; }
+        .ocr-status.error { color: #ef4444; }
+        .ocr-status.loading { color: #3b82f6; }
     </style>
 </head>
 
@@ -501,15 +553,21 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                                     <div class="row row-3">
                                         <div class="col input-group">
                                             <label>Birth Cert (PSA)</label>
-                                            <input type="file" name="birth_cert">
+                                            <input type="file" name="birth_cert" class="ocr-input" data-type="birth_cert">
+                                            <div class="ocr-badge" onclick="triggerScan(this)"><i class="fas fa-magic"></i> Smart Scan</div>
+                                            <div class="ocr-status"></div>
                                         </div>
                                         <div class="col input-group">
                                             <label>Form 138</label>
-                                            <input type="file" name="form_138">
+                                            <input type="file" name="form_138" class="ocr-input">
+                                            <div class="ocr-badge" onclick="triggerScan(this)"><i class="fas fa-magic"></i> Smart Scan</div>
+                                            <div class="ocr-status"></div>
                                         </div>
                                         <div class="col input-group">
                                             <label>Passport Size ID <span>*</span></label>
-                                            <input type="file" name="id_picture" required>
+                                            <input type="file" name="id_picture" required class="ocr-input">
+                                            <div class="ocr-badge" onclick="triggerScan(this)"><i class="fas fa-magic"></i> Smart Scan</div>
+                                            <div class="ocr-status"></div>
                                         </div>
                                     </div>
 
@@ -762,6 +820,70 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
 
     <script src="../Assets/javascript/log-reg.js"></script>
     <script>
+        async function triggerScan(badge) {
+            const inputGroup = badge.closest('.input-group');
+            const fileInput = inputGroup.querySelector('input[type="file"]');
+            const statusDiv = inputGroup.querySelector('.ocr-status');
+
+            if (!fileInput.files || fileInput.files.length === 0) {
+                statusDiv.innerHTML = '<span class="error"><i class="fas fa-exclamation-circle"></i> Please select a file first.</span>';
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const formData = new FormData();
+            formData.append('document', file);
+
+            // UI Feedback
+            badge.classList.add('ocr-scanning');
+            badge.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Scanning...';
+            statusDiv.innerHTML = '<span class="loading">Reading document details...</span>';
+
+            try {
+                const response = await fetch('ocr_api.php', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (result.error) {
+                    statusDiv.innerHTML = `<span class="error"><i class="fas fa-times-circle"></i> ${result.error}</span>`;
+                } else {
+                    statusDiv.innerHTML = '<span class="success"><i class="fas fa-check-circle"></i> Details extracted!</span>';
+                    
+                    // Auto-fill fields if data found
+                    if (result.first_name) document.querySelector('input[name="first_name"]').value = result.first_name;
+                    if (result.middle_name) document.querySelector('input[name="middle_name"]').value = result.middle_name;
+                    if (result.last_name) document.querySelector('input[name="last_name"]').value = result.last_name;
+                    if (result.birthdate) document.querySelector('input[name="birthdate"]').value = result.birthdate;
+                    if (result.gender) document.querySelector('select[name="gender"]').value = result.gender;
+
+                    // If data was extracted, show a tooltip or notify user
+                    if (result.first_name || result.last_name) {
+                        Swal.fire({
+                            title: 'Data Extracted!',
+                            text: `We found ${result.first_name} ${result.last_name} in the document. Step 2 has been auto-filled.`,
+                            icon: 'success',
+                            confirmButtonColor: '#3b82f6'
+                        });
+                    }
+                }
+            } catch (err) {
+                console.error(err);
+                statusDiv.innerHTML = '<span class="error"><i class="fas fa-times-circle"></i> Error processing request.</span>';
+            } finally {
+                badge.classList.remove('ocr-scanning');
+                badge.innerHTML = '<i class="fas fa-magic"></i> Smart Scan';
+            }
+        }
+
+        // Optional: Include SweetAlert2 if not already present
+        if (typeof Swal === 'undefined') {
+            const swalScript = document.createElement('script');
+            swalScript.src = 'https://cdn.jsdelivr.net/npm/sweetalert2@11';
+            document.head.appendChild(swalScript);
+        }
 
         document.querySelectorAll('.toggle-password').forEach(icon => {
             icon.addEventListener('click', function () {

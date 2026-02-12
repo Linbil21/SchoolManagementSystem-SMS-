@@ -16,6 +16,9 @@ if ($_SERVER['HTTP_HOST'] == 'localhost' || $_SERVER['HTTP_HOST'] == '127.0.0.1'
     define('DB_NAME', 'u514031374_ems');
 }
 
+// Google Cloud Vision AI Integration
+define('GOOGLE_CLOUD_VISION_API_KEY', 'YOUR_GOOGLE_CLOUD_API_KEY_HERE');
+
 try {
     // Create PDO connection
     $pdo = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PASS);
