@@ -23,7 +23,7 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
     <style>
         /* Override body background from log-reg.css for a cleaner look */
         body {
-            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('../Assets/image/background.jpg') !important;
+            background: linear-gradient(rgba(30, 58, 138, 0.6), rgba(30, 58, 138, 0.6)), url('../Assets/image/background.jpg') !important;
             background-size: cover !important;
             background-position: center !important;
             background-repeat: no-repeat !important;
