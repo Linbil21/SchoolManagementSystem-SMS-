@@ -7,23 +7,6 @@
 header('Content-Type: application/json');
 require_once '../Database/config.php';
 
-// API Configuration
-define('API_PUBLIC_KEY', 'SMS-SECURE-STUDENT-API-KEY-021226');
-
-// Authentication Check
-// Supports 'public_key' via GET or 'X-Public-Key' in headers
-$received_key = $_GET['public_key'] ?? $_SERVER['HTTP_X_PUBLIC_KEY'] ?? '';
-
-if ($received_key !== API_PUBLIC_KEY) {
-    http_response_code(401);
-    echo json_encode([
-        'success' => false,
-        'message' => 'Unauthorized access. Provide a valid public_key.',
-        'received' => $received_key
-    ]);
-    exit();
-}
-
 // Action Handler
 $action = $_GET['action'] ?? 'list_enrollments';
 
