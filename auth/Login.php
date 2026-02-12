@@ -284,6 +284,18 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
 
                     <div class="roles-scroll-container">
                         <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; width: 100%;">
+                            <!-- Super Admin -->
+                            <a href="Login.php?action=login&role=superadmin" class="role-btn" style="background: white; border: 2px solid #f1f5f9;">
+                                <div class="role-icon" style="background: #0f172a;">
+                                    <i class="fas fa-shield-halved"></i>
+                                </div>
+                                <div>
+                                    <div style="font-weight: 700; font-size: 1rem; color: #1e293b;">Super Admin</div>
+                                    <div style="font-size: 0.8rem; color: #64748b;">Full System Control</div>
+                                </div>
+                                <i class="fas fa-chevron-right" style="margin-left: auto; color: #cbd5e1;"></i>
+                            </a>
+
                             <!-- Administrator -->
                             <a href="Login.php?action=login&role=admin" class="role-btn" style="background: white; border: 2px solid #eff6ff;">
                                 <div class="role-icon" style="background: #3b82f6;">
@@ -292,6 +304,30 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                                 <div>
                                     <div style="font-weight: 700; font-size: 1rem; color: #1e293b;">Administrator</div>
                                     <div style="font-size: 0.8rem; color: #64748b;">System Management</div>
+                                </div>
+                                <i class="fas fa-chevron-right" style="margin-left: auto; color: #cbd5e1;"></i>
+                            </a>
+
+                            <!-- Admission -->
+                            <a href="Login.php?action=login&role=admission" class="role-btn" style="background: white; border: 2px solid #fdf2f8;">
+                                <div class="role-icon" style="background: #db2777;">
+                                    <i class="fas fa-id-card-clip"></i>
+                                </div>
+                                <div>
+                                    <div style="font-weight: 700; font-size: 1rem; color: #1e293b;">Admission</div>
+                                    <div style="font-size: 0.8rem; color: #64748b;">Student Intake</div>
+                                </div>
+                                <i class="fas fa-chevron-right" style="margin-left: auto; color: #cbd5e1;"></i>
+                            </a>
+
+                            <!-- Cashier -->
+                            <a href="Login.php?action=login&role=cashier" class="role-btn" style="background: white; border: 2px solid #fefce8;">
+                                <div class="role-icon" style="background: #ca8a04;">
+                                    <i class="fas fa-money-bill-wave"></i>
+                                </div>
+                                <div>
+                                    <div style="font-weight: 700; font-size: 1rem; color: #1e293b;">Cashier</div>
+                                    <div style="font-size: 0.8rem; color: #64748b;">Financial Portal</div>
                                 </div>
                                 <i class="fas fa-chevron-right" style="margin-left: auto; color: #cbd5e1;"></i>
                             </a>
