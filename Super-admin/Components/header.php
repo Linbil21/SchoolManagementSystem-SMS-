@@ -20,8 +20,8 @@ $check_paths = ['/Super-admin/', '/modules/', '/Admin/', '/Submodules/', '/Modul
 $project_base = '';
 
 foreach ($check_paths as $path) {
-    if (($pos = strpos($script_name, $path)) !== false) {
-        $project_base = substr($script_name, 0, $pos);
+    if (($pos = stripos($script_name, $path)) !== false) {
+        $project_base = rtrim(substr($script_name, 0, $pos), '/');
         break;
     }
 }

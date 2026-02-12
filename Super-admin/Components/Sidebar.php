@@ -10,8 +10,8 @@ $check_paths = ['/Super-admin/', '/modules/', '/Admin/', '/Submodules/', '/Modul
 $project_base = '';
 
 foreach ($check_paths as $path) {
-    if (($pos = strpos($script_name, $path)) !== false) {
-        $project_base = substr($script_name, 0, $pos);
+    if (($pos = stripos($script_name, $path)) !== false) {
+        $project_base = rtrim(substr($script_name, 0, $pos), '/');
         break;
     }
 }
@@ -44,7 +44,7 @@ $root = $project_base . '/';
         <ul class="main-menu">
             <!-- User Management Dropdown -->
             <li
-                class="has-dropdown <?php echo (strpos($_SERVER['PHP_SELF'], '/Modules/') !== false) ? 'active open' : ''; ?>">
+                class="has-dropdown <?php echo (stripos($_SERVER['PHP_SELF'], '/Modules/') !== false) ? 'active open' : ''; ?>">
                 <a href="javascript:void(0)" class="dropdown-toggle">
                     <i class="fas fa-user-shield"></i>
                     <span>User Accounts</span>
@@ -70,7 +70,7 @@ $root = $project_base . '/';
         <p class="menu-label">ADMISSION CONTROL</p>
         <ul class="main-menu">
             <!-- Admission Summary Dropdown -->
-            <li class="has-dropdown <?php echo (strpos($_SERVER['PHP_SELF'], '/Submodules/') !== false) ? 'active open' : ''; ?>">
+            <li class="has-dropdown <?php echo (stripos($_SERVER['PHP_SELF'], '/Submodules/') !== false) ? 'active open' : ''; ?>">
                 <a href="javascript:void(0)" class="dropdown-toggle">
                     <i class="fas fa-user-graduate"></i>
                     <span>Admission Hub</span>
