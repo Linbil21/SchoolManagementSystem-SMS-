@@ -221,7 +221,7 @@
       </ul>
       <ul class="navbar-nav">
         <li class="nav-item">
-          <a class="btn btn-primary px-4 py-2 rounded-pill fw-bold" href="../html/dashboard.html">Get Started</a>
+          <a class="btn btn-primary px-4 py-2 rounded-pill fw-bold" href="../auth/Login.php">Get Started</a>
         </li>
       </ul>
     </div>
@@ -235,7 +235,7 @@
       <div class="col-md-6 hero-text">
         <h1>Welcome to <br><span class="text-primary">School Management System</span></h1>
         <p>Efficiently manage student records, faculty activities, and school operations — all in one place.</p>
-        <a href="../html/dashboard.html" class="btn-get-started">Get Started</a>
+        <a href="../auth/Login.php" class="btn-get-started">Get Started</a>
       </div>
     </div>
   </div>
