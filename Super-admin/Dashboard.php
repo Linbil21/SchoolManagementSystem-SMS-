@@ -8,14 +8,14 @@ $role = $_SESSION['role'];
 <html lang="en">
 
 <head>
-    <link rel='icon' type='image/png' href='/Assets/image/logo.png'>
+    <link rel='icon' type='image/png' href='../Assets/image/logo.png'>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Super Admin Dashboard - SMS</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="/Super-admin/assets/super-admin.css">
+    <link rel="stylesheet" href="assets/super-admin.css">
 </head>
 
 <body>
@@ -52,4 +52,3 @@ $role = $_SESSION['role'];
 </body>
 
 </html>
-

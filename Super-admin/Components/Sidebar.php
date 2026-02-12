@@ -3,11 +3,16 @@
 $current_page = basename($_SERVER['PHP_SELF']);
 $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'superadmin';
 $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admin@sms.com';
+
+// Path logic to handle different directory depths
+$is_sub = (strpos($_SERVER['PHP_SELF'], '/Modules/') !== false || strpos($_SERVER['PHP_SELF'], '/Submodules/') !== false);
+$base = $is_sub ? '../' : ''; // Relative to Super-admin root
+$root = $is_sub ? '../../' : '../'; // Relative to project root
 ?>
 <div class="sidebar">
     <div class="sidebar-brand">
-        <a href="/Super-admin/Dashboard.php" class="brand-wrapper">
-            <img src="/Assets/image/logo.png" alt="Logo" class="sidebar-logo">
+        <a href="<?php echo $base; ?>Dashboard.php" class="brand-wrapper">
+            <img src="<?php echo $root; ?>Assets/image/logo.png" alt="Logo" class="sidebar-logo">
             <h2>Super Admin</h2>
         </a>
     </div>
@@ -16,7 +21,7 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admin@sms.com';
         <p class="menu-label">MAIN</p>
         <ul>
             <li class="<?php echo ($current_page == 'Dashboard.php') ? 'active' : ''; ?>">
-                <a href="/Super-admin/Dashboard.php">
+                <a href="<?php echo $base; ?>Dashboard.php">
                     <i class="fas fa-th-large"></i>
                     <span>Dashboard</span>
                 </a>
@@ -34,8 +39,8 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admin@sms.com';
                     <i class="fas fa-chevron-right arrow-icon"></i>
                 </a>
                 <ul class="sub-menu">
-                    <li><a href="/Super-admin/Modules/User-Management.php">Staff Accounts</a></li>
-                    <li><a href="/Super-admin/Modules/Roles.php">Roles & Permissions</a></li>
+                    <li><a href="<?php echo $base; ?>Modules/User-Management.php">Staff Accounts</a></li>
+                    <li><a href="<?php echo $base; ?>Modules/Roles.php">Roles & Permissions</a></li>
                 </ul>
             </li>
         </ul>
@@ -50,11 +55,11 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admin@sms.com';
                     <i class="fas fa-chevron-right arrow-icon"></i>
                 </a>
                 <ul class="sub-menu">
-                    <li class="<?php echo ($current_page == 'Admission-Dashboard.php') ? 'active' : ''; ?>"><a href="/Super-admin/Submodules/Admission-Dashboard.php">Admission Dashboard</a></li>
-                    <li class="<?php echo ($current_page == 'Applications-Manager.php') ? 'active' : ''; ?>"><a href="/Super-admin/Submodules/Applications-Manager.php">Applications Manager</a></li>
-                    <li class="<?php echo ($current_page == 'Evaluation-Desk.php') ? 'active' : ''; ?>"><a href="/Super-admin/Submodules/Evaluation-Desk.php">Evaluation Desk</a></li>
-                    <li class="<?php echo ($current_page == 'Student-ID-Center.php') ? 'active' : ''; ?>"><a href="/Super-admin/Submodules/Student-ID-Center.php">Student ID Center</a></li>
-                    <li class="<?php echo ($current_page == 'Requirements-Config.php') ? 'active' : ''; ?>"><a href="/Super-admin/Submodules/Requirements-Config.php">Requirements Config</a></li>
+                    <li class="<?php echo ($current_page == 'Admission-Dashboard.php') ? 'active' : ''; ?>"><a href="<?php echo $base; ?>Submodules/Admission-Dashboard.php">Admission Dashboard</a></li>
+                    <li class="<?php echo ($current_page == 'Applications-Manager.php') ? 'active' : ''; ?>"><a href="<?php echo $base; ?>Submodules/Applications-Manager.php">Applications Manager</a></li>
+                    <li class="<?php echo ($current_page == 'Evaluation-Desk.php') ? 'active' : ''; ?>"><a href="<?php echo $base; ?>Submodules/Evaluation-Desk.php">Evaluation Desk</a></li>
+                    <li class="<?php echo ($current_page == 'Student-ID-Center.php') ? 'active' : ''; ?>"><a href="<?php echo $base; ?>Submodules/Student-ID-Center.php">Student ID Center</a></li>
+                    <li class="<?php echo ($current_page == 'Requirements-Config.php') ? 'active' : ''; ?>"><a href="<?php echo $base; ?>Submodules/Requirements-Config.php">Requirements Config</a></li>
                 </ul>
             </li>
         </ul>
@@ -62,7 +67,7 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admin@sms.com';
         <p class="menu-label">ACCOUNT & SETTINGS</p>
         <ul>
             <li>
-                <a href="/modules/Profile.php"
+                <a href="<?php echo $root; ?>modules/Profile.php"
                     class="<?php echo ($current_page == 'Profile.php') ? 'active' : ''; ?>">
                     <i class="fas fa-user-circle"></i>
                     <span>My Profile</span>
@@ -70,7 +75,7 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admin@sms.com';
             </li>
 
             <li>
-                <a href="/modules/Settings.php"
+                <a href="<?php echo $root; ?>modules/Settings.php"
                     class="<?php echo ($current_page == 'Settings.php') ? 'active' : ''; ?>">
                     <i class="fas fa-cog"></i>
                     <span>Settings</span>

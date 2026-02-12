@@ -13,7 +13,12 @@ if (strpos($user_email, '@') !== false) {
 // Fetch notifications
 $unread_count = getUnreadNotificationsCount($pdo);
 $notifications = getRecentNotifications($pdo);
+
+// Path logic for deep directories
+$is_sub = (strpos($_SERVER['PHP_SELF'], '/Modules/') !== false || strpos($_SERVER['PHP_SELF'], '/Submodules/') !== false);
+$root = $is_sub ? '../../' : '../';
 ?>
+<link rel="stylesheet" href="<?php echo $root; ?>Assets/css/theme.css">
 <div class="head-bar">
     <div class="head-left">
         <div class="burger-btn" id="sidebar-toggle">
@@ -78,7 +83,7 @@ $notifications = getRecentNotifications($pdo);
                     </div>
                 </div>
                 <div class="dropdown-body">
-                    <a href="/modules/Profile.php" class="dropdown-link">
+                    <a href="<?php echo $root; ?>modules/Profile.php" class="dropdown-link">
                         <i class="fas fa-user-shield"></i> Security Profile
                     </a>
                     <a href="javascript:void(0)" onclick="openLogoutModal()" class="dropdown-link logout-link">
@@ -90,7 +95,7 @@ $notifications = getRecentNotifications($pdo);
     </div>
 </div>
 
-<link rel="stylesheet" href="/Assets/css/theme.css">
+
 
 
 <script>
@@ -164,7 +169,7 @@ $notifications = getRecentNotifications($pdo);
 
     // Mark all notifications as read
     function markAllAsRead() {
-        fetch('/Admin/api/mark_notifications_read.php', {
+        fetch('<?php echo $root; ?>Admin/api/mark_notifications_read.php', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'}
         })
