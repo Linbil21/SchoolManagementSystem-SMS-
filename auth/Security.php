@@ -48,7 +48,7 @@ function checkRole($allowed_roles) {
                 header("Location: /Cashier/Dashboard.php");
                 break;
             case 'student':
-                header("Location: /Student/Dashboard.php");
+                header("Location: /student/Dashboard.php");
                 break;
             default:
                 header("Location: /auth/Login.php");
