@@ -4,10 +4,12 @@ $current_page = basename($_SERVER['PHP_SELF']);
 $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'superadmin';
 $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admin@sms.com';
 
-// Path logic to handle different directory depths
-$is_sub = (strpos($_SERVER['PHP_SELF'], '/Modules/') !== false || strpos($_SERVER['PHP_SELF'], '/Submodules/') !== false);
-$base = $is_sub ? '../' : ''; // Relative to Super-admin root
-$root = $is_sub ? '../../' : '../'; // Relative to project root
+// Robust absolute-relative path logic
+$script_name = $_SERVER['SCRIPT_NAME'];
+$sa_pos = strpos($script_name, '/Super-admin/');
+$project_base = ($sa_pos !== false) ? substr($script_name, 0, $sa_pos) : '';
+$base = $project_base . '/Super-admin/';
+$root = $project_base . '/';
 ?>
 <div class="sidebar">
     <div class="sidebar-brand">

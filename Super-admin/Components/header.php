@@ -14,9 +14,11 @@ if (strpos($user_email, '@') !== false) {
 $unread_count = getUnreadNotificationsCount($pdo);
 $notifications = getRecentNotifications($pdo);
 
-// Path logic for deep directories
-$is_sub = (strpos($_SERVER['PHP_SELF'], '/Modules/') !== false || strpos($_SERVER['PHP_SELF'], '/Submodules/') !== false);
-$root = $is_sub ? '../../' : '../';
+// Robust absolute-relative path logic
+$script_name = $_SERVER['SCRIPT_NAME'];
+$sa_pos = strpos($script_name, '/Super-admin/');
+$project_base = ($sa_pos !== false) ? substr($script_name, 0, $sa_pos) : '';
+$root = $project_base . '/';
 ?>
 <link rel="stylesheet" href="<?php echo $root; ?>Assets/css/theme.css">
 <div class="head-bar">
