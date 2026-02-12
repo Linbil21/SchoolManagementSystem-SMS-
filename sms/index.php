@@ -1,332 +1,408 @@
-<?php
-session_start();
-require_once '../Database/config.php';
-?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SMS - School Management System</title>
-    <link rel="icon" type="image/png" href="../Assets/image/logo.png">
-    
-    <!-- Google Fonts: Poppins -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <style>
-        :root {
-            --primary: #2563eb;
-            --primary-dark: #0f172a;
-            --text-main: #020617;
-            --text-light: #64748b;
-            --gradient-blue: linear-gradient(135deg, rgba(37, 99, 235, 0.9) 0%, rgba(29, 78, 216, 0.95) 100%);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
-
-        body {
-            background-color: #f8fafc;
-            overflow-x: hidden;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
-
-        /* Navbar */
-        nav {
-            position: absolute;
-            top: 0;
-            width: 100%;
-            padding: 20px 5%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 100;
-        }
-
-        .logo-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .logo-container img {
-            width: 35px;
-        }
-
-        .logo-container span {
-            font-weight: 700;
-            color: var(--primary);
-            font-size: 1rem;
-        }
-
-        .menu-btn {
-            font-size: 1.4rem;
-            color: var(--primary);
-            cursor: pointer;
-        }
-
-        /* Main Container */
-        .page-container {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-        }
-
-        /* Background Graphics */
-        .bg-white-left {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #ffffff;
-            z-index: 0;
-        }
-
-        /* Blue Diagonal Section */
-        .bg-blue-right {
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 60%;
-            height: 100%;
-            background: var(--gradient-blue), url('../Assets/image/background.jpg');
-            background-blend-mode: overlay;
-            background-size: cover;
-            /* Steep diagonal cut */
-            clip-path: polygon(30% 0%, 100% 0%, 100% 100%, 15% 100%);
-            z-index: 1;
-        }
-
-        /* Content Area */
-        .content-area {
-            position: relative;
-            z-index: 10;
-            height: 100%;
-            padding: 0 5%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        .text-section {
-            width: 100%;
-            max-width: 500px;
-            margin-top: -60px;
-        }
-
-        .text-section h1 {
-            font-size: clamp(2rem, 5vw, 3.2rem);
-            line-height: 1.2;
-            font-weight: 800;
-            margin-bottom: 25px;
-            letter-spacing: -0.5px;
-        }
-
-        .text-welcome {
-            color: var(--primary-dark);
-            display: block;
-        }
-
-        .text-brand {
-            color: #2563eb;
-            display: block;
-        }
-
-        .text-section p {
-            font-size: 1rem;
-            color: var(--text-light);
-            line-height: 1.6;
-            margin-bottom: 35px;
-            max-width: 350px;
-        }
-
-        .cta-btn {
-            display: inline-block;
-            padding: 14px 35px;
-            background: linear-gradient(90deg, #2563eb 0%, #3b82f6 100%);
-            color: white;
-            font-weight: 600;
-            border-radius: 30px;
-            text-decoration: none;
-            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
-            transition: transform 0.2s;
-        }
-
-        /* Floating Badge - Back on the line */
-        .badge-container {
-            position: absolute;
-            top: 25%;
-            left: 45%; /* Positioned on the diagonal */
-            width: 180px;
-            height: 180px;
-            background: rgba(255, 255, 255, 0.25);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            border-radius: 50%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            z-index: 20;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-        }
-
-        .badge-container img {
-            width: 60px;
-            margin-bottom: 8px;
-            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.1));
-        }
-
-        .badge-container span {
-            font-size: 0.8rem;
-            font-weight: 700;
-            color: #0f172a;
-            line-height: 1.2;
-        }
-
-        /* Illustration at bottom right */
-        .illustration-container {
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            width: 100%;
-            max-width: 550px;
-            z-index: 5;
-            pointer-events: none;
-            display: flex;
-            justify-content: flex-end;
-            align-items: flex-end;
-        }
-
-        .illustration-container img {
-            width: 85%;
-            height: auto;
-        }
-
-        /* Responsive Adjustments */
-        @media (max-width: 1024px) {
-            .bg-blue-right {
-                width: 60%;
-                clip-path: polygon(35% 0%, 100% 0%, 100% 100%, 20% 100%);
-            }
-            .badge-container {
-                left: 50%;
-                transform: translateX(-50%);
-            }
-        }
-
-        @media (max-width: 768px) {
-            .bg-blue-right {
-                width: 55%;
-                clip-path: polygon(25% 0%, 100% 0%, 100% 100%, 10% 100%);
-            }
-
-            .badge-container {
-                width: 140px;
-                height: 140px;
-                top: 20%;
-                left: 55%; 
-                transform: translateX(-50%);
-            }
-
-            .badge-container img {
-                width: 45px;
-            }
-
-            .text-section {
-                margin-top: 50px;
-                max-width: 60%;
-            }
-
-            .text-section h1 {
-                font-size: 1.8rem;
-            }
-
-            .illustration-container {
-                right: -20px;
-            }
-            
-            .illustration-container img {
-                width: 100%;
-                max-width: 400px;
-            }
-        }
-
-        @media (max-width: 480px) {
-             .text-section h1 {
-                font-size: 2rem;
-            }
-            
-            .bg-blue-right {
-                width: 50%;
-                clip-path: polygon(20% 0%, 100% 0%, 100% 100%, 5% 100%);
-            }
-            
-            .badge-container {
-                left: 65%;
-                top: 18%;
-                width: 130px;
-                height: 130px;
-            }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>School Management System</title>
+  <link rel="icon" type="image/png" href="../img/sms.png" />
+  <link rel="stylesheet" href="../css/sms.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 </head>
+<style>
+    body {
+  background: linear-gradient(rgba(250, 250, 250, 0.937), rgba(8, 52, 117, 0.942)), url('../img/img.jpg') no-repeat center center fixed; 
+  background-size: cover;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  padding-top: 80px;
+  scroll-behavior: smooth;
+}
+
+.stylish-navbar {
+  background: linear-gradient(to right, #ffffff, #cce0ff, #99c2ff, #66a3ff);
+  padding: 12px 0;
+  border-bottom: 1px solid #e6f0ff;
+}
+
+.navbar-brand {
+  font-size: 1.7rem;
+  color: #004aad !important;
+  display: flex;
+  align-items: center;
+}
+
+.nav-underline {
+  position: relative;
+  font-weight: 600;
+  color: #003366 !important;
+  transition: all 0.3s ease;
+}
+
+.nav-underline::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  width: 0%;
+  height: 2px;
+  background-color: #004aad;
+  transition: width 0.3s ease;
+}
+
+.nav-underline:hover::after {
+  width: 100%;
+}
+
+/* Hero Section Slant Style */
+.hero-slant-section {
+  position: relative;
+  height: 89vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  padding: 0;
+  margin: 0;
+}
+
+.slanted-bg {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 45%;
+  height: 100%;
+  background: linear-gradient(#66b3ff00, #00336681);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 20% 100%);
+  z-index: 1;
+}
+
+.hero-student-slant {
+  position: absolute;
+  bottom: -25px;
+  right: 0%;
+  z-index: 3;
+}
+
+.hero-student-slant img {
+  width: 500px;
+  height: auto;
+  object-fit: contain;
+}
+
+.hero-logo-slant {
+  position: absolute;
+  top: 23%;
+  left: 70%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  text-align: center;
+}
+
+.hero-logo-slant img {
+  max-width: 300px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  border-radius: 200px 200px;
+  box-shadow: 20px 20px 40px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease;
+}
+
+.hero-logo-slant img:hover {
+  transform: scale(1.03);
+}
+
+.hero-text {
+  position: relative;
+  z-index: 2;
+}
+
+.btn-get-started {
+  margin-top: 60px;
+  padding: 15px 30px;
+  background: linear-gradient(135deg, #004aad, #66b2ff);
+  color: #fff;
+  border-radius: 50px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.btn-get-started:hover {
+  background: linear-gradient(135deg, #004aad, #042342);
+  color: #fff;
+}
+
+.hero-text h1 {
+  font-size: 3.5rem;
+  color: #003366;
+  font-weight: 800;
+}
+
+.hero-text p {
+  font-size: 1.5rem;
+  color: #333;
+  margin-top: 20px;
+}
+
+.feature-card {
+  transition: transform 0.3s;
+  border-radius: 15px;
+  overflow: hidden;
+  text-align: center;
+  padding: 10px;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+.feature-card i {
+  font-size: 3rem;
+  color: #004aad;
+}
+
+.feature-box {
+  flex: 0 0 19%;
+  min-width: 160px;
+}
+
+@media (max-width: 1200px) {
+  .feature-box {
+    flex: 0 0 48%;
+  }
+}
+
+@media (max-width: 768px) {
+  .feature-box {
+    flex: 0 0 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-text h1 {
+    font-size: 2.5rem;
+  }
+
+  .hero-text p {
+    font-size: 1rem;
+  }
+
+  .hero-section {
+    text-align: center;
+  }
+}
+</style>
 <body>
+    
 
-    <nav>
-        <div class="logo-container">
-            <img src="../Assets/image/logo.png" alt="SMS Logo">
-            <span>School Management</span>
-        </div>
-        <div class="menu-btn">
-            <i class="fas fa-bars"></i>
-        </div>
-    </nav>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg fixed-top shadow-sm stylish-navbar">
+  <div class="container">
+    <a class="navbar-brand fw-bold d-flex align-items-center" href="#">
+      <img src="../img/sms.png" alt="Logo" width="40" height="40" class="me-2">
+      School Management
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
 
-    <div class="page-container">
-        <!-- Backgrounds -->
-        <div class="bg-white-left"></div>
-        <div class="bg-blue-right"></div>
+    <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
+      <ul class="navbar-nav mx-auto gap-4">
+        <li class="nav-item"><a class="nav-link nav-underline fw-bold" href="#">Home</a></li>
+        <li class="nav-item"><a class="nav-link nav-underline fw-bold" href="#features">Features</a></li>
+        <li class="nav-item"><a class="nav-link nav-underline fw-bold" href="#about-us">About Us</a></li>
+        <li class="nav-item"><a class="nav-link nav-underline fw-bold" href="#contact">Contact Us</a></li>
+      </ul>
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="btn btn-primary px-4 py-2 rounded-pill fw-bold" href="../html/dashboard.html">Get Started</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
 
-        <!-- Floating Badge -->
-        <div class="badge-container">
-            <img src="../Assets/image/logo.png" alt="Logo">
-            <span>School<br>Management System</span>
-        </div>
+<!-- Hero Section -->
+<section class="hero-slant-section position-relative">
+  <div class="container position-relative z-2">
+    <div class="row align-items-center">
+      <div class="col-md-6 hero-text">
+        <h1>Welcome to <br><span class="text-primary">School Management System</span></h1>
+        <p>Efficiently manage student records, faculty activities, and school operations — all in one place.</p>
+        <a href="../html/dashboard.html" class="btn-get-started">Get Started</a>
+      </div>
+    </div>
+  </div>
+  <div class="slanted-bg"></div>
+  <div class="hero-logo-slant">
+    <img src="../img/sms.png" alt="Logo" />
+  </div>
+  <div class="hero-student-slant">
+    <img src="../img/hero.png" alt="Student Images" />
+  </div>
+</section>
 
-        <!-- Text Content -->
-        <div class="content-area">
-            <div class="text-section">
-                <h1>
-                    <span class="text-welcome">WELCOME</span>
-                    <span class="text-welcome">TO</span>
-                    <span class="text-brand">SCHOOL</span>
-                    <span class="text-brand">MANAGEMENT</span>
-                    <span class="text-brand">SYSTEM</span>
-                </h1>
-                <p>Efficiently manage student records, faculty activities, and school operations — all in one accessible platform.</p>
-                <a href="../auth/Login.php" class="cta-btn">Get Started</a>
-            </div>
-        </div>
-
-        <!-- Illustration -->
-        <div class="illustration-container">
-            <img src="../Assets/image/hero.png" alt="Education Illustration">
-        </div>
+<!-- Core Features Section -->
+<section id="features" class="py-5 text-white" style="background: linear-gradient(#ffffff44, #011f4b53);">
+  <div class="container">
+    <div class="text-end mb-4">
+      <h2 class="fw-bold text-primary">Core Features</h2>
+      <p class="text-light">Explore what our School Management System offers.</p>
     </div>
 
+    <div class="d-flex flex-wrap justify-content-end gap-3">
+      <!-- Feature Box 1 -->
+      <div class="feature-box">
+        <div class="text-center px-2 py-3 rounded-3 h-100" style="background-color: rgba(255,255,255,0.05);">
+          <i class="fas fa-user-graduate fa-lg text-primary mb-2"></i>
+          <h6 class="fw-bold mb-1">Enrollment</h6>
+          <p class="text-light small mb-0">Student registration made simple.</p>
+        </div>
+      </div>
+
+      <!-- Feature Box 2 -->
+      <div class="feature-box">
+        <div class="text-center px-2 py-3 rounded-3 h-100" style="background-color: rgba(255,255,255,0.05);">
+          <i class="fas fa-book-open fa-lg text-primary mb-2"></i>
+          <h6 class="fw-bold mb-1">Subjects</h6>
+          <p class="text-light small mb-0">Manage courses and subjects easily.</p>
+        </div>
+      </div>
+
+      <!-- Feature Box 3 -->
+      <div class="feature-box">
+        <div class="text-center px-2 py-3 rounded-3 h-100" style="background-color: rgba(255,255,255,0.05);">
+          <i class="fas fa-users fa-lg text-primary mb-2"></i>
+          <h6 class="fw-bold mb-1">Students</h6>
+          <p class="text-light small mb-0">View and update student profiles.</p>
+        </div>
+      </div>
+
+      <!-- Feature Box 4 -->
+      <div class="feature-box">
+        <div class="text-center px-2 py-3 rounded-3 h-100" style="background-color: rgba(255,255,255,0.05);">
+          <i class="fas fa-chalkboard-teacher fa-lg text-primary mb-2"></i>
+          <h6 class="fw-bold mb-1">Faculty</h6>
+          <p class="text-light small mb-0">Manage faculty members and classes.</p>
+        </div>
+      </div>
+
+      <!-- Feature Box 5 -->
+      <div class="feature-box">
+        <div class="text-center px-2 py-3 rounded-3 h-100" style="background-color: rgba(255,255,255,0.05);">
+          <i class="fas fa-calendar-alt fa-lg text-primary mb-2"></i>
+          <h6 class="fw-bold mb-1">Schedule</h6>
+          <p class="text-light small mb-0">Class scheduling made efficient.</p>
+        </div>
+      </div>
+
+      <!-- Feature Box 6 -->
+      <div class="feature-box">
+        <div class="text-center px-2 py-3 rounded-3 h-100" style="background-color: rgba(255,255,255,0.05);">
+          <i class="fas fa-clipboard-list fa-lg text-primary mb-2"></i>
+          <h6 class="fw-bold mb-1">Grades</h6>
+          <p class="text-light small mb-0">Record and track academic performance.</p>
+        </div>
+      </div>
+
+      <!-- Feature Box 7 -->
+      <div class="feature-box">
+        <div class="text-center px-2 py-3 rounded-3 h-100" style="background-color: rgba(255,255,255,0.05);">
+          <i class="fas fa-user-shield fa-lg text-primary mb-2"></i>
+          <h6 class="fw-bold mb-1">User Roles</h6>
+          <p class="text-light small mb-0">Manage permissions and access.</p>
+        </div>
+      </div>
+
+      <!-- Feature Box 8 -->
+      <div class="feature-box">
+        <div class="text-center px-2 py-3 rounded-3 h-100" style="background-color: rgba(255,255,255,0.05);">
+          <i class="fas fa-bell fa-lg text-primary mb-2"></i>
+          <h6 class="fw-bold mb-1">Notifications</h6>
+          <p class="text-light small mb-0">Stay updated with announcements.</p>
+        </div>
+      </div>
+
+      <!-- Feature Box 9 -->
+      <div class="feature-box">
+        <div class="text-center px-2 py-3 rounded-3 h-100" style="background-color: rgba(255,255,255,0.05);">
+          <i class="fas fa-chart-line fa-lg text-primary mb-2"></i>
+          <h6 class="fw-bold mb-1">Analytics</h6>
+          <p class="text-light small mb-0">Track school performance visually.</p>
+        </div>
+      </div>
+
+      <!-- Feature Box 10 -->
+      <div class="feature-box">
+        <div class="text-center px-2 py-3 rounded-3 h-100" style="background-color: rgba(255,255,255,0.05);">
+          <i class="fas fa-cogs fa-lg text-primary mb-2"></i>
+          <h6 class="fw-bold mb-1">Settings</h6>
+          <p class="text-light small mb-0">Configure your system preferences.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- About Us Section -->
+<section id="about-us" class="py-5 text-white" style="background: linear-gradient(to right, #ffffff56, #3399ff23);">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-md-6 mb-4 mb-md-0 text-center">
+        <img src="../img/studs.jpg" class="img-fluid rounded w-75" alt="About Us Image">
+      </div>
+      <div class="col-md-6">
+        <h2 class="fw-bold">About Us</h2>
+        <p>
+          Our School Management System is a modern solution designed to make academic and administrative 
+          processes simple, efficient, and unified. Built for both educators and learners, we aim to provide 
+          a digital space where everything just works — from enrollment to research.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Contact Us Section -->
+<section id="contact" class="py-3 text-white" style="background: linear-gradient(135deg, #0a0a3a1d, #1465b163);">
+  <div class="container text-center">
+    <h2 class="fw-bold mb-4">Contact Us</h2>
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="mb-3">
+          <h5 class="fw-bold"><i class="fas fa-map-marker-alt me-2"></i> Address</h5>
+          <p>Bestlink College of the Philippines, Quirino Highway, Quezon City, Metro Manila</p>
+        </div>
+        <div class="mb-3">
+          <h5 class="fw-bold"><i class="fas fa-phone me-2"></i> Contact Number</h5>
+          <p>(02) 1234-5678 / 0917-123-4567</p>
+        </div>
+        <div class="mb-3">
+          <h5 class="fw-bold"><i class="fas fa-envelope me-2"></i> Email</h5>
+          <p>sms.support@bestlink.edu.ph</p>
+        </div>
+        <div class="mb-3">
+          <h5 class="fw-bold"><i class="fas fa-clock me-2"></i> Office Hours</h5>
+          <p>Monday - Friday: 8:00 AM to 5:00 PM</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer Section -->
+<section id="login" class="text-center py-4" style="background-color: #002a80;">
+  <div class="container" style="width: 600px;">
+    <p class="mb-0 text-white">&copy; 2025 School Management System. All rights reserved.</p>
+  </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
