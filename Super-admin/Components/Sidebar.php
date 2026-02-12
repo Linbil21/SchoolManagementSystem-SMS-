@@ -6,8 +6,16 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admin@sms.com';
 
 // Robust absolute-relative path logic
 $script_name = $_SERVER['SCRIPT_NAME'];
-$sa_pos = strpos($script_name, '/Super-admin/');
-$project_base = ($sa_pos !== false) ? substr($script_name, 0, $sa_pos) : '';
+$check_paths = ['/Super-admin/', '/modules/', '/Admin/', '/Submodules/', '/Modules/', '/Cashier/', '/Admission/', '/auth/'];
+$project_base = '';
+
+foreach ($check_paths as $path) {
+    if (($pos = strpos($script_name, $path)) !== false) {
+        $project_base = substr($script_name, 0, $pos);
+        break;
+    }
+}
+
 $base = $project_base . '/Super-admin/';
 $root = $project_base . '/';
 ?>

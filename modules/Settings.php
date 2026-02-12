@@ -24,7 +24,7 @@ switch ($role) {
     case 'super-admin':
         $sidebar_path = '../Super-admin/Components/Sidebar.php';
         $header_path = '../Super-admin/Components/header.php';
-        $css_path = '../Super-admin/Assets/super-admin.css';
+        $css_path = '../Super-admin/assets/super-admin.css';
         break;
     case 'admission':
         $sidebar_path = '../Admission/Components/Sidebar.php';
@@ -55,7 +55,7 @@ switch ($role) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <link rel="stylesheet" href="<?php echo htmlspecialchars($css_path); ?>">
-    <link rel="stylesheet" href="/Assets/css/theme.css">
+    <link rel="stylesheet" href="../Assets/css/theme.css">
 
     <style>
         .settings-grid {
