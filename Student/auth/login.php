@@ -8,23 +8,25 @@ $csrf_token = generateCsrfToken();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Portal | Login</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Student Portal | SMS</title>
+    <link rel="icon" type="image/x-icon" href="../../Assets/image/logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
         :root {
-            --primary: #2563eb;
-            --primary-dark: #1e40af;
-            --secondary: #64748b;
-            --accent: #3b82f6;
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #94a3b8;
+            --accent: #10b981;
+            --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            --card-bg: rgba(255, 255, 255, 0.85);
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
         }
 
         body {
@@ -32,262 +34,330 @@ $csrf_token = generateCsrfToken();
             display: flex;
             align-items: center;
             justify-content: center;
-            background: #f8fafc;
+            background: #0f172a;
             position: relative;
             overflow: hidden;
         }
 
-        /* Ambient Background */
-        body::before {
-            content: '';
+        /* Animated Particles Background */
+        .bg-blobs {
             position: absolute;
-            top: -10%;
-            right: -5%;
-            width: 600px;
-            height: 600px;
-            background: radial-gradient(circle, rgba(37, 99, 235, 0.1) 0%, rgba(255, 255, 255, 0) 70%);
-            border-radius: 50%;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
             z-index: 0;
+            overflow: hidden;
         }
 
-        body::after {
-            content: '';
+        .blob {
             position: absolute;
-            bottom: -10%;
-            left: -5%;
             width: 500px;
             height: 500px;
-            background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, rgba(255, 255, 255, 0) 70%);
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(168, 85, 247, 0.15) 100%);
+            filter: blur(80px);
             border-radius: 50%;
-            z-index: 0;
+            animation: move 20s infinite alternate;
+        }
+
+        .blob-1 { top: -100px; left: -100px; }
+        .blob-2 { bottom: -150px; right: -100px; animation-delay: -5s; }
+        .blob-3 { top: 40%; left: 50%; width: 300px; height: 300px; background: rgba(16, 185, 129, 0.1); }
+
+        @keyframes move {
+            from { transform: translate(0, 0) scale(1); }
+            to { transform: translate(100px, 100px) scale(1.2); }
         }
 
         .login-container {
             position: relative;
-            z-index: 1;
+            z-index: 10;
             width: 100%;
-            max-width: 450px;
+            max-width: 440px;
             padding: 20px;
+            animation: containerAppear 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes containerAppear {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .login-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            padding: 40px;
-            border-radius: 24px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            transition: transform 0.3s ease;
-        }
-
-        .login-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .brand-header {
+            background: var(--card-bg);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            padding: 50px 40px;
+            border-radius: 32px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             text-align: center;
-            margin-bottom: 30px;
         }
 
-        .logo-circle {
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            border-radius: 16px;
+        .logo-box {
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 22px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 20px;
-            color: white;
-            font-size: 1.5rem;
-            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2);
+            margin: 0 auto 25px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            position: relative;
         }
 
-        .brand-header h1 {
+        .logo-box img {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+        }
+
+        .logo-box::after {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 26px;
+            background: linear-gradient(135deg, var(--primary), #a855f7);
+            z-index: -1;
+            opacity: 0.5;
+        }
+
+        h1 {
             color: #1e293b;
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 5px;
+            font-size: 1.75rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+            letter-spacing: -0.025em;
         }
 
-        .brand-header p {
-            color: var(--secondary);
-            font-size: 0.9rem;
+        .subtitle {
+            color: #64748b;
+            font-size: 0.95rem;
+            margin-bottom: 35px;
+            font-weight: 500;
+        }
+
+        .success-banner {
+            background: #ecfdf5;
+            border: 1px solid #10b981;
+            color: #065f46;
+            padding: 16px;
+            border-radius: 16px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            animation: pulseSuccess 2s infinite;
+        }
+
+        @keyframes pulseSuccess {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
         }
 
         .form-group {
-            margin-bottom: 20px;
-            position: relative;
+            text-align: left;
+            margin-bottom: 22px;
         }
 
         .form-group label {
             display: block;
-            color: #475569;
             font-size: 0.85rem;
-            font-weight: 600;
-            margin-bottom: 8px;
+            font-weight: 700;
+            color: #475569;
+            margin-bottom: 10px;
+            margin-left: 4px;
         }
 
-        .input-wrapper {
+        .input-group {
             position: relative;
+            display: flex;
+            align-items: center;
         }
 
-        .input-wrapper i.fa-lock,
-        .input-wrapper i.fa-user {
+        .input-group i:not(.toggle-password) {
             position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #94a3b8;
+            left: 18px;
+            color: var(--secondary);
+            font-size: 1.1rem;
             transition: color 0.3s;
-        }
-
-        .toggle-password {
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #94a3b8;
-            cursor: pointer;
-            transition: color 0.3s;
-        }
-
-        .toggle-password:hover {
-            color: var(--primary);
         }
 
         .form-input {
             width: 100%;
-            padding: 14px 14px 14px 45px;
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
+            background: #f1f5f9;
+            border: 2px solid transparent;
+            padding: 16px 16px 16px 52px;
+            border-radius: 16px;
             font-size: 0.95rem;
+            font-weight: 600;
             color: #1e293b;
             transition: all 0.3s;
-            background: #f8fafc;
         }
 
         .form-input:focus {
             outline: none;
-            border-color: var(--primary);
             background: white;
-            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 5px rgba(99, 102, 241, 0.1);
         }
 
-        .form-input:focus+i {
+        .form-input:focus + i {
             color: var(--primary);
         }
+
+        .toggle-password {
+            position: absolute;
+            right: 18px;
+            color: var(--secondary);
+            cursor: pointer;
+            padding: 5px;
+            transition: color 0.3s;
+        }
+
+        .toggle-password:hover { color: var(--primary); }
 
         .login-btn {
             width: 100%;
-            padding: 14px;
             background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: white;
             border: none;
-            border-radius: 12px;
+            padding: 16px;
+            border-radius: 16px;
             font-size: 1rem;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.4);
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
 
         .login-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 15px 30px rgba(37, 99, 235, 0.3);
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 20px 35px -10px rgba(79, 70, 229, 0.5);
         }
 
-        .links {
+        .login-btn:active { transform: scale(0.98); }
+
+        .form-links {
+            margin-top: 25px;
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-top: 20px;
             font-size: 0.85rem;
+            font-weight: 600;
         }
 
-        .links a {
+        .form-links a {
             color: var(--secondary);
             text-decoration: none;
             transition: color 0.3s;
+        }
+
+        .form-links a:hover { color: var(--primary); }
+
+        .footer-copyright {
+            margin-top: 40px;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.75rem;
             font-weight: 500;
         }
 
-        .links a:hover {
-            color: var(--primary);
+        .back-to-home {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            opacity: 0.7;
+            transition: opacity 0.3s;
         }
 
-        .footer-text {
-            text-align: center;
-            margin-top: 30px;
-            color: #94a3b8;
-            font-size: 0.8rem;
-        }
+        .back-to-home:hover { opacity: 1; }
     </style>
 </head>
 
 <body>
+    <div class="bg-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <a href="../../auth/Login.php" class="back-to-home">
+        <i class="fas fa-arrow-left"></i> Selection Screen
+    </a>
+
     <div class="login-container">
         <div class="login-card">
-            <div class="brand-header">
-                <div class="logo-circle">
-                    <i class="fas fa-graduation-cap"></i>
-                </div>
-
-                <?php if (isset($_GET['registered']) && $_GET['registered'] == 'true'): ?>
-                    <div
-                        style="background-color: #d1fae5; color: #065f46; padding: 15px; border-radius: 12px; margin-bottom: 25px; text-align: center; border: 1px solid #10b981; font-weight: 600; font-size: 0.85rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
-                        <i class="fas fa-check-circle" style="margin-right: 8px; color: #10b981;"></i>
-                        OFFICIAL ENROLLED
-                    </div>
-                <?php endif; ?>
-
-                <h1>Welcome Back!</h1>
-                <p>Sign in to access your student portal</p>
+            <div class="logo-box">
+                <img src="../../Assets/image/logo.png" alt="SMS Logo">
             </div>
+
+            <?php if (isset($_GET['registered']) && $_GET['registered'] == 'true'): ?>
+                <div class="success-banner">
+                    <div style="width: 30px; height: 30px; border-radius: 50%; background: #10b981; color: white; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <span>ENROLLMENT COMPLETE! You can now access your portal.</span>
+                </div>
+            <?php endif; ?>
+
+            <h1>Student Portal</h1>
+            <p class="subtitle">Enter your credentials to manage your studies</p>
 
             <form action="Login_process.php" method="POST">
                 <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
+                
                 <div class="form-group">
                     <label>Student ID or Email</label>
-                    <div class="input-wrapper">
-                        <input type="text" name="student_identifier" class="form-input"
-                            placeholder="Enter your ID or Email" required>
-                        <i class="fas fa-user"></i>
+                    <div class="input-group">
+                        <input type="text" name="student_identifier" class="form-input" placeholder="20XX-XXXX or email@example.com" required>
+                        <i class="fas fa-id-card"></i>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label>Password</label>
-                    <div class="input-wrapper">
-                        <input type="password" name="password" id="student_password" class="form-input"
-                            placeholder="Enter your password" required>
-                        <i class="fas fa-lock"></i>
+                    <label>Account Password</label>
+                    <div class="input-group">
+                        <input type="password" name="password" id="student_password" class="form-input" placeholder="••••••••" required>
+                        <i class="fas fa-shield-lock"></i>
                         <i class="fas fa-eye toggle-password" id="togglePassword"></i>
                     </div>
                 </div>
 
                 <button type="submit" class="login-btn">
-                    Sign In <i class="fas fa-arrow-right" style="margin-left: 8px;"></i>
+                    SIGN IN NOW <i class="fas fa-chevron-right"></i>
                 </button>
 
-                <div class="links">
-                    <a href="forgot_password.php">Forgot Password?</a>
-                    <a href="#">Need Help?</a>
+                <div class="form-links">
+                    <a href="forgot_password.php">Forgot password?</a>
+                    <a href="../../auth/Login.php">New? Enroll here</a>
                 </div>
             </form>
         </div>
-        <p class="footer-text">© 2026 School Management System. All rights reserved.</p>
+        <p class="footer-copyright">© 2026 SMS Student Portal. Powered by SMS Intelligence.</p>
     </div>
+
     <script>
         const togglePassword = document.querySelector("#togglePassword");
         const password = document.querySelector("#student_password");
 
         togglePassword.addEventListener("click", function () {
-            // toggle the type attribute
             const type = password.getAttribute("type") === "password" ? "text" : "password";
             password.setAttribute("type", type);
-
-            // toggle the icon
             this.classList.toggle("fa-eye");
             this.classList.toggle("fa-eye-slash");
         });

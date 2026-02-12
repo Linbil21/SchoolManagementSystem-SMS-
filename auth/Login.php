@@ -388,7 +388,7 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                             </a>
 
                             <!-- Student -->
-                            <a href="Login.php?action=login&role=student" class="role-btn" style="background: white; border: 1.5px solid #dcfce7; grid-column: span 2; padding: 22px 25px;">
+                            <a href="../student/auth/Login.php" class="role-btn" style="background: white; border: 1.5px solid #dcfce7; grid-column: span 2; padding: 22px 25px;">
                                 <div class="role-icon" style="background: #22c55e;">
                                     <i class="fas fa-user-graduate"></i>
                                 </div>

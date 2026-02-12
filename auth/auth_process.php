@@ -37,7 +37,7 @@ function sendEnrolmentEmail($recipientEmail)
         // Dynamic absolute URL detection for email compatibility
         $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https://" : "http://";
         $host = $_SERVER['HTTP_HOST'];
-        $login_url = $protocol . $host . "/auth/Login.php?action=login&role=student&registered=true";
+        $login_url = $protocol . $host . "/student/auth/Login.php?registered=true";
 
         // Email Body with Button
         $mail->Body = "
@@ -233,7 +233,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 sendEnrolmentEmail($email);
 
                 // Redirect to Student Portal login as success
-                header("Location: Login.php?action=login&role=student&registered=true");
+                header("Location: ../student/auth/Login.php?registered=true");
                 exit();
 
             } catch (Exception $e) {
@@ -299,7 +299,7 @@ function process_login($email, $password, $pdo)
                     'superadmin' => '../Super-admin/Dashboard.php',
                     'admission' => '../Admission/Dashboard.php',
                     'cashier' => '../Cashier/Dashboard.php',
-                    'student' => '../Student/Dashboard.php'
+                    'student' => '../student/Dashboard.php'
                 ];
 
                 $location = isset($redirects[$user->role]) ? $redirects[$user->role] : '../auth/Login.php?error=unauthorized';
@@ -327,7 +327,7 @@ function process_login($email, $password, $pdo)
                     $_SESSION['role'] = 'student';
                     $_SESSION['profile_image'] = $student->profile_image;
 
-                    header("Location: ../Student/Dashboard.php");
+                    header("Location: ../student/Dashboard.php");
                     exit();
                 } else {
                     header("Location: Login.php?error=invalid_password");
