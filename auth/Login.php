@@ -114,7 +114,96 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
             animation: fadeIn 0.8s ease-out forwards;
         }
 
-/* ... existing animation code ... */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .role-left { 
+            flex: 1.2; 
+            padding: 60px; 
+            background: #ffffff; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            position: relative; 
+            overflow: hidden; 
+        }
+        
+        .role-left-content {
+            opacity: 0;
+            animation: slideRight 0.8s ease-out 0.3s forwards;
+        }
+        
+        @keyframes slideRight {
+            from { opacity: 0; transform: translateX(-30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .role-right { 
+            flex: 1; 
+            padding: 60px; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            background: white; 
+            border-left: 1px solid #f1f5f9;
+        }
+        
+        .role-right-content {
+            opacity: 0;
+            animation: slideLeft 0.8s ease-out 0.5s forwards;
+        }
+
+        @keyframes slideLeft {
+            from { opacity: 0; transform: translateX(30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .role-btn { 
+            display: flex; 
+            align-items: center; 
+            padding: 16px; 
+            border-radius: 12px; 
+            text-decoration: none; 
+            transition: all 0.3s ease; 
+            margin-bottom: 15px; 
+            position: relative; 
+            overflow: hidden; 
+            opacity: 0;
+            animation: fadeInUp 0.5s ease-out forwards;
+        }
+        
+        .role-btn:nth-child(1) { animation-delay: 0.6s; }
+        .role-btn:nth-child(2) { animation-delay: 0.7s; }
+        .role-btn:nth-child(3) { animation-delay: 0.8s; }
+        .role-btn:nth-child(4) { animation-delay: 0.9s; }
+        
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .role-btn:hover { 
+            transform: translateY(-4px); 
+            box-shadow: 0 10px 25px rgba(50, 100, 255, 0.15); 
+        }
+        .role-icon { 
+            width: 48px; 
+            height: 48px; 
+            border-radius: 10px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            margin-right: 15px; 
+            font-size: 1.2rem; 
+            color: white; 
+            transition: transform 0.3s ease;
+        }
+        
+        .role-btn:hover .role-icon {
+            transform: scale(1.1);
+        }
 
         @media (max-width: 900px) {
             .role-card { flex-direction: column; height: auto; }
