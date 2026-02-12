@@ -60,133 +60,161 @@ switch ($role) {
     <link rel="stylesheet" href="/Assets/css/theme.css">
 
     <style>
-        body {
-            background: var(--bg-color);
-            color: var(--text-color);
-            transition: background 0.3s;
+        .profile-container {
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
-        .main-wrapper {
-            background: var(--bg-color);
-            min-height: 100vh;
-        }
-
-        .profile-header {
-            background: var(--surface-color);
-            padding: 30px;
-            border-radius: 16px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        .profile-header-premium {
+            background: linear-gradient(135deg, var(--accent-color) 0%, #4f46e5 100%);
+            padding: 60px 40px;
+            border-radius: 40px;
+            color: white;
             display: flex;
             align-items: center;
-            gap: 25px;
-            margin-bottom: 30px;
-            transition: 0.3s;
+            gap: 40px;
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(99, 102, 241, 0.2);
         }
 
-        .profile-img {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
+        .profile-header-premium::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 35c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm60-21c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM70 88c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM31 13c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3z' fill='rgba(255,255,255,0.05)' fill-rule='evenodd'/%3E%3C/svg%3E");
+            opacity: 0.4;
+        }
+
+        .profile-avatar-wrapper {
+            position: relative;
+            z-index: 1;
+        }
+
+        .profile-img-lg {
+            width: 140px;
+            height: 140px;
+            border-radius: 40px;
             object-fit: cover;
-            border: 4px solid #f1f5f9;
+            border: 6px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
         }
 
-        .profile-info h1 {
-            font-size: 1.5rem;
-            color: var(--text-color);
-            margin-bottom: 5px;
+        .profile-header-info {
+            z-index: 1;
         }
 
-        .profile-info p {
-            color: var(--text-muted);
-            margin-bottom: 10px;
-        }
-
-        .badge-role {
-            background: rgba(37, 99, 235, 0.1);
-            color: var(--accent-color);
-            padding: 6px 16px;
-            border-radius: 30px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .badge-super {
-            background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+        .profile-header-info h1 {
+            font-size: 2.2rem;
+            font-weight: 850;
+            letter-spacing: -1.5px;
+            margin-bottom: 8px;
             color: white;
-            box-shadow: 0 4px 10px rgba(217, 119, 6, 0.2);
         }
 
-        .grid-layout {
+        .profile-header-info p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .role-badge-premium {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 8px 20px;
+            border-radius: 14px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .info-grid {
             display: grid;
             grid-template-columns: 2fr 1fr;
             gap: 30px;
         }
 
-        .card {
-            background: var(--surface-color);
-            padding: 25px;
-            border-radius: 16px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-            transition: 0.3s;
+        @media (max-width: 992px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+            .profile-header-premium {
+                flex-direction: column;
+                text-align: center;
+                padding: 40px 20px;
+            }
         }
 
-        .card-title {
-            font-size: 1.1rem;
+        .field-group {
+            margin-bottom: 25px;
+        }
+
+        .field-label {
+            display: block;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .input-premium {
+            width: 100%;
+            padding: 16px 20px;
+            background: var(--hover-bg);
+            border: 2px solid transparent;
+            border-radius: 18px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-color);
+            transition: all 0.3s ease;
+        }
+
+        .input-premium:focus {
+            background: var(--surface-color);
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+            outline: none;
+        }
+
+        .input-premium:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .stat-item {
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stat-item:last-child {
+            border-bottom: none;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .stat-value {
             font-weight: 700;
             color: var(--text-color);
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid var(--border-color);
         }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            font-size: 0.85rem;
-            color: var(--text-muted);
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            background: var(--bg-color);
-            color: var(--text-color);
-            font-family: inherit;
-            transition: 0.2s;
-        }
-
-        .form-control:focus {
-            border-color: var(--accent-color);
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-        }
-
-        .btn-save {
-            background: #2563eb;
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .btn-save:hover {
-            background: #1d4ed8;
-        }
+    </style>
     </style>
 </head>
 
@@ -214,78 +242,86 @@ switch ($role) {
         ?>
 
         <div class="content-area">
-            <div class="profile-header">
-                <img src="https://ui-avatars.com/api/?name=<?php echo urlencode($user_name); ?>&background=random&size=200"
-                    class="profile-img" alt="Profile">
-                <div class="profile-info">
-                    <h1>
-                        <?php echo htmlspecialchars($user_name); ?>
-                    </h1>
-                    <p>
-                        <?php echo htmlspecialchars($user_email); ?>
-                    </p>
-                    <span class="badge-role <?php echo (strpos(strtolower($user_role), 'super') !== false) ? 'badge-super' : ''; ?>">
-                        <?php echo htmlspecialchars($user_role); ?>
-                    </span>
+            <div class="profile-header-premium">
+                <div class="profile-avatar-wrapper">
+                    <img src="https://ui-avatars.com/api/?name=<?php echo urlencode($user_name); ?>&background=1648bc&color=fff&size=200"
+                        class="profile-img-lg" alt="Profile">
                 </div>
-            </div>
-
-            <div class="grid-layout">
-                <div class="col-left">
-                    <div class="card">
-                        <h3 class="card-title">Personal Information</h3>
-                        <form>
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                                <div class="form-group">
-                                    <label class="form-label">Full Name</label>
-                                    <input type="text" class="form-control"
-                                        value="<?php echo htmlspecialchars($user_name); ?>">
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Email Address</label>
-                                    <input type="email" class="form-control"
-                                        value="<?php echo htmlspecialchars($user_email); ?>">
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Phone Number</label>
-                                    <input type="text" class="form-control" placeholder="+63 900 000 0000">
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-label">Designation</label>
-                                    <input type="text" class="form-control" value="<?php echo ucfirst($user_role); ?>"
-                                        disabled style="background: #f8fafc;">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Bio</label>
-                                <textarea class="form-control" rows="4" placeholder="Brief description..."></textarea>
-                            </div>
-                            <button type="button" class="btn-save">Save Changes</button>
-                        </form>
-                    </div>
-                </div>
-
-                <div class="col-right">
-                    <div class="card">
-                        <h3 class="card-title">Account Statistics</h3>
-                        <div style="margin-bottom: 15px; display: flex; justify-content: space-between;">
-                            <span style="color: #64748b;">Member Since</span>
-                            <span style="font-weight: 600;">Jan 2024</span>
-                        </div>
-                        <div style="margin-bottom: 15px; display: flex; justify-content: space-between;">
-                            <span style="color: #64748b;">Last Login</span>
-                            <span style="font-weight: 600;">
-                                <?php echo date('M d, Y'); ?>
-                            </span>
-                        </div>
-                        <div style="margin-bottom: 15px; display: flex; justify-content: space-between;">
-                            <span style="color: #64748b;">Status</span>
-                            <span style="color: #10b981; font-weight: 600;">Active</span>
-                        </div>
+                <div class="profile-header-info">
+                    <h1><?php echo htmlspecialchars($user_name); ?></h1>
+                    <p><?php echo htmlspecialchars($user_email); ?></p>
+                    <div class="role-badge-premium">
+                        <i class="fas fa-shield-alt"></i>
+                        <span><?php echo htmlspecialchars($user_role); ?></span>
                     </div>
                 </div>
             </div>
 
+            <div class="info-grid">
+                <div class="card-premium">
+                    <h3 style="font-size: 1.3rem; font-weight: 850; letter-spacing: -0.5px; margin-bottom: 30px; display: flex; align-items: center; gap: 15px;">
+                        <i class="fas fa-id-card-alt" style="color: var(--accent-color);"></i>
+                        Personal Details
+                    </h3>
+                    <form>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px;">
+                            <div class="field-group">
+                                <label class="field-label">Full Name</label>
+                                <input type="text" class="input-premium" value="<?php echo htmlspecialchars($user_name); ?>">
+                            </div>
+                            <div class="field-group">
+                                <label class="field-label">Email Address</label>
+                                <input type="email" class="input-premium" value="<?php echo htmlspecialchars($user_email); ?>">
+                            </div>
+                            <div class="field-group">
+                                <label class="field-label">Primary Contact</label>
+                                <input type="text" class="input-premium" placeholder="+63 900 000 0000">
+                            </div>
+                            <div class="field-group">
+                                <label class="field-label">Official Designation</label>
+                                <input type="text" class="input-premium" value="<?php echo ucfirst($user_role); ?>" disabled>
+                            </div>
+                        </div>
+                        <div class="field-group" style="margin-top: 10px;">
+                            <label class="field-label">Professional Bio</label>
+                            <textarea class="input-premium" rows="4" placeholder="Briefly describe your responsibilities..."></textarea>
+                        </div>
+                        <div style="margin-top: 20px; text-align: right;">
+                            <button type="button" class="btn-premium">
+                                <i class="fas fa-save"></i>
+                                Save Profile Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="card-premium">
+                    <h3 style="font-size: 1.2rem; font-weight: 850; letter-spacing: -0.5px; margin-bottom: 25px; display: flex; align-items: center; gap: 12px;">
+                        <i class="fas fa-chart-pie" style="color: #f59e0b;"></i>
+                        Account Summary
+                    </h3>
+                    <div class="stat-item">
+                        <span class="stat-label">Member Since</span>
+                        <span class="stat-value">Jan 2024</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Last Session</span>
+                        <span class="stat-value"><?php echo date('M d, Y'); ?></span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Account Health</span>
+                        <span class="stat-value" style="color: #10b981;">Excellent</span>
+                    </div>
+                    
+                    <div style="margin-top: 40px; text-align: center;">
+                        <div style="width: 80px; height: 80px; background: var(--hover-bg); border-radius: 20px; display: inline-flex; align-items: center; justify-content: center; font-size: 2rem; color: var(--accent-color); margin-bottom: 15px;">
+                            <i class="fas fa-user-shield"></i>
+                        </div>
+                        <h4 style="font-weight: 800; margin-bottom: 5px;">Secure Account</h4>
+                        <p style="font-size: 0.85rem; color: var(--text-muted);">Your account is protected by enterprise-grade security.</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <script>

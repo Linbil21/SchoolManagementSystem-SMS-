@@ -58,128 +58,136 @@ switch ($role) {
     <link rel="stylesheet" href="/Assets/css/theme.css">
 
     <style>
-        body {
-            background: var(--bg-color);
-            color: var(--text-color);
-            transition: background 0.3s;
-        }
-
-        .main-wrapper {
-            background: var(--bg-color);
-            min-height: 100vh;
-        }
-
-        .settings-container {
-            max-width: 900px;
+        .settings-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 35px;
+            max-width: 1000px;
             margin: 0 auto;
         }
 
-        .settings-card {
-            background: var(--surface-color);
-            border-radius: 16px;
-            padding: 30px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-            margin-bottom: 25px;
-            transition: 0.3s;
-        }
-
-        .card-header {
+        .settings-section-header {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 20px;
             margin-bottom: 25px;
-            border-bottom: 1px solid var(--border-color);
             padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
         }
 
-        .card-title {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--text-color);
-            margin: 0;
-        }
-
-        .icon-box {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
+        .settings-icon-box {
+            width: 50px;
+            height: 50px;
+            border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.2rem;
+            font-size: 1.3rem;
+            background: var(--hover-bg);
+            color: var(--accent-color);
         }
 
-        .bg-security {
-            background: #fee2e2;
-            color: #ef4444;
-        }
-
-        .bg-notify {
-            background: #eff6ff;
-            color: #2563eb;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: var(--text-muted);
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid var(--border-color);
-            background: var(--bg-color);
-            color: var(--text-color);
-            border-radius: 8px;
-            font-family: inherit;
-        }
-
-        .toggle-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 0;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .toggle-item:last-child {
-            border-bottom: none;
-        }
-
-        .toggle-info h4 {
-            margin: 0 0 5px 0;
-            color: var(--text-color);
-            font-size: 1rem;
-        }
-
-        .toggle-info p {
+        .settings-section-title h2 {
+            font-size: 1.25rem;
+            font-weight: 850;
+            letter-spacing: -0.5px;
             margin: 0;
-            color: var(--text-muted);
-            font-size: 0.85rem;
+            color: var(--text-color);
         }
 
-        /* Switch Toggle */
-        .switch {
+        .settings-section-title p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        .toggle-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+            background: var(--hover-bg);
+            border-radius: 20px;
+            margin-bottom: 15px;
+            transition: 0.3s;
+        }
+
+        .toggle-card:hover {
+            background: var(--surface-color);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transform: translateX(5px);
+        }
+
+        .toggle-label-info h4 {
+            font-size: 0.95rem;
+            font-weight: 750;
+            margin-bottom: 4px;
+        }
+
+        .toggle-label-info p {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+        }
+
+        .input-premium {
+            width: 100%;
+            padding: 15px 20px;
+            background: var(--hover-bg);
+            border: 2px solid transparent;
+            border-radius: 16px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-color);
+            transition: 0.3s;
+        }
+
+        .input-premium:focus {
+            background: var(--surface-color);
+            border-color: var(--accent-color);
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+
+        .pin-input-group {
+            display: flex;
+            gap: 12px;
+        }
+
+        .pin-box-premium {
+            width: 55px;
+            height: 55px;
+            text-align: center;
+            font-size: 1.4rem;
+            font-weight: 800;
+            background: var(--hover-bg);
+            border: 2px solid transparent;
+            border-radius: 16px;
+            color: var(--accent-color);
+            transition: 0.3s;
+        }
+
+        .pin-box-premium:focus {
+            background: var(--surface-color);
+            border-color: var(--accent-color);
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+
+        /* Modern Toggle Switch */
+        .switch-premium {
             position: relative;
             display: inline-block;
             width: 50px;
-            height: 26px;
+            height: 28px;
         }
 
-        .switch input {
+        .switch-premium input {
             opacity: 0;
             width: 0;
             height: 0;
         }
 
-        .slider {
+        .slider-premium {
             position: absolute;
             cursor: pointer;
             top: 0;
@@ -191,78 +199,25 @@ switch ($role) {
             border-radius: 34px;
         }
 
-        .slider:before {
+        .slider-premium:before {
             position: absolute;
             content: "";
             height: 20px;
             width: 20px;
-            left: 3px;
-            bottom: 3px;
+            left: 4px;
+            bottom: 4px;
             background-color: white;
             transition: .4s;
             border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        input:checked+.slider {
-            background-color: #2563eb;
+        input:checked+.slider-premium {
+            background-color: var(--accent-color);
         }
 
-        input:checked+.slider:before {
-            transform: translateX(24px);
-        }
-
-        .btn-action {
-            padding: 12px 25px;
-            border-radius: 8px;
-            font-weight: 600;
-            border: none;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .btn-primary {
-            background: #2563eb;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: #1d4ed8;
-        }
-
-        .btn-outline {
-            background: var(--surface-color);
-            border: 1px solid var(--border-color);
-            color: var(--text-color);
-        }
-
-        .btn-outline:hover {
-            background: var(--hover-bg);
-        }
-
-        /* PIN Input Styles */
-        .pin-container {
-            display: flex;
-            gap: 8px;
-        }
-
-        .pin-box {
-            width: 45px;
-            height: 45px;
-            text-align: center;
-            font-size: 1.25rem;
-            font-weight: 600;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            background: var(--bg-color);
-            color: var(--text-color);
-            transition: all 0.2s;
-        }
-
-        .pin-box:focus {
-            border-color: #ea580c;
-            /* Orange focus to match theme */
-            box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.1);
-            outline: none;
+        input:checked+.slider-premium:before {
+            transform: translateX(22px);
         }
     </style>
 </head>
@@ -291,123 +246,109 @@ switch ($role) {
         ?>
 
         <div class="content-area">
-            <h1 style="font-size: 1.8rem; font-weight: 800; color: var(--text-color); margin-bottom: 30px;">Settings</h1>
+            <h1 style="font-size: 2.2rem; font-weight: 850; color: var(--text-color); margin-bottom: 40px; letter-spacing: -1.5px;">Account Settings</h1>
 
-            <div class="settings-container">
-
+            <div class="settings-grid">
                 <!-- Security Settings -->
-                <div class="settings-card">
-                    <div class="card-header">
-                        <div class="icon-box bg-security"><i class="fas fa-shield-alt"></i></div>
-                        <h2 class="card-title">Security Settings</h2>
+                <div class="card-premium">
+                    <div class="settings-section-header">
+                        <div class="settings-icon-box" style="background: #fee2e2; color: #ef4444;">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div class="settings-section-title">
+                            <h2>Security Credentials</h2>
+                            <p>Manage your password and authentication methods.</p>
+                        </div>
                     </div>
 
                     <form>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
-                            <div class="form-group">
-                                <label class="form-label">Current Password</label>
-                                <input type="password" class="form-control" placeholder="Enter current password">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px;">
+                            <div class="field-group">
+                                <label class="field-label" style="display: block; font-size: 0.75rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 10px;">Current Password</label>
+                                <input type="password" class="input-premium" placeholder="••••••••">
                             </div>
                         </div>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                            <div class="form-group">
-                                <label class="form-label">New Password</label>
-                                <input type="password" class="form-control" placeholder="Enter new password">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px;">
+                            <div class="field-group">
+                                <label class="field-label" style="display: block; font-size: 0.75rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 10px;">New Password</label>
+                                <input type="password" class="input-premium" placeholder="••••••••">
                             </div>
-                            <div class="form-group">
-                                <label class="form-label">Confirm New Password</label>
-                                <input type="password" class="form-control" placeholder="Confirm new password">
+                            <div class="field-group">
+                                <label class="field-label" style="display: block; font-size: 0.75rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 10px;">Confirm New Password</label>
+                                <input type="password" class="input-premium" placeholder="••••••••">
                             </div>
                         </div>
-                        <div style="text-align: right; margin-top: 10px;">
-                            <button type="button" class="btn-action btn-outline"
-                                style="margin-right: 10px;">Cancel</button>
-                            <button type="button" class="btn-action btn-primary">Update Password</button>
+                        <div style="text-align: right;">
+                            <button type="button" class="btn-premium">
+                                <i class="fas fa-key"></i>
+                                Update Credentials
+                            </button>
                         </div>
                     </form>
 
-                    <div style="margin-top: 30px; border-top: 1px solid #f1f5f9; padding-top: 20px;">
-                        <div class="toggle-item">
-                            <div class="toggle-info">
+                    <div style="margin-top: 40px; border-top: 1px solid var(--border-color); padding-top: 30px;">
+                        <div class="toggle-card">
+                            <div class="toggle-label-info">
                                 <h4>Two-Factor Authentication (2FA)</h4>
-                                <p>Add an extra layer of security to your account.</p>
+                                <p>Add an extra layer of security to your Super Admin account.</p>
                             </div>
-                            <label class="switch">
+                            <label class="switch-premium">
                                 <input type="checkbox">
-                                <span class="slider"></span>
+                                <span class="slider-premium"></span>
                             </label>
                         </div>
 
-                        <div class="toggle-item">
-                            <div class="toggle-info">
-                                <h4>Login Alerts</h4>
-                                <p>Receive emails about new sign-ins.</p>
+                        <div class="toggle-card" style="background: rgba(239, 68, 68, 0.05);">
+                            <div class="toggle-label-info">
+                                <h4 style="color: #ef4444;">Critical Login Alerts</h4>
+                                <p>Get notified immediately on unauthorized access attempts.</p>
                             </div>
-                            <label class="switch">
+                            <label class="switch-premium">
                                 <input type="checkbox" checked>
-                                <span class="slider"></span>
+                                <span class="slider-premium"></span>
                             </label>
                         </div>
                     </div>
                 </div>
 
                 <!-- PIN Security -->
-                <div class="settings-card">
-                    <div class="card-header">
-                        <div class="icon-box" style="background: #fff7ed; color: #ea580c;"><i class="fas fa-key"></i>
+                <div class="card-premium">
+                    <div class="settings-section-header">
+                        <div class="settings-icon-box" style="background: #fff7ed; color: #ea580c;">
+                            <i class="fas fa-lock"></i>
                         </div>
-                        <h2 class="card-title">PIN Security</h2>
+                        <div class="settings-section-title">
+                            <h2>Security PIN</h2>
+                            <p>Required for high-level system modifications.</p>
+                        </div>
                     </div>
 
-                    <p style="color: #64748b; margin-bottom: 20px; font-size: 0.9rem;">
-                        Set a 4-digit Security PIN for sensitive transactions and account recovery.
-                    </p>
-
                     <form id="pinForm">
-                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px;">
-                            <div class="form-group">
-                                <label class="form-label">Current PIN</label>
-                                <div class="pin-container" id="current-pin">
-                                    <input type="password" class="pin-box" maxlength="1"
-                                        oninput="moveToNext(this, 'current-pin-2')" id="current-pin-1">
-                                    <input type="password" class="pin-box" maxlength="1"
-                                        oninput="moveToNext(this, 'current-pin-3')" id="current-pin-2">
-                                    <input type="password" class="pin-box" maxlength="1"
-                                        oninput="moveToNext(this, 'current-pin-4')" id="current-pin-3">
-                                    <input type="password" class="pin-box" maxlength="1"
-                                        oninput="moveToNext(this, null)" id="current-pin-4">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 30px; margin-bottom: 30px;">
+                            <div>
+                                <label class="field-label" style="display: block; font-size: 0.75rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 12px;">Current PIN</label>
+                                <div class="pin-input-group" id="current-pin">
+                                    <input type="password" class="pin-box-premium" maxlength="1" oninput="moveToNext(this, 'current-pin-2')" id="current-pin-1">
+                                    <input type="password" class="pin-box-premium" maxlength="1" oninput="moveToNext(this, 'current-pin-3')" id="current-pin-2">
+                                    <input type="password" class="pin-box-premium" maxlength="1" oninput="moveToNext(this, 'current-pin-4')" id="current-pin-3">
+                                    <input type="password" class="pin-box-premium" maxlength="1" oninput="moveToNext(this, null)" id="current-pin-4">
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <label class="form-label">New PIN</label>
-                                <div class="pin-container" id="new-pin">
-                                    <input type="password" class="pin-box" maxlength="1"
-                                        oninput="moveToNext(this, 'new-pin-2')" id="new-pin-1">
-                                    <input type="password" class="pin-box" maxlength="1"
-                                        oninput="moveToNext(this, 'new-pin-3')" id="new-pin-2">
-                                    <input type="password" class="pin-box" maxlength="1"
-                                        oninput="moveToNext(this, 'new-pin-4')" id="new-pin-3">
-                                    <input type="password" class="pin-box" maxlength="1"
-                                        oninput="moveToNext(this, null)" id="new-pin-4">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Confirm PIN</label>
-                                <div class="pin-container" id="confirm-pin">
-                                    <input type="password" class="pin-box" maxlength="1"
-                                        oninput="moveToNext(this, 'confirm-pin-2')" id="confirm-pin-1">
-                                    <input type="password" class="pin-box" maxlength="1"
-                                        oninput="moveToNext(this, 'confirm-pin-3')" id="confirm-pin-2">
-                                    <input type="password" class="pin-box" maxlength="1"
-                                        oninput="moveToNext(this, 'confirm-pin-4')" id="confirm-pin-3">
-                                    <input type="password" class="pin-box" maxlength="1"
-                                        oninput="moveToNext(this, null)" id="confirm-pin-4">
+                            <div>
+                                <label class="field-label" style="display: block; font-size: 0.75rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 12px;">New Security PIN</label>
+                                <div class="pin-input-group" id="new-pin">
+                                    <input type="password" class="pin-box-premium" maxlength="1" oninput="moveToNext(this, 'new-pin-2')" id="new-pin-1">
+                                    <input type="password" class="pin-box-premium" maxlength="1" oninput="moveToNext(this, 'new-pin-3')" id="new-pin-2">
+                                    <input type="password" class="pin-box-premium" maxlength="1" oninput="moveToNext(this, 'new-pin-4')" id="new-pin-3">
+                                    <input type="password" class="pin-box-premium" maxlength="1" oninput="moveToNext(this, null)" id="new-pin-4">
                                 </div>
                             </div>
                         </div>
-                        <div style="text-align: right; margin-top: 15px;">
-                            <button type="button" class="btn-action btn-primary" style="background: #ea580c;">Update
-                                PIN</button>
+                        <div style="text-align: right;">
+                            <button type="button" class="btn-premium" style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);">
+                                <i class="fas fa-shield-alt"></i>
+                                Save Security PIN
+                            </button>
                         </div>
                     </form>
                 </div>
@@ -423,35 +364,39 @@ switch ($role) {
                 </script>
 
                 <!-- Preference Settings -->
-                <div class="settings-card">
-                    <div class="card-header">
-                        <div class="icon-box bg-notify"><i class="fas fa-bell"></i></div>
-                        <h2 class="card-title">Preferences</h2>
+                <div class="card-premium">
+                    <div class="settings-section-header">
+                        <div class="settings-icon-box" style="background: #eff6ff; color: #2563eb;">
+                            <i class="fas fa-sliders-h"></i>
+                        </div>
+                        <div class="settings-section-title">
+                            <h2>System Preferences</h2>
+                            <p>Customize your dashboard experience.</p>
+                        </div>
                     </div>
 
-                    <div class="toggle-item">
-                        <div class="toggle-info">
-                            <h4>Email Notifications</h4>
-                            <p>Get updates on enrollment queues and system status.</p>
+                    <div class="toggle-card">
+                        <div class="toggle-label-info">
+                            <h4>Real-time Notifications</h4>
+                            <p>Get instant browser alerts for system events.</p>
                         </div>
-                        <label class="switch">
+                        <label class="switch-premium">
                             <input type="checkbox" checked>
-                            <span class="slider"></span>
+                            <span class="slider-premium"></span>
                         </label>
                     </div>
 
-                    <div class="toggle-item">
-                        <div class="toggle-info">
-                            <h4>Dark Mode</h4>
-                            <p>Toggle system-wide dark appearance.</p>
+                    <div class="toggle-card">
+                        <div class="toggle-label-info">
+                            <h4>Compact Sidebar</h4>
+                            <p>Maximize workspace by collapsing the side navigation.</p>
                         </div>
-                        <label class="switch">
+                        <label class="switch-premium">
                             <input type="checkbox">
-                            <span class="slider"></span>
+                            <span class="slider-premium"></span>
                         </label>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
