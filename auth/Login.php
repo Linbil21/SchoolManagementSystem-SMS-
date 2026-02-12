@@ -189,20 +189,21 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
             box-shadow: 0 10px 25px rgba(50, 100, 255, 0.15); 
         }
         .role-icon { 
-            width: 48px; 
-            height: 48px; 
-            border-radius: 10px; 
+            width: 54px; 
+            height: 54px; 
+            border-radius: 12px; 
             display: flex; 
             align-items: center; 
             justify-content: center; 
-            margin-right: 15px; 
-            font-size: 1.2rem; 
+            margin-right: 18px; 
+            font-size: 1.4rem; 
             color: white; 
+            flex-shrink: 0;
             transition: transform 0.3s ease;
         }
         
         .role-btn:hover .role-icon {
-            transform: scale(1.1);
+            transform: scale(1.1) rotate(5deg);
         }
 
         @media (max-width: 900px) {
@@ -305,7 +306,17 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                         </a>
                     </div>
 
-                    <div style="text-align: center; margin-top: 40px; color: #94a3b8; font-size: 0.85rem;">
+                    <div style="margin-top: 40px; padding: 20px; background: #f8fafc; border-radius: 16px; border: 1px dashed #cbd5e1;">
+                        <h4 style="font-size: 0.8rem; font-weight: 700; color: #1e3a8a; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; text-align: center;">Demo Access Accounts</h4>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.75rem;">
+                            <div style="color: #64748b;"><strong>Admin:</strong> admin@example.com <br> (pass: admin123)</div>
+                            <div style="color: #64748b;"><strong>Staff:</strong> admission@example.com <br> (pass: admission123)</div>
+                            <div style="color: #64748b;"><strong>Cashier:</strong> cashier@example.com <br> (pass: cashier123)</div>
+                            <div style="color: #64748b;"><strong>Super:</strong> superadmin@example.com <br> (pass: superadmin123)</div>
+                        </div>
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 20px; color: #94a3b8; font-size: 0.85rem;">
                         Need help? <a href="#" style="color: #3b82f6; text-decoration: none; font-weight: 600;">Contact support</a>
                     </div>
                 </div>
