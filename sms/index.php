@@ -118,7 +118,15 @@ require_once '../Database/config.php';
             display: flex;
             flex-direction: column;
             justify-content: center;
+            align-items: center; /* Center horizontally */
+            text-align: center;  /* Center text */
             z-index: 10;
+        }
+
+        .hero-text {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
         }
 
         .hero-text h1 {
@@ -133,6 +141,9 @@ require_once '../Database/config.php';
         .text-welcome {
             display: block;
             color: var(--text-main);
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
         }
         
         .text-highlight {
@@ -142,9 +153,9 @@ require_once '../Database/config.php';
         .hero-text p {
             font-size: 1.1rem;
             color: var(--text-secondary);
-            margin-bottom: 2.5rem;
+            margin: 0 auto 2.5rem;
             line-height: 1.6;
-            max-width: 500px;
+            max-width: 600px;
         }
 
         .cta-btn {
@@ -172,11 +183,12 @@ require_once '../Database/config.php';
             position: absolute;
             top: 0;
             right: 0;
-            width: 55%;
+            width: 50%;
             height: 100%;
             z-index: 1;
-            /* Create the diagonal shape */
-            clip-path: polygon(20% 0%, 100% 0%, 100% 100%, 0% 100%);
+            /* Less aggressive clip, or remove specifically for centered design if needed, 
+               but let's keep it for style and adjust z-index */
+            clip-path: polygon(15% 0%, 100% 0%, 100% 100%, 0% 100%);
             background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(37, 99, 235, 0.05) 100%),
                         url('../Assets/image/background.jpg') center/cover no-repeat;
         }
@@ -190,7 +202,7 @@ require_once '../Database/config.php';
             z-index: 1;
         }
         
-        /* Doodle Pattern Overlay (Optional simulation) */
+        /* Doodle Pattern Overlay */
         .doodle-overlay {
             position: absolute;
             inset: 0;
@@ -203,11 +215,10 @@ require_once '../Database/config.php';
         /* Logo Badge */
         .logo-badge {
             position: absolute;
-            top: 50%;
-            left: 50%; /* Center relative to content-right */
-            transform: translate(-50%, -50%);
-            width: 280px;
-            height: 280px;
+            top: 20%;
+            right: 10%;
+            width: 180px;
+            height: 180px;
             background: rgba(255, 255, 255, 0.15);
             backdrop-filter: blur(12px);
             border-radius: 50%;
@@ -223,14 +234,14 @@ require_once '../Database/config.php';
         }
 
         .logo-badge img {
-            width: 100px;
-            margin-bottom: 1rem;
+            width: 60px;
+            margin-bottom: 0.5rem;
             filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
         }
 
         .logo-badge h3 {
             color: white;
-            font-size: 1rem;
+            font-size: 0.8rem;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 1px;
@@ -241,86 +252,97 @@ require_once '../Database/config.php';
         /* Illustration Container */
         .illustration-container {
             position: absolute;
-            bottom: 0;
-            right: 5%; 
-            width: 400px;
+            bottom: 50px;
+            right: 5%;
+            width: 450px;
             z-index: 5;
             pointer-events: none;
+            /* Make it responsive */
+            max-width: 45%; 
         }
 
         .illustration-container img {
             width: 100%;
             height: auto;
             display: block;
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.15));
         }
 
         @keyframes float {
-            0% { transform: translate(-50%, -50%) translateY(0px); }
-            50% { transform: translate(-50%, -50%) translateY(-20px); }
-            100% { transform: translate(-50%, -50%) translateY(0px); }
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
         }
 
-        /* Responsive Design */
+        /* Mobile / Tablet Responsive Design */
         @media (max-width: 1024px) {
+            .main-wrapper {
+                flex-direction: column;
+                height: auto;
+                min-height: 100vh;
+                padding-bottom: 2rem;
+            }
+
             .content-left {
                 width: 100%;
-                text-align: center;
-                align-items: center;
-                padding-top: 4rem;
+                padding: 3rem 5% 0; /* Add top padding */
+                justify-content: flex-start;
+                flex: none; /* Don't grow, take content height */
             }
-            
-            .content-right {
-                width: 100%;
-                height: 50vh;
-                top: auto;
-                bottom: 0;
-                clip-path: polygon(0 15%, 100% 0, 100% 100%, 0% 100%);
-            }
-            
-            .logo-badge {
-                width: 200px;
-                height: 200px;
-                top: 60%; /* Position inside the blue area */
-                left: 50%;
-                transform: translate(-50%, -50%);
-            }
-            
-            .logo-badge img {
-                width: 70px;
-            }
-            
+
             .hero-text h1 {
                 font-size: 2.5rem;
             }
-            
+
+            /* Adjust background for mobile */
+            .content-right {
+                position: relative;
+                width: 100%;
+                height: 400px; /* Fixed height for graphics area on mobile */
+                clip-path: none; /* Remove diagonal clip on mobile usually looks cleaner or use a bottom wave */
+                clip-path: polygon(0 15%, 100% 0, 100% 100%, 0% 100%);
+                background: linear-gradient(135deg, rgba(37,99,235,0.9), rgba(30,64,175,0.95));
+                margin-top: 2rem;
+                border-radius: 30px 30px 0 0;
+            }
+
+            .content-right::before {
+                opacity: 0.6;
+            }
+
             .illustration-container {
-                display: none; /* Hide illustration on tablet/mobile to keep clean */
+                display: block; /* Ensure it is visible */
+                position: absolute;
+                bottom: 0px;
+                right: 50%;
+                transform: translateX(50%);
+                width: 300px;
+                max-width: 80%;
+            }
+
+            .logo-badge {
+                display: none; /* Hide badge on mobile to simplify/avoid overlap */
+            }
+            
+            /* Center the CTA/Button */
+            .cta-btn {
+                width: 100%;
+                max-width: 300px;
             }
         }
 
         @media (max-width: 480px) {
-            .content-right {
-                height: 45vh;
-                clip-path: polygon(0 10%, 100% 0, 100% 100%, 0% 100%);
-            }
-
-            .logo-badge {
-                width: 160px;
-                height: 160px;
-                top: 55%;
-            }
-
-            .logo-badge img {
-                width: 60px;
-            }
-
             .hero-text h1 {
                 font-size: 2rem;
-                margin-bottom: 1rem;
             }
             
-            .nav {
-                padding: 1rem;
+            .content-right {
+                height: 350px;
+                clip-path: polygon(0 10%, 100% 0, 100% 100%, 0% 100%);
+            }
+            
+            .illustration-container {
+                width: 250px;
             }
         }
     </style>
@@ -340,8 +362,8 @@ require_once '../Database/config.php';
     <div class="main-wrapper">
         <div class="content-left">
             <div class="hero-text">
-                <h1 class="text-welcome">Welcome To</h1>
-                <h1 class="text-highlight">School<br>Management<br>System</h1>
+                <span class="text-welcome">Welcome To</span>
+                <h1 class="text-highlight">School Management<br>System</h1>
                 <p>Efficiently manage student records, faculty activities, and school operations — all in one accessible platform.</p>
                 <a href="../auth/Login.php" class="cta-btn">Get Started</a>
             </div>
@@ -349,14 +371,16 @@ require_once '../Database/config.php';
 
         <div class="content-right">
             <div class="doodle-overlay"></div>
+            
+            <!-- Logo badge floating (hidden on mobile) -->
             <div class="logo-badge">
                 <img src="../Assets/image/logo.png" alt="School Logo">
                 <h3>School<br>Management<br>System</h3>
             </div>
             
-            <!-- Illustration positioned at bottom right if on desktop -->
+            <!-- Hero Image / Illustration -->
             <div class="illustration-container">
-                <img src="https://cdni.iconscout.com/illustration/premium/thumb/students-studying-online-2995844-2524673.png" alt="Education Illustration">
+                <img src="../Assets/image/hero.png" alt="School Management Hero">
             </div>
         </div>
     </div>
