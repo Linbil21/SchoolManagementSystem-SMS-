@@ -50,7 +50,7 @@ body {
     overflow-x: hidden;
 }
 
-/* Sidebar Styles */
+/* Sidebar Styles Update */
 .sidebar {
     width: 270px;
     /* Slight reduction */
@@ -64,6 +64,8 @@ body {
     flex-direction: column;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     flex-shrink: 0;
+    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.02);
+    /* Subtle depth */
 }
 
 .sidebar.collapsed {
@@ -79,6 +81,14 @@ body {
     align-items: center;
     gap: 12px;
     text-decoration: none;
+}
+
+/* Content Area Polish */
+.content-area {
+    padding: 25px 35px;
+    /* Tighter vertical, slightly wider horizontal */
+    flex: 1;
+    animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .sidebar-logo {
@@ -407,13 +417,36 @@ body {
     border: 2px solid var(--surface-color);
 }
 
+/* Global resets for Sidebar Dots */
+.sidebar ul,
+.sidebar li,
+.sidebar-menu ul,
+.sidebar-menu li {
+    list-style: none !important;
+    list-style-type: none !important;
+    margin: 0;
+    padding: 0;
+}
+
+.sidebar li::marker,
+.sidebar-menu li::marker {
+    content: none !important;
+    display: none !important;
+}
+
+/* User Profile Center Polish */
+.user-wrapper {
+    position: relative;
+}
+
 .head-user {
     display: flex;
     align-items: center;
     gap: 12px;
     cursor: pointer;
-    padding: 8px 15px;
-    border-radius: 16px;
+    padding: 6px 15px;
+    /* Tighter padding */
+    border-radius: 14px;
     transition: 0.3s;
     background: var(--hover-bg);
     border: 1px solid var(--border-color);
@@ -421,38 +454,48 @@ body {
 
 .head-user:hover {
     border-color: var(--accent-color);
+    background: var(--surface-color);
+    box-shadow: var(--shadow-sm);
 }
 
 .head-user .user-info {
     text-align: right;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .head-user .name {
     display: block;
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     font-weight: 700;
-    line-height: 1;
+    line-height: 1.2;
+    color: var(--text-color);
 }
 
 .head-user .role {
-    font-size: 0.7rem;
+    font-size: 0.68rem;
     color: var(--text-muted);
-    font-weight: 500;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .avatar-circle {
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
+    width: 38px;
+    /* Slightly smaller to match header density */
+    height: 38px;
+    border-radius: 12px;
+    /* Squircle look */
     background: linear-gradient(135deg, var(--accent-color) 0%, #0a2e7a 100%);
     color: white;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 800;
-    font-size: 0.95rem;
-    border: 2px solid white;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    font-size: 0.85rem;
+    border: 2px solid var(--surface-color);
+    box-shadow: 0 4px 10px rgba(22, 72, 188, 0.2);
 }
 
 /* Content Area */
