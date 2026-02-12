@@ -19,10 +19,11 @@ require_once '../Database/config.php';
     <style>
         :root {
             --primary: #2563eb;
-            --primary-dark: #1e40af;
-            --text-main: #1e293b;
+            --primary-dark: #0f172a;
+            --text-main: #0f172a;
             --text-secondary: #64748b;
-            --gradient-accent: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            --gradient-accent: linear-gradient(90deg, #2563eb 0%, #3b82f6 100%);
+            --blue-overlay: linear-gradient(135deg, rgba(219, 234, 254, 0.4) 0%, rgba(37, 99, 235, 0.1) 100%);
         }
 
         * {
@@ -33,7 +34,7 @@ require_once '../Database/config.php';
         }
 
         body {
-            background-color: #f8fafc;
+            background-color: #ffffff;
             overflow-x: hidden;
             height: 100vh;
             display: flex;
@@ -41,18 +42,16 @@ require_once '../Database/config.php';
             position: relative;
         }
 
-        /* Navbar */
+        /* Navbar (Hidden on strictly mobile landing usually, but keeping simplistic) */
         nav {
             position: absolute;
             top: 0;
             width: 100%;
-            padding: 15px 5%;
+            padding: 20px 25px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(255, 255, 255, 0.95);
             z-index: 1000;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
 
         .logo-container {
@@ -62,13 +61,13 @@ require_once '../Database/config.php';
         }
 
         .logo-container img {
-            width: 35px;
+            width: 30px;
         }
 
         .logo-container span {
-            font-weight: 700;
+            font-weight: 600;
             color: var(--primary);
-            font-size: 0.95rem;
+            font-size: 0.9rem;
         }
 
         .menu-btn {
@@ -76,228 +75,193 @@ require_once '../Database/config.php';
             color: var(--primary);
             cursor: pointer;
             padding: 8px;
-            background: #eff6ff;
+            background: rgba(239, 246, 255, 0.5);
             border-radius: 6px;
         }
 
         /* Main Container */
         .page-container {
-            flex: 1;
             position: relative;
             width: 100%;
             height: 100%;
             overflow: hidden;
-            display: flex;
         }
 
-        /* Background Shapes */
+        /* Background Graphics */
+        /* Left side doodles (using an image or CSS radial gradient pattern) */
+        .bg-pattern {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            /* Subtle doodle-like pattern */
+            background-image: 
+                radial-gradient(#cbd5e1 1.5px, transparent 1.5px),
+                radial-gradient(#cbd5e1 1.5px, transparent 1.5px);
+            background-size: 30px 30px;
+            background-position: 0 0, 15px 15px;
+            opacity: 0.3;
+            z-index: 0;
+        }
+
+        /* The Right-side Blue Shape */
         .bg-shape-right {
             position: absolute;
             top: 0;
             right: 0;
-            width: 45%;
+            width: 50%; /* Start broadly */
             height: 100%;
-            background: linear-gradient(135deg, rgba(37, 99, 235, 0.9) 0%, rgba(30, 64, 175, 0.95) 100%),
-                        url('../Assets/image/background.jpg') center/cover;
-            clip-path: polygon(30% 0%, 100% 0%, 100% 100%, 0% 100%);
+            background: linear-gradient(180deg, rgba(239,246,255,0.8) 0%, rgba(59,130,246,0.3) 100%);
+            /* The diagonal split */
+            clip-path: polygon(25% 0%, 100% 0%, 100% 100%, 0% 100%);
             z-index: 1;
+            backdrop-filter: blur(2px);
+            border-left: 1px solid rgba(255,255,255,0.2);
         }
 
-        /* Doodle Pattern on Left */
-        .bg-doodles {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%239C92AC" fill-opacity="0.05"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');
-            z-index: 0;
-        }
-
-        /* Content Area */
+        /* Content Positioning */
         .content-area {
             position: relative;
             z-index: 10;
-            width: 100%;
             height: 100%;
-            padding: 80px 5% 0;
+            padding: 0 8%;
             display: flex;
             flex-direction: column;
+            justify-content: center;
         }
 
         .text-section {
-            width: 55%;
-            padding-top: 40px;
+            max-width: 55%;
+            margin-top: -50px; /* Slight offset upwards */
         }
 
         .text-section h1 {
-            font-size: clamp(2.2rem, 4vw, 3.5rem);
-            line-height: 1.2;
-            font-weight: 800;
+            font-size: clamp(2rem, 5vw, 3rem);
+            line-height: 1.25;
+            font-weight: 700;
             margin-bottom: 20px;
+            text-transform: uppercase;
         }
 
-        .text-dark {
-            color: var(--text-main);
+        .text-line-1, .text-line-2 {
             display: block;
+            color: #0f172a; /* Dark Navy */
         }
 
-        .text-blue {
-            color: var(--primary);
+        .text-highlight {
             display: block;
+            color: #2563eb; /* Bright Blue */
+            font-weight: 800; /* Extra bold */
         }
 
         .text-section p {
-            color: var(--text-secondary);
-            font-size: 0.95rem;
+            font-size: 0.9rem;
+            color: #64748b;
             line-height: 1.6;
             margin-bottom: 30px;
-            max-width: 400px;
+            width: 90%;
         }
 
+        /* Button */
         .cta-btn {
             display: inline-block;
             padding: 12px 30px;
-            background: var(--gradient-accent);
-            color: white;
+            background: linear-gradient(90deg, #1d4ed8 0%, #3b82f6 100%);
+            color: #fff;
+            font-size: 0.85rem;
             font-weight: 600;
-            font-size: 0.9rem;
             border-radius: 25px;
             text-decoration: none;
-            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
-            transition: transform 0.2s;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
         }
 
-        /* Floating Logo Badge */
-        .logo-badge {
+        /* Floating Logo Circle */
+        .logo-circle {
             position: absolute;
-            top: 25%;
-            right: 15%; /* Position relative to screen width */
-            width: 200px;
-            height: 200px;
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(15px);
+            top: 22%;
+            right: 22%; /* Center-ish horizontally on the diagonal line */
+            width: 140px;
+            height: 140px;
+            background: rgba(255, 255, 255, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(8px);
             border-radius: 50%;
-            border: 1px solid rgba(255, 255, 255, 0.4);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
             z-index: 20;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
 
-        .logo-badge img {
-            width: 70px;
-            margin-bottom: 10px;
+        .logo-circle img {
+            width: 50px;
+            margin-bottom: 8px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
         }
 
-        .logo-badge p {
-            font-size: 0.8rem;
+        .logo-circle span {
+            font-size: 0.7rem;
             font-weight: 700;
-            color: #0f172a; /* Dark text for better visibility on glass */
+            color: #0f172a;
+            text-align: center;
             line-height: 1.2;
         }
 
-        /* Illustration at Bottom */
-        .illustration-container {
+        /* Bottom Illustration (Optional, faintly visible behind) */
+        .illustration-bg {
             position: absolute;
             bottom: 0;
             right: 0;
-            width: 100%;
-            height: 45%; 
+            width: 60%;
+            opacity: 0.8;
+            z-index: 2;
             pointer-events: none;
-            z-index: 5;
-            display: flex;
-            justify-content: flex-end;
-            align-items: flex-end;
         }
 
-        .illustration-container img {
-            max-width: 500px;
-            width: 80%;
-            object-fit: contain;
+        .illustration-bg img {
+            width: 100%;
+            display: block;
+            /* Fade it into the bottom */
+            mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to top, transparent 0%, black 20%);
         }
 
-        /* Responsive Design */
-        @media (max-width: 1024px) {
-            .bg-shape-right {
-                width: 55%; 
-                clip-path: polygon(25% 0%, 100% 0%, 100% 100%, 0% 100%);
-            }
-            .text-section {
-                width: 60%;
-            }
-            .logo-badge {
-                width: 160px;
-                height: 160px;
-                right: 10%;
-                top: 20%;
-            }
-        }
-
+        /* Mobile Specific Overrides to MATCH SCREENSHOT */
         @media (max-width: 768px) {
-            /* Mobile Layout Matching Screenshot */
             .bg-shape-right {
-                width: 40%;
-                background: linear-gradient(135deg, rgba(37, 99, 235, 0.8) 0%, rgba(30, 64, 175, 0.9) 100%);
-                clip-path: polygon(0 0%, 100% 0%, 100% 100%, 40% 100%);
+                width: 45%;
+                background: linear-gradient(180deg, rgba(219,234,254,0.6) 0%, rgba(59,130,246,0.3) 100%);
+                /* The specific slant */
+                clip-path: polygon(15% 0%, 100% 0%, 100% 100%, 0% 100%);
+                border-left: 1px solid rgba(255,255,255,0.4);
             }
             
             .text-section {
-                width: 100%;
-                padding-right: 20%; /* Space for the diagonal cut */
-                padding-top: 60px;
-            }
-
-            .logo-badge {
-                right: 5%;
-                top: 18%;
-                width: 140px;
-                height: 140px;
-                background: rgba(255, 255, 255, 0.3);
-                border: 2px solid rgba(255, 255, 255, 0.5);
-            }
-
-            .logo-badge img {
-                width: 50px;
-            }
-
-            .illustration-container {
-                justify-content: flex-end;
+                max-width: 65%;
+                margin-top: 20px;
+                padding-right: 10px;
             }
             
-            .illustration-container img {
-                width: 90%;
-                max-width: 400px;
-            }
-        }
-
-        @media (max-width: 480px) {
-             .bg-shape-right {
-                width: 35%;
-                clip-path: polygon(0 0%, 100% 0%, 100% 100%, 20% 100%);
-            }
-
             .text-section h1 {
-                font-size: 2rem;
-            }
-            
-            .text-section {
-                padding-top: 40px;
-                max-width: 70%;
+                font-size: 1.8rem;
+                margin-bottom: 15px;
             }
 
-            .logo-badge {
-                width: 130px;
-                height: 130px;
-                top: 15%;
-                right: 5%;
+            .logo-circle {
+                width: 120px;
+                height: 120px;
+                top: 18%;
+                right: 12%; 
+                background: rgba(255,255,255,0.3);
+            }
+
+            .logo-circle img {
+                width: 45px;
             }
             
-            .illustration-container img {
-                width: 100%;
+            .illustration-bg {
+                width: 70%;
+                opacity: 0.9;
             }
         }
     </style>
@@ -315,25 +279,26 @@ require_once '../Database/config.php';
     </nav>
 
     <div class="page-container">
-        <!-- Backgrounds -->
-        <div class="bg-doodles"></div>
+        <!-- Background Assets -->
+        <div class="bg-pattern"></div>
         <div class="bg-shape-right"></div>
-
-        <!-- Floating Badge -->
-        <div class="logo-badge">
-            <img src="../Assets/image/logo.png" alt="Badge Logo">
-            <p>School<br>Management System</p>
+        
+        <!-- Center Floating Logo -->
+        <div class="logo-circle">
+            <img src="../Assets/image/logo.png" alt="Logo">
+            <span>School<br>Management System</span>
         </div>
 
-        <!-- Main Content -->
+        <!-- Main Text Content -->
         <div class="content-area">
             <div class="text-section">
                 <h1>
-                    <span class="text-dark">WELCOME</span><br>
-                    <span class="text-dark">TO</span><br>
-                    <span class="text-blue">SCHOOL</span><br>
-                    <span class="text-blue">MANAGEMENT</span><br>
-                    <span class="text-blue">SYSTEM</span>
+                    <span class="text-line-1">WELCOME</span>
+                    <span class="text-line-2">TO</span>
+                    <br>
+                    <span class="text-highlight">SCHOOL</span>
+                    <span class="text-highlight">MANAGEMENT</span>
+                    <span class="text-highlight">SYSTEM</span>
                 </h1>
                 <p>Efficiently manage student records, faculty activities, and school operations — all in one place.</p>
                 <a href="../auth/Login.php" class="cta-btn">Get Started</a>
@@ -341,8 +306,9 @@ require_once '../Database/config.php';
         </div>
 
         <!-- Illustration -->
-        <div class="illustration-container">
-            <img src="../Assets/image/hero.png" alt="Illustration">
+        <div class="illustration-bg">
+             <!-- Using header/hero image as illustration or background graphic -->
+            <img src="../Assets/image/hero.png" alt="School Background">
         </div>
     </div>
 
