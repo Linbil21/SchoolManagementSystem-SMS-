@@ -876,7 +876,8 @@ table tr:last-child td {
 
 .permission-item i {
     color: #10b981;
-    font-size: 0.9rem;
+    font-size: 1rem;
+    flex-shrink: 0;
 }
 
 .btn-manage {
@@ -1186,13 +1187,12 @@ tr:hover td {
 .modal {
     display: none;
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
     background: rgba(15, 23, 42, 0.4);
     backdrop-filter: blur(8px);
-    z-index: 10000;
+    z-index: 99999;
     overflow-y: auto;
     padding: 20px;
 }
@@ -1242,7 +1242,17 @@ tr:hover td {
 
 .modal-header h2 {
     font-size: 1.5rem;
+    font-weight: 850;
+    color: var(--text-color);
+    letter-spacing: -1px;
     margin: 0;
+}
+
+.modal-header p {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    margin-top: 4px;
 }
 
 .modal-close {

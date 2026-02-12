@@ -82,11 +82,11 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'superadmin') {
 
     <!-- Roles Modal -->
     <div id="rolesModal" class="modal centered">
-        <div class="modal-content premium" style="max-width: 600px;">
+        <div class="modal-content premium">
             <div class="modal-header">
                 <div>
-                    <h2 id="modalTitle" style="font-weight: 850; color: var(--text-color); line-height: 1.2;">Configure Permissions</h2>
-                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Select the modules this role can access.</p>
+                    <h2 id="modalTitle">Configure Permissions</h2>
+                    <p>Select the modules this role can access.</p>
                 </div>
                 <div class="modal-close" onclick="closeRolesModal()">
                     <i class="fas fa-times"></i>
@@ -94,12 +94,30 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'superadmin') {
             </div>
             <div class="modal-body">
                 <div class="checkbox-group">
-                    <label class="checkbox-item"><input type="checkbox" checked> <span>Dashboard Access</span></label>
-                    <label class="checkbox-item"><input type="checkbox" checked> <span>User Management</span></label>
-                    <label class="checkbox-item"><input type="checkbox" checked> <span>Reports View</span></label>
-                    <label class="checkbox-item"><input type="checkbox" checked> <span>Data Export</span></label>
-                    <label class="checkbox-item"><input type="checkbox"> <span>System Settings</span></label>
-                    <label class="checkbox-item"><input type="checkbox"> <span>Database Access</span></label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" checked>
+                        <span>Dashboard Access</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" checked>
+                        <span>User Management</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" checked>
+                        <span>Reports View</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" checked>
+                        <span>Data Export</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox">
+                        <span>System Settings</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox">
+                        <span>Database Access</span>
+                    </label>
                 </div>
             </div>
             <div class="modal-footer">
@@ -135,6 +153,5 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'superadmin') {
         }
     </script>
 </body>
-
 </html>
 
