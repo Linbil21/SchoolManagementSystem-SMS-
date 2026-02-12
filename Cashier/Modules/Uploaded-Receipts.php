@@ -266,24 +266,36 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'cashier') {
                                     echo "<tr>
                                             <td>
                                                 <div style='display: flex; align-items: center; gap: 12px;'>
-                                                    <div style='width: 36px; height: 36px; border-radius: 10px; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700;'>
+                                                    <div style='width: 42px; height: 42px; border-radius: 12px; background: #e0e7ff; color: #4338ca; display: flex; align-items: center; justify-content: center; font-weight: 800; border: 1px solid #c7d2fe;'>
                                                         " . substr($row->first_name, 0, 1) . "
                                                     </div>
                                                     <div>
-                                                        <p style='font-weight: 700;'>$name</p>
-                                                        <p style='font-size: 0.75rem; color: var(--text-gray);'>$student_id</p>
+                                                        <p style='font-weight: 700; color: #1e293b; margin: 0;'>$name</p>
+                                                        <p style='font-size: 0.75rem; color: #64748b; margin: 0;'>$student_id</p>
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td style='font-family: monospace; font-weight: 600;'>$ref</td>
-                                            <td style='font-weight: 700; color: var(--primary);'>₱$amount</td>
-                                            <td>$date</td>
-                                            <td><button class='btn-view' onclick=\"openVerifyModal('$name', '$ref', '₱$amount', '$method', '$img', '{$row->payment_id}', '$purpose')\">Verify Payment</button></td>
+                                            <td>
+                                                <span style='font-family: monospace; font-weight: 700; color: #475569; background: #f1f5f9; padding: 4px 10px; border-radius: 6px; border: 1px solid #e2e8f0;'>$ref</span>
+                                            </td>
+                                            <td style='font-weight: 800; color: #059669; font-size: 1.05rem;'>₱$amount</td>
+                                            <td style='color: #64748b; font-weight: 500;'>$date</td>
+                                            <td>
+                                                <button class='btn-view' style='background: #1648bc; color: white; border-radius: 12px; padding: 10px 18px; font-weight: 700; box-shadow: 0 4px 12px rgba(22, 72, 188, 0.2); border: none; cursor: pointer; transition: 0.3s;' 
+                                                    onclick=\"openVerifyModal('$name', '$ref', '₱$amount', '$method', '$img', '{$row->payment_id}', '$purpose')\">
+                                                    <i class='fas fa-shield-check' style='margin-right: 8px;'></i>Verify
+                                                </button>
+                                            </td>
                                         </tr>";
                                 }
                             }
                         } catch (PDOException $e) {
-                            echo "<tr><td colspan='5' style='color: red; padding: 20px;'>Error: " . $e->getMessage() . "</td></tr>";
+                            echo "<tr><td colspan='5' style='text-align: center; padding: 40px;'>
+                                    <div style='color: #ef4444; background: #fee2e2; padding: 20px; border-radius: 16px; display: inline-block; border: 1px solid #fecaca;'>
+                                        <i class='fas fa-exclamation-circle' style='margin-right: 8px;'></i>
+                                        <strong>Database Error:</strong> " . $e->getMessage() . "
+                                    </div>
+                                  </td></tr>";
                         }
                         ?>
                     </tbody>

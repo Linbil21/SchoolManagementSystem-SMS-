@@ -271,20 +271,37 @@ try {
                             <?php foreach ($payments as $p): ?>
                                 <tr>
                                     <td>
-                                        <p style="font-weight: 700;"><?php echo htmlspecialchars($p->first_name . " " . $p->last_name); ?></p>
-                                        <p style="font-size: 0.75rem; color: var(--text-gray);"><?php echo htmlspecialchars($p->student_id); ?></p>
+                                        <div style="display: flex; align-items: center; gap: 12px;">
+                                            <div style="width: 42px; height: 42px; border-radius: 12px; background: #f0fdf4; color: #16a34a; display: flex; align-items: center; justify-content: center; font-weight: 800; border: 1px solid #bbf7d0;">
+                                                <?php echo substr($p->first_name, 0, 1); ?>
+                                            </div>
+                                            <div>
+                                                <p style="font-weight: 700; color: #1e293b; margin: 0;"><?php echo htmlspecialchars($p->first_name . " " . $p->last_name); ?></p>
+                                                <p style="font-size: 0.75rem; color: #64748b; margin: 0;"><?php echo htmlspecialchars($p->student_id); ?></p>
+                                            </div>
+                                        </div>
                                     </td>
-                                    <td><?php echo htmlspecialchars($p->description ?: 'Fee Payment'); ?></td>
-                                    <td style="font-weight: 700; color: var(--primary);">₱<?php echo number_format($p->amount, 2); ?></td>
-                                    <td><?php echo htmlspecialchars($p->payment_method); ?></td>
+                                    <td>
+                                        <div style="font-size: 0.85rem; font-weight: 500; color: #475569;">
+                                            <?php echo htmlspecialchars($p->description ?: 'Fee Payment'); ?>
+                                            <span style="display: block; font-size: 0.75rem; color: #94a3b8;"><?php echo htmlspecialchars($p->semester ?: ''); ?></span>
+                                        </div>
+                                    </td>
+                                    <td style="font-weight: 800; color: #059669; font-size: 1.05rem;">₱<?php echo number_format($p->amount, 2); ?></td>
+                                    <td>
+                                        <span style="background: #f1f5f9; color: #475569; padding: 4px 10px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; border: 1px solid #e2e8f0;">
+                                            <?php echo htmlspecialchars($p->payment_method); ?>
+                                        </span>
+                                    </td>
                                     <td>
                                         <span class="status-badge status-<?php echo strtolower($p->status); ?>">
                                             <?php echo htmlspecialchars($p->status); ?>
                                         </span>
                                     </td>
                                     <td>
-                                        <button class="btn-view" onclick="openModal(<?php echo htmlspecialchars(json_encode($p)); ?>)">
-                                            <i class="fas fa-search-dollar"></i> View
+                                        <button class="btn-view" style="background: #1648bc; color: white; border-radius: 12px; padding: 10px 18px; font-weight: 700; box-shadow: 0 4px 12px rgba(22, 72, 188, 0.2); border: none; cursor: pointer; transition: 0.3s;"
+                                            onclick="openModal(<?php echo htmlspecialchars(json_encode($p)); ?>)">
+                                            <i class="fas fa-search-dollar" style="margin-right: 8px;"></i>Details
                                         </button>
                                     </td>
                                 </tr>

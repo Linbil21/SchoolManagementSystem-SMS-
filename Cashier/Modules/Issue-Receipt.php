@@ -238,15 +238,22 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'cashier') {
                         </div>
                     </div>
 
-                    <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #f1f5f9;">
-                        <div class="card-title" style="font-size: 1rem;"><i class="fas fa-list"></i> Particulars</div>
-                        <div class="form-row" style="grid-template-columns: 2fr 1fr;">
-                            <input type="text" placeholder="Description (e.g. Tuition Fee)" value="Partial Tuition Fee">
-                            <input type="number" placeholder="Amount" value="5000">
+                    <div style="margin-top: 25px; padding: 20px; background: #f8fafc; border-radius: 18px; border: 1.5px solid #edf2f7;">
+                        <div class="card-title" style="font-size: 1rem; margin-bottom: 15px;"><i class="fas fa-list-ul"></i> Particulars</div>
+                        <div class="form-row" style="grid-template-columns: 2fr 1fr; gap: 15px; margin-bottom: 15px;">
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label style="font-size: 0.75rem;">Description</label>
+                                <input type="text" placeholder="e.g. Tuition Fee" value="Partial Tuition Fee" style="background: white; border-color: #e2e8f0;">
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label style="font-size: 0.75rem;">Amount</label>
+                                <input type="number" placeholder="0.00" value="5000" style="background: white; border-color: #e2e8f0; font-weight: 700; color: var(--primary);">
+                            </div>
                         </div>
                         <button
-                            style="background: #eef2ff; color: var(--primary); border: none; padding: 10px; border-radius: 10px; font-weight: 600; cursor: pointer; width: 100%;">+
-                            Add Line Item</button>
+                            style="background: white; color: var(--primary); border: 1.5px solid #e2e8f0; padding: 12px; border-radius: 12px; font-weight: 700; cursor: pointer; width: 100%; font-size: 0.85rem; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                            <i class="fas fa-plus-circle"></i> Add Line Item
+                        </button>
                     </div>
 
                     <div class="form-group" style="margin-top: 25px;">
