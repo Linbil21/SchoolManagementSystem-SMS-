@@ -88,71 +88,63 @@ $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
         .page-title h1 { font-size: 1.8rem; font-weight: 800; letter-spacing: -1px; }
         .page-title p { color: var(--text-muted); font-size: 0.95rem; }
 
-        /* Calendar Grid */
-        .calendar-container {
+        /* Tabular Layout Styles */
+        .data-table-container {
             background: var(--card-bg);
             border-radius: 30px;
             padding: 30px;
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05);
             border: 1px solid var(--border);
-        }
-
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 20px;
-        }
-
-        .day-column {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .day-header {
-            text-align: center;
-            padding: 15px;
-            background: var(--bg);
-            border-radius: 15px;
-            margin-bottom: 10px;
-        }
-
-        .day-header h3 { font-size: 0.9rem; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 1px; }
-
-        .schedule-card {
-            background: var(--bg);
-            padding: 15px;
-            border-radius: 18px;
-            border-left: 4px solid var(--primary);
-            transition: all 0.3s ease;
-            cursor: pointer;
-            position: relative;
             overflow: hidden;
         }
 
-        .schedule-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        .data-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
         }
 
-        .class-time { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); margin-bottom: 5px; display: block; }
-        .class-name { font-size: 0.85rem; font-weight: 700; margin-bottom: 8px; line-height: 1.3; }
-        
-        .class-details {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .detail-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 0.75rem;
+        .data-table th {
+            text-align: left;
+            padding: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
             color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 2px solid var(--border);
         }
 
-        .detail-item i { width: 12px; font-size: 0.7rem; }
+        .data-table td {
+            padding: 20px;
+            font-size: 0.95rem;
+            color: var(--text-main);
+            border-bottom: 1px solid var(--border);
+            transition: 0.3s;
+        }
+
+        .data-table tr:last-child td { border-bottom: none; }
+        .data-table tr:hover td { background: var(--bg); }
+
+        .sub-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.75rem;
+            background: rgba(37, 99, 235, 0.1);
+            color: var(--primary);
+        }
+
+        .day-tag {
+            background: #f1f5f9;
+            color: #475569;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-right: 5px;
+        }
 
         @media print {
             @page {
@@ -160,7 +152,7 @@ $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
                 margin: 10mm;
             }
             body { background: white; color: black; font-size: 10pt; }
-            .sidebar, .header, .header-actions, .page-header, .calendar-container, #sidebar-toggle { display: none !important; }
+            .sidebar, .header, .header-actions, .page-header, .calendar-container, .data-table-container, #sidebar-toggle { display: none !important; }
             .main-wrapper { margin-left: 0 !important; }
             .content-area { padding: 0 !important; }
             .cor-print-only { display: block !important; padding: 0; }
@@ -257,39 +249,64 @@ $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
                 </div>
             </div>
 
-            <div class="calendar-container">
-                <div class="calendar-grid">
-                    <?php foreach ($days as $day): ?>
-                        <div class="day-column">
-                            <div class="day-header">
-                                <h3><?php echo substr($day, 0, 3); ?></h3>
-                            </div>
-                            
-                            <?php if (isset($weekly_schedule[$day])): ?>
-                                <?php foreach ($weekly_schedule[$day] as $class): ?>
-                                    <div class="schedule-card" style="border-left-color: <?php echo $class['color']; ?>;">
-                                        <span class="class-time"><?php echo $class['time']; ?> - <?php echo $class['end']; ?></span>
-                                        <h4 class="class-name"><?php echo htmlspecialchars($class['subject']); ?></h4>
-                                        <div class="class-details">
-                                            <div class="detail-item">
-                                                <i class="fas fa-map-marker-alt"></i>
-                                                <span><?php echo htmlspecialchars($class['room']); ?></span>
-                                            </div>
-                                            <div class="detail-item">
-                                                <i class="fas fa-user-tie"></i>
-                                                <span><?php echo htmlspecialchars($class['teacher']); ?></span>
-                                            </div>
-                                        </div>
+            <div class="data-table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Subject</th>
+                            <th>Schedule</th>
+                            <th>Room</th>
+                            <th>Instructor</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php 
+                        $tabular_data = $portal->getConsolidatedSubjects($weekly_schedule);
+                        if (!empty($tabular_data)):
+                            foreach ($tabular_data as $row):
+                        ?>
+                            <tr>
+                                <td>
+                                    <div style="font-weight: 700; color: var(--text-main); margin-bottom: 2px;"><?php echo htmlspecialchars($row['subject']); ?></div>
+                                    <div style="font-size: 0.75rem; color: var(--text-muted);">CODE: <?php echo $row['code']; ?></div>
+                                </td>
+                                <td>
+                                    <div style="font-weight: 600; margin-bottom: 5px;"><?php echo $row['time']; ?></div>
+                                    <?php foreach ($row['days'] as $d): ?>
+                                        <span class="day-tag"><?php echo $d; ?></span>
+                                    <?php endforeach; ?>
+                                </td>
+                                <td>
+                                    <div class="sub-badge">
+                                        <i class="fas fa-door-open" style="margin-right: 5px; opacity: 0.6;"></i>
+                                        <?php echo htmlspecialchars($row['room']); ?>
                                     </div>
-                                <?php endforeach; ?>
-                            <?php else: ?>
-                                <div style="text-align: center; padding: 20px; opacity: 0.5;">
-                                    <span style="font-size: 0.75rem;">No Classes</span>
-                                </div>
-                            <?php endif; ?>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
+                                </td>
+                                <td>
+                                    <div style="font-weight: 600;"><?php echo htmlspecialchars($row['teacher']); ?></div>
+                                    <div style="font-size: 0.75rem; color: var(--text-muted);">Academic Dept.</div>
+                                </td>
+                                <td>
+                                    <div style="display: flex; align-items: center; gap: 6px; font-weight: 700; font-size: 0.75rem; color: #10b981;">
+                                        <div style="width: 8px; height: 8px; background: #10b981; border-radius: 50%;"></div>
+                                        Verified
+                                    </div>
+                                </td>
+                            </tr>
+                        <?php 
+                            endforeach; 
+                        else: 
+                        ?>
+                            <tr>
+                                <td colspan="5" style="text-align: center; padding: 50px; color: var(--text-muted);">
+                                    <i class="fas fa-calendar-times" style="font-size: 2rem; display: block; margin-bottom: 10px; opacity: 0.3;"></i>
+                                    No subjects found for current semester.
+                                </td>
+                            </tr>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
             </div>
 
             <!-- Professional COR Print Layout (Hidden on Screen) -->
