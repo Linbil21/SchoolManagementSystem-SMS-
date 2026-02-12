@@ -968,6 +968,16 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
             document.head.appendChild(swalScript);
         }
 
+        // AUTO-TRIGGER SCAN ON FILE SELECTION
+        document.querySelectorAll('.ocr-input').forEach(input => {
+            input.addEventListener('change', function() {
+                if (this.files && this.files.length > 0) {
+                    const badge = this.closest('.input-group').querySelector('.ocr-badge');
+                    if (badge) triggerScan(badge);
+                }
+            });
+        });
+
         document.querySelectorAll('.toggle-password').forEach(icon => {
             icon.addEventListener('click', function () {
                 const input = this.parentElement.querySelector('input');
