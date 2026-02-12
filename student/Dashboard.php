@@ -367,7 +367,7 @@ if ($current_day !== 'Sunday') {
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title">Today's Schedule (<?php echo $current_day; ?>)</h3>
-                    <a href="/Student/Modules/Academic/Schedule.php"
+                    <a href="/student/Modules/Academic/Schedule.php"
                         style="font-size: 0.85rem; color: var(--primary); text-decoration: none; font-weight: 600;">View
                         Full</a>
                 </div>

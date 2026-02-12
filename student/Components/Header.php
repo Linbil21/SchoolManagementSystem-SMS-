@@ -92,10 +92,10 @@ if (count($name_parts) >= 2) {
                     </div>
                 </div>
                 <div class="dropdown-body">
-                    <a href="/Student/Submodules/profile.php" class="dropdown-link">
+                    <a href="/student/Submodules/profile.php" class="dropdown-link">
                         <i class="fas fa-user-circle"></i> My Profile
                     </a>
-                    <a href="/Student/auth/logout.php" class="dropdown-link logout-link">
+                    <a href="/student/auth/logout.php" class="dropdown-link logout-link">
                         <i class="fas fa-power-off"></i> Sign Out
                     </a>
                 </div>
@@ -446,7 +446,7 @@ if (count($name_parts) >= 2) {
     function markAllRead() {
         const badge = document.querySelector('.notification-btn .badge');
         
-        fetch('/Student/api/mark_notifications_read.php')
+        fetch('/student/api/mark_notifications_read.php')
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
