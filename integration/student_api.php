@@ -19,7 +19,6 @@ try {
                                     e.reference_code,
                                     e.first_name,
                                     e.last_name,
-                                    e.middle_name,
                                     e.status,
                                     e.admission_type,
                                     e.year_level,
