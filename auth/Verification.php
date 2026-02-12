@@ -77,7 +77,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         body {
-            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            background: linear-gradient(rgba(30, 58, 138, 0.6), rgba(30, 58, 138, 0.6)), url('../Assets/image/background.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
             height: 100vh;
             display: flex;
             align-items: center;
@@ -86,15 +89,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         .verification-container {
-            background: var(--glass);
-            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
             padding: 40px;
             border-radius: 24px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
             width: 100%;
             max-width: 450px;
             text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.3);
             animation: slideUp 0.6s ease-out;
         }
 

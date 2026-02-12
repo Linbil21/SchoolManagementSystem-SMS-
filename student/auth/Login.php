@@ -14,12 +14,13 @@ $csrf_token = generateCsrfToken();
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
         :root {
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
-            --secondary: #94a3b8;
-            --accent: #10b981;
-            --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-            --card-bg: rgba(255, 255, 255, 0.85);
+            --primary: #1e40af;
+            --primary-light: #3b82f6;
+            --primary-dark: #1e3a8a;
+            --secondary: #64748b;
+            --accent: #0ea5e9;
+            --bg-gradient: linear-gradient(135deg, rgba(30, 64, 175, 0.8) 0%, rgba(37, 99, 235, 0.8) 100%);
+            --card-bg: rgba(255, 255, 255, 0.95);
         }
 
         * {
@@ -34,7 +35,10 @@ $csrf_token = generateCsrfToken();
             display: flex;
             align-items: center;
             justify-content: center;
-            background: #0f172a;
+            background: linear-gradient(rgba(30, 58, 138, 0.6), rgba(30, 58, 138, 0.6)), url('../../Assets/image/background.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
             position: relative;
             overflow: hidden;
         }
@@ -52,21 +56,21 @@ $csrf_token = generateCsrfToken();
 
         .blob {
             position: absolute;
-            width: 500px;
-            height: 500px;
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(168, 85, 247, 0.15) 100%);
-            filter: blur(80px);
+            width: 600px;
+            height: 600px;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.3) 0%, rgba(30, 64, 175, 0.3) 100%);
+            filter: blur(100px);
             border-radius: 50%;
-            animation: move 20s infinite alternate;
+            animation: move 25s infinite alternate;
         }
 
         .blob-1 { top: -100px; left: -100px; }
         .blob-2 { bottom: -150px; right: -100px; animation-delay: -5s; }
-        .blob-3 { top: 40%; left: 50%; width: 300px; height: 300px; background: rgba(16, 185, 129, 0.1); }
+        .blob-3 { top: 30%; left: 40%; width: 400px; height: 400px; background: rgba(14, 165, 233, 0.2); }
 
         @keyframes move {
-            from { transform: translate(0, 0) scale(1); }
-            to { transform: translate(100px, 100px) scale(1.2); }
+            from { transform: translate(0, 0) scale(1) rotate(0deg); }
+            to { transform: translate(150px, 150px) scale(1.3) rotate(30deg); }
         }
 
         .login-container {
@@ -294,27 +298,35 @@ $csrf_token = generateCsrfToken();
 
         .footer-copyright {
             margin-top: 40px;
-            color: rgba(255, 255, 255, 0.4);
+            color: rgba(30, 58, 138, 0.7);
             font-size: 0.75rem;
-            font-weight: 500;
+            font-weight: 600;
         }
 
         .back-to-home {
             position: absolute;
             top: 30px;
             left: 30px;
-            color: white;
+            color: #1e3a8a;
             text-decoration: none;
-            font-weight: 600;
+            font-weight: 700;
             font-size: 0.9rem;
             display: flex;
             align-items: center;
             gap: 10px;
-            opacity: 0.7;
-            transition: opacity 0.3s;
+            padding: 10px 15px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+            z-index: 100;
         }
 
-        .back-to-home:hover { opacity: 1; }
+        .back-to-home:hover { 
+            background: white;
+            transform: translateX(-5px);
+            color: var(--primary);
+        }
     </style>
 </head>
 

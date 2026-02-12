@@ -45,7 +45,7 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
 
         /* Style for the 'Already Enrolled?' button to look like the Next button */
         .btn-already-enrolled {
-            background-color: var(--primary-blue);
+            background-color: #1e40af;
             color: #fff;
             text-align: center;
             line-height: 49px;
@@ -56,6 +56,22 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
             border-radius: 6px;
             font-weight: 600;
             display: inline-block;
+            transition: all 0.3s ease;
+        }
+
+        .btn-already-enrolled:hover {
+            background-color: #1e3a8a;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3);
+        }
+
+        .login-btn:hover {
+            box-shadow: 0 10px 25px rgba(30, 64, 175, 0.4) !important;
+        }
+
+        .input-group input:focus {
+            border-color: #1e40af !important;
+            box-shadow: 0 0 0 4px rgba(30, 64, 175, 0.1) !important;
         }
 
         /* Password Toggle Styles */
