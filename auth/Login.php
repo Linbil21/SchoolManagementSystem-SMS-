@@ -1180,14 +1180,16 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                 html: `
                     <div style="text-align: center;">
                         <p style="font-size: 0.9rem; color: #64748b; margin-bottom: 25px;">
-                            We've sent a 4-digit code to <br>
+                            We've sent a 6-digit code to <br>
                             <b style="color: #1e40af;">${maskedEmail}</b>
                         </p>
-                        <div style="display: flex; gap: 12px; justify-content: center; margin-bottom: 25px;">
-                            <input type="text" maxlength="1" class="otp-box" style="width: 55px; height: 65px; text-align: center; font-size: 1.8rem; font-weight: 700; border: 2px solid #e2e8f0; border-radius: 12px; outline: none; transition: all 0.3s;" autofocus>
-                            <input type="text" maxlength="1" class="otp-box" style="width: 55px; height: 65px; text-align: center; font-size: 1.8rem; font-weight: 700; border: 2px solid #e2e8f0; border-radius: 12px; outline: none; transition: all 0.3s;">
-                            <input type="text" maxlength="1" class="otp-box" style="width: 55px; height: 65px; text-align: center; font-size: 1.8rem; font-weight: 700; border: 2px solid #e2e8f0; border-radius: 12px; outline: none; transition: all 0.3s;">
-                            <input type="text" maxlength="1" class="otp-box" style="width: 55px; height: 65px; text-align: center; font-size: 1.8rem; font-weight: 700; border: 2px solid #e2e8f0; border-radius: 12px; outline: none; transition: all 0.3s;">
+                        <div style="display: flex; gap: 8px; justify-content: center; margin-bottom: 25px;">
+                            <input type="text" maxlength="1" class="otp-box" style="width: 45px; height: 55px; text-align: center; font-size: 1.5rem; font-weight: 700; border: 2px solid #e2e8f0; border-radius: 10px; outline: none; transition: all 0.3s;" autofocus>
+                            <input type="text" maxlength="1" class="otp-box" style="width: 45px; height: 55px; text-align: center; font-size: 1.5rem; font-weight: 700; border: 2px solid #e2e8f0; border-radius: 10px; outline: none; transition: all 0.3s;">
+                            <input type="text" maxlength="1" class="otp-box" style="width: 45px; height: 55px; text-align: center; font-size: 1.5rem; font-weight: 700; border: 2px solid #e2e8f0; border-radius: 10px; outline: none; transition: all 0.3s;">
+                            <input type="text" maxlength="1" class="otp-box" style="width: 45px; height: 55px; text-align: center; font-size: 1.5rem; font-weight: 700; border: 2px solid #e2e8f0; border-radius: 10px; outline: none; transition: all 0.3s;">
+                            <input type="text" maxlength="1" class="otp-box" style="width: 45px; height: 55px; text-align: center; font-size: 1.5rem; font-weight: 700; border: 2px solid #e2e8f0; border-radius: 10px; outline: none; transition: all 0.3s;">
+                            <input type="text" maxlength="1" class="otp-box" style="width: 45px; height: 55px; text-align: center; font-size: 1.5rem; font-weight: 700; border: 2px solid #e2e8f0; border-radius: 10px; outline: none; transition: all 0.3s;">
                         </div>
                         <p style="font-size: 0.8rem; color: #94a3b8;">Please enter the code sent to your email to continue.</p>
                     </div>
@@ -1223,8 +1225,8 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                     const inputs = document.querySelectorAll('.otp-box');
                     let otp = '';
                     inputs.forEach(input => otp += input.value);
-                    if (otp.length < 4) {
-                        Swal.showValidationMessage('Please enter all 4 digits');
+                    if (otp.length < 6) {
+                        Swal.showValidationMessage('Please enter all 6 digits');
                         return false;
                     }
                     return otp;

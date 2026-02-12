@@ -110,8 +110,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 }
             }
 
-            // Generate 4-digit OTP
-            $otp = rand(1000, 9999);
+            // Generate 6-digit OTP
+            $otp = rand(100000, 999999);
 
             $pdo->beginTransaction();
             try {
@@ -244,8 +244,8 @@ function process_login($email, $password, $pdo, $isAjax = false)
             $student = $stmt->fetch();
 
             if ($student && (password_verify($password, $student->password) || $password === $student->password)) {
-                // Generate 4-digit OTP
-                $otp = rand(1000, 9999);
+                // Generate 6-digit OTP
+                $otp = rand(100000, 999999);
                 $updateStmt = $pdo->prepare("UPDATE students SET verification_code = ? WHERE id = ?");
                 $updateStmt->execute([$otp, $student->id]);
 
