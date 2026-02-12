@@ -1000,6 +1000,15 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
             });
         });
 
+        // AUTO-SYNC ADDRESS TO GUARDIAN
+        const studentAddressInput = document.querySelector('input[name="address"]');
+        const guardianAddressInput = document.querySelector('input[name="guardian_address"]');
+        if (studentAddressInput && guardianAddressInput) {
+            studentAddressInput.addEventListener('input', function() {
+                guardianAddressInput.value = this.value;
+            });
+        }
+
         document.querySelectorAll('.toggle-password').forEach(icon => {
             icon.addEventListener('click', function () {
                 const input = this.parentElement.querySelector('input');
