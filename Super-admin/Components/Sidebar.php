@@ -34,15 +34,19 @@ $root = $is_sub ? '../../' : '../'; // Relative to project root
         <ul class="main-menu">
             <!-- User Management Dropdown -->
             <li
-                class="has-dropdown <?php echo (strpos($_SERVER['PHP_SELF'], 'Modules/User-Management') !== false) ? 'active open' : ''; ?>">
+                class="has-dropdown <?php echo (strpos($_SERVER['PHP_SELF'], '/Modules/') !== false) ? 'active open' : ''; ?>">
                 <a href="javascript:void(0)" class="dropdown-toggle">
                     <i class="fas fa-user-shield"></i>
                     <span>User Accounts</span>
                     <i class="fas fa-chevron-right arrow-icon"></i>
                 </a>
                 <ul class="sub-menu">
-                    <li><a href="<?php echo $base; ?>Modules/User-Management.php">Staff Accounts</a></li>
-                    <li><a href="<?php echo $base; ?>Modules/Roles.php">Roles & Permissions</a></li>
+                    <li class="<?php echo ($current_page == 'User-Management.php') ? 'active' : ''; ?>">
+                        <a href="<?php echo $base; ?>Modules/User-Management.php">Staff Accounts</a>
+                    </li>
+                    <li class="<?php echo ($current_page == 'Roles.php') ? 'active' : ''; ?>">
+                        <a href="<?php echo $base; ?>Modules/Roles.php">Roles & Permissions</a>
+                    </li>
                 </ul>
             </li>
         </ul>
@@ -50,18 +54,28 @@ $root = $is_sub ? '../../' : '../'; // Relative to project root
         <p class="menu-label">ADMISSION CONTROL</p>
         <ul class="main-menu">
             <!-- Admission Summary Dropdown -->
-            <li class="has-dropdown <?php echo (strpos($_SERVER['PHP_SELF'], 'Submodules/') !== false) ? 'active open' : ''; ?>">
+            <li class="has-dropdown <?php echo (strpos($_SERVER['PHP_SELF'], '/Submodules/') !== false) ? 'active open' : ''; ?>">
                 <a href="javascript:void(0)" class="dropdown-toggle">
                     <i class="fas fa-user-graduate"></i>
                     <span>Admission Hub</span>
                     <i class="fas fa-chevron-right arrow-icon"></i>
                 </a>
                 <ul class="sub-menu">
-                    <li class="<?php echo ($current_page == 'Admission-Dashboard.php') ? 'active' : ''; ?>"><a href="<?php echo $base; ?>Submodules/Admission-Dashboard.php">Admission Dashboard</a></li>
-                    <li class="<?php echo ($current_page == 'Applications-Manager.php') ? 'active' : ''; ?>"><a href="<?php echo $base; ?>Submodules/Applications-Manager.php">Applications Manager</a></li>
-                    <li class="<?php echo ($current_page == 'Evaluation-Desk.php') ? 'active' : ''; ?>"><a href="<?php echo $base; ?>Submodules/Evaluation-Desk.php">Evaluation Desk</a></li>
-                    <li class="<?php echo ($current_page == 'Student-ID-Center.php') ? 'active' : ''; ?>"><a href="<?php echo $base; ?>Submodules/Student-ID-Center.php">Student ID Center</a></li>
-                    <li class="<?php echo ($current_page == 'Requirements-Config.php') ? 'active' : ''; ?>"><a href="<?php echo $base; ?>Submodules/Requirements-Config.php">Requirements Config</a></li>
+                    <li class="<?php echo ($current_page == 'Admission-Dashboard.php') ? 'active' : ''; ?>">
+                        <a href="<?php echo $base; ?>Submodules/Admission-Dashboard.php">Admission Dashboard</a>
+                    </li>
+                    <li class="<?php echo ($current_page == 'Applications-Manager.php') ? 'active' : ''; ?>">
+                        <a href="<?php echo $base; ?>Submodules/Applications-Manager.php">Applications Manager</a>
+                    </li>
+                    <li class="<?php echo ($current_page == 'Evaluation-Desk.php') ? 'active' : ''; ?>">
+                        <a href="<?php echo $base; ?>Submodules/Evaluation-Desk.php">Evaluation Desk</a>
+                    </li>
+                    <li class="<?php echo ($current_page == 'Student-ID-Center.php') ? 'active' : ''; ?>">
+                        <a href="<?php echo $base; ?>Submodules/Student-ID-Center.php">Student ID Center</a>
+                    </li>
+                    <li class="<?php echo ($current_page == 'Requirements-Config.php') ? 'active' : ''; ?>">
+                        <a href="<?php echo $base; ?>Submodules/Requirements-Config.php">Requirements Config</a>
+                    </li>
                 </ul>
             </li>
         </ul>
