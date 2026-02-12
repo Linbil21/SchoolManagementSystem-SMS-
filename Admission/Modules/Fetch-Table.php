@@ -151,11 +151,8 @@ $current_page = 'Fetch-Table.php';
             
             <div class="header-strip">
                 <div>
-                    <h1>Live Fetch Table</h1>
-                    <p style="color: var(--text-muted); font-size: 0.85rem;">Streaming subjects from https://css.jampzdev.com/api/student-subject.php</p>
-                </div>
-                <div class="live-indicator">
-                    <span class="pulse-dot"></span> API CONNECTED
+                    <h1>List of student</h1>
+
                 </div>
             </div>
 
