@@ -35,16 +35,34 @@ $role = $_SESSION['role'];
                     <div class="stat-icon"><i class="fas fa-users"></i></div>
                 </div>
                 <div class="stat-card">
+                    <div class="stat-info"><span>Total Revenue</span>
+                        <h2>₱1.2M</h2>
+                    </div>
+                    <div class="stat-icon" style="color: #10b981;"><i class="fas fa-coins"></i></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-info"><span>Active Students</span>
+                        <h2>1,280</h2>
+                    </div>
+                    <div class="stat-icon" style="color: #6366f1;"><i class="fas fa-user-graduate"></i></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-info"><span>Faculty & Staff</span>
+                        <h2>45</h2>
+                    </div>
+                    <div class="stat-icon" style="color: #f59e0b;"><i class="fas fa-id-badge"></i></div>
+                </div>
+                <div class="stat-card">
                     <div class="stat-info"><span>System Health</span>
                         <h2>99%</h2>
                     </div>
-                    <div class="stat-icon"><i class="fas fa-heartbeat"></i></div>
+                    <div class="stat-icon" style="color: #ec4899;"><i class="fas fa-heartbeat"></i></div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-info"><span>Last Backup</span>
                         <h2>2h ago</h2>
                     </div>
-                    <div class="stat-icon"><i class="fas fa-database"></i></div>
+                    <div class="stat-icon" style="color: #64748b;"><i class="fas fa-database"></i></div>
                 </div>
             </div>
         </div>

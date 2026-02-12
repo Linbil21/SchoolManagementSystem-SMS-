@@ -70,7 +70,7 @@ $root = $project_base . '/';
         <p class="menu-label">ADMISSION CONTROL</p>
         <ul class="main-menu">
             <!-- Admission Summary Dropdown -->
-            <li class="has-dropdown <?php echo (stripos($_SERVER['PHP_SELF'], '/submodules/') !== false) ? 'active open' : ''; ?>">
+            <li class="has-dropdown <?php echo (stripos($_SERVER['PHP_SELF'], '/submodules/') !== false && stripos($_SERVER['PHP_SELF'], 'Admission') !== false) ? 'active open' : ''; ?>">
                 <a href="javascript:void(0)" class="dropdown-toggle">
                     <i class="fas fa-user-graduate"></i>
                     <span>Admission Hub</span>
@@ -105,6 +105,71 @@ $root = $project_base . '/';
                         <a href="<?php echo $base; ?>submodules/Requirements-Config.php">
                             <i class="fas fa-cogs"></i>
                             <span>Requirements Config</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+
+        <p class="menu-label">FINANCIAL OVERSIGHT</p>
+        <ul class="main-menu">
+            <li class="has-dropdown <?php echo (stripos($_SERVER['PHP_SELF'], '/Cashier/') !== false) ? 'active open' : ''; ?>">
+                <a href="javascript:void(0)" class="dropdown-toggle">
+                    <i class="fas fa-file-invoice-dollar"></i>
+                    <span>Finance Hub</span>
+                    <i class="fas fa-chevron-right arrow-icon"></i>
+                </a>
+                <ul class="sub-menu">
+                    <li>
+                        <a href="<?php echo $root; ?>Cashier/Dashboard.php">
+                            <i class="fas fa-chart-pie"></i>
+                            <span>Revenue Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="<?php echo $root; ?>Cashier/Modules/Collection-Report.php">
+                            <i class="fas fa-receipt"></i>
+                            <span>Collections</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+
+        <p class="menu-label">ACADEMIC & SYSTEM</p>
+        <ul class="main-menu">
+            <li class="has-dropdown <?php echo (stripos($_SERVER['PHP_SELF'], '/Admin/') !== false) ? 'active open' : ''; ?>">
+                <a href="javascript:void(0)" class="dropdown-toggle">
+                    <i class="fas fa-microchip"></i>
+                    <span>System Admin</span>
+                    <i class="fas fa-chevron-right arrow-icon"></i>
+                </a>
+                <ul class="sub-menu">
+                    <li>
+                        <a href="<?php echo $root; ?>Admin/Dashboard.php">
+                            <i class="fas fa-desktop"></i>
+                            <span>Admin Console</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="<?php echo $root; ?>Admin/Modules/Enrollment.php">
+                            <i class="fas fa-user-edit"></i>
+                            <span>Enrollment Control</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li class="has-dropdown <?php echo (stripos($_SERVER['PHP_SELF'], '/student/') !== false) ? 'active open' : ''; ?>">
+                <a href="javascript:void(0)" class="dropdown-toggle">
+                    <i class="fas fa-user-circle"></i>
+                    <span>Student Central</span>
+                    <i class="fas fa-chevron-right arrow-icon"></i>
+                </a>
+                <ul class="sub-menu">
+                    <li>
+                        <a href="<?php echo $root; ?>student/Dashboard.php">
+                            <i class="fas fa-user-shield"></i>
+                            <span>Portal Access</span>
                         </a>
                     </li>
                 </ul>
