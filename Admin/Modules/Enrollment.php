@@ -67,7 +67,7 @@ try {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Enrollment Management - SMS</title>
-    <link rel="icon" type="image/x-icon" href="../../Assets/image/logo.png">
+    <link rel="icon" type="image/png" href="../../Assets/image/logo.png">
     <!-- Google Fonts: Poppins -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
