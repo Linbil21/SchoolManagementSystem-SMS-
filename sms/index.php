@@ -18,24 +18,11 @@ require_once '../Database/config.php';
     
     <style>
         :root {
-            /* Primary Colors */
-            --primary: #2563eb;       /* Bright Blue */
-            --primary-dark: #1e40af;  /* Darker Blue */
-            --secondary: #3b82f6;     /* Light Blue Accent */
-            
-            /* Gradients */
-            --gradient-main: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); 
-            --gradient-accent: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-            
-            /* Neutral Colors */
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
             --text-main: #1e293b;
             --text-secondary: #64748b;
-            --white: #ffffff;
-            
-            /* Shadows */
-            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --gradient-accent: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
         }
 
         * {
@@ -48,301 +35,269 @@ require_once '../Database/config.php';
         body {
             background-color: #f8fafc;
             overflow-x: hidden;
-            min-height: 100vh;
+            height: 100vh;
             display: flex;
             flex-direction: column;
+            position: relative;
         }
 
         /* Navbar */
         nav {
-            position: fixed;
+            position: absolute;
             top: 0;
             width: 100%;
-            padding: 1.2rem 5%;
+            padding: 15px 5%;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
             z-index: 1000;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
 
         .logo-container {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
 
         .logo-container img {
-            width: 40px;
-            height: auto;
+            width: 35px;
         }
 
         .logo-container span {
-            font-weight: 600;
-            color: var(--primary-dark);
-            font-size: 1.1rem;
-            letter-spacing: -0.5px;
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 0.95rem;
         }
 
         .menu-btn {
-            font-size: 1.25rem;
+            font-size: 1.2rem;
             color: var(--primary);
             cursor: pointer;
             padding: 8px;
-            border-radius: 8px;
             background: #eff6ff;
-            transition: all 0.3s ease;
+            border-radius: 6px;
         }
 
-        .menu-btn:hover {
-            background: #dbeafe;
-            color: var(--primary-dark);
-        }
-
-        /* Main Layout */
-        .main-wrapper {
+        /* Main Container */
+        .page-container {
+            flex: 1;
             position: relative;
-            flex: 1;
-            display: flex;
-            padding-top: 80px; /* Navbar height */
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        /* Left Side (Text) */
-        .content-left {
-            flex: 1;
-            padding: 2rem 5% 2rem 8%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center; /* Center horizontally */
-            text-align: center;  /* Center text */
-            z-index: 10;
-        }
-
-        .hero-text {
             width: 100%;
-            max-width: 800px;
-            margin: 0 auto;
+            height: 100%;
+            overflow: hidden;
+            display: flex;
         }
 
-        .hero-text h1 {
-            font-size: clamp(2.5rem, 5vw, 4rem);
-            font-weight: 800;
-            line-height: 1.1;
-            margin-bottom: 1.5rem;
-            color: var(--text-main);
-            text-transform: uppercase;
-        }
-
-        .text-welcome {
-            display: block;
-            color: var(--text-main);
-            font-size: 1.5rem;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-        }
-        
-        .text-highlight {
-            color: var(--primary);
-        }
-
-        .hero-text p {
-            font-size: 1.1rem;
-            color: var(--text-secondary);
-            margin: 0 auto 2.5rem;
-            line-height: 1.6;
-            max-width: 600px;
-        }
-
-        .cta-btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 16px 40px;
-            background: var(--gradient-accent);
-            color: white;
-            font-weight: 600;
-            border-radius: 50px;
-            text-decoration: none;
-            box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.4);
-            transition: all 0.3s ease;
-            width: fit-content;
-        }
-
-        .cta-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 15px 30px -5px rgba(37, 99, 235, 0.5);
-        }
-
-        /* Right Side (Graphics/Background) */
-        .content-right {
+        /* Background Shapes */
+        .bg-shape-right {
             position: absolute;
             top: 0;
             right: 0;
-            width: 50%;
+            width: 45%;
             height: 100%;
-            z-index: 1;
-            /* Less aggressive clip, or remove specifically for centered design if needed, 
-               but let's keep it for style and adjust z-index */
-            clip-path: polygon(15% 0%, 100% 0%, 100% 100%, 0% 100%);
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(37, 99, 235, 0.05) 100%),
-                        url('../Assets/image/background.jpg') center/cover no-repeat;
-        }
-
-        .content-right::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, rgba(37,99,235,0.85), rgba(30,64,175,0.95));
-            opacity: 0.9;
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.9) 0%, rgba(30, 64, 175, 0.95) 100%),
+                        url('../Assets/image/background.jpg') center/cover;
+            clip-path: polygon(30% 0%, 100% 0%, 100% 100%, 0% 100%);
             z-index: 1;
         }
-        
-        /* Doodle Pattern Overlay */
-        .doodle-overlay {
+
+        /* Doodle Pattern on Left */
+        .bg-doodles {
             position: absolute;
-            inset: 0;
-            background-image: radial-gradient(#ffffff 1px, transparent 1px);
-            background-size: 20px 20px;
-            opacity: 0.1;
-            z-index: 2;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%239C92AC" fill-opacity="0.05"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');
+            z-index: 0;
         }
 
-        /* Logo Badge */
+        /* Content Area */
+        .content-area {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            height: 100%;
+            padding: 80px 5% 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .text-section {
+            width: 55%;
+            padding-top: 40px;
+        }
+
+        .text-section h1 {
+            font-size: clamp(2.2rem, 4vw, 3.5rem);
+            line-height: 1.2;
+            font-weight: 800;
+            margin-bottom: 20px;
+        }
+
+        .text-dark {
+            color: var(--text-main);
+            display: block;
+        }
+
+        .text-blue {
+            color: var(--primary);
+            display: block;
+        }
+
+        .text-section p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            max-width: 400px;
+        }
+
+        .cta-btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: var(--gradient-accent);
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border-radius: 25px;
+            text-decoration: none;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+            transition: transform 0.2s;
+        }
+
+        /* Floating Logo Badge */
         .logo-badge {
             position: absolute;
-            top: 20%;
-            right: 10%;
-            width: 180px;
-            height: 180px;
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(12px);
+            top: 25%;
+            right: 15%; /* Position relative to screen width */
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(15px);
             border-radius: 50%;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.4);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             text-align: center;
-            z-index: 10;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            animation: float 6s ease-in-out infinite;
+            z-index: 20;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
 
         .logo-badge img {
-            width: 60px;
-            margin-bottom: 0.5rem;
-            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+            width: 70px;
+            margin-bottom: 10px;
         }
 
-        .logo-badge h3 {
-            color: white;
+        .logo-badge p {
             font-size: 0.8rem;
             font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin: 0;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            color: #0f172a; /* Dark text for better visibility on glass */
+            line-height: 1.2;
         }
 
-        /* Illustration Container */
+        /* Illustration at Bottom */
         .illustration-container {
             position: absolute;
-            bottom: 50px;
-            right: 5%;
-            width: 450px;
-            z-index: 5;
+            bottom: 0;
+            right: 0;
+            width: 100%;
+            height: 45%; 
             pointer-events: none;
-            /* Make it responsive */
-            max-width: 45%; 
+            z-index: 5;
+            display: flex;
+            justify-content: flex-end;
+            align-items: flex-end;
         }
 
         .illustration-container img {
-            width: 100%;
-            height: auto;
-            display: block;
-            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.15));
+            max-width: 500px;
+            width: 80%;
+            object-fit: contain;
         }
 
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-15px); }
-            100% { transform: translateY(0px); }
-        }
-
-        /* Mobile / Tablet Responsive Design */
+        /* Responsive Design */
         @media (max-width: 1024px) {
-            .main-wrapper {
-                flex-direction: column;
-                height: auto;
-                min-height: 100vh;
-                padding-bottom: 2rem;
+            .bg-shape-right {
+                width: 55%; 
+                clip-path: polygon(25% 0%, 100% 0%, 100% 100%, 0% 100%);
             }
+            .text-section {
+                width: 60%;
+            }
+            .logo-badge {
+                width: 160px;
+                height: 160px;
+                right: 10%;
+                top: 20%;
+            }
+        }
 
-            .content-left {
+        @media (max-width: 768px) {
+            /* Mobile Layout Matching Screenshot */
+            .bg-shape-right {
+                width: 40%;
+                background: linear-gradient(135deg, rgba(37, 99, 235, 0.8) 0%, rgba(30, 64, 175, 0.9) 100%);
+                clip-path: polygon(0 0%, 100% 0%, 100% 100%, 40% 100%);
+            }
+            
+            .text-section {
                 width: 100%;
-                padding: 3rem 5% 0; /* Add top padding */
-                justify-content: flex-start;
-                flex: none; /* Don't grow, take content height */
-            }
-
-            .hero-text h1 {
-                font-size: 2.5rem;
-            }
-
-            /* Adjust background for mobile */
-            .content-right {
-                position: relative;
-                width: 100%;
-                height: 400px; /* Fixed height for graphics area on mobile */
-                clip-path: none; /* Remove diagonal clip on mobile usually looks cleaner or use a bottom wave */
-                clip-path: polygon(0 15%, 100% 0, 100% 100%, 0% 100%);
-                background: linear-gradient(135deg, rgba(37,99,235,0.9), rgba(30,64,175,0.95));
-                margin-top: 2rem;
-                border-radius: 30px 30px 0 0;
-            }
-
-            .content-right::before {
-                opacity: 0.6;
-            }
-
-            .illustration-container {
-                display: block; /* Ensure it is visible */
-                position: absolute;
-                bottom: 0px;
-                right: 50%;
-                transform: translateX(50%);
-                width: 300px;
-                max-width: 80%;
+                padding-right: 20%; /* Space for the diagonal cut */
+                padding-top: 60px;
             }
 
             .logo-badge {
-                display: none; /* Hide badge on mobile to simplify/avoid overlap */
+                right: 5%;
+                top: 18%;
+                width: 140px;
+                height: 140px;
+                background: rgba(255, 255, 255, 0.3);
+                border: 2px solid rgba(255, 255, 255, 0.5);
+            }
+
+            .logo-badge img {
+                width: 50px;
+            }
+
+            .illustration-container {
+                justify-content: flex-end;
             }
             
-            /* Center the CTA/Button */
-            .cta-btn {
-                width: 100%;
-                max-width: 300px;
+            .illustration-container img {
+                width: 90%;
+                max-width: 400px;
             }
         }
 
         @media (max-width: 480px) {
-            .hero-text h1 {
+             .bg-shape-right {
+                width: 35%;
+                clip-path: polygon(0 0%, 100% 0%, 100% 100%, 20% 100%);
+            }
+
+            .text-section h1 {
                 font-size: 2rem;
             }
             
-            .content-right {
-                height: 350px;
-                clip-path: polygon(0 10%, 100% 0, 100% 100%, 0% 100%);
+            .text-section {
+                padding-top: 40px;
+                max-width: 70%;
+            }
+
+            .logo-badge {
+                width: 130px;
+                height: 130px;
+                top: 15%;
+                right: 5%;
             }
             
-            .illustration-container {
-                width: 250px;
+            .illustration-container img {
+                width: 100%;
             }
         }
     </style>
@@ -359,29 +314,35 @@ require_once '../Database/config.php';
         </div>
     </nav>
 
-    <div class="main-wrapper">
-        <div class="content-left">
-            <div class="hero-text">
-                <span class="text-welcome">Welcome To</span>
-                <h1 class="text-highlight">School Management<br>System</h1>
-                <p>Efficiently manage student records, faculty activities, and school operations — all in one accessible platform.</p>
+    <div class="page-container">
+        <!-- Backgrounds -->
+        <div class="bg-doodles"></div>
+        <div class="bg-shape-right"></div>
+
+        <!-- Floating Badge -->
+        <div class="logo-badge">
+            <img src="../Assets/image/logo.png" alt="Badge Logo">
+            <p>School<br>Management System</p>
+        </div>
+
+        <!-- Main Content -->
+        <div class="content-area">
+            <div class="text-section">
+                <h1>
+                    <span class="text-dark">WELCOME</span><br>
+                    <span class="text-dark">TO</span><br>
+                    <span class="text-blue">SCHOOL</span><br>
+                    <span class="text-blue">MANAGEMENT</span><br>
+                    <span class="text-blue">SYSTEM</span>
+                </h1>
+                <p>Efficiently manage student records, faculty activities, and school operations — all in one place.</p>
                 <a href="../auth/Login.php" class="cta-btn">Get Started</a>
             </div>
         </div>
 
-        <div class="content-right">
-            <div class="doodle-overlay"></div>
-            
-            <!-- Logo badge floating (hidden on mobile) -->
-            <div class="logo-badge">
-                <img src="../Assets/image/logo.png" alt="School Logo">
-                <h3>School<br>Management<br>System</h3>
-            </div>
-            
-            <!-- Hero Image / Illustration -->
-            <div class="illustration-container">
-                <img src="../Assets/image/hero.png" alt="School Management Hero">
-            </div>
+        <!-- Illustration -->
+        <div class="illustration-container">
+            <img src="../Assets/image/hero.png" alt="Illustration">
         </div>
     </div>
 
