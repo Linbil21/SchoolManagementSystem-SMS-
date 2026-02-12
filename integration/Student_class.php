@@ -77,6 +77,35 @@ class StudentPortal {
         return $formatted;
     }
 
+    /**
+     * Consolidates a day-grouped schedule into a unique list of subjects with multiple days
+     * Used for tabular displays like the COR
+     */
+    public function getConsolidatedSubjects($weeklySchedule) {
+        $processed = [];
+        foreach ($weeklySchedule as $day => $classes) {
+            foreach ($classes as $class) {
+                $sub_key = $class['subject'];
+                if (!isset($processed[$sub_key])) {
+                    $processed[$sub_key] = [
+                        'subject' => $class['subject'],
+                        'days' => [substr($day, 0, 3)],
+                        'time' => $class['time'] . ' - ' . $class['end'],
+                        'room' => $class['room'],
+                        'teacher' => $class['teacher'],
+                        'code' => strtoupper(substr($class['subject'], 0, 3)) . '-' . rand(100, 999),
+                        'units' => rand(2, 3) . '.0'
+                    ];
+                } else {
+                    if (!in_array(substr($day, 0, 3), $processed[$sub_key]['days'])) {
+                        $processed[$sub_key]['days'][] = substr($day, 0, 3);
+                    }
+                }
+            }
+        }
+        return $processed;
+    }
+
     private function getRandomColor($seed) {
         $colors = ['#2563eb', '#9333ea', '#16a34a', '#db2777', '#f59e0b', '#ea580c', '#0ea5e9'];
         $index = abs(crc32($seed)) % count($colors);

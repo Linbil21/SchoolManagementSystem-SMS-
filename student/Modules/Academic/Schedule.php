@@ -331,39 +331,23 @@ $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
                     <tbody>
                         <?php 
                         $total_units = 0;
-                        $processed_subjects = [];
-                        foreach ($weekly_schedule as $day => $classes) {
-                            foreach ($classes as $class) {
-                                $sub_key = $class['subject'];
-                                if (!isset($processed_subjects[$sub_key])) {
-                                    $processed_subjects[$sub_key] = [
-                                        'days' => [substr($day, 0, 3)],
-                                        'time' => $class['time'] . ' - ' . $class['end'],
-                                        'room' => $class['room'],
-                                        'teacher' => $class['teacher']
-                                    ];
-                                } else {
-                                    $processed_subjects[$sub_key]['days'][] = substr($day, 0, 3);
-                                }
-                            }
-                        }
+                        $consolidated = $portal->getConsolidatedSubjects($weekly_schedule);
 
-                        foreach ($processed_subjects as $name => $data): 
-                            $units = rand(2, 3);
-                            $total_units += $units;
+                        foreach ($consolidated as $data): 
+                            $total_units += floatval($data['units']);
                         ?>
                         <tr>
-                            <td><?php echo strtoupper(substr($name, 0, 3)) . '-' . rand(100, 999); ?></td>
-                            <td><?php echo htmlspecialchars($name); ?></td>
+                            <td><?php echo $data['code']; ?></td>
+                            <td><?php echo htmlspecialchars($data['subject']); ?></td>
                             <td><?php echo implode('/', $data['days']) . ' ' . $data['time']; ?></td>
                             <td><?php echo htmlspecialchars($data['room']); ?></td>
                             <td><?php echo htmlspecialchars($data['teacher']); ?></td>
-                            <td><?php echo $units; ?>.0</td>
+                            <td><?php echo $data['units']; ?></td>
                         </tr>
                         <?php endforeach; ?>
                         <tr style="background: #f9fafb; font-weight: 800;">
                             <td colspan="5" style="text-align: right;">TOTAL ACADEMIC UNITS:</td>
-                            <td><?php echo $total_units; ?>.0</td>
+                            <td><?php echo number_format($total_units, 1); ?></td>
                         </tr>
                     </tbody>
                 </table>
