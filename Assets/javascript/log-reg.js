@@ -158,19 +158,20 @@ function updateProgressbar() {
         "Student Information",
         "Secondary Documents",
         "Guardian Information",
-        "Educational Background"
+        "Educational Background",
+        "Account Credentials"
     ];
 
-    // Update Part X of 5 Text
+    // Update Part X of 6 Text
     const stepText = document.getElementById("step-text");
     if (stepText) {
-        stepText.innerText = `Part ${formStepsNum + 1} of 5: ${stepLabels[formStepsNum]}`;
+        stepText.innerText = `Part ${formStepsNum + 1} of 6: ${stepLabels[formStepsNum]}`;
     }
 
     // Update Horizontal Progress Bar
     const horizontalProgress = document.getElementById("progress");
     if (horizontalProgress) {
-        const progressPercent = ((formStepsNum + 1) / 5) * 100;
+        const progressPercent = ((formStepsNum + 1) / 6) * 100;
         horizontalProgress.style.width = progressPercent + "%";
     }
 

@@ -501,8 +501,10 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                                         <div class="h-step" data-step="4">4</div>
                                         <div class="h-step-line"></div>
                                         <div class="h-step" data-step="5">5</div>
+                                        <div class="h-step-line"></div>
+                                        <div class="h-step" data-step="6">6</div>
                                     </div>
-                                    <span class="step-text" id="step-text">Part 1 of 5: Enrollment Information</span>
+                                    <span class="step-text" id="step-text">Part 1 of 6: Enrollment Information</span>
                                 </div>
                             </div>
 
@@ -740,6 +742,22 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                                             <input type="text" name="secondary_year" placeholder="20XX" required oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                                         </div>
                                     </div>
+                                    <div class="btns-group">
+                                        <a href="#" class="btn btn-prev"><i class="fas fa-chevron-left" style="margin-right: 10px;"></i> BACK</a>
+                                        <a href="#" class="btn btn-next">CONTINUE <i class="fas fa-chevron-right" style="margin-left: 10px;"></i></a>
+                                    </div>
+                                </div>
+
+                                <!-- Step 6: Account Credentials -->
+                                <div class="form-step">
+                                    <h3 class="step-title">Account Credentials</h3>
+                                    <div class="row">
+                                        <div class="col col-full input-group">
+                                            <label>Registered Email Address <span>*</span></label>
+                                            <input type="email" id="confirm_reg_email" readonly style="background: #f1f5f9; cursor: not-allowed;" placeholder="Auto-filled from Step 2">
+                                            <small style="color: #64748b; font-size: 0.75rem;">This will be your login identifier.</small>
+                                        </div>
+                                    </div>
                                     <div class="row">
                                         <div class="col col-2 input-group">
                                             <label>Account Password <span>*</span></label>
@@ -815,6 +833,9 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                                 </li>
                                 <li class="v-step" data-step="4">
                                     <span class="v-dot"></span> Educational History
+                                </li>
+                                <li class="v-step" data-step="5">
+                                    <span class="v-dot"></span> Account Credentials
                                 </li>
                             </ul>
                         </div>
@@ -918,6 +939,13 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                     let alertText = `We found ${result.first_name || 'data'} in the document. Fields have been auto-filled. (Accuracy: ${confidence}%)`;
                     if (result.is_simulation) {
                         alertText += "\n\n(Note: Simulation Mode)";
+                    }
+
+                    // Mirror Email to Step 6
+                    const regEmail = document.querySelector('input[name="reg_email"]').value;
+                    const confirmEmailInput = document.getElementById('confirm_reg_email');
+                    if (confirmEmailInput && regEmail) {
+                        confirmEmailInput.value = regEmail;
                     }
 
                     Swal.fire({
