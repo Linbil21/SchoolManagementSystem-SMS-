@@ -30,8 +30,8 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'superadmin') {
                     <h1 style="font-size: 1.8rem; font-weight: 800; letter-spacing: -1px; color: var(--text-color); margin-bottom: 2px;">User Management</h1>
                     <p style="color: var(--text-muted); font-weight: 500; font-size: 0.9rem;">Manage system administrators and staff accounts with ease.</p>
                 </div>
-                <button class="btn-primary" onclick="openUserModal()">
-                    <i class="fas fa-plus-circle" style="margin-right: 8px;"></i> Add New User
+                <button class="btn-premium" onclick="openUserModal()">
+                    <i class="fas fa-plus-circle"></i> Add New User
                 </button>
             </div>
 
