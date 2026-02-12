@@ -41,7 +41,7 @@ try {
     <link rel="icon" type="image/x-icon" href="../../Assets/image/logo.png">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="../Assets/admin.css">
+    <link rel="stylesheet" href="../Assets/style.css">
 </head>
 <body>
     <?php include '../Components/Side-bar.php'; ?>

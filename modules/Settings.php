@@ -18,7 +18,7 @@ switch ($role) {
     case 'admin':
         $sidebar_path = '../Admin/Components/Side-bar.php';
         $header_path = '../Admin/Components/Head-bar.php';
-        $css_path = '../Admin/Assets/admin.css';
+        $css_path = '../Admin/Assets/style.css';
         break;
     case 'superadmin':
     case 'super-admin':
@@ -29,17 +29,17 @@ switch ($role) {
     case 'admission':
         $sidebar_path = '../Admission/Components/Sidebar.php';
         $header_path = '../Admission/Components/header.php';
-        $css_path = '../Admin/Assets/admin.css';
+        $css_path = '../Admin/Assets/style.css';
         break;
     case 'cashier':
         $sidebar_path = '../Cashier/Components/Sidebar.php';
         $header_path = '../Cashier/Components/header.php';
-        $css_path = '../Admin/Assets/admin.css';
+        $css_path = '../Admin/Assets/style.css';
         break;
     default:
         $sidebar_path = '../Admin/Components/Side-bar.php';
         $header_path = '../Admin/Components/Head-bar.php';
-        $css_path = '../Admin/Assets/admin.css';
+        $css_path = '../Admin/Assets/style.css';
 }
 ?>
 <!DOCTYPE html>
