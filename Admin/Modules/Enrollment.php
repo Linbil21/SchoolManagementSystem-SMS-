@@ -10,7 +10,15 @@ if (!isset($_SESSION['role']) || ($_SESSION['role'] !== 'admin' && $_SESSION['ro
 
 // 1. Handle AJAX Status Updates (Self-submission)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+    require_once '../../auth/Security.php';
     
+    // Check if Read-Only mode is active
+    if (isReadOnly()) {
+        header('Content-Type: application/json');
+        echo json_encode(['success' => false, 'message' => 'View-Only Mode: Super Admin cannot modify data in this portal.']);
+        exit;
+    }
+
     // ACTION: UPDATE STATUS
     if ($_POST['action'] === 'update_status') {
         require_once '../../auth/Security.php';
@@ -155,13 +163,18 @@ try {
                 </div>
             </div>
             <div class="modal-footer">
-                <?php if ($role === 'superadmin'): ?>
+                <?php if ($role === 'superadmin' && isReadOnly()): ?>
+                    <p style="color: #6366f1; font-size: 0.85rem; font-weight: 600; margin-right: auto; background: #eef2ff; padding: 10px 15px; border-radius: 12px; border: 1px solid #e0e7ff;">
+                        <i class="fas fa-shield-alt"></i> SYSTEM VIEW: You are in View-Only mode for this portal.
+                    </p>
+                    <button class="btn-view" style="background: #e2e8f0; color: #475569; box-shadow: none;" onclick="closeModal()">Close Viewer</button>
+                <?php elseif ($role === 'superadmin' || $role === 'admin'): ?>
                     <button class="btn-approve" onclick="updateStatus('Enrolled')"><i class="fas fa-check-circle"></i> Approve</button>
                     <button class="btn-reject" onclick="updateStatus('Rejected')"><i class="fas fa-times-circle"></i> Reject</button>
                     <button class="btn-edit-modal" onclick="editEnrollment()"><i class="fas fa-edit"></i> Edit</button>
                 <?php else: ?>
                     <p style="color: #64748b; font-size: 0.85rem; font-style: italic; margin-right: auto;">
-                        <i class="fas fa-info-circle"></i> Account management restricted to Super Admin
+                        <i class="fas fa-info-circle"></i> Account management restricted
                     </p>
                     <button class="btn-view" style="background: #e2e8f0; color: #475569; box-shadow: none;" onclick="closeModal()">Close Details</button>
                 <?php endif; ?>

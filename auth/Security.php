@@ -59,6 +59,19 @@ function checkRole($allowed_roles) {
 }
 
 /**
+ * Determines if the current user should be in "View Only" mode.
+ * True if core role is superadmin but accessing pages outside Super-admin directory.
+ */
+function isReadOnly() {
+    if (!isset($_SESSION['role'])) return false;
+    if ($_SESSION['role'] !== 'superadmin') return false;
+
+    $script = $_SERVER['SCRIPT_NAME'];
+    // If NOT in Super-admin folder, then it's read-only for superadmin
+    return stripos($script, '/Super-admin/') === false;
+}
+
+/**
  * Generates a CSRF token and stores it in the session.
  * 
  * @return string The generated token

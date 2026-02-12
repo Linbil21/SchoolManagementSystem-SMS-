@@ -2,6 +2,7 @@
 // Cashier Head-bar Component
 require_once __DIR__ . '/../../Database/config.php';
 require_once __DIR__ . '/../../Components/NotificationHelper.php';
+require_once __DIR__ . '/../../auth/Security.php';
 
 $user_email = isset($_SESSION['email']) ? $_SESSION['email'] : 'Cashier';
 $initials = strtoupper(substr($user_email, 0, 1) . substr($user_email, 1, 1));
@@ -14,6 +15,12 @@ if (strpos($user_email, '@') !== false) {
 $unread_count = getUnreadNotificationsCount($pdo);
 $notifications = getRecentNotifications($pdo);
 ?>
+<?php if (isReadOnly()): ?>
+    <div style="background: linear-gradient(90deg, #6366f1 0%, #4f46e5 100%); color: white; padding: 8px 15px; text-align: center; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.5px; display: flex; align-items: center; justify-content: center; gap: 10px;">
+        <i class="fas fa-eye"></i> <span>PEEK MODE: You are viewing the Finance Portal as a Super Admin. Data modification is disabled.</span>
+        <a href="/Super-admin/Dashboard.php" style="color: white; text-decoration: underline; margin-left:10px;">Return to Control Center</a>
+    </div>
+<?php endif; ?>
 <div class="head-bar">
     <div class="head-left">
         <div class="burger-btn" id="sidebar-toggle">
