@@ -1,3 +1,4 @@
+<?php header("Location: ../auth/Login.php"); exit; ?>
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 
