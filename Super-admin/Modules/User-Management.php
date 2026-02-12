@@ -24,10 +24,10 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'superadmin') {
     <div class="main-wrapper">
         <?php include '../Components/header.php'; ?>
         <div class="content-area">
-            <div class="module-header" style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 40px;">
+            <div class="module-header" style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 25px;">
                 <div>
-                    <h1 style="font-size: 2.2rem; font-weight: 800; letter-spacing: -1px; color: var(--text-color); margin-bottom: 5px;">User Management</h1>
-                    <p style="color: var(--text-muted); font-weight: 500;">Manage system administrators and staff accounts with ease.</p>
+                    <h1 style="font-size: 1.8rem; font-weight: 800; letter-spacing: -1px; color: var(--text-color); margin-bottom: 2px;">User Management</h1>
+                    <p style="color: var(--text-muted); font-weight: 500; font-size: 0.9rem;">Manage system administrators and staff accounts with ease.</p>
                 </div>
                 <button class="btn-primary" onclick="openUserModal()">
                     <i class="fas fa-plus-circle" style="margin-right: 8px;"></i> Add New User
