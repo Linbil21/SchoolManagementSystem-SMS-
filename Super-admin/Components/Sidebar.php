@@ -91,19 +91,6 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admin@sms.com';
             <img src="https://ui-avatars.com/api/?name=<?php echo urlencode($email); ?>&background=1648bc&color=fff"
                 alt="User">
             <div class="user-peek-info">
-                <h4>Super Admin</h4>
-                <p><?php echo $email; ?></p>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-    <div class="sidebar-footer">
-        <div class="user-peek">
-            <img src="https://ui-avatars.com/api/?name=<?php echo urlencode($email); ?>&background=1648bc&color=fff"
-                alt="User">
-            <div class="user-peek-info">
                 <h4><?php echo $role === 'superadmin' ? 'Super Admin' : 'Admin'; ?></h4>
                 <p><?php echo $email; ?></p>
             </div>
@@ -133,7 +120,7 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admin@sms.com';
 </script>
 
 <!-- Logout Modal -->
-<div id="logoutModal" class="modal centered">
+<div id="logoutModal" class="modal centered" style="display: none;">
     <div class="modal-content premium" style="width: 440px; border: none; overflow: visible;">
         <div style="text-align: center; padding: 50px 35px; position: relative;">
             <!-- Premium Icon Header -->
