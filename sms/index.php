@@ -22,7 +22,7 @@ require_once '../Database/config.php';
             --primary-dark: #0f172a;
             --text-main: #020617;
             --text-light: #64748b;
-            --gradient-blue: linear-gradient(135deg, rgba(59, 130, 246, 0.9) 0%, rgba(29, 78, 216, 0.95) 100%);
+            --gradient-blue: linear-gradient(135deg, rgba(37, 99, 235, 1) 0%, rgba(29, 78, 216, 1) 100%);
         }
 
         * {
@@ -100,35 +100,36 @@ require_once '../Database/config.php';
             opacity: 0.3;
         }
 
-        /* Right Side Blue Background with Texture */
+        /* Right Side Blue Background */
         .bg-blue-right {
             position: absolute;
             top: 0;
             right: 0;
             width: 65%; 
             height: 100%;
-            /* Gradient + Pattern Overlay */
+            /* Gradient + Texture */
             background: 
                 var(--gradient-blue),
                 url('../Assets/image/background.jpg') center/cover;
-            background-blend-mode: overlay;
+            background-blend-mode: multiply;
             /* Steep diagonal cut */
             clip-path: polygon(25% 0%, 100% 0%, 100% 100%, 10% 100%);
             z-index: 1;
-            box-shadow: -10px 0 30px rgba(0,0,0,0.1); /* Attempting shadow, though clip-path clips it often. Handled by separator below if needed */
         }
-        
-        /* Separator Line Effect (Simulated via pseudo element if needed, or distinct div) */
-        .diagonal-separator {
+         
+        /* Shadow for the diagonal separation */
+        .page-container::after {
+            content: '';
             position: absolute;
             top: 0;
             right: 0;
             width: 65%;
             height: 100%;
-            background: rgba(255,255,255,0.3); /* Subtle highlight edge */
-            clip-path: polygon(24.8% 0%, 25.2% 0%, 10.2% 100%, 9.8% 100%);
-            z-index: 2;
-            pointer-events: none;
+            background: rgba(0,0,0,0.3);
+            clip-path: polygon(25% 0%, 100% 0%, 100% 100%, 10% 100%);
+            transform: translateX(-5px); /* Offset to create shadow effect to the left */
+            z-index: 0;
+            filter: blur(10px);
         }
 
         /* Content Area */
@@ -191,17 +192,15 @@ require_once '../Database/config.php';
             transform: translateY(-2px);
         }
 
-        /* Floating Badge - On the line */
+        /* Floating Badge - Smaller, White, Shadowed */
         .badge-container {
             position: absolute;
             top: 25%;
-            left: 42%; /* Adjusted for steeper cut */
+            left: 42%; 
             transform: translateX(-50%);
-            width: 160px;
-            height: 160px;
-            background: rgba(255, 255, 255, 0.2); 
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.4);
+            width: 120px; /* Smaller size */
+            height: 120px;
+            background: #ffffff; /* Change color to white */
             border-radius: 50%;
             display: flex;
             flex-direction: column;
@@ -209,25 +208,21 @@ require_once '../Database/config.php';
             justify-content: center;
             text-align: center;
             z-index: 20;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
-        }
-        
-        .badge-container:hover {
-            transform: translateX(-50%) scale(1.05);
+            /* Strong colored shadow */
+            box-shadow: 0 10px 40px rgba(37, 99, 235, 0.5); 
+            border: 4px solid rgba(255,255,255,0.5);
         }
 
         .badge-container img {
-            width: 50px;
-            margin-bottom: 8px;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+            width: 35px; /* Smaller icon */
+            margin-bottom: 5px;
         }
 
         .badge-container span {
-            font-size: 0.75rem;
+            font-size: 0.6rem;
             font-weight: 700;
-            color: #0f172a;
-            line-height: 1.25;
+            color: #1e3a8a; /* Dark Blue Text */
+            line-height: 1.2;
         }
 
         /* Illustration */
@@ -235,7 +230,7 @@ require_once '../Database/config.php';
             position: absolute;
             bottom: 0;
             right: 0;
-            width: 55%; /* Limit width relative to screen */
+            width: 55%; 
             height: 60%;
             z-index: 5;
             pointer-events: none;
@@ -249,18 +244,14 @@ require_once '../Database/config.php';
             max-width: 100%;
             max-height: 100%;
             object-fit: contain;
-            filter: drop-shadow(-5px 10px 20px rgba(0,0,0,0.2)); 
+            filter: drop-shadow(-10px 10px 20px rgba(0,0,0,0.2)); 
         }
 
         /* Responsive */
         @media (max-width: 1024px) {
-            .bg-blue-right {
+            .bg-blue-right, .page-container::after {
                 width: 70%;
                 clip-path: polygon(30% 0%, 100% 0%, 100% 100%, 15% 100%);
-            }
-            .diagonal-separator {
-                width: 70%;
-                clip-path: polygon(29.8% 0%, 30.2% 0%, 15.2% 100%, 14.8% 100%);
             }
             .badge-container {
                 left: 50%;
@@ -271,13 +262,9 @@ require_once '../Database/config.php';
         }
 
         @media (max-width: 768px) {
-            .bg-blue-right {
+            .bg-blue-right, .page-container::after {
                 width: 55%;
                 clip-path: polygon(25% 0%, 100% 0%, 100% 100%, 10% 100%);
-            }
-             .diagonal-separator {
-                width: 55%;
-                clip-path: polygon(24.8% 0%, 25.2% 0%, 10.2% 100%, 9.8% 100%);
             }
             
             .text-section {
@@ -290,14 +277,18 @@ require_once '../Database/config.php';
             }
 
             .badge-container {
-                width: 130px;
-                height: 130px;
+                width: 100px;
+                height: 100px;
                 left: 60%;
                 top: 20%;
             }
             
             .badge-container img {
-                width: 40px;
+                width: 30px;
+            }
+            
+            .badge-container span {
+                font-size: 0.5rem;
             }
 
             .illustration-container {
@@ -308,13 +299,9 @@ require_once '../Database/config.php';
         }
         
          @media (max-width: 480px) {
-            .bg-blue-right {
+            .bg-blue-right, .page-container::after {
                 width: 50%;
                 clip-path: polygon(20% 0%, 100% 0%, 100% 100%, 5% 100%);
-            }
-             .diagonal-separator {
-                width: 50%;
-                clip-path: polygon(19.8% 0%, 20.2% 0%, 5.2% 100%, 4.8% 100%);
             }
             .badge-container {
                 left: 65%;
@@ -341,7 +328,6 @@ require_once '../Database/config.php';
             <div class="bg-doodle-left"></div>
         </div>
         <div class="bg-blue-right"></div>
-        <div class="diagonal-separator"></div>
 
         <!-- Floating Badge -->
         <div class="badge-container">
