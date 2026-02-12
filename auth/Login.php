@@ -220,7 +220,7 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                 <div class="role-left-content" style="position: relative; z-index: 1;">
                     <img src="../Assets/image/logo.png" alt="Logo" style="width: 80px; margin-bottom: 30px; display: block;">
                     <h1 style="font-size: 3.5rem; font-weight: 800; line-height: 1.1; color: #1e3a8a; margin-bottom: 25px;">
-                        Welcome to <br><span style="color: #3b82f6;">School Management System</span>
+                        Welcome to <br><span style="color: #3b82f6;">SMS</span>
                     </h1>
                     <p style="font-size: 1.1rem; color: #64748b; line-height: 1.6; margin-bottom: 40px; max-width: 90%;">
                         Empowering education through a unified academic management system that enhances learning, streamlines processes, and connects the academic community.
