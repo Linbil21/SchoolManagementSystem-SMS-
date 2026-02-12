@@ -4,14 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>School Management System</title>
-  <link rel="icon" type="image/png" href="../img/sms.png" />
+  <link rel="icon" type="image/png" href="../Assets/image/logo.png" />
   <link rel="stylesheet" href="../css/sms.css">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 </head>
 <style>
     body {
-  background: linear-gradient(rgba(250, 250, 250, 0.937), rgba(8, 52, 117, 0.942)), url('../img/img.jpg') no-repeat center center fixed; 
+  background: linear-gradient(rgba(250, 250, 250, 0.937), rgba(8, 52, 117, 0.942)), url('../Assets/image/background.jpg') no-repeat center center fixed; 
   background-size: cover;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   padding-top: 80px;
@@ -205,7 +205,7 @@
 <nav class="navbar navbar-expand-lg fixed-top shadow-sm stylish-navbar">
   <div class="container">
     <a class="navbar-brand fw-bold d-flex align-items-center" href="#">
-      <img src="../img/sms.png" alt="Logo" width="40" height="40" class="me-2">
+      <img src="../Assets/image/logo.png" alt="Logo" width="40" height="40" class="me-2">
       School Management
     </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -241,10 +241,10 @@
   </div>
   <div class="slanted-bg"></div>
   <div class="hero-logo-slant">
-    <img src="../img/sms.png" alt="Logo" />
+    <img src="../Assets/image/logo.png" alt="Logo" />
   </div>
   <div class="hero-student-slant">
-    <img src="../img/hero.png" alt="Student Images" />
+    <img src="../Assets/image/hero.png" alt="Student Images" />
   </div>
 </section>
 
