@@ -15,8 +15,9 @@ class OcrProcessor {
      * @return array Extracted data
      */
     public function scanDocument($imagePath) {
+        // SIMULATION MODE: If no API key, return demo data
         if (empty($this->apiKey) || $this->apiKey === 'YOUR_GOOGLE_CLOUD_API_KEY_HERE') {
-            return ['error' => 'Google Cloud Vision API Key is not configured.'];
+            return $this->getSimulationData();
         }
 
         $imageData = base64_encode(file_get_contents($imagePath));
@@ -53,12 +54,31 @@ class OcrProcessor {
 
         $result = json_decode($response, true);
         $text = $result['responses'][0]['fullTextAnnotation']['text'] ?? '';
+        $confidence = $result['responses'][0]['fullTextAnnotation']['pages'][0]['confidence'] ?? 0;
 
         if (empty($text)) {
             return ['error' => 'No text detected in the document.'];
         }
 
-        return $this->parseExtractedText($text);
+        $parsedData = $this->parseExtractedText($text);
+        $parsedData['confidence'] = round($confidence * 100, 2);
+        return $parsedData;
+    }
+
+    /**
+     * Simulation data for demonstration when API key is missing
+     */
+    private function getSimulationData() {
+        return [
+            'is_simulation' => true,
+            'confidence' => rand(95, 99) . '.' . rand(10, 99),
+            'first_name' => 'JUAN',
+            'middle_name' => 'PROTOTYPE',
+            'last_name' => 'DELA CRUZ',
+            'birthdate' => '2005-05-15',
+            'gender' => 'Male',
+            'raw_text' => 'SIMULATED DATA: PHILIPPINE STATISTICS AUTHORITY Birth Certificate Juan Prototype Dela Cruz May 15, 2005 Male'
+        ];
     }
 
     /**

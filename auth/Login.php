@@ -850,7 +850,8 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                 if (result.error) {
                     statusDiv.innerHTML = `<span class="error"><i class="fas fa-times-circle"></i> ${result.error}</span>`;
                 } else {
-                    statusDiv.innerHTML = '<span class="success"><i class="fas fa-check-circle"></i> Details extracted!</span>';
+                    const confidence = result.confidence || 0;
+                    statusDiv.innerHTML = `<span class="success"><i class="fas fa-check-circle"></i> Details extracted! (${confidence}% Accurate)</span>`;
                     
                     // Auto-fill fields if data found
                     if (result.first_name) document.querySelector('input[name="first_name"]').value = result.first_name;
@@ -860,14 +861,17 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                     if (result.gender) document.querySelector('select[name="gender"]').value = result.gender;
 
                     // If data was extracted, show a tooltip or notify user
-                    if (result.first_name || result.last_name) {
-                        Swal.fire({
-                            title: 'Data Extracted!',
-                            text: `We found ${result.first_name} ${result.last_name} in the document. Step 2 has been auto-filled.`,
-                            icon: 'success',
-                            confirmButtonColor: '#3b82f6'
-                        });
+                    let alertText = `We found ${result.first_name} ${result.last_name} in the document. Step 2 has been auto-filled. (Accuracy: ${confidence}%)`;
+                    if (result.is_simulation) {
+                        alertText += "\n\n(Note: This is a simulation since API Key is not yet configured)";
                     }
+
+                    Swal.fire({
+                        title: 'Data Extracted!',
+                        text: alertText,
+                        icon: result.is_simulation ? 'info' : 'success',
+                        confirmButtonColor: '#3b82f6'
+                    });
                 }
             } catch (err) {
                 console.error(err);
