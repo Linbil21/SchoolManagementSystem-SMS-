@@ -16,28 +16,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'superadmin') {
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="../Assets/super-admin.css">
-    <style>
-        .form-group {
-            margin-bottom: 20px;
-        }
 
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
-        .form-group input,
-        .form-group select {
-            width: 100%;
-            padding: 12px;
-            border-radius: 12px;
-            border: 1px solid #e2e8f0;
-            outline: none;
-            font-family: inherit;
-        }
-    </style>
 </head>
 
 <body>
