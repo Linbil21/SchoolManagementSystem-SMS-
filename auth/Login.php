@@ -597,19 +597,21 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                                 <div class="form-step">
                                     <h3 class="step-title">Student Information</h3>
                                     <div class="row">
-                                        <div class="col input-group">
+                                        <div class="col col-2 input-group">
                                             <label>First Name <span>*</span></label>
                                             <input type="text" name="first_name" placeholder="John" required>
                                         </div>
-                                        <div class="col input-group">
+                                        <div class="col col-2 input-group">
                                             <label>Middle Name</label>
                                             <input type="text" name="middle_name" placeholder="Quincy">
                                         </div>
-                                        <div class="col input-group">
+                                    </div>
+                                    <div class="row">
+                                        <div class="col col-2 input-group">
                                             <label>Last Name <span>*</span></label>
                                             <input type="text" name="last_name" placeholder="Doe" required>
                                         </div>
-                                        <div class="col input-group">
+                                        <div class="col col-2 input-group">
                                             <label>Gender <span>*</span></label>
                                             <select name="gender" required>
                                                 <option value="">Select...</option>
@@ -720,19 +722,21 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                                 <div class="form-step">
                                     <h3 class="step-title">Educational Background</h3>
                                     <div class="row">
-                                        <div class="col input-group">
+                                        <div class="col col-2 input-group">
                                             <label>Primary School <span>*</span></label>
                                             <input type="text" name="primary_school" required>
                                         </div>
-                                        <div class="col input-group">
+                                        <div class="col col-2 input-group">
                                             <label>Graduated <span>*</span></label>
                                             <input type="text" name="primary_year" placeholder="20XX" required oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                                         </div>
-                                        <div class="col input-group">
+                                    </div>
+                                    <div class="row">
+                                        <div class="col col-2 input-group">
                                             <label>Secondary School <span>*</span></label>
                                             <input type="text" name="secondary_school" required>
                                         </div>
-                                        <div class="col input-group">
+                                        <div class="col col-2 input-group">
                                             <label>Graduated <span>*</span></label>
                                             <input type="text" name="secondary_year" placeholder="20XX" required oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                                         </div>
