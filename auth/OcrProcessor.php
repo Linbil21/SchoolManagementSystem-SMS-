@@ -77,7 +77,9 @@ class OcrProcessor {
             'last_name' => 'DELA CRUZ',
             'birthdate' => '2005-05-15',
             'gender' => 'Male',
-            'raw_text' => 'SIMULATED DATA: PHILIPPINE STATISTICS AUTHORITY Birth Certificate Juan Prototype Dela Cruz May 15, 2005 Male'
+            'guardian_name' => 'MARIA DELA CRUZ',
+            'recommendation' => 'BS Information Technology',
+            'raw_text' => 'SIMULATED DATA: PHILIPPINE STATISTICS AUTHORITY Birth Certificate Juan Prototype Dela Cruz May 15, 2005 Male. Mother: Maria Dela Cruz. High honors in Computer Studies.'
         ];
     }
 
@@ -119,6 +121,19 @@ class OcrProcessor {
         }
         if (preg_match('/(?:Last Name|LAST NAME)[:\s]*([A-Z\s]+)/i', $text, $matches)) {
             $data['last_name'] = trim(explode("\n", $matches[1])[0]);
+        }
+
+        // Try to find Guardian (Father/Mother on Birth Cert)
+        if (preg_match('/(?:Father|FATHER|Mother|MOTHER)[:\s]*([A-Z\s,]+)/i', $text, $matches)) {
+            $data['guardian_name'] = trim(explode("\n", $matches[1])[0]);
+        }
+
+        // Simple Recommendation Logic
+        $data['recommendation'] = "General Academic";
+        if (preg_match('/(Computer|Technology|IT|Programming|Science|Math|Information)/i', $text)) {
+            $data['recommendation'] = "BS Information Technology / Computer Science";
+        } elseif (preg_match('/(Business|Management|Accountancy|Audit|Accountant)/i', $text)) {
+            $data['recommendation'] = "BS Business Administration / Accountancy";
         }
 
         return $data;

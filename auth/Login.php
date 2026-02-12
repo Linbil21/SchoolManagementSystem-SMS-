@@ -651,15 +651,21 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                                     <div class="row row-3">
                                         <div class="col input-group">
                                             <label>Form 137</label>
-                                            <input type="file" name="form_137">
+                                            <input type="file" name="form_137" class="ocr-input">
+                                            <div class="ocr-badge" onclick="triggerScan(this)"><i class="fas fa-magic"></i> Smart Scan</div>
+                                            <div class="ocr-status"></div>
                                         </div>
                                         <div class="col input-group">
                                             <label>Good Moral</label>
-                                            <input type="file" name="good_moral">
+                                            <input type="file" name="good_moral" class="ocr-input">
+                                            <div class="ocr-badge" onclick="triggerScan(this)"><i class="fas fa-magic"></i> Smart Scan</div>
+                                            <div class="ocr-status"></div>
                                         </div>
                                         <div class="col input-group">
                                             <label>Brgy Clearance</label>
-                                            <input type="file" name="barangay_clearance">
+                                            <input type="file" name="barangay_clearance" class="ocr-input">
+                                            <div class="ocr-badge" onclick="triggerScan(this)"><i class="fas fa-magic"></i> Smart Scan</div>
+                                            <div class="ocr-status"></div>
                                         </div>
                                     </div>
 
@@ -751,9 +757,34 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                                         </div>
                                     </div>
 
-                                    <div class="btns-group" style="justify-content: center;">
-                                        <a href="#" class="btn btn-prev"><i class="fas fa-chevron-left" style="margin-right: 10px;"></i> BACK</a>
-                                        <button type="submit" class="btn">FINISH <i class="fas fa-check-circle" style="margin-left: 10px;"></i></button>
+                                    <div class="btns-group" style="justify-content: center; flex-direction: column; gap: 20px;">
+                                        <!-- AI SUGGESTION CARD -->
+                                        <div id="ai-suggestion-card" style="display: none; width: 100%; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border: 1px solid #bae6fd; border-radius: 12px; padding: 20px; text-align: left; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+                                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                                                <div style="width: 40px; height: 40px; background: #0ea5e9; color: white; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+                                                    <i class="fas fa-robot"></i>
+                                                </div>
+                                                <div>
+                                                    <h4 style="margin: 0; color: #0369a1; font-weight: 800; font-size: 1rem;">SMS AI RECOMMENDATION</h4>
+                                                    <p style="margin: 0; font-size: 0.75rem; color: #0ea5e9; font-weight: 600;" id="ai-scan-count">Based on 0 scanned documents</p>
+                                                </div>
+                                            </div>
+                                            <p style="color: #334155; font-size: 0.9rem; line-height: 1.5; margin-bottom: 15px;">
+                                                "Our AI has analyzed your submitted documents. Based on the keywords and data found, we suggest the following course path:"
+                                            </p>
+                                            <div style="background: white; border: 1.5px dashed #0ea5e9; border-radius: 8px; padding: 12px; font-weight: 800; color: #0369a1; font-size: 1.1rem; text-align: center;" id="ai-recommendation-text">
+                                                Analyzing documents...
+                                            </div>
+                                            <div style="margin-top: 15px; font-size: 0.8rem; color: #64748b; display: flex; justify-content: space-between;">
+                                                <span><i class="fas fa-shield-check"></i> Verification Score: <strong id="ai-final-confidence">0%</strong></span>
+                                                <span id="ai-simulation-indicator" style="display:none; color: #f59e0b;"><i class="fas fa-flask"></i> Simulation Mode</span>
+                                            </div>
+                                        </div>
+
+                                        <div style="display: flex; width: 100%; gap: 15px;">
+                                            <a href="#" class="btn btn-prev" style="flex: 1;"><i class="fas fa-chevron-left" style="margin-right: 10px;"></i> BACK</a>
+                                            <button type="submit" class="btn" style="flex: 2;">FINISH <i class="fas fa-check-circle" style="margin-left: 10px;"></i></button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -820,6 +851,13 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
 
     <script src="../Assets/javascript/log-reg.js"></script>
     <script>
+        let scanResults = {
+            count: 0,
+            confidences: [],
+            recommendations: [],
+            isSimulation: false
+        };
+
         async function triggerScan(badge) {
             const inputGroup = badge.closest('.input-group');
             const fileInput = inputGroup.querySelector('input[type="file"]');
@@ -850,9 +888,15 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                 if (result.error) {
                     statusDiv.innerHTML = `<span class="error"><i class="fas fa-times-circle"></i> ${result.error}</span>`;
                 } else {
-                    const confidence = result.confidence || 0;
+                    const confidence = parseFloat(result.confidence) || 0;
                     statusDiv.innerHTML = `<span class="success"><i class="fas fa-check-circle"></i> Details extracted! (${confidence}% Accurate)</span>`;
                     
+                    // Update Global Results
+                    scanResults.count++;
+                    scanResults.confidences.push(confidence);
+                    if (result.recommendation) scanResults.recommendations.push(result.recommendation);
+                    if (result.is_simulation) scanResults.isSimulation = true;
+
                     // Auto-fill fields if data found
                     if (result.first_name) document.querySelector('input[name="first_name"]').value = result.first_name;
                     if (result.middle_name) document.querySelector('input[name="middle_name"]').value = result.middle_name;
@@ -860,17 +904,31 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                     if (result.birthdate) document.querySelector('input[name="birthdate"]').value = result.birthdate;
                     if (result.gender) document.querySelector('select[name="gender"]').value = result.gender;
 
-                    // If data was extracted, show a tooltip or notify user
-                    let alertText = `We found ${result.first_name} ${result.last_name} in the document. Step 2 has been auto-filled. (Accuracy: ${confidence}%)`;
+                    // Guardian Field Autofill
+                    if (result.guardian_name) {
+                        const guardianParts = result.guardian_name.split(' ');
+                        document.querySelector('input[name="guardian_first"]').value = guardianParts[0] || '';
+                        document.querySelector('input[name="guardian_last"]').value = guardianParts[guardianParts.length - 1] || '';
+                    }
+
+                    // Update UI for Step 5
+                    updateAISummary();
+
+                    // If data was extracted, show a tooltip
+                    let alertText = `We found ${result.first_name || 'data'} in the document. Fields have been auto-filled. (Accuracy: ${confidence}%)`;
                     if (result.is_simulation) {
-                        alertText += "\n\n(Note: This is a simulation since API Key is not yet configured)";
+                        alertText += "\n\n(Note: Simulation Mode)";
                     }
 
                     Swal.fire({
                         title: 'Data Extracted!',
                         text: alertText,
                         icon: result.is_simulation ? 'info' : 'success',
-                        confirmButtonColor: '#3b82f6'
+                        confirmButtonColor: '#3b82f6',
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000
                     });
                 }
             } catch (err) {
@@ -879,6 +937,27 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
             } finally {
                 badge.classList.remove('ocr-scanning');
                 badge.innerHTML = '<i class="fas fa-magic"></i> Smart Scan';
+            }
+        }
+
+        function updateAISummary() {
+            const card = document.getElementById('ai-suggestion-card');
+            if (scanResults.count > 0) {
+                card.style.display = 'block';
+                document.getElementById('ai-scan-count').innerText = `Based on ${scanResults.count} scanned document(s)`;
+                
+                // Calculate average confidence
+                const avgConf = (scanResults.confidences.reduce((a, b) => a + b, 0) / scanResults.confidences.length).toFixed(2);
+                document.getElementById('ai-final-confidence').innerText = `${avgConf}%`;
+                
+                // Get most frequent recommendation or just the last one
+                if (scanResults.recommendations.length > 0) {
+                    document.getElementById('ai-recommendation-text').innerText = scanResults.recommendations[scanResults.recommendations.length - 1];
+                }
+
+                if (scanResults.isSimulation) {
+                    document.getElementById('ai-simulation-indicator').style.display = 'block';
+                }
             }
         }
 
