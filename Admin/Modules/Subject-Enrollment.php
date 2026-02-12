@@ -214,14 +214,17 @@ try {
     <script>
         const modal = document.getElementById("subjectModal");
 
-        document.getElementById("btnAddSubject").onclick = function () {
-            document.getElementById("modalLabel").innerHTML = '<i class="fas fa-book-medical"></i> Add New Subject';
-            document.getElementById("submitBtn").name = "add_subject";
-            document.getElementById("field_id").value = "";
-            document.getElementById("field_code").value = "";
-            document.getElementById("field_name").value = "";
-            document.getElementById("field_units").value = "";
-            modal.style.display = "block";
+        const btnAdd = document.getElementById("btnAddSubject");
+        if (btnAdd) {
+            btnAdd.onclick = function () {
+                document.getElementById("modalLabel").innerHTML = '<i class="fas fa-book-medical"></i> Add New Subject';
+                document.getElementById("submitBtn").name = "add_subject";
+                document.getElementById("field_id").value = "";
+                document.getElementById("field_code").value = "";
+                document.getElementById("field_name").value = "";
+                document.getElementById("field_units").value = "";
+                modal.style.display = "block";
+            }
         }
 
         function openEditModal(data) {
