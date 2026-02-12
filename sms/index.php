@@ -22,7 +22,7 @@ require_once '../Database/config.php';
             --primary-dark: #0f172a;
             --text-main: #020617;
             --text-light: #64748b;
-            --gradient-blue: linear-gradient(135deg, rgba(37, 99, 235, 1) 0%, rgba(30, 64, 175, 1) 100%);
+            --gradient-blue: linear-gradient(135deg, rgba(59, 130, 246, 0.9) 0%, rgba(29, 78, 216, 0.95) 100%);
         }
 
         * {
@@ -88,44 +88,47 @@ require_once '../Database/config.php';
             z-index: 0;
         }
         
-        /* Optional faint doodles on left only */
+        /* Faint doodles on left */
         .bg-doodle-left {
             position: absolute;
             top: 0;
             left: 0;
-            width: 40%;
+            width: 45%;
             height: 100%;
-            background-image: radial-gradient(#e2e8f0 1.5px, transparent 1.5px);
-            background-size: 25px 25px;
-            opacity: 0.6;
+            background-image: radial-gradient(#94a3b8 1px, transparent 1px);
+            background-size: 20px 20px;
+            opacity: 0.3;
         }
 
-        /* Right Side Blue Background */
+        /* Right Side Blue Background with Texture */
         .bg-blue-right {
             position: absolute;
             top: 0;
             right: 0;
-            width: 60%; 
+            width: 65%; 
             height: 100%;
-            background: var(--gradient-blue);
-            /* Overlay texture/image if desired, keeping it clean blue per 'Picture 2' mobile look */
-            background-blend-mode: multiply;
+            /* Gradient + Pattern Overlay */
+            background: 
+                var(--gradient-blue),
+                url('../Assets/image/background.jpg') center/cover;
+            background-blend-mode: overlay;
             /* Steep diagonal cut */
-            clip-path: polygon(30% 0%, 100% 0%, 100% 100%, 15% 100%);
+            clip-path: polygon(25% 0%, 100% 0%, 100% 100%, 10% 100%);
             z-index: 1;
+            box-shadow: -10px 0 30px rgba(0,0,0,0.1); /* Attempting shadow, though clip-path clips it often. Handled by separator below if needed */
         }
         
-        /* Add faint texture to blue area to give depth */
-        .bg-blue-right::after {
-            content: '';
+        /* Separator Line Effect (Simulated via pseudo element if needed, or distinct div) */
+        .diagonal-separator {
             position: absolute;
             top: 0;
-            left: 0;
-            width: 100%;
+            right: 0;
+            width: 65%;
             height: 100%;
-            background-image: radial-gradient(rgba(255,255,255,0.1) 1px, transparent 1px);
-            background-size: 30px 30px;
-            opacity: 0.3;
+            background: rgba(255,255,255,0.3); /* Subtle highlight edge */
+            clip-path: polygon(24.8% 0%, 25.2% 0%, 10.2% 100%, 9.8% 100%);
+            z-index: 2;
+            pointer-events: none;
         }
 
         /* Content Area */
@@ -188,17 +191,17 @@ require_once '../Database/config.php';
             transform: translateY(-2px);
         }
 
-        /* Floating Badge - Center on line */
+        /* Floating Badge - On the line */
         .badge-container {
             position: absolute;
             top: 25%;
-            left: 48%; /* Adjust to sit exactly on the edge */
+            left: 42%; /* Adjusted for steeper cut */
             transform: translateX(-50%);
             width: 160px;
             height: 160px;
-            background: rgba(255, 255, 255, 0.15); /* Translucent */
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.2); 
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
             border-radius: 50%;
             display: flex;
             flex-direction: column;
@@ -206,7 +209,12 @@ require_once '../Database/config.php';
             justify-content: center;
             text-align: center;
             z-index: 20;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .badge-container:hover {
+            transform: translateX(-50%) scale(1.05);
         }
 
         .badge-container img {
@@ -227,38 +235,49 @@ require_once '../Database/config.php';
             position: absolute;
             bottom: 0;
             right: 0;
-            width: 100%;
-            max-width: 600px;
+            width: 55%; /* Limit width relative to screen */
+            height: 60%;
             z-index: 5;
             pointer-events: none;
             display: flex;
-            justify-content: flex-end;
+            justify-content: center;
             align-items: flex-end;
+            padding-right: 2%;
         }
 
         .illustration-container img {
-            width: 90%;
-            height: auto;
-            /* Enhance shadow for depth */
-            filter: drop-shadow(-10px 10px 20px rgba(0,0,0,0.15)); 
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(-5px 10px 20px rgba(0,0,0,0.2)); 
         }
 
         /* Responsive */
         @media (max-width: 1024px) {
             .bg-blue-right {
-                width: 65%;
+                width: 70%;
                 clip-path: polygon(30% 0%, 100% 0%, 100% 100%, 15% 100%);
             }
+            .diagonal-separator {
+                width: 70%;
+                clip-path: polygon(29.8% 0%, 30.2% 0%, 15.2% 100%, 14.8% 100%);
+            }
             .badge-container {
-                left: 55%;
+                left: 50%;
+            }
+            .illustration-container {
+                width: 60%;
             }
         }
 
         @media (max-width: 768px) {
-            /* Mobile Layout per 'Picture 2' */
             .bg-blue-right {
                 width: 55%;
                 clip-path: polygon(25% 0%, 100% 0%, 100% 100%, 10% 100%);
+            }
+             .diagonal-separator {
+                width: 55%;
+                clip-path: polygon(24.8% 0%, 25.2% 0%, 10.2% 100%, 9.8% 100%);
             }
             
             .text-section {
@@ -282,12 +301,9 @@ require_once '../Database/config.php';
             }
 
             .illustration-container {
-                right: -20px;
-            }
-            
-            .illustration-container img {
                 width: 100%;
-                max-width: 450px;
+                right: -20px;
+                justify-content: flex-end;
             }
         }
         
@@ -296,12 +312,16 @@ require_once '../Database/config.php';
                 width: 50%;
                 clip-path: polygon(20% 0%, 100% 0%, 100% 100%, 5% 100%);
             }
+             .diagonal-separator {
+                width: 50%;
+                clip-path: polygon(19.8% 0%, 20.2% 0%, 5.2% 100%, 4.8% 100%);
+            }
             .badge-container {
                 left: 65%;
                 top: 18%;
             }
             .text-section h1 {
-                font-size: 2.2rem; /* Make heading slightly bigger on small screens */
+                font-size: 2.2rem;
             }
          }
     </style>
@@ -321,6 +341,7 @@ require_once '../Database/config.php';
             <div class="bg-doodle-left"></div>
         </div>
         <div class="bg-blue-right"></div>
+        <div class="diagonal-separator"></div>
 
         <!-- Floating Badge -->
         <div class="badge-container">
