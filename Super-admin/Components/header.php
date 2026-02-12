@@ -16,7 +16,7 @@ $notifications = getRecentNotifications($pdo);
 
 // Robust absolute-relative path logic
 $script_name = $_SERVER['SCRIPT_NAME'];
-$check_paths = ['/Super-admin/', '/modules/', '/Admin/', '/Submodules/', '/Modules/', '/Cashier/', '/Admission/', '/auth/'];
+$check_paths = ['/Super-admin/', '/modules/', '/Admin/', '/submodules/', '/modules/', '/Cashier/', '/Admission/', '/auth/'];
 $project_base = '';
 
 foreach ($check_paths as $path) {
