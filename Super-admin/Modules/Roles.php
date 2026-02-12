@@ -114,12 +114,12 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'superadmin') {
     <script>
         function openRolesModal(role) {
             document.getElementById('modalTitle').textContent = 'Manage Access: ' + role;
-            document.getElementById('rolesModal').style.display = 'block';
+            document.getElementById('rolesModal').classList.add('show');
             document.body.style.overflow = 'hidden';
         }
 
         function closeRolesModal() {
-            document.getElementById('rolesModal').style.display = 'none';
+            document.getElementById('rolesModal').classList.remove('show');
             document.body.style.overflow = 'auto';
         }
 
