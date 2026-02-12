@@ -23,7 +23,11 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
     <style>
         /* Override body background from log-reg.css for a cleaner look */
         body {
-            background: #f8fafc !important; /* Clean light background */
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('../Assets/image/background.jpg') !important;
+            background-size: cover !important;
+            background-position: center !important;
+            background-repeat: no-repeat !important;
+            background-attachment: fixed !important;
             display: block !important; /* Reset flex to allow normal flow */
             overflow-y: auto !important; /* Allow scrolling if needed */
         }
@@ -89,7 +93,7 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
         /* New Role Selection Styles */
         .role-selection-wrapper { 
             min-height: 100vh; 
-            background: #f8fafc; /* Replaced blue gradient with clean light gray */
+            background: transparent; 
             display: flex; 
             align-items: center; 
             justify-content: center; 
@@ -100,7 +104,7 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
         .role-card { 
             background: white; 
             border-radius: 24px; 
-            box-shadow: 0 20px 60px rgba(0,0,0,0.05); /* Softer shadow */
+            box-shadow: 0 20px 60px rgba(59, 130, 246, 0.25); /* Soft Blue Shadow */
             display: flex; 
             overflow: hidden; 
             max-width: 1100px; 
@@ -204,6 +208,11 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
             .role-card { flex-direction: column; height: auto; }
             .role-left { padding: 40px; text-align: center; }
             .role-right { padding: 40px; border-left: none; border-top: 1px solid #f1f5f9; }
+        }
+
+        /* Shadow Override for Login */
+        .container {
+            box-shadow: 0 20px 60px rgba(59, 130, 246, 0.25) !important;
         }
     </style>
 </head>
@@ -723,3 +732,7 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
 </body>
 
 </html>
+        /* Shadow Override for Login */
+        .container {
+            box-shadow: 0 20px 60px rgba(59, 130, 246, 0.25) !important;
+        }
