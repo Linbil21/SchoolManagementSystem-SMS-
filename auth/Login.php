@@ -228,16 +228,18 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                 <!-- Decorative background elements could be added here -->
                 
                 <div class="role-left-content" style="position: relative; z-index: 1;">
-                    <img src="../Assets/image/logo.png" alt="Logo" style="width: 80px; margin-bottom: 30px; display: block;">
-                    <h1 style="font-size: 3.5rem; font-weight: 800; line-height: 1.1; color: #1e3a8a; margin-bottom: 25px;">
+                    <img src="../Assets/image/logo.png" alt="Logo" style="width: 100px; margin: 0 auto 30px; display: block; border: 1px solid #000; padding: 5px; border-radius: 8px;">
+                    <h1 style="font-size: 3.5rem; font-weight: 800; line-height: 1.1; color: #1e3a8a; margin-bottom: 25px; text-align: center;">
                         Welcome to <br><span style="color: #3b82f6;">SMS</span>
                     </h1>
-                    <p style="font-size: 1.1rem; color: #64748b; line-height: 1.6; margin-bottom: 40px; max-width: 90%;">
+                    <p style="font-size: 1.1rem; color: #64748b; line-height: 1.6; margin-bottom: 40px; max-width: 90%; text-align: center; margin-left: auto; margin-right: auto;">
                         Empowering education through a unified academic management system that enhances learning, streamlines processes, and connects the academic community.
                     </p>
-                    <a href="Login.php?action=login" style="background: #1e3a8a; color: white; padding: 15px 40px; border-radius: 50px; font-weight: 600; text-decoration: none; display: inline-block; transition: all 0.3s; box-shadow: 0 4px 14px 0 rgba(30, 58, 138, 0.39);">
-                        Learn More <i class="fas fa-arrow-right" style="margin-left: 8px;"></i>
-                    </a>
+                    <div style="text-align: center;">
+                        <a href="Login.php?action=login" style="background: #1e3a8a; color: white; padding: 15px 40px; border-radius: 50px; font-weight: 600; text-decoration: none; display: inline-block; transition: all 0.3s; box-shadow: 0 4px 14px 0 rgba(30, 58, 138, 0.39);">
+                            Learn More <i class="fas fa-arrow-right" style="margin-left: 8px;"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
 
