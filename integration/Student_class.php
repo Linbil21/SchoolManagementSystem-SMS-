@@ -24,6 +24,13 @@ class StudentPortal {
 
         if ($httpCode === 200 && $response) {
             $data = json_decode($response, true);
+            // Universal adapter for different API versions
+            if (isset($data['status'])) {
+                $data['success'] = ($data['status'] === 'success');
+            }
+            if (isset($data['data'])) {
+                $data['subjects'] = $data['data'];
+            }
             return $data;
         }
 
@@ -43,15 +50,26 @@ class StudentPortal {
             'W' => 'Wednesday',
             'TH' => 'Thursday',
             'F' => 'Friday',
-            'S' => 'Saturday'
+            'S' => 'Saturday',
+            'Monday' => 'Monday',
+            'Tuesday' => 'Tuesday',
+            'Wednesday' => 'Wednesday',
+            'Thursday' => 'Thursday',
+            'Friday' => 'Friday',
+            'Saturday' => 'Saturday'
         ];
 
         if (!is_array($apiSubjects)) return [];
 
         foreach ($apiSubjects as $subject) {
-            // Assumes API returns days in "M/W/F" or "M" etc.
-            // Adjusting based on common academic API structures
-            $rawDays = $subject['days'] ?? '';
+            // Handle both camelCase from screenshot and snake_case from previous iteration
+            $subjectName = $subject['subjectName'] ?? $subject['subject_name'] ?? 'Unknown Subject';
+            $teacherName = $subject['teacherName'] ?? $subject['instructor'] ?? 'TBA';
+            $roomName = $subject['roomName'] ?? $subject['room_name'] ?? 'N/A';
+            $startTime = $subject['startTime'] ?? $subject['start_time'] ?? 'N/A';
+            $endTime = $subject['endTime'] ?? $subject['end_time'] ?? 'N/A';
+            $rawDays = $subject['day'] ?? $subject['days'] ?? '';
+            
             $splitDays = explode('/', $rawDays);
 
             foreach ($splitDays as $dayChar) {
@@ -64,12 +82,12 @@ class StudentPortal {
                     }
 
                     $formatted[$dayName][] = [
-                        'time' => $subject['start_time'] ?? 'N/A',
-                        'end' => $subject['end_time'] ?? 'N/A',
-                        'subject' => $subject['subject_name'] ?? 'Unknown Subject',
-                        'room' => $subject['room_name'] ?? 'N/A',
-                        'teacher' => $subject['instructor'] ?? 'TBA',
-                        'color' => $this->getRandomColor($subject['subject_name'] ?? '')
+                        'time' => $startTime,
+                        'end' => $endTime,
+                        'subject' => $subjectName,
+                        'room' => $roomName,
+                        'teacher' => $teacherName,
+                        'color' => $this->getRandomColor($subjectName)
                     ];
                 }
             }

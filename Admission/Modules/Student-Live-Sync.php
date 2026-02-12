@@ -129,32 +129,78 @@ if (!empty($student_id)) {
             100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
         }
 
-        .data-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
+        .data-table-container {
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+            border: 1px solid var(--border);
+            overflow: hidden;
         }
 
-        .subject-card {
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 18px;
-            border: 1px solid var(--border);
-            border-left: 5px solid var(--primary);
+        .data-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .data-table th {
+            text-align: left;
+            padding: 18px 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .data-table td {
+            padding: 18px 20px;
+            font-size: 0.9rem;
+            color: var(--text-main);
+            border-bottom: 1px solid var(--border);
             transition: 0.3s;
         }
 
-        .subject-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        .data-table tr:last-child td { border-bottom: none; }
+        .data-table tr:hover td { background: var(--bg); }
 
-        .sub-header { display: flex; justify-content: space-between; margin-bottom: 12px; }
-        .sub-time { font-size: 0.8rem; font-weight: 700; color: var(--text-muted); }
-        .sub-days { font-size: 0.7rem; background: #f1f5f9; padding: 2px 8px; border-radius: 6px; color: #475569; }
+        .sub-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.75rem;
+            background: rgba(22, 72, 188, 0.1);
+            color: var(--primary);
+        }
 
-        .sub-name { font-size: 1.05rem; font-weight: 700; margin-bottom: 15px; color: var(--text-main); }
+        .day-tag {
+            background: #f1f5f9;
+            color: #475569;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
 
-        .sub-details { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .detail-item { font-size: 0.8rem; color: var(--text-muted); display: flex; align-items: center; gap: 5px; }
-        .detail-item i { color: var(--primary); opacity: 0.7; }
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #10b981;
+        }
+
+        .status-badge::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: #10b981;
+            border-radius: 50%;
+        }
 
         .error-msg {
             background: #fef2f2;
@@ -200,34 +246,46 @@ if (!empty($student_id)) {
             <?php endif; ?>
 
             <?php if ($apiData && isset($apiData['subjects'])): ?>
-                <div class="data-grid">
-                    <?php foreach ($apiData['subjects'] as $subject): ?>
-                        <div class="subject-card">
-                            <div class="sub-header">
-                                <span class="sub-time"><?php echo $subject['start_time']; ?> - <?php echo $subject['end_time']; ?></span>
-                                <span class="sub-days"><?php echo $subject['days']; ?></span>
-                            </div>
-                            <h3 class="sub-name"><?php echo htmlspecialchars($subject['subject_name']); ?></h3>
-                            <div class="sub-details">
-                                <div class="detail-item">
-                                    <i class="fas fa-user-tie"></i>
-                                    <span><?php echo htmlspecialchars($subject['instructor']); ?></span>
-                                </div>
-                                <div class="detail-item">
-                                    <i class="fas fa-map-marker-alt"></i>
-                                    <span><?php echo htmlspecialchars($subject['room_name']); ?></span>
-                                </div>
-                                <div class="detail-item">
-                                    <i class="fas fa-book"></i>
-                                    <span><?php echo htmlspecialchars($subject['section_name']); ?></span>
-                                </div>
-                                <div class="detail-item">
-                                    <i class="fas fa-clock"></i>
-                                    <span>Current Term</span>
-                                </div>
-                            </div>
-                        </div>
-                    <?php endforeach; ?>
+                <div class="data-table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Subject</th>
+                                <th>Schedule</th>
+                                <th>Room</th>
+                                <th>Instructor</th>
+                                <th>Section</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($apiData['subjects'] as $subject): ?>
+                                <tr>
+                                    <td>
+                                        <div style="font-weight: 700; color: var(--text-main);"><?php echo htmlspecialchars($subject['subjectName'] ?? $subject['subject_name']); ?></div>
+                                        <div style="font-size: 0.75rem; color: var(--text-muted);">CODE: <?php echo $subject['subjectID'] ?? 'N/A'; ?></div>
+                                    </td>
+                                    <td>
+                                        <div style="font-weight: 600;"><?php echo $subject['startTime'] ?? $subject['start_time']; ?> - <?php echo $subject['endTime'] ?? $subject['end_time']; ?></div>
+                                        <span class="day-tag"><?php echo $subject['day'] ?? $subject['days']; ?></span>
+                                    </td>
+                                    <td>
+                                        <div class="sub-badge"><i class="fas fa-door-open" style="margin-right: 5px;"></i><?php echo htmlspecialchars($subject['roomName'] ?? $subject['room_name']); ?></div>
+                                    </td>
+                                    <td>
+                                        <div style="font-weight: 600;"><?php echo htmlspecialchars($subject['teacherName'] ?? $subject['instructor']); ?></div>
+                                        <div style="font-size: 0.75rem; color: var(--text-muted);">Prof. ID: <?php echo $subject['teacherID'] ?? 'N/A'; ?></div>
+                                    </td>
+                                    <td>
+                                        <div style="font-weight: 600;"><?php echo htmlspecialchars($subject['sectionName'] ?? $subject['section_name']); ?></div>
+                                    </td>
+                                    <td>
+                                        <div class="status-badge">Active Sync</div>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
                 </div>
             <?php elseif ($student_id && !$error): ?>
                 <div style="text-align: center; padding: 60px; color: var(--text-muted);">
