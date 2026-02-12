@@ -22,7 +22,7 @@ require_once '../Database/config.php';
             --primary-dark: #0f172a;
             --text-main: #020617;
             --text-light: #64748b;
-            --gradient-blue: linear-gradient(135deg, rgba(37, 99, 235, 1) 0%, rgba(29, 78, 216, 1) 100%);
+            --gradient-blue: linear-gradient(135deg, rgba(37, 99, 235, 0.9) 0%, rgba(29, 78, 216, 0.95) 100%);
         }
 
         * {
@@ -33,7 +33,8 @@ require_once '../Database/config.php';
         }
 
         body {
-            background-color: #ffffff;
+            /* Global Background using the doodle image */
+            background: url('../Assets/image/background.jpg') center/cover no-repeat fixed;
             overflow-x: hidden;
             height: 100vh;
             display: flex;
@@ -57,6 +58,10 @@ require_once '../Database/config.php';
             display: flex;
             align-items: center;
             gap: 12px;
+            background: rgba(255, 255, 255, 0.8); /* Slight legible backing */
+            padding: 8px 15px;
+            border-radius: 20px;
+            backdrop-filter: blur(5px);
         }
 
         .logo-container img {
@@ -77,59 +82,31 @@ require_once '../Database/config.php';
             overflow: hidden;
         }
 
-        /* Left Side Background */
-        .bg-white-left {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #ffffff;
-            z-index: 0;
-        }
-        
-        /* Faint doodles on left */
-        .bg-doodle-left {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 45%;
-            height: 100%;
-            background-image: radial-gradient(#94a3b8 1px, transparent 1px);
-            background-size: 20px 20px;
-            opacity: 0.3;
-        }
-
-        /* Right Side Blue Background */
+        /* Right Side Blue Overlay - 35% width */
         .bg-blue-right {
             position: absolute;
             top: 0;
             right: 0;
-            width: 65%; 
+            width: 35%; 
             height: 100%;
-            /* Gradient + Texture */
-            background: 
-                var(--gradient-blue),
-                url('../Assets/image/background.jpg') center/cover;
-            background-blend-mode: multiply;
-            /* Steep diagonal cut */
-            clip-path: polygon(25% 0%, 100% 0%, 100% 100%, 10% 100%);
+            background: var(--gradient-blue);
+            /* Steep diagonal cut - line position per request */
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 20% 100%); 
             z-index: 1;
+            /* Texture blend */
+            mix-blend-mode: multiply; 
         }
-         
-        /* Shadow for the diagonal separation */
-        .page-container::after {
-            content: '';
-            position: absolute;
+        
+        /* Optional: Add a second layer for the blue to ensure it's not too transparent if multiply makes it too dark */
+        .bg-blue-backdrop {
+             position: absolute;
             top: 0;
             right: 0;
-            width: 65%;
+            width: 35%; 
             height: 100%;
-            background: rgba(0,0,0,0.3);
-            clip-path: polygon(25% 0%, 100% 0%, 100% 100%, 10% 100%);
-            transform: translateX(-5px); /* Offset to create shadow effect to the left */
+            background: rgba(37, 99, 235, 0.8);
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 20% 100%); 
             z-index: 0;
-            filter: blur(10px);
         }
 
         /* Content Area */
@@ -145,8 +122,14 @@ require_once '../Database/config.php';
 
         .text-section {
             width: 100%;
-            max-width: 550px;
+            max-width: 600px;
             margin-top: -50px;
+            /* Add backdrop to ensure text readability over doodle background */
+            background: rgba(255, 255, 255, 0.85);
+            padding: 40px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
         }
 
         .text-section h1 {
@@ -173,7 +156,7 @@ require_once '../Database/config.php';
             color: var(--text-light);
             line-height: 1.6;
             margin-bottom: 35px;
-            max-width: 420px;
+            max-width: 450px;
         }
 
         .cta-btn {
@@ -192,15 +175,14 @@ require_once '../Database/config.php';
             transform: translateY(-2px);
         }
 
-        /* Floating Badge - Smaller, White, Shadowed */
+        /* Floating Badge - Right Side, 50% Opacity */
         .badge-container {
             position: absolute;
-            top: 25%;
-            left: 42%; 
-            transform: translateX(-50%);
-            width: 120px; /* Smaller size */
+            top: 20%;
+            right: 8%; /* Centered in the 35% blue strip roughly */
+            width: 120px;
             height: 120px;
-            background: #ffffff; /* Change color to white */
+            background: #ffffff;
             border-radius: 50%;
             display: flex;
             flex-direction: column;
@@ -208,68 +190,74 @@ require_once '../Database/config.php';
             justify-content: center;
             text-align: center;
             z-index: 20;
-            /* Strong colored shadow */
-            box-shadow: 0 10px 40px rgba(37, 99, 235, 0.5); 
-            border: 4px solid rgba(255,255,255,0.5);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            opacity: 0.5; /* Requested 50% opacity */
         }
 
         .badge-container img {
-            width: 35px; /* Smaller icon */
+            width: 35px;
             margin-bottom: 5px;
         }
 
         .badge-container span {
             font-size: 0.6rem;
             font-weight: 700;
-            color: #1e3a8a; /* Dark Blue Text */
+            color: #1e3a8a;
             line-height: 1.2;
         }
 
-        /* Illustration */
+        /* Illustration - Smaller (50%) */
         .illustration-container {
             position: absolute;
-            bottom: 0;
+            bottom: 5%;
             right: 0;
-            width: 55%; 
-            height: 60%;
-            z-index: 5;
-            pointer-events: none;
+            width: 35%; /* Confined to the blue area */
             display: flex;
             justify-content: center;
             align-items: flex-end;
-            padding-right: 2%;
+            z-index: 5;
+            pointer-events: none;
         }
 
         .illustration-container img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-            filter: drop-shadow(-10px 10px 20px rgba(0,0,0,0.2)); 
+            width: 80%; /* Relative to container, making it visually smaller on page */
+            max-width: 300px; /* Cap size */
+            height: auto;
+            filter: drop-shadow(-5px 5px 15px rgba(0,0,0,0.2));
         }
 
         /* Responsive */
         @media (max-width: 1024px) {
-            .bg-blue-right, .page-container::after {
-                width: 70%;
-                clip-path: polygon(30% 0%, 100% 0%, 100% 100%, 15% 100%);
+            .bg-blue-right, .bg-blue-backdrop {
+                width: 45%;
+                clip-path: polygon(0 0, 100% 0, 100% 100%, 15% 100%);
             }
-            .badge-container {
-                left: 50%;
+             .badge-container {
+                right: 12%; 
             }
-            .illustration-container {
-                width: 60%;
+             .illustration-container {
+                width: 45%;
             }
         }
 
         @media (max-width: 768px) {
-            .bg-blue-right, .page-container::after {
-                width: 55%;
-                clip-path: polygon(25% 0%, 100% 0%, 100% 100%, 10% 100%);
+            /* Mobile View */
+            body {
+                background-position: left center;
+            }
+            
+            .bg-blue-right, .bg-blue-backdrop {
+                width: 100%;
+                height: 40%;
+                top: auto;
+                bottom: 0;
+                clip-path: polygon(0 20%, 100% 0, 100% 100%, 0% 100%);
             }
             
             .text-section {
-                padding-right: 20px;
-                margin-top: 50px;
+                padding: 25px;
+                margin-top: 0;
+                background: rgba(255, 255, 255, 0.9);
             }
             
             .text-section h1 {
@@ -277,14 +265,15 @@ require_once '../Database/config.php';
             }
 
             .badge-container {
-                width: 100px;
-                height: 100px;
-                left: 60%;
-                top: 20%;
+                top: auto;
+                bottom: 35%;
+                right: 5%;
+                width: 90px;
+                height: 90px;
             }
             
             .badge-container img {
-                width: 30px;
+                width: 25px;
             }
             
             .badge-container span {
@@ -292,25 +281,14 @@ require_once '../Database/config.php';
             }
 
             .illustration-container {
+                width: 50%;
+                right: 0;
+                bottom: 0;
+            }
+             .illustration-container img {
                 width: 100%;
-                right: -20px;
-                justify-content: flex-end;
             }
         }
-        
-         @media (max-width: 480px) {
-            .bg-blue-right, .page-container::after {
-                width: 50%;
-                clip-path: polygon(20% 0%, 100% 0%, 100% 100%, 5% 100%);
-            }
-            .badge-container {
-                left: 65%;
-                top: 18%;
-            }
-            .text-section h1 {
-                font-size: 2.2rem;
-            }
-         }
     </style>
 </head>
 <body>
@@ -323,10 +301,8 @@ require_once '../Database/config.php';
     </nav>
 
     <div class="page-container">
-        <!-- Backgrounds -->
-        <div class="bg-white-left">
-            <div class="bg-doodle-left"></div>
-        </div>
+        <!-- Blue Overlays -->
+        <div class="bg-blue-backdrop"></div>
         <div class="bg-blue-right"></div>
 
         <!-- Floating Badge -->
