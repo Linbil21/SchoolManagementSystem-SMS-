@@ -134,22 +134,22 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admin@sms.com';
 
 <!-- Logout Modal -->
 <div id="logoutModal" class="modal centered">
-    <div class="modal-content premium" style="width: 450px; border: none; overflow: visible;">
-        <div style="text-align: center; padding: 50px 40px; position: relative;">
-            <!-- Decorative circle -->
-            <div style="position: absolute; top: -40px; left: 50%; transform: translateX(-50%); width: 90px; height: 90px; background: #fff; border-radius: 30px; display: flex; align-items: center; justify-content: center; box-shadow: 0 15px 35px rgba(239, 68, 68, 0.2); border: 1px solid #fee2e2;">
-                <div style="width: 70px; height: 70px; background: linear-gradient(135deg, #ef4444 0%, #f43f5e 100%); color: white; border-radius: 22px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem;">
+    <div class="modal-content premium" style="width: 440px; border: none; overflow: visible;">
+        <div style="text-align: center; padding: 50px 35px; position: relative;">
+            <!-- Premium Icon Header -->
+            <div style="position: absolute; top: -35px; left: 50%; transform: translateX(-50%); width: 85px; height: 85px; background: var(--surface-color); border-radius: 28px; display: flex; align-items: center; justify-content: center; box-shadow: 0 15px 30px rgba(244, 63, 94, 0.2); border: 1px solid var(--border-color);">
+                <div style="width: 65px; height: 65px; background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%); color: white; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem;">
                     <i class="fas fa-power-off"></i>
                 </div>
             </div>
             
-            <div style="margin-top: 40px;">
-                <h2 style="font-weight: 900; color: var(--text-color); margin-bottom: 12px; font-size: 1.8rem; letter-spacing: -1.2px;">End Session?</h2>
-                <p style="color: var(--text-muted); margin-bottom: 40px; line-height: 1.6; font-size: 1rem; font-weight: 500;">Are you sure you want to exit the Super Admin panel?</p>
+            <div style="margin-top: 35px;">
+                <h2 style="font-weight: 800; color: var(--text-color); margin-bottom: 15px; font-size: 1.7rem; letter-spacing: -1px;">End Session?</h2>
+                <p style="color: var(--text-muted); margin-bottom: 35px; line-height: 1.6; font-size: 1.05rem; font-weight: 500;">Are you sure you want to exit the Super Admin panel?</p>
                 
-                <div style="display: flex; gap: 15px;">
-                    <button onclick="closeLogoutModal()" style="flex: 1; padding: 16px; border-radius: 18px; border: 1.5px solid var(--border-color); background: var(--surface-color); color: var(--text-color); font-weight: 700; cursor: pointer; transition: 0.3s; font-size: 0.95rem;" onmouseover="this.style.background='var(--hover-bg)'" onmouseout="this.style.background='var(--surface-color)'">No, Stay</button>
-                    <a href="/auth/logout.php" style="flex: 1; padding: 16px; border-radius: 18px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; font-weight: 700; text-decoration: none; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 20px rgba(239, 68, 68, 0.25); transition: 0.3s; font-size: 0.95rem;" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 15px 25px rgba(239, 68, 68, 0.35)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 10px 20px rgba(239, 68, 68, 0.25)'">Yes, Log Out</a>
+                <div style="display: flex; gap: 12px;">
+                    <button onclick="closeLogoutModal()" style="flex: 1; padding: 15px; border-radius: 16px; border: 1.5px solid var(--border-color); background: var(--surface-color); color: var(--text-color); font-weight: 700; cursor: pointer; transition: 0.3s; font-size: 0.95rem;" onmouseover="this.style.background='var(--hover-bg)'" onmouseout="this.style.background='var(--surface-color)'">No, Stay</button>
+                    <a href="/auth/logout.php" style="flex: 1; padding: 15px; border-radius: 16px; background: #0f172a; color: white; font-weight: 700; text-decoration: none; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 15px rgba(15, 23, 42, 0.2); transition: 0.3s; font-size: 0.95rem;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 15px 25px rgba(15, 23, 42, 0.3)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 10px 15px rgba(15, 23, 42, 0.2)'">Yes, Log Out</a>
                 </div>
             </div>
         </div>

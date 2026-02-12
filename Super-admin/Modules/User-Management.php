@@ -25,17 +25,17 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'superadmin') {
     <div class="main-wrapper">
         <?php include '../Components/header.php'; ?>
         <div class="content-area">
-            <div class="module-header" style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 25px;">
+            <div class="module-header">
                 <div>
-                    <h1 style="font-size: 1.8rem; font-weight: 800; letter-spacing: -1px; color: var(--text-color); margin-bottom: 2px;">User Management</h1>
-                    <p style="color: var(--text-muted); font-weight: 500; font-size: 0.9rem;">Manage system administrators and staff accounts with ease.</p>
+                    <h1>User Management</h1>
+                    <p>Manage system administrators and staff accounts with ease.</p>
                 </div>
                 <button class="btn-premium" onclick="openUserModal()">
                     <i class="fas fa-plus-circle"></i> Add New User
                 </button>
             </div>
 
-            <div class="table-card" style="border: 1px solid var(--border-color); box-shadow: var(--shadow-md);">
+            <div class="table-card">
                 <table>
                     <thead>
                         <tr>
@@ -50,7 +50,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'superadmin') {
                         <tr>
                             <td>
                                 <div style="display: flex; align-items: center; gap: 15px;">
-                                    <div class="avatar-circle" style="width: 48px; height: 48px; border-radius: 14px; background: linear-gradient(135deg, #1648bc 0%, #3b82f6 100%); font-weight: 700;">AU</div>
+                                    <div class="avatar-circle">AU</div>
                                     <div>
                                         <p style="font-weight: 700; color: var(--text-color); margin: 0; font-size: 0.95rem;">Admin User</p>
                                         <p style="font-size: 0.78rem; color: var(--text-muted); margin: 0; font-weight: 500;">admin@sms.com</p>
@@ -81,7 +81,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'superadmin') {
                         <tr>
                             <td>
                                 <div style="display: flex; align-items: center; gap: 15px;">
-                                    <div class="avatar-circle" style="width: 48px; height: 48px; border-radius: 14px; background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%); font-weight: 700;">SM</div>
+                                    <div class="avatar-circle" style="background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);">SM</div>
                                     <div>
                                         <p style="font-weight: 700; color: var(--text-color); margin: 0; font-size: 0.95rem;">Sarah Miller</p>
                                         <p style="font-size: 0.78rem; color: var(--text-muted); margin: 0; font-weight: 500;">sarah.m@sms.com</p>
