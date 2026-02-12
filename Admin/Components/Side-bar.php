@@ -4,8 +4,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
 ?>
 <div class="sidebar">
     <div class="sidebar-brand">
-        <a href="/Admin/Dashboard.php" class="brand-wrapper">
-            <img src="/Assets/image/logo.png" alt="Logo" class="sidebar-logo">
+        <a href="/sms/Admin/Dashboard.php" class="brand-wrapper">
+            <img src="/sms/Assets/image/logo.png" alt="Logo" class="sidebar-logo">
             <h2>Admin</h2>
         </a>
     </div>
@@ -14,7 +14,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         <p class="menu-label">MAIN</p>
         <ul>
             <li class="<?php echo ($current_page == 'Dashboard.php') ? 'active' : ''; ?>">
-                <a href="/Admin/Dashboard.php"><i class="fas fa-home"></i> <span>Dashboard</span></a>
+                <a href="/sms/Admin/Dashboard.php"><i class="fas fa-home"></i> <span>Dashboard</span></a>
             </li>
         </ul>
 
@@ -27,19 +27,19 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     <i class="fas fa-chevron-right arrow-icon"></i>
                 </a>
                 <ul class="sub-menu">
-                    <li><a href="/Admin/Modules/Enrollment-Queue.php"><i class="fas fa-list-ol"></i> <span>Enrollment
+                    <li><a href="/sms/Admin/Modules/Enrollment-Queue.php"><i class="fas fa-list-ol"></i> <span>Enrollment
                                 Queue</span></a></li>
-                    <li><a href="/Admin/Modules/Enrollment.php"><i class="fas fa-clipboard-list"></i>
+                    <li><a href="/sms/Admin/Modules/Enrollment.php"><i class="fas fa-clipboard-list"></i>
                             <span>Enrollment List</span></a></li>
-                    <li><a href="/Admin/Modules/Subject-Enrollment.php"><i class="fas fa-book"></i> <span>Subject
+                    <li><a href="/sms/Admin/Modules/Subject-Enrollment.php"><i class="fas fa-book"></i> <span>Subject
                                 Enrollment</span></a></li>
-                    <li><a href="/Admin/Modules/Section-Assignment.php"><i class="fas fa-users-viewfinder"></i>
+                    <li><a href="/sms/Admin/Modules/Section-Assignment.php"><i class="fas fa-users-viewfinder"></i>
                             <span>Section Assignment</span></a></li>
-                    <li><a href="/Admin/Modules/Payments-Fees.php"><i class="fas fa-file-invoice-dollar"></i>
+                    <li><a href="/sms/Admin/Modules/Payments-Fees.php"><i class="fas fa-file-invoice-dollar"></i>
                             <span>Payments & Fees</span></a></li>
-                    <li><a href="/Admin/Modules/Enrollment-History.php"><i class="fas fa-history"></i>
+                    <li><a href="/sms/Admin/Modules/Enrollment-History.php"><i class="fas fa-history"></i>
                             <span>Enrollment History</span></a></li>
-                    <li><a href="/Admin/Modules/Reports.php"><i class="fas fa-chart-line"></i>
+                    <li><a href="/sms/Admin/Modules/Reports.php"><i class="fas fa-chart-line"></i>
                             <span>Reports</span></a></li>
                 </ul>
             </li>
@@ -51,15 +51,15 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     <i class="fas fa-chevron-right arrow-icon"></i>
                 </a>
                 <ul class="sub-menu">
-                    <li><a href="/Admin/Submodules/Admin-Users.php"><i class="fas fa-user-shield"></i> <span>Admin
+                    <li><a href="/sms/Admin/Submodules/Admin-Users.php"><i class="fas fa-user-shield"></i> <span>Admin
                                 Users</span></a></li>
-                    <li><a href="/Admin/Submodules/Staff-Registration.php"><i class="fas fa-id-card-alt"></i>
+                    <li><a href="/sms/Admin/Submodules/Staff-Registration.php"><i class="fas fa-id-card-alt"></i>
                             <span>Staff / Registration</span></a></li>
-                    <li><a href="/Admin/Submodules/Student-Accounts.php"><i class="fas fa-user-graduate"></i>
+                    <li><a href="/sms/Admin/Submodules/Student-Accounts.php"><i class="fas fa-user-graduate"></i>
                             <span>Student Accounts</span></a></li>
-                    <li><a href="/Admin/Submodules/Roles-Permissions.php"><i class="fas fa-user-tag"></i>
+                    <li><a href="/sms/Admin/Submodules/Roles-Permissions.php"><i class="fas fa-user-tag"></i>
                             <span>Roles & Permissions</span></a></li>
-                    <li><a href="/Admin/Submodules/Account-Status.php"><i class="fas fa-user-check"></i>
+                    <li><a href="/sms/Admin/Submodules/Account-Status.php"><i class="fas fa-user-check"></i>
                             <span>Account Status</span></a></li>
                 </ul>
             </li>
@@ -74,10 +74,10 @@ $current_page = basename($_SERVER['PHP_SELF']);
         <p class="menu-label">ACCOUNT</p>
         <ul>
             <li class="<?php echo ($current_page == 'Profile.php') ? 'active' : ''; ?>">
-                <a href="/modules/Profile.php"><i class="fas fa-user-circle"></i> <span>Profile</span></a>
+                <a href="/sms/modules/Profile.php"><i class="fas fa-user-circle"></i> <span>Profile</span></a>
             </li>
             <li class="<?php echo ($current_page == 'Settings.php') ? 'active' : ''; ?>">
-                <a href="/modules/Settings.php"><i class="fas fa-sliders-h"></i> <span>Settings</span></a>
+                <a href="/sms/modules/Settings.php"><i class="fas fa-sliders-h"></i> <span>Settings</span></a>
             </li>
             <li>
                 <a href="javascript:void(0)" onclick="openLogoutModal()" style="color: #ef4444;"><i
@@ -90,9 +90,9 @@ $current_page = basename($_SERVER['PHP_SELF']);
         <?php
         if (!isset($_SESSION['role']) || ($_SESSION['role'] !== 'admin' && $_SESSION['role'] !== 'superadmin')) {
             if (!headers_sent()) {
-                header("Location: /auth/Login.php");
+                header("Location: /sms/auth/Login.php");
             } else {
-                echo '<script>window.location.href = "/auth/Login.php";</script>';
+                echo '<script>window.location.href = "/sms/auth/Login.php";</script>';
             }
             exit();
         }
@@ -170,7 +170,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         <p>Are you sure you want to log out? Your current session will be ended.</p>
         <div class="modal-actions">
             <button onclick="closeLogoutModal()" class="btn-cancel">Cancel</button>
-            <a href="/auth/logout.php" class="btn-confirm-delete">Logout</a>
+            <a href="/sms/auth/logout.php" class="btn-confirm-delete">Logout</a>
         </div>
     </div>
 </div>
