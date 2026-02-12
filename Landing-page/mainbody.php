@@ -5,7 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>School Management System</title>
-    <link rel="icon" type="image/png" href="../img/sms.png" />
+    <link rel="icon" type="image/png" href="../Assets/image/logo.png" />
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
@@ -353,7 +353,7 @@
                     <span class="text-xl font-bold tracking-tight">SMS <span class="text-primary-400">Pro</span></span>
                 </div>
                 <p class="text-slate-400 text-sm">
-                    &copy; 2025 School Management System. All rights reserved.
+                    &copy; 2026 School Management System. All rights reserved.
                 </p>
                 <div class="flex gap-6">
                     <a href="#" class="text-slate-400 hover:text-white transition-colors"><i
