@@ -42,6 +42,12 @@ $csrf_token = generateCsrfToken();
             position: relative;
             overflow-y: auto;
             padding: 40px 0;
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE/Edge */
+        }
+
+        body::-webkit-scrollbar {
+            display: none; /* Chrome/Safari */
         }
 
         /* Animated Particles Background */

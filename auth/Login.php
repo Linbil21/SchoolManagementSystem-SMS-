@@ -149,7 +149,10 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
             justify-content: center; 
             position: relative; 
             overflow-y: auto; 
+            scrollbar-width: none;
+            -ms-overflow-style: none;
         }
+        .role-left::-webkit-scrollbar { display: none; }
         
         .role-left-content {
             opacity: 0;
@@ -171,7 +174,10 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
             border-left: 1px solid #f1f5f9;
             overflow-y: auto;
             max-height: 100vh;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
         }
+        .role-right::-webkit-scrollbar { display: none; }
         
         .role-right-content {
             opacity: 0;
