@@ -628,12 +628,7 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                                             <input type="text" name="contact_number" placeholder="09123456789" required maxlength="12" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                                         </div>
                                     </div>
-                                    <div class="row">
-                                        <div class="col col-full input-group">
-                                            <label>Email Address <span>*</span></label>
-                                            <input type="email" name="reg_email" placeholder="example@email.com" required>
-                                        </div>
-                                    </div>
+
                                     <div class="row">
                                         <div class="col col-full input-group">
                                             <label>Complete Address <span>*</span></label>
@@ -753,9 +748,9 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                                     <h3 class="step-title">Account Credentials</h3>
                                     <div class="row">
                                         <div class="col col-full input-group">
-                                            <label>Registered Email Address <span>*</span></label>
-                                            <input type="email" id="confirm_reg_email" readonly style="background: #f1f5f9; cursor: not-allowed;" placeholder="Auto-filled from Step 2">
-                                            <small style="color: #64748b; font-size: 0.75rem;">This will be your login identifier.</small>
+                                            <label>Email Address (Active) <span>*</span></label>
+                                            <input type="email" name="reg_email" placeholder="example@email.com" required>
+                                            <small style="color: #64748b; font-size: 0.75rem;">This will be used for account verification and login.</small>
                                         </div>
                                     </div>
                                     <div class="row">
@@ -941,11 +936,10 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                         alertText += "\n\n(Note: Simulation Mode)";
                     }
 
-                    // Mirror Email to Step 6
-                    const regEmail = document.querySelector('input[name="reg_email"]').value;
-                    const confirmEmailInput = document.getElementById('confirm_reg_email');
-                    if (confirmEmailInput && regEmail) {
-                        confirmEmailInput.value = regEmail;
+                    // Auto-fill Email if found in OCR (though usually rare in PSA)
+                    if (result.email) {
+                        const emailInput = document.querySelector('input[name="reg_email"]');
+                        if (emailInput) emailInput.value = result.email;
                     }
 
                     Swal.fire({
