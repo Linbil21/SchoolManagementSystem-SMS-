@@ -20,10 +20,9 @@ require_once '../Database/config.php';
         :root {
             --primary: #2563eb;
             --primary-dark: #0f172a;
-            --text-main: #0f172a;
-            --text-secondary: #64748b;
-            --gradient-accent: linear-gradient(90deg, #2563eb 0%, #3b82f6 100%);
-            --blue-overlay: linear-gradient(135deg, rgba(219, 234, 254, 0.4) 0%, rgba(37, 99, 235, 0.1) 100%);
+            --text-main: #020617;
+            --text-light: #64748b;
+            --gradient-blue: linear-gradient(135deg, rgba(37, 99, 235, 0.9) 0%, rgba(29, 78, 216, 0.95) 100%);
         }
 
         * {
@@ -34,7 +33,7 @@ require_once '../Database/config.php';
         }
 
         body {
-            background-color: #ffffff;
+            background-color: #f8fafc;
             overflow-x: hidden;
             height: 100vh;
             display: flex;
@@ -42,16 +41,16 @@ require_once '../Database/config.php';
             position: relative;
         }
 
-        /* Navbar (Hidden on strictly mobile landing usually, but keeping simplistic) */
+        /* Navbar */
         nav {
             position: absolute;
             top: 0;
             width: 100%;
-            padding: 20px 25px;
+            padding: 20px 5%;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            z-index: 1000;
+            z-index: 100;
         }
 
         .logo-container {
@@ -61,22 +60,19 @@ require_once '../Database/config.php';
         }
 
         .logo-container img {
-            width: 30px;
+            width: 35px;
         }
 
         .logo-container span {
-            font-weight: 600;
+            font-weight: 700;
             color: var(--primary);
-            font-size: 0.9rem;
+            font-size: 1rem;
         }
 
         .menu-btn {
-            font-size: 1.2rem;
+            font-size: 1.4rem;
             color: var(--primary);
             cursor: pointer;
-            padding: 8px;
-            background: rgba(239, 246, 255, 0.5);
-            border-radius: 6px;
         }
 
         /* Main Container */
@@ -88,180 +84,220 @@ require_once '../Database/config.php';
         }
 
         /* Background Graphics */
-        /* Left side doodles (using an image or CSS radial gradient pattern) */
-        .bg-pattern {
+        .bg-white-left {
             position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            /* Subtle doodle-like pattern */
-            background-image: 
-                radial-gradient(#cbd5e1 1.5px, transparent 1.5px),
-                radial-gradient(#cbd5e1 1.5px, transparent 1.5px);
-            background-size: 30px 30px;
-            background-position: 0 0, 15px 15px;
-            opacity: 0.3;
+            background: #ffffff;
             z-index: 0;
         }
 
-        /* The Right-side Blue Shape */
-        .bg-shape-right {
+        /* Blue Diagonal Section */
+        .bg-blue-right {
             position: absolute;
             top: 0;
             right: 0;
-            width: 50%; /* Start broadly */
+            width: 65%; /* Adjusted width */
             height: 100%;
-            background: linear-gradient(180deg, rgba(239,246,255,0.8) 0%, rgba(59,130,246,0.3) 100%);
-            /* The diagonal split */
-            clip-path: polygon(25% 0%, 100% 0%, 100% 100%, 0% 100%);
+            background: var(--gradient-blue), url('../Assets/image/background.jpg');
+            background-blend-mode: overlay;
+            background-size: cover;
+            /* Steep diagonal cut as requested */
+            clip-path: polygon(30% 0%, 100% 0%, 100% 100%, 15% 100%);
             z-index: 1;
-            backdrop-filter: blur(2px);
-            border-left: 1px solid rgba(255,255,255,0.2);
         }
 
-        /* Content Positioning */
+        /* Doodle Pattern (Faint) on left */
+        .bg-doodle {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 40%;
+            height: 100%;
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 20px 20px;
+            opacity: 0.5;
+            z-index: 0;
+        }
+
+        /* Content Area */
         .content-area {
             position: relative;
             z-index: 10;
             height: 100%;
-            padding: 0 8%;
+            padding: 0 5%;
             display: flex;
             flex-direction: column;
             justify-content: center;
         }
 
         .text-section {
-            max-width: 55%;
-            margin-top: -50px; /* Slight offset upwards */
+            width: 100%;
+            max-width: 500px;
+            margin-top: -60px; /* Shift up slightly */
         }
 
         .text-section h1 {
-            font-size: clamp(2rem, 5vw, 3rem);
-            line-height: 1.25;
-            font-weight: 700;
-            margin-bottom: 20px;
-            text-transform: uppercase;
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            line-height: 1.2;
+            font-weight: 800;
+            margin-bottom: 25px;
+            letter-spacing: -0.5px;
         }
 
-        .text-line-1, .text-line-2 {
+        .text-welcome {
+            color: var(--primary-dark); /* Dark Navy */
             display: block;
-            color: #0f172a; /* Dark Navy */
         }
 
-        .text-highlight {
-            display: block;
+        .text-brand {
             color: #2563eb; /* Bright Blue */
-            font-weight: 800; /* Extra bold */
+            display: block;
         }
 
         .text-section p {
-            font-size: 0.9rem;
-            color: #64748b;
+            font-size: 1rem;
+            color: var(--text-light);
             line-height: 1.6;
-            margin-bottom: 30px;
-            width: 90%;
+            margin-bottom: 35px;
+            max-width: 350px;
         }
 
-        /* Button */
         .cta-btn {
             display: inline-block;
-            padding: 12px 30px;
-            background: linear-gradient(90deg, #1d4ed8 0%, #3b82f6 100%);
-            color: #fff;
-            font-size: 0.85rem;
+            padding: 14px 35px;
+            background: linear-gradient(90deg, #2563eb 0%, #3b82f6 100%);
+            color: white;
             font-weight: 600;
-            border-radius: 25px;
+            border-radius: 30px;
             text-decoration: none;
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+            transition: transform 0.2s;
         }
 
-        /* Floating Logo Circle */
-        .logo-circle {
+        /* Floating Badge */
+        .badge-container {
             position: absolute;
-            top: 22%;
-            right: 22%; /* Center-ish horizontally on the diagonal line */
-            width: 140px;
-            height: 140px;
+            top: 25%;
+            left: 40%; /* Adjusted to sit on the diagonal line */
+            transform: translateX(-50%);
+            width: 180px;
+            height: 180px;
             background: rgba(255, 255, 255, 0.25);
-            border: 1px solid rgba(255, 255, 255, 0.6);
-            backdrop-filter: blur(8px);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
             border-radius: 50%;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+            text-align: center;
             z-index: 20;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
         }
 
-        .logo-circle img {
-            width: 50px;
+        .badge-container img {
+            width: 60px;
             margin-bottom: 8px;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.1));
         }
 
-        .logo-circle span {
-            font-size: 0.7rem;
+        .badge-container span {
+            font-size: 0.8rem;
             font-weight: 700;
             color: #0f172a;
-            text-align: center;
             line-height: 1.2;
         }
 
-        /* Bottom Illustration (Optional, faintly visible behind) */
-        .illustration-bg {
+        /* Illustration at bottom right */
+        .illustration-container {
             position: absolute;
             bottom: 0;
             right: 0;
-            width: 60%;
-            opacity: 0.8;
-            z-index: 2;
-            pointer-events: none;
-        }
-
-        .illustration-bg img {
             width: 100%;
-            display: block;
-            /* Fade it into the bottom */
-            mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
-            -webkit-mask-image: linear-gradient(to top, transparent 0%, black 20%);
+            max-width: 550px;
+            z-index: 5;
+            pointer-events: none;
+            display: flex;
+            justify-content: flex-end;
+            align-items: flex-end;
         }
 
-        /* Mobile Specific Overrides to MATCH SCREENSHOT */
+        .illustration-container img {
+            width: 85%;
+            height: auto;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 1024px) {
+            .bg-blue-right {
+                width: 60%;
+                clip-path: polygon(35% 0%, 100% 0%, 100% 100%, 20% 100%);
+            }
+            .badge-container {
+                left: 45%;
+            }
+        }
+
         @media (max-width: 768px) {
-            .bg-shape-right {
-                width: 45%;
-                background: linear-gradient(180deg, rgba(219,234,254,0.6) 0%, rgba(59,130,246,0.3) 100%);
-                /* The specific slant */
-                clip-path: polygon(15% 0%, 100% 0%, 100% 100%, 0% 100%);
-                border-left: 1px solid rgba(255,255,255,0.4);
-            }
-            
-            .text-section {
-                max-width: 65%;
-                margin-top: 20px;
-                padding-right: 10px;
-            }
-            
-            .text-section h1 {
-                font-size: 1.8rem;
-                margin-bottom: 15px;
+            /* Exact Mobile Match */
+            .bg-blue-right {
+                width: 55%;
+                /* Steep slant */
+                clip-path: polygon(25% 0%, 100% 0%, 100% 100%, 10% 100%);
             }
 
-            .logo-circle {
-                width: 120px;
-                height: 120px;
-                top: 18%;
-                right: 12%; 
-                background: rgba(255,255,255,0.3);
+            .badge-container {
+                width: 140px;
+                height: 140px;
+                top: 20%;
+                left: 50%; /* Center it roughly on the line */
+                margin-left: 20px; /* Fine tune */
             }
 
-            .logo-circle img {
+            .badge-container img {
                 width: 45px;
             }
+
+            .text-section {
+                margin-top: 50px;
+                max-width: 60%; /* Ensure text wraps before hitting the blue too much */
+            }
+
+            .text-section h1 {
+                font-size: 1.8rem;
+            }
+
+            .illustration-container {
+                width: 100%;
+                max-width: 100%;
+                right: -20px;
+            }
             
-            .illustration-bg {
-                width: 70%;
-                opacity: 0.9;
+            .illustration-container img {
+                width: 100%;
+                max-width: 400px;
+            }
+        }
+
+        @media (max-width: 480px) {
+             .text-section h1 {
+                font-size: 2rem;
+            }
+            
+            .bg-blue-right {
+                width: 50%;
+                clip-path: polygon(20% 0%, 100% 0%, 100% 100%, 5% 100%);
+            }
+            
+            .badge-container {
+                left: 60%;
+                top: 18%;
+                width: 130px;
+                height: 130px;
+                margin: 0;
             }
         }
     </style>
@@ -279,36 +315,36 @@ require_once '../Database/config.php';
     </nav>
 
     <div class="page-container">
-        <!-- Background Assets -->
-        <div class="bg-pattern"></div>
-        <div class="bg-shape-right"></div>
-        
-        <!-- Center Floating Logo -->
-        <div class="logo-circle">
+        <!-- Backgrounds -->
+        <div class="bg-white-left">
+            <div class="bg-doodle"></div>
+        </div>
+        <div class="bg-blue-right"></div>
+
+        <!-- Floating Badge -->
+        <div class="badge-container">
             <img src="../Assets/image/logo.png" alt="Logo">
             <span>School<br>Management System</span>
         </div>
 
-        <!-- Main Text Content -->
+        <!-- Text Content -->
         <div class="content-area">
             <div class="text-section">
                 <h1>
-                    <span class="text-line-1">WELCOME</span>
-                    <span class="text-line-2">TO</span>
-                    <br>
-                    <span class="text-highlight">SCHOOL</span>
-                    <span class="text-highlight">MANAGEMENT</span>
-                    <span class="text-highlight">SYSTEM</span>
+                    <span class="text-welcome">WELCOME</span>
+                    <span class="text-welcome">TO</span>
+                    <span class="text-brand">SCHOOL</span>
+                    <span class="text-brand">MANAGEMENT</span>
+                    <span class="text-brand">SYSTEM</span>
                 </h1>
-                <p>Efficiently manage student records, faculty activities, and school operations — all in one place.</p>
+                <p>Efficiently manage student records, faculty activities, and school operations — all in one accessible platform.</p>
                 <a href="../auth/Login.php" class="cta-btn">Get Started</a>
             </div>
         </div>
 
         <!-- Illustration -->
-        <div class="illustration-bg">
-             <!-- Using header/hero image as illustration or background graphic -->
-            <img src="../Assets/image/hero.png" alt="School Background">
+        <div class="illustration-container">
+            <img src="../Assets/image/hero.png" alt="Education Illustration">
         </div>
     </div>
 
