@@ -4,26 +4,38 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admission') {
     header("Location: ../../auth/Login.php");
     exit();
 }
-require_once '../../integration/Student_class.php';
+require_once '../../integration/faculty.php';
 
-// Handle AJAX Request for Live Fetch
+// Handle AJAX Request for Faculty Fetch
 if (isset($_GET['ajax'])) {
     header('Content-Type: application/json');
-    $student_id = $_GET['student_id'] ?? '1'; // Default ID for live feed
-    $portal = new StudentPortal();
-    $data = $portal->getStudentSubjects($student_id);
-    echo json_encode($data);
+    $portal = new FacultyPortal();
+    $data = $portal->getAllFaculty();
+    
+    // Auto-adapter for API response structure
+    $response = [
+        'success' => false,
+        'data' => []
+    ];
+
+    if ($data) {
+        $response['success'] = true;
+        // Handle if data is directly the array or wrapped in a 'data'/'faculty' key
+        $response['data'] = $data['data'] ?? $data['faculty'] ?? $data['list'] ?? (is_array($data) ? $data : []);
+    }
+    
+    echo json_encode($response);
     exit;
 }
 
-$current_page = 'Fetch-Table.php';
+$current_page = 'Teacher-Management.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>List of student</title>
+    <title>Teacher Management</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -55,8 +67,8 @@ $current_page = 'Fetch-Table.php';
             gap: 8px;
             font-size: 0.75rem;
             font-weight: 700;
-            color: #059669;
-            background: #ecfdf5;
+            color: #3b82f6;
+            background: #eff6ff;
             padding: 5px 12px;
             border-radius: 20px;
         }
@@ -64,15 +76,15 @@ $current_page = 'Fetch-Table.php';
         .pulse-dot {
             width: 8px;
             height: 8px;
-            background: #10b981;
+            background: #3b82f6;
             border-radius: 50%;
             animation: pulse 1.5s infinite;
         }
 
         @keyframes pulse {
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
-            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
-            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
         }
 
         .table-card {
@@ -151,8 +163,11 @@ $current_page = 'Fetch-Table.php';
             
             <div class="header-strip">
                 <div>
-                    <h1>List of student</h1>
-
+                    <h1>Teacher Management</h1>
+                    <p style="color: var(--text-muted); font-size: 0.85rem;">Live Faculty Repository Feed</p>
+                </div>
+                <div class="live-indicator">
+                    <span class="pulse-dot"></span> FACULTY API CONNECTED
                 </div>
             </div>
 
@@ -161,13 +176,13 @@ $current_page = 'Fetch-Table.php';
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Subject Name</th>
-                            <th>Instructor</th>
+                            <th>Faculty Name</th>
+                            <th>Department</th>
+                            <th>Subject</th>
                             <th>Section</th>
                             <th>Room</th>
                             <th>Day</th>
-                            <th>Time</th>
-                            <th>Notes</th>
+                            <th>Schedule</th>
                         </tr>
                     </thead>
                     <tbody id="fetch-body">
@@ -175,8 +190,8 @@ $current_page = 'Fetch-Table.php';
                     </tbody>
                 </table>
                 <div id="loading-overlay">
-                    <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: var(--primary); margin-bottom: 15px;"></i>
-                    <p style="color: var(--text-muted); font-weight: 600;">Fetching Real-time Academic Data...</p>
+                    <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: #3b82f6; margin-bottom: 15px;"></i>
+                    <p style="color: var(--text-muted); font-weight: 600;">Fetching Faculty Data...</p>
                 </div>
             </div>
 
@@ -188,41 +203,50 @@ $current_page = 'Fetch-Table.php';
             const tbody = document.getElementById('fetch-body');
             const loader = document.getElementById('loading-overlay');
 
-            // Automatic Fetch
-            fetch('?ajax=1&student_id=1')
+            // Automatic Fetch from Teacher API
+            fetch('?ajax=1')
                 .then(response => response.json())
-                .then(data => {
+                .then(res => {
                     loader.style.display = 'none';
-                    if (data && data.success && data.subjects) {
-                        data.subjects.forEach((item, index) => {
+                    if (res && res.success && res.data && res.data.length > 0) {
+                        res.data.forEach((item, index) => {
                             setTimeout(() => {
+                                // Maps varied API fields to table structure
+                                const facultyName = item.fullName || item.name || item.faculty_name || 'N/A';
+                                const dept = item.department || item.dept || 'General';
+                                const subject = item.subjectName || item.subject || 'N/A';
+                                const section = item.sectionName || item.section || '-';
+                                const room = item.roomName || item.room || 'TBA';
+                                const day = item.day || item.days || '-';
+                                const schedule = (item.startTime && item.endTime) ? `${item.startTime} - ${item.endTime}` : (item.schedule || '-');
+                                
                                 const row = `
                                     <tr class="fade-in">
-                                        <td><span style="font-weight: 700; color: var(--text-muted);">${item.id}</span></td>
+                                        <td><span style="font-weight: 700; color: var(--text-muted);">${item.id || item.facultyId || index + 1}</span></td>
                                         <td>
-                                            <div style="font-weight: 700;">${item.subjectName}</div>
-                                            <div style="font-size: 0.7rem; color: var(--text-muted);">CODE: ${item.subjectID}</div>
+                                            <div style="font-weight: 700;">${facultyName}</div>
+                                            <div style="font-size: 0.7rem; color: var(--text-muted);">${item.email || 'No Email'}</div>
                                         </td>
+                                        <td><div style="font-weight: 600;">${dept}</div></td>
                                         <td>
-                                            <div style="font-weight: 600;">${item.teacherName}</div>
-                                            <div style="font-size: 0.7rem; color: var(--text-muted);">ID: ${item.teacherID}</div>
+                                            <div style="font-weight: 700;">${subject}</div>
+                                            <div style="font-size: 0.7rem; color: var(--text-muted);">CODE: ${item.subjectID || 'N/A'}</div>
                                         </td>
-                                        <td><div style="font-weight: 600;">${item.sectionName}</div></td>
-                                        <td><span class="badge-room">${item.roomName}</span></td>
-                                        <td><span class="badge-day">${item.day}</span></td>
-                                        <td><div style="font-weight: 600;">${item.startTime} - ${item.endTime}</div></td>
-                                        <td style="color: var(--text-muted); font-style: italic;">${item.notes || '-'}</td>
+                                        <td><div style="font-weight: 600;">${section}</div></td>
+                                        <td><span class="badge-room">${room}</span></td>
+                                        <td><span class="badge-day">${day}</span></td>
+                                        <td><div style="font-weight: 600;">${schedule}</div></td>
                                     </tr>
                                 `;
                                 tbody.insertAdjacentHTML('beforeend', row);
-                            }, index * 80);
+                            }, index * 60);
                         });
                     } else {
-                        tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 40px; color: #ef4444; font-weight: 600;">No live data available from the repository.</td></tr>';
+                        tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 40px; color: #ef4444; font-weight: 600;">No live faculty data available.</td></tr>';
                     }
                 })
                 .catch(err => {
-                    loader.innerHTML = '<i class="fas fa-exclamation-triangle" style="font-size: 2rem; color: #ef4444;"></i><p style="color: #ef4444; margin-top: 15px;">Connection to API failed.</p>';
+                    loader.innerHTML = '<i class="fas fa-exclamation-triangle" style="font-size: 2rem; color: #ef4444;"></i><p style="color: #ef4444; margin-top: 15px;">Connection to Faculty API failed.</p>';
                 });
         });
     </script>
