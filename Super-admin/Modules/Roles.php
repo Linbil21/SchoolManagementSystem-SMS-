@@ -34,14 +34,14 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'superadmin') {
 
             <div class="roles-grid">
                 <!-- Admission Role -->
-                <div class="role-card">
+                <div class="card-premium role-card">
                     <div class="role-header">
-                        <div style="display: flex; align-items: center; gap: 15px;">
-                            <div class="role-icon"><i class="fas fa-user-graduate"></i></div>
-                            <div>
-                                <h3 style="font-weight: 800;">Admission</h3>
-                                <p style="font-size: 0.8rem; color: var(--text-gray);">Manage student applications</p>
-                            </div>
+                        <div class="role-icon-box">
+                            <i class="fas fa-user-graduate"></i>
+                        </div>
+                        <div class="role-meta">
+                            <h3>Admission</h3>
+                            <p>Manage student applications and evaluations</p>
                         </div>
                     </div>
                     <div class="permissions-list">
@@ -50,18 +50,20 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'superadmin') {
                         <div class="permission-item"><i class="fas fa-check-circle"></i> Schedule Interviews</div>
                         <div class="permission-item"><i class="fas fa-check-circle"></i> Generate Reports</div>
                     </div>
-                    <button class="btn-manage" onclick="openRolesModal('Admission')">Configure Permissions</button>
+                    <button class="btn-manage" onclick="openRolesModal('Admission')">
+                        <i class="fas fa-sliders-h"></i> Configure Permissions
+                    </button>
                 </div>
 
                 <!-- Cashier Role -->
-                <div class="role-card">
+                <div class="card-premium role-card">
                     <div class="role-header">
-                        <div style="display: flex; align-items: center; gap: 15px;">
-                            <div class="role-icon"><i class="fas fa-cash-register"></i></div>
-                            <div>
-                                <h3 style="font-weight: 800;">Cashier</h3>
-                                <p style="font-size: 0.8rem; color: var(--text-gray);">Handle financial records</p>
-                            </div>
+                        <div class="role-icon-box">
+                            <i class="fas fa-cash-register"></i>
+                        </div>
+                        <div class="role-meta">
+                            <h3>Cashier</h3>
+                            <p>Handle financial records and payments</p>
                         </div>
                     </div>
                     <div class="permissions-list">
@@ -70,34 +72,41 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'superadmin') {
                         <div class="permission-item"><i class="fas fa-check-circle"></i> View Invoices</div>
                         <div class="permission-item"><i class="fas fa-check-circle"></i> Financial Analytics</div>
                     </div>
-                    <button class="btn-manage" onclick="openRolesModal('Cashier')">Configure Permissions</button>
+                    <button class="btn-manage" onclick="openRolesModal('Cashier')">
+                        <i class="fas fa-sliders-h"></i> Configure Permissions
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Roles Modal -->
-    <div id="rolesModal" class="modal">
-        <div class="modal-content">
+    <div id="rolesModal" class="modal centered">
+        <div class="modal-content premium" style="max-width: 600px;">
             <div class="modal-header">
-                <h2 id="modalTitle" style="font-weight: 800; color: var(--text-dark);">Configure Permissions</h2>
-                <i class="fas fa-times" style="cursor: pointer; color: var(--text-gray);"
-                    onclick="closeRolesModal()"></i>
+                <div>
+                    <h2 id="modalTitle" style="font-weight: 850; color: var(--text-color); line-height: 1.2;">Configure Permissions</h2>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Select the modules this role can access.</p>
+                </div>
+                <div class="modal-close" onclick="closeRolesModal()">
+                    <i class="fas fa-times"></i>
+                </div>
             </div>
             <div class="modal-body">
-                <p style="margin-bottom: 25px; font-size: 0.9rem; color: var(--text-gray); font-weight: 500;">Select the modules and actions this role has access to.</p>
                 <div class="checkbox-group">
-                    <label class="checkbox-item"><input type="checkbox" checked> Dashboard Access</label>
-                    <label class="checkbox-item"><input type="checkbox" checked> User Management</label>
-                    <label class="checkbox-item"><input type="checkbox" checked> Reports View</label>
-                    <label class="checkbox-item"><input type="checkbox" checked> Data Export</label>
-                    <label class="checkbox-item"><input type="checkbox"> System Settings</label>
-                    <label class="checkbox-item"><input type="checkbox"> Database Access</label>
+                    <label class="checkbox-item"><input type="checkbox" checked> <span>Dashboard Access</span></label>
+                    <label class="checkbox-item"><input type="checkbox" checked> <span>User Management</span></label>
+                    <label class="checkbox-item"><input type="checkbox" checked> <span>Reports View</span></label>
+                    <label class="checkbox-item"><input type="checkbox" checked> <span>Data Export</span></label>
+                    <label class="checkbox-item"><input type="checkbox"> <span>System Settings</span></label>
+                    <label class="checkbox-item"><input type="checkbox"> <span>Database Access</span></label>
                 </div>
             </div>
             <div class="modal-footer">
-                <button onclick="closeRolesModal()" style="padding: 12px 24px; border-radius: 12px; border: 1px solid var(--border-color); background: white; font-weight: 600; cursor: pointer; color: var(--text-gray);">Cancel</button>
-                <button onclick="saveRoles()" class="btn-primary">Save Permissions</button>
+                <button onclick="closeRolesModal()" class="btn-secondary">Cancel</button>
+                <button onclick="saveRoles()" class="btn-premium">
+                    <i class="fas fa-save"></i> Save Permissions
+                </button>
             </div>
         </div>
     </div>
