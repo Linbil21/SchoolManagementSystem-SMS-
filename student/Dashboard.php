@@ -4,39 +4,61 @@ session_start();
 require_once '../auth/Security.php';
 checkRole(['student']);
 
-$student_name = isset($_SESSION['fullname']) ? $_SESSION['fullname'] : 'John Doe';
+require_once '../integration/Student_class.php';
+
+$student_name = $_SESSION['fullname'] ?? 'Student';
+$student_id = $_SESSION['student_id'] ?? null;
 
 // --- Dynamic Schedule Logic ---
 $current_day = date('l'); // Get current day (e.g., 'Sunday', 'Monday')
 $schedule = [];
 
 if ($current_day !== 'Sunday') {
-    $subjects = [
-        ['name' => 'Web Development 101', 'teacher' => 'Mr. Anderson', 'room' => 'Lab 3'],
-        ['name' => 'Database Management', 'teacher' => 'Ms. Roberts', 'room' => 'Room 404'],
-        ['name' => 'Networking Fundamentals', 'teacher' => 'Engr. Dave', 'room' => 'CISCO Lab'],
-        ['name' => 'Data Structures', 'teacher' => 'Prof. Smith', 'room' => 'Room 202'],
-        ['name' => 'Discrete Mathematics', 'teacher' => 'Dr. Evans', 'room' => 'Hall B'],
-        ['name' => 'UI/UX Design', 'teacher' => 'Ms. Lopez', 'room' => 'Design Lab'],
-        ['name' => 'Artificial Intelligence', 'teacher' => 'Dr. Chen', 'room' => 'AI Room'],
-    ];
+    $portal = new StudentPortal();
+    $apiData = $portal->getStudentSubjects($student_id);
 
-    $times = ['08:00', '10:00', '01:00', '03:00', '05:00'];
-    $durations = ['1 HR', '1.5 HRS', '2 HRS', '3 HRS'];
-    $colors = ['#2563eb', '#16a34a', '#ea580c', '#9333ea', '#db2777'];
-
-    // Select 3 random subjects for the day
-    shuffle($subjects);
-    $selected_subjects = array_slice($subjects, 0, 3);
-
-    foreach ($selected_subjects as $index => $sub) {
-        $schedule[] = [
-            'time' => $times[$index],
-            'duration' => $durations[array_rand($durations)],
-            'name' => $sub['name'],
-            'location' => $sub['room'] . ' • ' . $sub['teacher'],
-            'color' => $colors[$index]
+    if ($apiData && isset($apiData['success']) && $apiData['success'] === true) {
+        $full_schedule = $portal->formatSchedule($apiData['subjects'] ?? []);
+        $today_schedule = $full_schedule[$current_day] ?? [];
+        
+        foreach ($today_schedule as $item) {
+            $schedule[] = [
+                'time' => $item['time'],
+                'duration' => 'N/A', // API might not provide duration directly
+                'name' => $item['subject'],
+                'location' => $item['room'] . ' • ' . $item['teacher'],
+                'color' => $item['color']
+            ];
+        }
+    } else {
+        // Fallback Mock data
+        $subjects = [
+            ['name' => 'Web Development 101', 'teacher' => 'Mr. Anderson', 'room' => 'Lab 3'],
+            ['name' => 'Database Management', 'teacher' => 'Ms. Roberts', 'room' => 'Room 404'],
+            ['name' => 'Networking Fundamentals', 'teacher' => 'Engr. Dave', 'room' => 'CISCO Lab'],
+            ['name' => 'Data Structures', 'teacher' => 'Prof. Smith', 'room' => 'Room 202'],
+            ['name' => 'Discrete Mathematics', 'teacher' => 'Dr. Evans', 'room' => 'Hall B'],
+            ['name' => 'UI/UX Design', 'teacher' => 'Ms. Lopez', 'room' => 'Design Lab'],
+            ['name' => 'Artificial Intelligence', 'teacher' => 'Dr. Chen', 'room' => 'AI Room'],
         ];
+
+        $times = ['08:00', '10:00', '01:00', '03:00', '05:00'];
+        $durations = ['1 HR', '1.5 HRS', '2 HRS', '3 HRS'];
+        $colors = ['#2563eb', '#16a34a', '#ea580c', '#9333ea', '#db2777'];
+
+        // Select 3 random subjects for the day
+        shuffle($subjects);
+        $selected_subjects = array_slice($subjects, 0, 3);
+
+        foreach ($selected_subjects as $index => $sub) {
+            $schedule[] = [
+                'time' => $times[$index],
+                'duration' => $durations[array_rand($durations)],
+                'name' => $sub['name'],
+                'location' => $sub['room'] . ' • ' . $sub['teacher'],
+                'color' => $colors[$index]
+            ];
+        }
     }
 }
 ?>

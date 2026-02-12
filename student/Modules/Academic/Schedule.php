@@ -3,36 +3,49 @@ session_start();
 require_once '../../../auth/Security.php';
 checkRole(['student']);
 
+require_once '../../../integration/Student_class.php';
+
 $student_name = $_SESSION['fullname'] ?? 'Student';
+$student_id = $_SESSION['student_id'] ?? null;
 $current_page = 'Schedule.php';
 
-// Mock schedule data for the week
+// Initialize Integration Class
+$portal = new StudentPortal();
+$apiData = $portal->getStudentSubjects($student_id);
+
+if ($apiData && isset($apiData['success']) && $apiData['success'] === true) {
+    // API successful, format the schedule
+    $weekly_schedule = $portal->formatSchedule($apiData['subjects'] ?? []);
+} else {
+    // Fallback Mock data if API fails or no data found
+    $weekly_schedule = [
+        'Monday' => [
+            ['time' => '08:00 AM', 'end' => '10:00 AM', 'subject' => 'Web Development 101', 'room' => 'Lab 3', 'teacher' => 'Mr. Anderson', 'color' => '#2563eb'],
+            ['time' => '01:00 PM', 'end' => '02:30 PM', 'subject' => 'Data Structures', 'room' => 'Room 202', 'teacher' => 'Prof. Smith', 'color' => '#9333ea'],
+        ],
+        'Tuesday' => [
+            ['time' => '10:00 AM', 'end' => '11:30 AM', 'subject' => 'Database Management', 'room' => 'Room 404', 'teacher' => 'Ms. Roberts', 'color' => '#16a34a'],
+            ['time' => '03:00 PM', 'end' => '05:00 PM', 'subject' => 'UI/UX Design', 'room' => 'Design Lab', 'teacher' => 'Ms. Lopez', 'color' => '#db2777'],
+        ],
+        'Wednesday' => [
+            ['time' => '08:00 AM', 'end' => '10:00 AM', 'subject' => 'Web Development 101', 'room' => 'Lab 3', 'teacher' => 'Mr. Anderson', 'color' => '#2563eb'],
+            ['time' => '11:00 AM', 'end' => '12:30 PM', 'subject' => 'Discrete Mathematics', 'room' => 'Hall B', 'teacher' => 'Dr. Evans', 'color' => '#f59e0b'],
+        ],
+        'Thursday' => [
+            ['time' => '10:00 AM', 'end' => '11:30 AM', 'subject' => 'Database Management', 'room' => 'Room 404', 'teacher' => 'Ms. Roberts', 'color' => '#16a34a'],
+            ['time' => '01:00 PM', 'end' => '03:00 PM', 'subject' => 'Networking Fundamentals', 'room' => 'CISCO Lab', 'teacher' => 'Engr. Dave', 'color' => '#ea580c'],
+        ],
+        'Friday' => [
+            ['time' => '08:00 AM', 'end' => '10:00 AM', 'subject' => 'Data Structures', 'room' => 'Room 202', 'teacher' => 'Prof. Smith', 'color' => '#9333ea'],
+            ['time' => '03:00 PM', 'end' => '05:00 PM', 'subject' => 'Artificial Intelligence', 'room' => 'AI Room', 'teacher' => 'Dr. Chen', 'color' => '#0ea5e9'],
+        ],
+        'Saturday' => [
+            ['time' => '09:00 AM', 'end' => '12:00 PM', 'subject' => 'National Service Training', 'room' => 'Field', 'teacher' => 'Maj. Garcia', 'color' => '#64748b'],
+        ],
+    ];
+}
+
 $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-$weekly_schedule = [
-    'Monday' => [
-        ['time' => '08:00 AM', 'end' => '10:00 AM', 'subject' => 'Web Development 101', 'room' => 'Lab 3', 'teacher' => 'Mr. Anderson', 'color' => '#2563eb'],
-        ['time' => '01:00 PM', 'end' => '02:30 PM', 'subject' => 'Data Structures', 'room' => 'Room 202', 'teacher' => 'Prof. Smith', 'color' => '#9333ea'],
-    ],
-    'Tuesday' => [
-        ['time' => '10:00 AM', 'end' => '11:30 AM', 'subject' => 'Database Management', 'room' => 'Room 404', 'teacher' => 'Ms. Roberts', 'color' => '#16a34a'],
-        ['time' => '03:00 PM', 'end' => '05:00 PM', 'subject' => 'UI/UX Design', 'room' => 'Design Lab', 'teacher' => 'Ms. Lopez', 'color' => '#db2777'],
-    ],
-    'Wednesday' => [
-        ['time' => '08:00 AM', 'end' => '10:00 AM', 'subject' => 'Web Development 101', 'room' => 'Lab 3', 'teacher' => 'Mr. Anderson', 'color' => '#2563eb'],
-        ['time' => '11:00 AM', 'end' => '12:30 PM', 'subject' => 'Discrete Mathematics', 'room' => 'Hall B', 'teacher' => 'Dr. Evans', 'color' => '#f59e0b'],
-    ],
-    'Thursday' => [
-        ['time' => '10:00 AM', 'end' => '11:30 AM', 'subject' => 'Database Management', 'room' => 'Room 404', 'teacher' => 'Ms. Roberts', 'color' => '#16a34a'],
-        ['time' => '01:00 PM', 'end' => '03:00 PM', 'subject' => 'Networking Fundamentals', 'room' => 'CISCO Lab', 'teacher' => 'Engr. Dave', 'color' => '#ea580c'],
-    ],
-    'Friday' => [
-        ['time' => '08:00 AM', 'end' => '10:00 AM', 'subject' => 'Data Structures', 'room' => 'Room 202', 'teacher' => 'Prof. Smith', 'color' => '#9333ea'],
-        ['time' => '03:00 PM', 'end' => '05:00 PM', 'subject' => 'Artificial Intelligence', 'room' => 'AI Room', 'teacher' => 'Dr. Chen', 'color' => '#0ea5e9'],
-    ],
-    'Saturday' => [
-        ['time' => '09:00 AM', 'end' => '12:00 PM', 'subject' => 'National Service Training', 'room' => 'Field', 'teacher' => 'Maj. Garcia', 'color' => '#64748b'],
-    ],
-];
 ?>
 <!DOCTYPE html>
 <html lang="en">
