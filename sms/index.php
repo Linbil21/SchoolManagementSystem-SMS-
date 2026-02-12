@@ -22,6 +22,7 @@ require_once '../Database/config.php';
             --primary-dark: #0f172a;
             --text-main: #020617;
             --text-light: #64748b;
+            --gradient-blue: linear-gradient(135deg, rgba(37, 99, 235, 0.9) 0%, rgba(29, 78, 216, 0.95) 100%);
         }
 
         * {
@@ -32,7 +33,7 @@ require_once '../Database/config.php';
         }
 
         body {
-            background-color: #ffffff;
+            background-color: #f8fafc;
             overflow-x: hidden;
             height: 100vh;
             display: flex;
@@ -47,7 +48,7 @@ require_once '../Database/config.php';
             width: 100%;
             padding: 20px 5%;
             display: flex;
-            justify-content: flex-start; /* Align left */
+            justify-content: space-between;
             align-items: center;
             z-index: 100;
         }
@@ -68,6 +69,12 @@ require_once '../Database/config.php';
             font-size: 1rem;
         }
 
+        .menu-btn {
+            font-size: 1.4rem;
+            color: var(--primary);
+            cursor: pointer;
+        }
+
         /* Main Container */
         .page-container {
             position: relative;
@@ -76,33 +83,30 @@ require_once '../Database/config.php';
             overflow: hidden;
         }
 
-        /* Background - "Blue Shadow" feel */
-        .bg-shadow-right {
+        /* Background Graphics */
+        .bg-white-left {
             position: absolute;
             top: 0;
-            right: 0;
-            width: 60%; 
+            left: 0;
+            width: 100%;
             height: 100%;
-            /* Soft blue gradient, low opacity */
-            background: linear-gradient(120deg, rgba(255,255,255,0) 0%, rgba(37, 99, 235, 0.1) 100%);
-            /* Steep diagonal cut */
-            clip-path: polygon(20% 0%, 100% 0%, 100% 100%, 0% 100%);
+            background: #ffffff;
             z-index: 0;
         }
 
-        /* Additional Right Side Pattern/Texture container */
-        .bg-pattern-right {
-           position: absolute;
-           top: 0;
-           right: 0;
-           width: 55%;
-           height: 100%;
-           /* Using a radial gradient to simulate dots or texture if image missing */
-           background-image: radial-gradient(#3b82f6 1px, transparent 1px);
-           background-size: 30px 30px;
-           opacity: 0.1; /* Very faint */
-           clip-path: polygon(20% 0%, 100% 0%, 100% 100%, 0% 100%);
-           z-index: 0;
+        /* Blue Diagonal Section */
+        .bg-blue-right {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 60%;
+            height: 100%;
+            background: var(--gradient-blue), url('../Assets/image/background.jpg');
+            background-blend-mode: overlay;
+            background-size: cover;
+            /* Steep diagonal cut */
+            clip-path: polygon(30% 0%, 100% 0%, 100% 100%, 15% 100%);
+            z-index: 1;
         }
 
         /* Content Area */
@@ -118,26 +122,25 @@ require_once '../Database/config.php';
 
         .text-section {
             width: 100%;
-            max-width: 550px;
-            margin-top: -40px; 
+            max-width: 500px;
+            margin-top: -60px;
         }
 
         .text-section h1 {
-            font-size: clamp(2.5rem, 5vw, 3.8rem);
-            line-height: 1.1;
-            font-weight: 900;
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            line-height: 1.2;
+            font-weight: 800;
             margin-bottom: 25px;
-            letter-spacing: -1px;
-            text-transform: uppercase;
+            letter-spacing: -0.5px;
         }
 
         .text-welcome {
-            color: var(--primary-dark); 
+            color: var(--primary-dark);
             display: block;
         }
 
         .text-brand {
-            color: #2563eb; 
+            color: #2563eb;
             display: block;
         }
 
@@ -146,34 +149,31 @@ require_once '../Database/config.php';
             color: var(--text-light);
             line-height: 1.6;
             margin-bottom: 35px;
-            max-width: 400px;
+            max-width: 350px;
         }
 
         .cta-btn {
             display: inline-block;
-            padding: 14px 40px;
-            background: #2563eb;
+            padding: 14px 35px;
+            background: linear-gradient(90deg, #2563eb 0%, #3b82f6 100%);
             color: white;
             font-weight: 600;
             border-radius: 30px;
             text-decoration: none;
-            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
             transition: transform 0.2s;
         }
-        
-        .cta-btn:hover {
-            transform: translateY(-2px);
-            background: #1d4ed8;
-        }
 
-        /* Floating Badge - Top Right & Smaller */
+        /* Floating Badge - Back on the line */
         .badge-container {
             position: absolute;
-            top: 100px; /* Below navbar */
-            right: 5%;
-            width: 120px;
-            height: 120px;
-            background: #ffffff;
+            top: 25%;
+            left: 45%; /* Positioned on the diagonal */
+            width: 180px;
+            height: 180px;
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
             border-radius: 50%;
             display: flex;
             flex-direction: column;
@@ -181,16 +181,17 @@ require_once '../Database/config.php';
             justify-content: center;
             text-align: center;
             z-index: 20;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
         }
 
         .badge-container img {
-            width: 40px;
-            margin-bottom: 5px;
+            width: 60px;
+            margin-bottom: 8px;
+            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.1));
         }
 
         .badge-container span {
-            font-size: 0.65rem;
+            font-size: 0.8rem;
             font-weight: 700;
             color: #0f172a;
             line-height: 1.2;
@@ -202,7 +203,7 @@ require_once '../Database/config.php';
             bottom: 0;
             right: 0;
             width: 100%;
-            max-width: 650px;
+            max-width: 550px;
             z-index: 5;
             pointer-events: none;
             display: flex;
@@ -211,46 +212,74 @@ require_once '../Database/config.php';
         }
 
         .illustration-container img {
-            width: 90%;
-            max-width: 600px;
+            width: 85%;
             height: auto;
         }
 
         /* Responsive Adjustments */
         @media (max-width: 1024px) {
-            .bg-shadow-right {
-                width: 70%;
-                clip-path: polygon(30% 0%, 100% 0%, 100% 100%, 10% 100%);
+            .bg-blue-right {
+                width: 60%;
+                clip-path: polygon(35% 0%, 100% 0%, 100% 100%, 20% 100%);
+            }
+            .badge-container {
+                left: 50%;
+                transform: translateX(-50%);
             }
         }
 
         @media (max-width: 768px) {
-            .bg-shadow-right {
-                width: 80%;
-                opacity: 0.5;
+            .bg-blue-right {
+                width: 55%;
+                clip-path: polygon(25% 0%, 100% 0%, 100% 100%, 10% 100%);
+            }
+
+            .badge-container {
+                width: 140px;
+                height: 140px;
+                top: 20%;
+                left: 55%; 
+                transform: translateX(-50%);
+            }
+
+            .badge-container img {
+                width: 45px;
+            }
+
+            .text-section {
+                margin-top: 50px;
+                max-width: 60%;
+            }
+
+            .text-section h1 {
+                font-size: 1.8rem;
+            }
+
+            .illustration-container {
+                right: -20px;
             }
             
-            .text-section h1 {
-                font-size: 2.2rem;
+            .illustration-container img {
+                width: 100%;
+                max-width: 400px;
+            }
+        }
+
+        @media (max-width: 480px) {
+             .text-section h1 {
+                font-size: 2rem;
+            }
+            
+            .bg-blue-right {
+                width: 50%;
+                clip-path: polygon(20% 0%, 100% 0%, 100% 100%, 5% 100%);
             }
             
             .badge-container {
-                top: 80px;
-                right: 20px;
-                width: 90px;
-                height: 90px;
-            }
-            
-            .badge-container img {
-                width: 30px;
-            }
-            
-             .badge-container span {
-                font-size: 0.5rem;
-             }
-
-            .illustration-container img {
-                width: 100%;
+                left: 65%;
+                top: 18%;
+                width: 130px;
+                height: 130px;
             }
         }
     </style>
@@ -262,14 +291,17 @@ require_once '../Database/config.php';
             <img src="../Assets/image/logo.png" alt="SMS Logo">
             <span>School Management</span>
         </div>
+        <div class="menu-btn">
+            <i class="fas fa-bars"></i>
+        </div>
     </nav>
 
     <div class="page-container">
         <!-- Backgrounds -->
-        <div class="bg-shadow-right"></div>
-        <div class="bg-pattern-right"></div>
+        <div class="bg-white-left"></div>
+        <div class="bg-blue-right"></div>
 
-        <!-- Floating Badge (Top Right) -->
+        <!-- Floating Badge -->
         <div class="badge-container">
             <img src="../Assets/image/logo.png" alt="Logo">
             <span>School<br>Management System</span>
