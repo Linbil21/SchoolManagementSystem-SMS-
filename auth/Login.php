@@ -1221,7 +1221,3 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
 </body>
 
 </html>
-        /* Shadow Override for Login */
-        .container {
-            box-shadow: 0 20px 60px rgba(59, 130, 246, 0.25) !important;
-        }
