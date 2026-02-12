@@ -220,10 +220,21 @@ if (!empty($student_id)) {
     <?php include '../Components/Sidebar.php'; ?>
     <div class="main-wrapper">
         <?php include '../Components/header.php'; ?>
-       
+        <div class="content-area">
+            <div class="search-container" style="max-width: 100%; margin-bottom: 20px;">
+                <form method="GET" class="search-box">
+                    <div style="position: relative; flex: 1;">
+                        <i class="fas fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.9rem;"></i>
+                        <input type="text" name="student_id" placeholder="Enter Student ID to fetch live table data (e.g., 2026-0001)" value="<?php echo htmlspecialchars($student_id); ?>" required style="padding-left: 45px;">
+                    </div>
+                    <button type="submit" class="btn-fetch" style="padding: 0 25px;">
+                        <i class="fas fa-satellite-dish"></i> Sync Table
+                    </button>
+                </form>
+            </div>
 
             <?php if ($error): ?>
-                <div class="error-msg">
+                <div class="error-msg" style="margin-bottom: 20px;">
                     <i class="fas fa-exclamation-circle"></i>
                     <span><?php echo $error; ?></span>
                 </div>
@@ -267,10 +278,16 @@ if (!empty($student_id)) {
                         </tbody>
                     </table>
                 </div>
+            <?php elseif (!$student_id): ?>
+                <div style="text-align: center; padding: 100px 20px; color: var(--text-muted); background: var(--card-bg); border-radius: 24px; border: 1px dashed var(--border);">
+                    <i class="fas fa-table" style="font-size: 3rem; margin-bottom: 20px; opacity: 0.2;"></i>
+                    <h3 style="color: var(--text-main); margin-bottom: 10px;">Live Data Table</h3>
+                    <p>Enter a Student ID above to fetch and display the live academic table from the API.</p>
+                </div>
             <?php elseif ($student_id && !$error): ?>
                 <div style="text-align: center; padding: 60px; color: var(--text-muted);">
                     <i class="fas fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 20px;"></i>
-                    <p>Connecting to secure API servers...</p>
+                    <p>Fetching data from https://css.jampzdev.com/api/student-subject.php ...</p>
                 </div>
             <?php endif; ?>
         </div>
