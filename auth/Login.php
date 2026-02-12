@@ -238,7 +238,7 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                         <div style="width: 80px; height: 80px; background: white; border-radius: 50%; box-shadow: 0 4px 20px rgba(0,0,0,0.08); display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
                             <img src="../Assets/image/logo.png" alt="SIS" style="width: 40px;">
                         </div>
-                        <span style="color: #3b82f6; font-weight: 700; letter-spacing: 2px; font-size: 0.8rem; text-transform: uppercase;">SIS Portal</span>
+                        <span style="color: #3b82f6; font-weight: 700; letter-spacing: 2px; font-size: 0.8rem; text-transform: uppercase;">SMS Portal</span>
                         <h2 style="font-size: 1.5rem; font-weight: 800; color: #0f172a; margin: 10px 0;">Choose Your Role</h2>
                         <p style="font-size: 0.9rem; color: #64748b;">Select your portal to continue</p>
                     </div>
