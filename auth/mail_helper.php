@@ -6,8 +6,16 @@ require_once __DIR__ . '/../PHPMailer/src/Exception.php';
 require_once __DIR__ . '/../PHPMailer/src/PHPMailer.php';
 require_once __DIR__ . '/../PHPMailer/src/SMTP.php';
 
+$last_mail_error = '';
+
+function get_last_mail_error() {
+    global $last_mail_error;
+    return $last_mail_error;
+}
+
 function sendOTP($recipientEmail, $otp, $type = 'Verification')
 {
+    global $last_mail_error;
     $mail = new PHPMailer(true);
 
     try {
@@ -15,10 +23,15 @@ function sendOTP($recipientEmail, $otp, $type = 'Verification')
         $mail->isSMTP();
         $mail->Host = 'smtp.gmail.com';
         $mail->SMTPAuth = true;
+        // Updated to use official credentials from previous successful sessions
         $mail->Username = 'linbilcelestre3@gmail.com';
-        $mail->Password = 'wovw wjac wzlf pzev';
+        $mail->Password = 'wovw wjac wzlf pzev'; // App Password
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port = 587;
+        
+        // Timeout settings
+        $mail->Timeout = 10;
+        $mail->SMTPKeepAlive = true; 
 
         // Recipients
         $mail->setFrom('linbilcelestre3@gmail.com', 'SMS Official');
@@ -46,7 +59,8 @@ function sendOTP($recipientEmail, $otp, $type = 'Verification')
         $mail->send();
         return true;
     } catch (Exception $e) {
-        error_log("PHPMailer Error: " . $e->getMessage());
+        $last_mail_error = $e->getMessage();
+        error_log("PHPMailer Error: " . $last_mail_error);
         return false;
     }
 }

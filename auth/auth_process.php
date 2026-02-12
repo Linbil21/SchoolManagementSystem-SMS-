@@ -138,12 +138,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     }
                     header("Location: Verification.php?email=" . urlencode($email) . "&type=register");
                 } else {
+                    $error_msg = get_last_mail_error();
                     if ($isAjax) {
                         header('Content-Type: application/json');
-                        echo json_encode(['status' => 'error', 'message' => 'Failed to send OTP.']);
+                        echo json_encode(['status' => 'error', 'message' => 'Failed to send OTP. ' . $error_msg]);
                         exit();
                     }
-                    header("Location: Login.php?error=mail_error");
+                    header("Location: Login.php?error=mail_error&details=" . urlencode($error_msg));
                 }
                 exit();
             } catch (Exception $e) {
@@ -256,12 +257,13 @@ function process_login($email, $password, $pdo, $isAjax = false)
                     }
                     header("Location: Verification.php?email=" . urlencode($student->email) . "&type=login");
                 } else {
+                    $error_msg = get_last_mail_error();
                     if ($isAjax) {
                         header('Content-Type: application/json');
-                        echo json_encode(['status' => 'error', 'message' => 'Failed to send OTP.']);
+                        echo json_encode(['status' => 'error', 'message' => 'Failed to send OTP. ' . $error_msg]);
                         exit();
                     }
-                    header("Location: Login.php?error=mail_error");
+                    header("Location: Login.php?error=mail_error&details=" . urlencode($error_msg));
                 }
                 exit();
             } else {

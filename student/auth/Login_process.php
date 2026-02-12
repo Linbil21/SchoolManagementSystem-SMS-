@@ -84,7 +84,8 @@ try {
                 'masked_email' => maskEmail($student->email)
             ]);
         } else {
-            echo json_encode(['status' => 'error', 'message' => 'Failed to send verification code.']);
+            $error_msg = get_last_mail_error();
+            echo json_encode(['status' => 'error', 'message' => 'Failed to send verification code. ' . $error_msg]);
         }
         exit();
     }

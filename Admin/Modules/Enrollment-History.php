@@ -9,7 +9,7 @@ if (!isset($_SESSION['role']) || ($_SESSION['role'] !== 'admin' && $_SESSION['ro
 
 // Fetch Enrollment History (Approved or Rejected students)
 try {
-    $stmt = $pdo->query("SELECT e.*, c.course_code, c.course_name FROM enrollments e LEFT JOIN courses c ON e.course_id = c.courseId WHERE e.status IN ('Enrolled', 'Rejected') ORDER BY e.created_at DESC");
+    $stmt = $pdo->query("SELECT e.*, c.course_code, c.course_name FROM enrollments e LEFT JOIN courses c ON e.course_id = c.courseId WHERE e.status IN ('Enrolled', 'Rejected', 'Pending Review', 'Pending Payment') ORDER BY e.created_at DESC");
     $history = $stmt->fetchAll();
 } catch (PDOException $e) {
     $history = [];
@@ -62,9 +62,13 @@ try {
                                     </td>
                                     <td><?php echo htmlspecialchars($h->course_code); ?></td>
                                     <td>
-                                        <span
-                                            class="status-badge <?php echo ($h->status == 'Enrolled') ? 'status-enrolled' : 'status-reject'; ?>"
-                                            style="<?php echo ($h->status == 'Rejected') ? 'background:#fee2e2; color:#b91c1c;' : ''; ?>">
+                                        <?php
+                                        $status_class = 'status-reject'; // Default for Rejected
+                                        if ($h->status == 'Enrolled') $status_class = 'status-enrolled';
+                                        elseif ($h->status == 'Pending Review') $status_class = 'status-pending-review';
+                                        elseif ($h->status == 'Pending Payment') $status_class = 'status-pending-payment';
+                                        ?>
+                                        <span class="status-badge <?php echo $status_class; ?>">
                                             <?php echo htmlspecialchars($h->status); ?>
                                         </span>
                                     </td>
