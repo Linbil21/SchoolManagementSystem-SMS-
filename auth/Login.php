@@ -971,12 +971,37 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                     if (result.last_name) document.querySelector('input[name="last_name"]').value = result.last_name;
                     if (result.birthdate) document.querySelector('input[name="birthdate"]').value = result.birthdate;
                     if (result.gender) document.querySelector('select[name="gender"]').value = result.gender;
+                    if (result.contact_number) document.querySelector('input[name="contact_number"]').value = result.contact_number;
+                    if (result.address) document.querySelector('input[name="address"]').value = result.address;
 
                     // Guardian Field Autofill
                     if (result.guardian_name) {
                         const guardianParts = result.guardian_name.split(' ');
-                        document.querySelector('input[name="guardian_first"]').value = guardianParts[0] || '';
-                        document.querySelector('input[name="guardian_last"]').value = guardianParts[guardianParts.length - 1] || '';
+                        const gFirst = document.querySelector('input[name="guardian_first"]');
+                        const gLast = document.querySelector('input[name="guardian_last"]');
+                        if (gFirst) gFirst.value = guardianParts[0] || '';
+                        if (gLast) gLast.value = guardianParts.length > 1 ? guardianParts[guardianParts.length - 1] : '';
+                    }
+
+                    if (result.guardian_contact) {
+                        const gContact = document.querySelector('input[name="guardian_contact"]');
+                        if (gContact) gContact.value = result.guardian_contact;
+                    }
+
+                    if (result.guardian_email) {
+                        const gEmail = document.querySelector('input[name="guardian_email"]');
+                        if (gEmail) gEmail.value = result.guardian_email;
+                    }
+
+                    if (result.relationship) {
+                        const gRel = document.querySelector('input[name="relationship"]');
+                        if (gRel) gRel.value = result.relationship;
+                    }
+
+                    // Sync address to guardian if not set
+                    if (result.address) {
+                        const gAddress = document.querySelector('input[name="guardian_address"]');
+                        if (gAddress) gAddress.value = result.address;
                     }
 
                     // Update UI for Step 5

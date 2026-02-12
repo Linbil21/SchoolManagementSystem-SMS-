@@ -23,9 +23,8 @@ function sendOTP($recipientEmail, $otp, $type = 'Verification')
         $mail->isSMTP();
         $mail->Host = 'smtp.gmail.com';
         $mail->SMTPAuth = true;
-        // Updated to use official credentials from previous successful sessions
-        $mail->Username = 'linbilcelestre3@gmail.com';
-        $mail->Password = 'wovw wjac wzlf pzev'; // App Password
+        $mail->Username = 'linbilcelestre31@gmail.com';
+        $mail->Password = 'ncim rfhg jisu zzam'; // New App Password
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port = 587;
         
@@ -34,7 +33,7 @@ function sendOTP($recipientEmail, $otp, $type = 'Verification')
         $mail->SMTPKeepAlive = true; 
 
         // Recipients
-        $mail->setFrom('linbilcelestre3@gmail.com', 'SMS Official');
+        $mail->setFrom('linbilcelestre31@gmail.com', 'SMS Official');
         $mail->addAddress($recipientEmail);
 
         // Content

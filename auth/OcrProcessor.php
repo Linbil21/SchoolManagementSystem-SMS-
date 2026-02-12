@@ -77,9 +77,14 @@ class OcrProcessor {
             'last_name' => 'DELA CRUZ',
             'birthdate' => '2005-05-15',
             'gender' => 'Male',
+            'contact_number' => '09123456789',
+            'address' => '123 Street, City, Province',
             'guardian_name' => 'MARIA DELA CRUZ',
+            'guardian_contact' => '09987654321',
+            'guardian_email' => 'maria.delacruz@example.com',
+            'relationship' => 'Mother',
             'recommendation' => 'BS Information Technology',
-            'raw_text' => 'SIMULATED DATA: PHILIPPINE STATISTICS AUTHORITY Birth Certificate Juan Prototype Dela Cruz May 15, 2005 Male. Mother: Maria Dela Cruz. High honors in Computer Studies.'
+            'raw_text' => 'SIMULATED DATA: PHILIPPINE STATISTICS AUTHORITY Birth Certificate Juan Prototype Dela Cruz May 15, 2005 Male. Mother: Maria Dela Cruz. Address: 123 Street, City, Province. Contact: 09123456789. High honors in Computer Studies.'
         ];
     }
 
