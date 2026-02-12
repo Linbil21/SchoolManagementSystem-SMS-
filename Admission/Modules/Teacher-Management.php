@@ -208,38 +208,44 @@ $current_page = 'Teacher-Management.php';
                 .then(response => response.json())
                 .then(res => {
                     loader.style.display = 'none';
-                    if (res && res.success && res.data && res.data.length > 0) {
-                        res.data.forEach((item, index) => {
-                            setTimeout(() => {
-                                // Maps varied API fields to table structure
-                                const facultyName = item.fullName || item.name || item.faculty_name || 'N/A';
-                                const dept = item.department || item.dept || 'General';
-                                const subject = item.subjectName || item.subject || 'N/A';
-                                const section = item.sectionName || item.section || '-';
-                                const room = item.roomName || item.room || 'TBA';
-                                const day = item.day || item.days || '-';
-                                const schedule = (item.startTime && item.endTime) ? `${item.startTime} - ${item.endTime}` : (item.schedule || '-');
+                    const faculties = res.data?.faculties || [];
+                    if (res && res.success && faculties.length > 0) {
+                        let globalIndex = 0;
+                        faculties.forEach((faculty) => {
+                            const prof = faculty.professorInfo || {};
+                            const fullName = `${prof.firstName} ${prof.lastName}`;
+                            const email = prof.workEmail || 'N/A';
+                            const position = prof.position || 'Professor';
+                            
+                            (faculty.sections || []).forEach((section) => {
+                                const sectionName = section.name || 'N/A';
+                                const room = section.room || 'TBA';
+                                const program = section.program?.toUpperCase() || 'GE';
                                 
-                                const row = `
-                                    <tr class="fade-in">
-                                        <td><span style="font-weight: 700; color: var(--text-muted);">${item.id || item.facultyId || index + 1}</span></td>
-                                        <td>
-                                            <div style="font-weight: 700;">${facultyName}</div>
-                                            <div style="font-size: 0.7rem; color: var(--text-muted);">${item.email || 'No Email'}</div>
-                                        </td>
-                                        <td><div style="font-weight: 600;">${dept}</div></td>
-                                        <td>
-                                            <div style="font-weight: 700;">${subject}</div>
-                                            <div style="font-size: 0.7rem; color: var(--text-muted);">CODE: ${item.subjectID || 'N/A'}</div>
-                                        </td>
-                                        <td><div style="font-weight: 600;">${section}</div></td>
-                                        <td><span class="badge-room">${room}</span></td>
-                                        <td><span class="badge-day">${day}</span></td>
-                                        <td><div style="font-weight: 600;">${schedule}</div></td>
-                                    </tr>
-                                `;
-                                tbody.insertAdjacentHTML('beforeend', row);
-                            }, index * 60);
+                                (section.subjects || []).forEach((subject) => {
+                                    setTimeout(() => {
+                                        const row = `
+                                            <tr class="fade-in">
+                                                <td><span style="font-weight: 700; color: var(--text-muted);">${++globalIndex}</span></td>
+                                                <td>
+                                                    <div style="font-weight: 700;">${fullName}</div>
+                                                    <div style="font-size: 0.7rem; color: var(--text-muted);">${email}</div>
+                                                </td>
+                                                <td><div style="font-weight: 600;">${position}</div></td>
+                                                <td>
+                                                    <div style="font-weight: 700;">${subject.name || 'Unknown'}</div>
+                                                    <div style="font-size: 0.7rem; color: var(--text-muted);">ID: ${subject.id?.substring(0,8) || 'N/A'}</div>
+                                                </td>
+                                                <td><div style="font-weight: 600;">${sectionName} [${program}]</div></td>
+                                                <td><span class="badge-room">${room}</span></td>
+                                                <td><span class="badge-day">${subject.day || '-'}</span></td>
+                                                <td><div style="font-weight: 600;">${subject.startTime} - ${subject.endTime}</div></td>
+                                            </tr>
+                                        `;
+                                        tbody.insertAdjacentHTML('beforeend', row);
+                                    }, globalIndex * 60);
+                                });
+                            });
                         });
                     } else {
                         tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 40px; color: #ef4444; font-weight: 600;">No live faculty data available.</td></tr>';
