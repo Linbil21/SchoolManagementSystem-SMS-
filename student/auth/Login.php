@@ -373,7 +373,7 @@ $csrf_token = generateCsrfToken();
 
                 <div class="form-links">
                     <a href="forgot_password.php">Forgot password?</a>
-                    <a href="../../auth/Login.php">New? Enroll here</a>
+                    <a href="../../auth/Login.php?action=register">New? Enroll here</a>
                 </div>
             </form>
         </div>

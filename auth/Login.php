@@ -422,10 +422,19 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                 <form action="auth_process.php" method="POST" class="sign-in-form">
                     <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
                     <h2 class="title" style="color: #1648bc; font-size: 1.8rem; font-weight: 800; line-height: 1.2;">
-                        Enrollment Management</h2>
+                        <?php 
+                        $role = $_GET['role'] ?? 'Staff';
+                        $role_titles = [
+                            'superadmin' => 'Super Admin Access',
+                            'admin' => 'Administrator Login',
+                            'admission' => 'Enrollment Management',
+                            'cashier' => 'Cashier Portal'
+                        ];
+                        echo htmlspecialchars($role_titles[$role] ?? 'SMS Portal');
+                        ?></h2>
                     <div class="subtitle"
-                        style="color: #1034a6; font-weight: 700; font-size: 1.15rem; margin-top: 10px;">Log in to your
-                        account</div>
+                        style="color: #1034a6; font-weight: 700; font-size: 1.15rem; margin-top: 10px;">
+                        <?php echo htmlspecialchars(ucfirst($role)); ?> Authentication</div>
 
                     <?php if (isset($_GET['registered']) && $_GET['registered'] == 'true'): ?>
                         <div
@@ -474,11 +483,7 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                     <a href="forgot_password.php" class="forgot-password"
                         style="margin-top: 20px; color: #3b82f6;">Forgot Password?</a>
 
-                    <div style="margin-top: 30px; font-size: 0.9rem; color: #4b5563;">
-                        New Student? <a href="#" id="sign-up-link-trigger"
-                            style="color: var(--primary-blue); font-weight: 700; text-decoration: none;">Register
-                            Here</a>
-                    </div>
+                    <!-- Registration link removed as per user request (Role-based separation) -->
                 </form>
 
                 <!-- REGISTRATION FORM (Modern Modern Split Design) -->
@@ -588,7 +593,7 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                                     </div>
 
                                     <div class="btns-group">
-                                        <a href="#" id="sign-in-link-trigger" style="margin-right: auto; text-decoration: none; color: #64748b; font-weight: 700; font-size: 0.85rem;">Already Enrolled?</a>
+                                        <a href="../student/auth/Login.php" style="margin-right: auto; text-decoration: none; color: #64748b; font-weight: 700; font-size: 0.85rem;">Already Enrolled?</a>
                                         <a href="#" class="btn btn-next">CONTINUE <i class="fas fa-chevron-right" style="margin-left: 10px;"></i></a>
                                     </div>
                                 </div>
@@ -871,6 +876,15 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
 
     <script src="../Assets/javascript/log-reg.js"></script>
     <script>
+        // Auto-toggle to Registration mode if action=register is present
+        document.addEventListener("DOMContentLoaded", () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('action') === 'register') {
+                const container = document.querySelector(".container");
+                if (container) container.classList.add("sign-up-mode");
+            }
+        });
+
         let scanResults = {
             count: 0,
             confidences: [],
