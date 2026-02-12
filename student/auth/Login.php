@@ -30,24 +30,33 @@ $csrf_token = generateCsrfToken();
             font-family: 'Plus Jakarta Sans', sans-serif;
         }
 
+        * {
+            scrollbar-width: none !important; /* Firefox */
+            -ms-overflow-style: none !important; /* IE/Edge */
+        }
+
+        *::-webkit-scrollbar {
+            display: none !important; /* Chrome/Safari/Opera */
+            width: 0 !important;
+            height: 0 !important;
+        }
+
+        html, body {
+            overflow-x: hidden;
+        }
+
         body {
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(rgba(30, 58, 138, 0.6), rgba(30, 58, 138, 0.6)), url('../../Assets/image/background.jpg');
+            background: linear-gradient(rgba(30, 58, 138, 0.4), rgba(30, 58, 138, 0.4)), url('../../Assets/image/background.jpg');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
             position: relative;
             overflow-y: auto;
             padding: 40px 0;
-            scrollbar-width: none; /* Firefox */
-            -ms-overflow-style: none; /* IE/Edge */
-        }
-
-        body::-webkit-scrollbar {
-            display: none; /* Chrome/Safari */
         }
 
         /* Animated Particles Background */

@@ -22,19 +22,24 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
         /* Override body background from log-reg.css for a cleaner look */
+        * {
+            scrollbar-width: none !important;
+            -ms-overflow-style: none !important;
+        }
+        *::-webkit-scrollbar {
+            display: none !important;
+            width: 0 !important;
+            height: 0 !important;
+        }
+
         body {
             background: linear-gradient(rgba(30, 58, 138, 0.6), rgba(30, 58, 138, 0.6)), url('../Assets/image/background.jpg') !important;
             background-size: cover !important;
             background-position: center !important;
             background-repeat: no-repeat !important;
             background-attachment: fixed !important;
-            display: block !important; /* Reset flex to allow normal flow */
-            overflow-y: auto !important; /* Allow scrolling if card is taller than screen */
-            scrollbar-width: none; /* Hide for body but keep functionality */
-        }
-        
-        body::-webkit-scrollbar {
-            display: none;
+            display: block !important;
+            overflow-y: auto !important;
         }
 
         /* Floating logo for registration to save space and move it up */
