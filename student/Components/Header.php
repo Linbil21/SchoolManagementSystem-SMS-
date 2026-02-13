@@ -19,6 +19,20 @@ $profile_pic = isset($_SESSION['profile_image']) ? $_SESSION['profile_image'] : 
 $unread_count = getUnreadNotificationsCount($pdo);
 $notifications = getRecentNotifications($pdo);
 
+// Robust absolute-relative path logic
+$script_name = $_SERVER['SCRIPT_NAME'];
+$check_paths = ['/Super-admin/', '/modules/', '/Admin/', '/submodules/', '/modules/', '/Cashier/', '/Admission/', '/auth/', '/student/'];
+$project_base = '';
+
+foreach ($check_paths as $path) {
+    if (($pos = stripos($script_name, $path)) !== false) {
+        $project_base = rtrim(substr($script_name, 0, $pos), '/');
+        break;
+    }
+}
+
+$root = $project_base . '/'; // Ensures trailing slash
+
 // Improved initials logic
 $name_parts = explode(' ', trim($student_name));
 $initials = '';
@@ -112,7 +126,7 @@ if (count($name_parts) >= 2) {
     </div>
 </div>
 
-<link rel="stylesheet" href="/Assets/css/theme.css">
+<link rel="stylesheet" href="<?php echo $root; ?>Assets/css/theme.css">
 
 <style>
     .header {
@@ -474,4 +488,8 @@ if (count($name_parts) >= 2) {
         }
     }
 </script>
-<script src="/sms/Assets/js/global-search.js"></script>
+<script>
+    // Config for global search
+    window.smsRoot = "<?php echo $root; ?>";
+</script>
+<script src="<?php echo $root; ?>Assets/js/global-search.js"></script>

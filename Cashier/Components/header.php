@@ -14,6 +14,20 @@ if (strpos($user_email, '@') !== false) {
 // Fetch dynamic notifications
 $unread_count = getUnreadNotificationsCount($pdo);
 $notifications = getRecentNotifications($pdo);
+
+// Robust absolute-relative path logic
+$script_name = $_SERVER['SCRIPT_NAME'];
+$check_paths = ['/Super-admin/', '/modules/', '/Admin/', '/submodules/', '/modules/', '/Cashier/', '/Admission/', '/auth/', '/student/'];
+$project_base = '';
+
+foreach ($check_paths as $path) {
+    if (($pos = stripos($script_name, $path)) !== false) {
+        $project_base = rtrim(substr($script_name, 0, $pos), '/');
+        break;
+    }
+}
+
+$root = $project_base . '/'; // Ensures trailing slash
 ?>
 <?php if (isReadOnly()): ?>
     <div style="background: linear-gradient(90deg, #6366f1 0%, #4f46e5 100%); color: white; padding: 8px 15px; text-align: center; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.5px; display: flex; align-items: center; justify-content: center; gap: 10px;">
@@ -96,7 +110,7 @@ $notifications = getRecentNotifications($pdo);
     </div>
 </div>
 
-<link rel="stylesheet" href="/Assets/css/theme.css">
+<link rel="stylesheet" href="<?php echo $root; ?>Assets/css/theme.css">
 
 <style>
     .head-bar {
@@ -497,4 +511,8 @@ $notifications = getRecentNotifications($pdo);
         }
     }
 </script>
-<script src="/sms/Assets/js/global-search.js"></script>
+<script>
+    // Config for global search
+    window.smsRoot = "<?php echo $root; ?>";
+</script>
+<script src="<?php echo $root; ?>Assets/js/global-search.js"></script>

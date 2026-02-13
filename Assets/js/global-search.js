@@ -119,10 +119,9 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             debounceTimer = setTimeout(() => {
-                // Determine base path - try absolute first
-                // If hosted on localhost/sms/, then /sms/api/global_search.php works.
-                // We'll try to guess relative if needed, but absolute is safer for now.
-                const apiPath = '/sms/api/global_search.php?q=' + encodeURIComponent(query);
+                // Determine base path dynamically or use provided config
+                const root = window.smsRoot || '/sms/';
+                const apiPath = root + 'api/global_search.php?q=' + encodeURIComponent(query);
 
                 dropdown.innerHTML = '<div class="no-results"><i class="fas fa-spinner fa-spin"></i> Searching...</div>';
                 dropdown.classList.add('active');

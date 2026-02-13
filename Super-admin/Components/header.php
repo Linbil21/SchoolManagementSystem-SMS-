@@ -192,4 +192,8 @@ $root = $project_base . '/';
         .catch(error => console.error('Error:', error));
     }
 </script>
-<script src="/sms/Assets/js/global-search.js"></script>
+<script>
+    // Config for global search
+    window.smsRoot = "<?php echo $root; ?>";
+</script>
+<script src="<?php echo $root; ?>Assets/js/global-search.js"></script>
