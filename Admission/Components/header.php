@@ -683,3 +683,4 @@ $notifications = getRecentNotifications($pdo);
         .catch(error => console.error('Error:', error));
     }
 </script>
+<script src="/sms/Assets/js/global-search.js"></script>

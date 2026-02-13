@@ -474,3 +474,4 @@ if (count($name_parts) >= 2) {
         }
     }
 </script>
+<script src="/sms/Assets/js/global-search.js"></script>
