@@ -617,10 +617,10 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                                             <label style="color: var(--primary-blue); font-weight: 600;">Secondary Documents Requirements? <span>*</span></label>
                                             <div style="display: flex; gap: 30px; margin-top: 10px; background: #f8fafc; padding: 15px; border-radius: 10px; border: 1px dashed #e2e8f0; width: fit-content;">
                                                 <label style="font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 10px; margin-bottom: 0;">
-                                                    <input type="radio" name="has_secondary_docs" value="yes" checked style="width: 18px; height: 18px;"> Meron
+                                                    <input type="radio" name="has_secondary_docs" value="yes" checked style="width: 18px; height: 18px;"> Yes
                                                 </label>
                                                 <label style="font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 10px; margin-bottom: 0;">
-                                                    <input type="radio" name="has_secondary_docs" value="no" style="width: 18px; height: 18px;"> Wala
+                                                    <input type="radio" name="has_secondary_docs" value="no" style="width: 18px; height: 18px;"> No
                                                 </label>
                                             </div>
                                         </div>

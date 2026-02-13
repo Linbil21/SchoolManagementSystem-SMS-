@@ -189,6 +189,36 @@ $current_page = 'Fetch-Table.php';
         .fade-in { animation: fadeIn 0.5s ease-out forwards; opacity: 0; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* Search Box Styling */
+        .search-wrapper {
+            position: relative;
+            width: 300px;
+            margin-right: 20px;
+        }
+        .search-input {
+            width: 100%;
+            padding: 10px 15px 10px 40px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 0.9rem;
+            outline: none;
+            transition: 0.3s;
+            background: #f8fafc;
+        }
+        .search-input:focus {
+            background: white;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            pointer-events: none;
+        }
+
     </style>
 </head>
 <body>
@@ -202,6 +232,10 @@ $current_page = 'Fetch-Table.php';
                     <i class="fas fa-satellite-dish" style="color: var(--primary);"></i>
                     Live Academic Masterlist
                 </h1>
+                <div class="search-wrapper">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="searchInput" class="search-input" placeholder="Search student, subject, room...">
+                </div>
                 <div class="live-badge">
                     <div class="pulse-dot"></div>
                     LIVE FEED ACTIVE
@@ -237,7 +271,17 @@ $current_page = 'Fetch-Table.php';
         document.addEventListener('DOMContentLoaded', function() {
             const tableBody = document.getElementById('table-body');
             const loader = document.getElementById('loader');
+            const searchInput = document.getElementById('searchInput');
+            
             let isFirstLoad = true;
+            let currentData = [];
+            let searchTerm = '';
+
+            // Handle Search Input
+            searchInput.addEventListener('input', (e) => {
+                searchTerm = e.target.value.toLowerCase();
+                renderTable();
+            });
 
             const fetchData = async () => {
                 try {
@@ -250,7 +294,8 @@ $current_page = 'Fetch-Table.php';
                     }
 
                     if (result.status === 'success' && Array.isArray(result.data)) {
-                        updateTable(result.data);
+                        currentData = result.data;
+                        renderTable();
                     } else {
                         console.error('Invalid data format received');
                     }
@@ -259,7 +304,32 @@ $current_page = 'Fetch-Table.php';
                 }
             };
 
-            const updateTable = (data) => {
+            const renderTable = () => {
+                // Filter data based on search term
+                const filteredData = currentData.filter(item => {
+                    if (!searchTerm) return true;
+                    
+                    // Search across all relevant fields ("lahat na search")
+                    const searchable = [
+                        item.studentName, 
+                        item.studentID, 
+                        item.studentEmail, 
+                        item.sectionName, 
+                        item.program, 
+                        item.subjectName, 
+                        item.subjectID,
+                        item.teacherName,
+                        item.roomName,
+                        item.schedule
+                    ].join(' ').toLowerCase();
+                    
+                    return searchable.includes(searchTerm);
+                });
+
+                updateTableHTML(filteredData);
+            };
+
+            const updateTableHTML = (data) => {
                 // Clear existing content securely or diff it (simple clear for now)
                 tableBody.innerHTML = '';
 
@@ -269,7 +339,7 @@ $current_page = 'Fetch-Table.php';
                             <td colspan="6">
                                 <div class="empty-state">
                                     <i class="fas fa-inbox" style="font-size: 2rem; margin-bottom: 15px; opacity: 0.5;"></i>
-                                    <p>No active records found in masterlist</p>
+                                    <p>${searchTerm ? 'No matches found' : 'No active records found in masterlist'}</p>
                                 </div>
                             </td>
                         </tr>
