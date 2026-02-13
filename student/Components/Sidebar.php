@@ -18,6 +18,18 @@ function isDropdownOpen($searchStrings)
     }
     return '';
 }
+
+// Robust absolute-relative path logic
+$script_name = $_SERVER['SCRIPT_NAME'];
+$check_paths = ['/Super-admin/', '/modules/', '/Admin/', '/submodules/', '/Cashier/', '/Admission/', '/auth/', '/student/'];
+$project_base = '';
+foreach ($check_paths as $path) {
+    if (($pos = stripos($script_name, $path)) !== false) {
+        $project_base = rtrim(substr($script_name, 0, $pos), '/');
+        break;
+    }
+}
+$root = $project_base . '/';
 ?>
 <div class="sidebar">
     <div class="sidebar-brand">
@@ -403,12 +415,12 @@ function isDropdownOpen($searchStrings)
         document.body.style.overflow = 'auto';
     }
 
-    window.onclick = function (event) {
+    window.addEventListener('click', function (event) {
         const modal = document.getElementById('logoutModal');
         if (event.target == modal) {
             closeLogoutModal();
         }
-    }
+    });
 </script>
 
 <!-- Logout Modal -->
@@ -421,7 +433,7 @@ function isDropdownOpen($searchStrings)
         <p>Are you sure you want to log out of the Student Portal? Your session details will be cleared.</p>
         <div class="logout-modal-buttons">
             <button onclick="closeLogoutModal()" class="btn-cancel">Stay Here</button>
-            <a href="/student/auth/logout.php" class="btn-logout">Logout</a>
+            <a href="<?php echo $root; ?>student/auth/logout.php" class="btn-logout">Logout</a>
         </div>
     </div>
 </div>

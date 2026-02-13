@@ -1,8 +1,23 @@
 <?php
 session_start();
 require_once '../auth/Security.php';
+require_once '../Database/config.php';
 checkRole(['cashier']);
 $role = $_SESSION['role'];
+
+// Fetch Statistics
+$total_collections = $pdo->query("SELECT SUM(amount) FROM payments WHERE status = 'Completed'")->fetchColumn() ?: 0;
+$pending_verification = $pdo->query("SELECT COUNT(*) FROM payments WHERE status = 'Pending'")->fetchColumn() ?: 0;
+// Using current date for new assessments
+$new_assessments = $pdo->query("SELECT COUNT(*) FROM enrollments WHERE DATE(created_at) = CURDATE()")->fetchColumn() ?: 0;
+
+// Fetch Recent Transactions
+$stmt = $pdo->query("SELECT p.*, s.first_name, s.last_name 
+                     FROM payments p 
+                     JOIN enrollments e ON p.enrollment_id = e.id 
+                     JOIN students s ON e.email = s.email 
+                     ORDER BY p.created_at DESC LIMIT 5");
+$recent_transactions = $stmt->fetchAll();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -270,14 +285,14 @@ $role = $_SESSION['role'];
                 <div class="stat-card">
                     <div class="stat-info">
                         <span>Total Collections</span>
-                        <h2>₱42,500.00</h2>
+                        <h2>₱<?php echo number_format($total_collections, 2); ?></h2>
                     </div>
                     <div class="stat-icon"><i class="fas fa-coins"></i></div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-info">
                         <span>Pending Verification</span>
-                        <h2>12</h2>
+                        <h2><?php echo $pending_verification; ?></h2>
                     </div>
                     <div class="stat-icon" style="background: rgba(249, 115, 22, 0.1); color: #f97316;">
                         <i class="fas fa-clock"></i>
@@ -286,7 +301,7 @@ $role = $_SESSION['role'];
                 <div class="stat-card">
                     <div class="stat-info">
                         <span>New Assessments</span>
-                        <h2>45</h2>
+                        <h2><?php echo $new_assessments; ?></h2>
                     </div>
                     <div class="stat-icon" style="background: rgba(34, 197, 94, 0.1); color: #22c55e;">
                         <i class="fas fa-file-invoice"></i>
@@ -307,12 +322,20 @@ $role = $_SESSION['role'];
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td style="font-weight: 600;">John Doe</td>
-                                <td>Tuition Fee</td>
-                                <td style="font-weight: 700; color: var(--accent-color);">₱15,000.00</td>
-                                <td><span class="status-badge status-success">Success</span></td>
-                            </tr>
+                            <?php if ($recent_transactions): ?>
+                                <?php foreach ($recent_transactions as $tx): ?>
+                                <tr>
+                                    <td style="font-weight: 600;"><?php echo htmlspecialchars($tx->first_name . ' ' . $tx->last_name); ?></td>
+                                    <td><?php echo htmlspecialchars($tx->payment_method); ?></td>
+                                    <td style="font-weight: 700; color: var(--accent-color);">₱<?php echo number_format($tx->amount, 2); ?></td>
+                                    <td><span class="status-badge status-success"><?php echo $tx->status; ?></span></td>
+                                </tr>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="4" style="text-align: center; color: #64748b;">No recent transactions found.</td>
+                                </tr>
+                            <?php endif; ?>
                         </tbody>
                     </table>
                 </div>

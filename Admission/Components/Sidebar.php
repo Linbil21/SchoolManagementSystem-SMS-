@@ -14,15 +14,14 @@ foreach ($check_paths as $path) {
     }
 }
 $root = $project_base . '/';
-if ($root === '/') $root = '/sms/'; // Common XAMPP fallback
 
 $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'admission';
 $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admission@sms.com';
 ?>
 <div class="sidebar">
     <div class="sidebar-brand">
-        <a href="/Admission/Dashboard.php" class="brand-wrapper">
-            <img src="/Assets/image/logo.png" alt="Logo" class="sidebar-logo">
+        <a href="<?php echo $root; ?>Admission/Dashboard.php" class="brand-wrapper">
+            <img src="<?php echo $root; ?>Assets/image/logo.png" alt="Logo" class="sidebar-logo">
             <h2>Admission</h2>
         </a>
     </div>
@@ -41,13 +40,13 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admission@sms.com';
                 </a>
                 <ul class="sub-menu">
                     <li class="<?php echo (isset($_GET['view']) && $_GET['view'] == 'summary') ? 'active' : ''; ?>">
-                        <a href="/Admission/Dashboard.php?view=summary">Application Summary</a>
+                        <a href="<?php echo $root; ?>Admission/Dashboard.php?view=summary">Application Summary</a>
                     </li>
                     <li class="<?php echo (isset($_GET['view']) && $_GET['view'] == 'pending') ? 'active' : ''; ?>">
-                        <a href="/Admission/Dashboard.php?view=pending">Pending Evaluation</a>
+                        <a href="<?php echo $root; ?>Admission/Dashboard.php?view=pending">Pending Evaluation</a>
                     </li>
                     <li class="<?php echo (isset($_GET['view']) && $_GET['view'] == 'notifications') ? 'active' : ''; ?>">
-                        <a href="/Admission/Dashboard.php?view=notifications">Notifications</a>
+                        <a href="<?php echo $root; ?>Admission/Dashboard.php?view=notifications">Notifications</a>
                     </li>
                 </ul>
             </li>
@@ -66,11 +65,11 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admission@sms.com';
                     <i class="fas fa-chevron-down arrow-icon"></i>
                 </a>
                 <ul class="sub-menu">
-                    <li class="<?php echo ($current_page == 'New-Applications.php') ? 'active' : ''; ?>"><a href="/Admission/Modules/New-Applications.php">New Applications</a></li>
-                    <li class="<?php echo ($current_page == 'For-Evaluation.php') ? 'active' : ''; ?>"><a href="/Admission/Modules/For-Evaluation.php">For Evaluation</a></li>
-                    <li class="<?php echo ($current_page == 'Approved.php') ? 'active' : ''; ?>"><a href="/Admission/Modules/Approved.php">Approved</a></li>
-                    <li class="<?php echo ($current_page == 'Rejected.php') ? 'active' : ''; ?>"><a href="/Admission/Modules/Rejected.php">Rejected</a></li>
-                    <li class="<?php echo ($current_page == 'Archived.php') ? 'active' : ''; ?>"><a href="/Admission/Modules/Archived.php">Archived</a></li>
+                    <li class="<?php echo ($current_page == 'New-Applications.php') ? 'active' : ''; ?>"><a href="<?php echo $root; ?>Admission/Modules/New-Applications.php">New Applications</a></li>
+                    <li class="<?php echo ($current_page == 'For-Evaluation.php') ? 'active' : ''; ?>"><a href="<?php echo $root; ?>Admission/Modules/For-Evaluation.php">For Evaluation</a></li>
+                    <li class="<?php echo ($current_page == 'Approved.php') ? 'active' : ''; ?>"><a href="<?php echo $root; ?>Admission/Modules/Approved.php">Approved</a></li>
+                    <li class="<?php echo ($current_page == 'Rejected.php') ? 'active' : ''; ?>"><a href="<?php echo $root; ?>Admission/Modules/Rejected.php">Rejected</a></li>
+                    <li class="<?php echo ($current_page == 'Archived.php') ? 'active' : ''; ?>"><a href="<?php echo $root; ?>Admission/Modules/Archived.php">Archived</a></li>
                 </ul>
             </li>
 
@@ -84,10 +83,10 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admission@sms.com';
                     <i class="fas fa-chevron-down arrow-icon"></i>
                 </a>
                 <ul class="sub-menu">
-                    <li class="<?php echo ($current_page == 'Document-Review.php') ? 'active' : ''; ?>"><a href="/Admission/Modules/Document-Review.php">Document Review</a></li>
-                    <li class="<?php echo ($current_page == 'Exam-Results.php') ? 'active' : ''; ?>"><a href="/Admission/Modules/Exam-Results.php">Entrance Exam Results</a></li>
-                    <li class="<?php echo ($current_page == 'Interview-Assessment.php') ? 'active' : ''; ?>"><a href="/Admission/Modules/Interview-Assessment.php">Interview Assessment</a></li>
-                    <li class="<?php echo ($current_page == 'Evaluation-Summary.php') ? 'active' : ''; ?>"><a href="/Admission/Modules/Evaluation-Summary.php">Evaluation Summary</a></li>
+                    <li class="<?php echo ($current_page == 'Document-Review.php') ? 'active' : ''; ?>"><a href="<?php echo $root; ?>Admission/Modules/Document-Review.php">Document Review</a></li>
+                    <li class="<?php echo ($current_page == 'Exam-Results.php') ? 'active' : ''; ?>"><a href="<?php echo $root; ?>Admission/Modules/Exam-Results.php">Entrance Exam Results</a></li>
+                    <li class="<?php echo ($current_page == 'Interview-Assessment.php') ? 'active' : ''; ?>"><a href="<?php echo $root; ?>Admission/Modules/Interview-Assessment.php">Interview Assessment</a></li>
+                    <li class="<?php echo ($current_page == 'Evaluation-Summary.php') ? 'active' : ''; ?>"><a href="<?php echo $root; ?>Admission/Modules/Evaluation-Summary.php">Evaluation Summary</a></li>
                 </ul>
             </li>
 
@@ -101,14 +100,14 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admission@sms.com';
                     <i class="fas fa-chevron-down arrow-icon"></i>
                 </a>
                 <ul class="sub-menu">
-                    <li class="<?php echo ($current_page == 'Generate-ID.php') ? 'active' : ''; ?>"><a href="/Admission/Modules/Generate-ID.php">Generate Student ID</a></li>
-                    <li class="<?php echo ($current_page == 'ID-Verification.php') ? 'active' : ''; ?>"><a href="/Admission/Modules/ID-Verification.php">ID Verification</a></li>
-                    <li class="<?php echo ($current_page == 'Print-Export-ID.php') ? 'active' : ''; ?>"><a href="/Admission/Modules/Print-Export-ID.php">Print / Export ID</a></li>
-                    <li class="<?php echo ($current_page == 'Lost-Replacement-IDs.php') ? 'active' : ''; ?>"><a href="/Admission/Modules/Lost-Replacement-IDs.php">Lost / Replacement IDs</a></li>
-                    <li class="<?php echo ($current_page == 'Student-Grades.php') ? 'active' : ''; ?>"><a href="/Admission/Modules/Student-Grades.php">My Grades</a></li>
-                    <li class="<?php echo ($current_page == 'Student-Attendance.php') ? 'active' : ''; ?>"><a href="/Admission/Modules/Student-Attendance.php">Attendance</a></li>
-                    <li class="<?php echo ($current_page == 'Teacher-Management.php') ? 'active' : ''; ?>"><a href="/Admission/Modules/Teacher-Management.php"><i class="fas fa-chalkboard-teacher" style="font-size: 0.75rem; color: #3b82f6;"></i> Teacher Management</a></li>
-                    <li class="<?php echo ($current_page == 'Fetch-Table.php') ? 'active' : ''; ?>"><a href="/Admission/Modules/Fetch-Table.php"><i class="fas fa-satellite-dish" style="font-size: 0.75rem; color: #10b981;"></i> Live Masterlist</a></li>
+                    <li class="<?php echo ($current_page == 'Generate-ID.php') ? 'active' : ''; ?>"><a href="<?php echo $root; ?>Admission/Modules/Generate-ID.php">Generate Student ID</a></li>
+                    <li class="<?php echo ($current_page == 'ID-Verification.php') ? 'active' : ''; ?>"><a href="<?php echo $root; ?>Admission/Modules/ID-Verification.php">ID Verification</a></li>
+                    <li class="<?php echo ($current_page == 'Print-Export-ID.php') ? 'active' : ''; ?>"><a href="<?php echo $root; ?>Admission/Modules/Print-Export-ID.php">Print / Export ID</a></li>
+                    <li class="<?php echo ($current_page == 'Lost-Replacement-IDs.php') ? 'active' : ''; ?>"><a href="<?php echo $root; ?>Admission/Modules/Lost-Replacement-IDs.php">Lost / Replacement IDs</a></li>
+                    <li class="<?php echo ($current_page == 'Student-Grades.php') ? 'active' : ''; ?>"><a href="<?php echo $root; ?>Admission/Modules/Student-Grades.php">My Grades</a></li>
+                    <li class="<?php echo ($current_page == 'Student-Attendance.php') ? 'active' : ''; ?>"><a href="<?php echo $root; ?>Admission/Modules/Student-Attendance.php">Attendance</a></li>
+                    <li class="<?php echo ($current_page == 'Teacher-Management.php') ? 'active' : ''; ?>"><a href="<?php echo $root; ?>Admission/Modules/Teacher-Management.php"><i class="fas fa-chalkboard-teacher" style="font-size: 0.75rem; color: #3b82f6;"></i> Teacher Management</a></li>
+                    <li class="<?php echo ($current_page == 'Fetch-Table.php') ? 'active' : ''; ?>"><a href="<?php echo $root; ?>Admission/Modules/Fetch-Table.php"><i class="fas fa-satellite-dish" style="font-size: 0.75rem; color: #10b981;"></i> Live Masterlist</a></li>
                 </ul>
             </li>
         </ul>
@@ -126,9 +125,9 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admission@sms.com';
                     <i class="fas fa-chevron-down arrow-icon"></i>
                 </a>
                 <ul class="sub-menu">
-                    <li class="<?php echo ($current_page == 'Requirement-List.php') ? 'active' : ''; ?>"><a href="/Admission/Modules/Requirement-List.php">Requirement List</a></li>
-                    <li class="<?php echo ($current_page == 'Submission-Status.php') ? 'active' : ''; ?>"><a href="/Admission/Modules/Submission-Status.php">Submission Status</a></li>
-                    <li class="<?php echo ($current_page == 'Validation-Rules.php') ? 'active' : ''; ?>"><a href="/Admission/Modules/Validation-Rules.php">Validation Rules</a></li>
+                    <li class="<?php echo ($current_page == 'Requirement-List.php') ? 'active' : ''; ?>"><a href="<?php echo $root; ?>Admission/Modules/Requirement-List.php">Requirement List</a></li>
+                    <li class="<?php echo ($current_page == 'Submission-Status.php') ? 'active' : ''; ?>"><a href="<?php echo $root; ?>Admission/Modules/Submission-Status.php">Submission Status</a></li>
+                    <li class="<?php echo ($current_page == 'Validation-Rules.php') ? 'active' : ''; ?>"><a href="<?php echo $root; ?>Admission/Modules/Validation-Rules.php">Validation Rules</a></li>
                 </ul>
             </li>
 
@@ -142,9 +141,9 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admission@sms.com';
                     <i class="fas fa-chevron-down arrow-icon"></i>
                 </a>
                 <ul class="sub-menu">
-                    <li class="<?php echo ($current_page == 'Passers-List.php') ? 'active' : ''; ?>"><a href="/Admission/Modules/Passers-List.php">Passers List</a></li>
-                    <li class="<?php echo ($current_page == 'Waitlisted.php') ? 'active' : ''; ?>"><a href="/Admission/Modules/Waitlisted.php">Waitlisted</a></li>
-                    <li class="<?php echo ($current_page == 'Result-Notifications.php') ? 'active' : ''; ?>"><a href="/Admission/Modules/Result-Notifications.php">Notifications</a></li>
+                    <li class="<?php echo ($current_page == 'Passers-List.php') ? 'active' : ''; ?>"><a href="<?php echo $root; ?>Admission/Modules/Passers-List.php">Passers List</a></li>
+                    <li class="<?php echo ($current_page == 'Waitlisted.php') ? 'active' : ''; ?>"><a href="<?php echo $root; ?>Admission/Modules/Waitlisted.php">Waitlisted</a></li>
+                    <li class="<?php echo ($current_page == 'Result-Notifications.php') ? 'active' : ''; ?>"><a href="<?php echo $root; ?>Admission/Modules/Result-Notifications.php">Notifications</a></li>
                 </ul>
             </li>
         </ul>
@@ -161,9 +160,9 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admission@sms.com';
                     <i class="fas fa-chevron-down arrow-icon"></i>
                 </a>
                 <ul class="sub-menu">
-                    <li class="<?php echo ($current_page == 'Applications-Summary.php') ? 'active' : ''; ?>"><a href="/Admission/Modules/Applications-Summary.php">Applications Summary</a></li>
-                    <li class="<?php echo ($current_page == 'Evaluation-Statistics.php') ? 'active' : ''; ?>"><a href="/Admission/Modules/Evaluation-Statistics.php">Evaluation Statistics</a></li>
-                    <li class="<?php echo ($current_page == 'ID-Reports.php') ? 'active' : ''; ?>"><a href="/Admission/Modules/ID-Reports.php">Student ID Reports</a></li>
+                    <li class="<?php echo ($current_page == 'Applications-Summary.php') ? 'active' : ''; ?>"><a href="<?php echo $root; ?>Admission/Modules/Applications-Summary.php">Applications Summary</a></li>
+                    <li class="<?php echo ($current_page == 'Evaluation-Statistics.php') ? 'active' : ''; ?>"><a href="<?php echo $root; ?>Admission/Modules/Evaluation-Statistics.php">Evaluation Statistics</a></li>
+                    <li class="<?php echo ($current_page == 'ID-Reports.php') ? 'active' : ''; ?>"><a href="<?php echo $root; ?>Admission/Modules/ID-Reports.php">Student ID Reports</a></li>
                 </ul>
             </li>
         </ul>
@@ -180,19 +179,19 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admission@sms.com';
                     <i class="fas fa-chevron-down arrow-icon"></i>
                 </a>
                 <ul class="sub-menu">
-                    <li class="<?php echo ($current_page == 'Admission-Year.php') ? 'active' : ''; ?>"><a href="/Admission/Modules/Admission-Year.php">Admission Year</a></li>
-                    <li class="<?php echo ($current_page == 'Cut-off-Score.php') ? 'active' : ''; ?>"><a href="/Admission/Modules/Cut-off-Score.php">Cut-off Score</a></li>
-                    <li class="<?php echo ($current_page == 'Notification-Templates.php') ? 'active' : ''; ?>"><a href="/Admission/Modules/Notification-Templates.php">Notification Templates</a></li>
+                    <li class="<?php echo ($current_page == 'Admission-Year.php') ? 'active' : ''; ?>"><a href="<?php echo $root; ?>Admission/Modules/Admission-Year.php">Admission Year</a></li>
+                    <li class="<?php echo ($current_page == 'Cut-off-Score.php') ? 'active' : ''; ?>"><a href="<?php echo $root; ?>Admission/Modules/Cut-off-Score.php">Cut-off Score</a></li>
+                    <li class="<?php echo ($current_page == 'Notification-Templates.php') ? 'active' : ''; ?>"><a href="<?php echo $root; ?>Admission/Modules/Notification-Templates.php">Notification Templates</a></li>
                 </ul>
             </li>
             <li class="<?php echo ($current_page == 'Profile.php') ? 'active' : ''; ?>">
-                <a href="/modules/Profile.php">
+                <a href="<?php echo $root; ?>modules/Profile.php">
                     <i class="fas fa-user-circle"></i>
                     <span>My Profile</span>
                 </a>
             </li>
             <li class="<?php echo ($current_page == 'Settings.php') ? 'active' : ''; ?>">
-                <a href="/modules/Settings.php">
+                <a href="<?php echo $root; ?>modules/Settings.php">
                     <i class="fas fa-cog"></i>
                     <span>Account Settings</span>
                 </a>
@@ -506,12 +505,12 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admission@sms.com';
         document.body.style.overflow = 'auto';
     }
 
-    window.onclick = function (event) {
+    window.addEventListener('click', function (event) {
         const modal = document.getElementById('logoutModal');
         if (event.target == modal) {
             closeLogoutModal();
         }
-    }
+    });
 </script>
 
 <!-- Logout Confirmation Modal -->

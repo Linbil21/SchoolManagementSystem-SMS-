@@ -32,9 +32,6 @@ foreach ($check_paths as $path) {
 }
 
 $root = $project_base . '/'; 
-if ($root === '/') {
-    $root = '/sms/'; 
-}
 
 // Improved initials logic
 $name_parts = explode(' ', trim($student_name));
@@ -117,10 +114,10 @@ if (count($name_parts) >= 2) {
                     </div>
                 </div>
                 <div class="dropdown-body">
-                    <a href="/student/Submodules/profile.php" class="dropdown-link">
+                    <a href="<?php echo $root; ?>student/Submodules/profile.php" class="dropdown-link">
                         <i class="fas fa-user-circle"></i> My Profile
                     </a>
-                    <a href="/student/auth/logout.php" class="dropdown-link logout-link">
+                    <a href="javascript:void(0)" onclick="openLogoutModal()" class="dropdown-link logout-link">
                         <i class="fas fa-power-off"></i> Sign Out
                     </a>
                 </div>
@@ -507,11 +504,11 @@ if (count($name_parts) >= 2) {
             .catch(err => console.error('Error marking notifications as read:', err));
     }
 
-    window.onclick = function(e) {
+    window.addEventListener('click', function(e) {
         if (!e.target.closest('.notification-wrapper') && !e.target.closest('.user-wrapper') && !e.target.closest('.theme-toggle')) {
             document.querySelectorAll('.dropdown-content').forEach(d => d.classList.remove('show'));
         }
-    }
+    });
 </script>
 <script>
     // Config for global search

@@ -28,9 +28,6 @@ foreach ($check_paths as $path) {
 }
 
 $root = $project_base . '/'; 
-if ($root === '/') {
-    $root = '/sms/'; // Fallback for XAMPP usually
-}
 ?>
 <?php if (isReadOnly()): ?>
     <div style="background: linear-gradient(90deg, #6366f1 0%, #4f46e5 100%); color: white; padding: 8px 15px; text-align: center; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.5px; display: flex; align-items: center; justify-content: center; gap: 10px;">
@@ -102,7 +99,7 @@ if ($root === '/') {
                     </div>
                 </div>
                 <div class="dropdown-body">
-                    <a href="/modules/Profile.php" class="dropdown-link">
+                    <a href="<?php echo $root; ?>modules/Profile.php" class="dropdown-link">
                         <i class="fas fa-user-cog"></i> Admin Settings
                     </a>
                     <a href="javascript:void(0)" onclick="openLogoutModal()" class="dropdown-link logout-link">
@@ -147,12 +144,11 @@ if ($root === '/') {
         document.getElementById(id).classList.toggle('show');
     }
 
-    window.onclick = function(e) {
+    window.addEventListener('click', function(e) {
         if (!e.target.closest('.notification-wrapper') && !e.target.closest('.user-wrapper') && !e.target.closest('.theme-toggle')) {
             document.querySelectorAll('.dropdown-content').forEach(d => d.classList.remove('show'));
         }
-    }
-
+    });
     function updateClock() {
         const clockTime = document.querySelector('.clock-time');
         const clockDate = document.querySelector('.clock-date');

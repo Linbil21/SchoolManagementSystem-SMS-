@@ -27,9 +27,6 @@ foreach ($check_paths as $path) {
 }
 
 $root = $project_base . '/'; 
-if ($root === '/') {
-    $root = '/sms/'; 
-}
 ?>
 <link rel="stylesheet" href="<?php echo $root; ?>Assets/css/theme.css">
 <div class="head-bar">
@@ -174,11 +171,11 @@ if ($root === '/') {
         document.getElementById(id).classList.toggle('show');
     }
 
-    window.onclick = function(e) {
+    window.addEventListener('click', function(e) {
         if (!e.target.closest('.notification-wrapper') && !e.target.closest('.user-wrapper') && !e.target.closest('.theme-toggle')) {
             document.querySelectorAll('.dropdown-content').forEach(d => d.classList.remove('show'));
         }
-    }
+    });
 
     // Mark all notifications as read
     function markAllAsRead() {

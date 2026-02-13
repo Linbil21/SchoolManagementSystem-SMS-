@@ -235,9 +235,9 @@ $root = $project_base . '/';
         document.body.style.overflow = 'auto';
     }
 
-    window.onclick = function(e) {
+    window.addEventListener('click', function(e) {
         if (e.target.id === 'logoutModal') closeLogoutModal();
-    }
+    });
 </script>
 
 <!-- Logout Modal -->

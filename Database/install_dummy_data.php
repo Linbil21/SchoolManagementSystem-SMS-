@@ -100,6 +100,7 @@ try {
     $notif_stmt->execute([1, 'alert', 'Backup Complete', 'Daily database backup completed successfully.', 'fa-database', '#d1fae5', '#059669']);
 
     echo "<br><b>SUCCESS! Dummy data installation complete.</b>";
+    echo "<br><br><a href='install_cashier_dummy_data.php' style='padding:10px 20px; background:#1648bc; color:white; text-decoration:none; border-radius:5px;'>👉 Install Cashier Dummy Data (Assessments & Payments)</a>";
 
 } catch (PDOException $e) {
     echo "Installation Failed: " . $e->getMessage();

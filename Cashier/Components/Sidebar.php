@@ -15,13 +15,12 @@ foreach ($check_paths as $path) {
         break;
     }
 }
-$root = $project_base . '/';
-if ($root === '/') $root = '/sms/'; // Common XAMPP fallback
+$root = $project_base . '/'; 
 ?>
 <div class="sidebar">
     <div class="sidebar-brand">
-        <a href="/Cashier/Dashboard.php" class="brand-wrapper">
-            <img src="/Assets/image/logo.png" alt="Logo" class="sidebar-logo">
+        <a href="<?php echo $root; ?>Cashier/Dashboard.php" class="brand-wrapper">
+            <img src="<?php echo $root; ?>Assets/image/logo.png" alt="Logo" class="sidebar-logo">
             <h2>Cashier</h2>
         </a>
     </div>
@@ -30,7 +29,7 @@ if ($root === '/') $root = '/sms/'; // Common XAMPP fallback
         <p class="menu-label">MAIN</p>
         <ul class="main-menu">
             <li class="<?php echo ($current_page == 'Dashboard.php') ? 'active' : ''; ?>">
-                <a href="/Cashier/Dashboard.php">
+                <a href="<?php echo $root; ?>Cashier/Dashboard.php">
                     <i class="fas fa-th-large"></i>
                     <span>Dashboard</span>
                 </a>
@@ -48,9 +47,9 @@ if ($root === '/') $root = '/sms/'; // Common XAMPP fallback
                     <i class="fas fa-chevron-right arrow-icon"></i>
                 </a>
                 <ul class="sub-menu">
-                    <li><a href="/Cashier/Modules/Uploaded-Receipts.php">Uploaded Receipts</a></li>
-                    <li><a href="/Cashier/Modules/Walk-in-Payments.php">Walk-in Payments</a></li>
-                    <li><a href="/Cashier/Modules/Online-Payments.php">Online Payments</a></li>
+                    <li><a href="<?php echo $root; ?>Cashier/Modules/Uploaded-Receipts.php">Uploaded Receipts</a></li>
+                    <li><a href="<?php echo $root; ?>Cashier/Modules/Walk-in-Payments.php">Walk-in Payments</a></li>
+                    <li><a href="<?php echo $root; ?>Cashier/Modules/Online-Payments.php">Online Payments</a></li>
                 </ul>
             </li>
 
@@ -63,9 +62,9 @@ if ($root === '/') $root = '/sms/'; // Common XAMPP fallback
                     <i class="fas fa-chevron-right arrow-icon"></i>
                 </a>
                 <ul class="sub-menu">
-                    <li><a href="/Cashier/Modules/Student-Assessment.php">Student Assessment</a></li>
-                    <li><a href="/Cashier/Submodules/Fee-Breakdown.php">Fee Breakdown</a></li>
-                    <li><a href="/Cashier/Submodules/Discounts.php">Discounts / Scholarships</a></li>
+                    <li><a href="<?php echo $root; ?>Cashier/Modules/Student-Assessment.php">Student Assessment</a></li>
+                    <li><a href="<?php echo $root; ?>Cashier/Submodules/Fee-Breakdown.php">Fee Breakdown</a></li>
+                    <li><a href="<?php echo $root; ?>Cashier/Submodules/Discounts.php">Discounts / Scholarships</a></li>
                 </ul>
             </li>
 
@@ -78,9 +77,9 @@ if ($root === '/') $root = '/sms/'; // Common XAMPP fallback
                     <i class="fas fa-chevron-right arrow-icon"></i>
                 </a>
                 <ul class="sub-menu">
-                    <li><a href="/Cashier/Modules/Issue-Receipt.php">Issue Receipt</a></li>
-                    <li><a href="/Cashier/Modules/Receipt-History.php">Receipt History</a></li>
-                    <li><a href="/Cashier/Modules/Refund-Requests.php">Void / Refund</a></li>
+                    <li><a href="<?php echo $root; ?>Cashier/Modules/Issue-Receipt.php">Issue Receipt</a></li>
+                    <li><a href="<?php echo $root; ?>Cashier/Modules/Receipt-History.php">Receipt History</a></li>
+                    <li><a href="<?php echo $root; ?>Cashier/Modules/Refund-Requests.php">Void / Refund</a></li>
                 </ul>
             </li>
         </ul>
@@ -95,9 +94,9 @@ if ($root === '/') $root = '/sms/'; // Common XAMPP fallback
                     <i class="fas fa-chevron-right arrow-icon"></i>
                 </a>
                 <ul class="sub-menu">
-                    <li><a href="/Cashier/Submodules/Payment-Status.php">Payment Status</a></li>
-                    <li><a href="/Cashier/Submodules/Outstanding-Balances.php">Outstanding Balances</a></li>
-                    <li><a href="/Cashier/Submodules/Payment-History.php">Payment History</a></li>
+                    <li><a href="<?php echo $root; ?>Cashier/Submodules/Payment-Status.php">Payment Status</a></li>
+                    <li><a href="<?php echo $root; ?>Cashier/Submodules/Outstanding-Balances.php">Outstanding Balances</a></li>
+                    <li><a href="<?php echo $root; ?>Cashier/Submodules/Payment-History.php">Payment History</a></li>
                 </ul>
             </li>
         </ul>
@@ -112,10 +111,10 @@ if ($root === '/') $root = '/sms/'; // Common XAMPP fallback
                     <i class="fas fa-chevron-right arrow-icon"></i>
                 </a>
                 <ul class="sub-menu">
-                    <li><a href="/Cashier/Submodules/Daily-Collection.php">Daily Collection</a></li>
-                    <li><a href="/Cashier/Submodules/Monthly-Summary.php">Monthly Summary</a></li>
-                    <li><a href="/Cashier/Submodules/Method-Reports.php">Payment Methods</a></li>
-                    <li><a href="/Cashier/Submodules/Outstanding-Report.php">Outstanding Report</a></li>
+                    <li><a href="<?php echo $root; ?>Cashier/Submodules/Daily-Collection.php">Daily Collection</a></li>
+                    <li><a href="<?php echo $root; ?>Cashier/Submodules/Monthly-Summary.php">Monthly Summary</a></li>
+                    <li><a href="<?php echo $root; ?>Cashier/Submodules/Method-Reports.php">Payment Methods</a></li>
+                    <li><a href="<?php echo $root; ?>Cashier/Submodules/Outstanding-Report.php">Outstanding Report</a></li>
                 </ul>
             </li>
         </ul>
@@ -123,13 +122,13 @@ if ($root === '/') $root = '/sms/'; // Common XAMPP fallback
         <p class="menu-label">ACCOUNT & SETTINGS</p>
         <ul class="main-menu">
             <li class="<?php echo ($current_page == 'Profile.php') ? 'active' : ''; ?>">
-                <a href="/modules/Profile.php">
+                <a href="<?php echo $root; ?>modules/Profile.php">
                     <i class="fas fa-user-circle"></i>
                     <span>Profile</span>
                 </a>
             </li>
             <li class="<?php echo ($current_page == 'Settings.php') ? 'active' : ''; ?>">
-                <a href="/modules/Settings.php">
+                <a href="<?php echo $root; ?>modules/Settings.php">
                     <i class="fas fa-cogs"></i>
                     <span>Settings</span>
                 </a>
@@ -380,12 +379,12 @@ if ($root === '/') $root = '/sms/'; // Common XAMPP fallback
         document.body.style.overflow = 'auto';
     }
 
-    window.onclick = function (event) {
+    window.addEventListener('click', function (event) {
         const modal = document.getElementById('logoutModal');
         if (event.target == modal) {
             closeLogoutModal();
         }
-    }
+    });
 </script>
 
 <!-- Logout Modal -->

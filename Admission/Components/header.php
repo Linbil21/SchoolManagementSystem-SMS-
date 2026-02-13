@@ -28,9 +28,6 @@ foreach ($check_paths as $path) {
 }
 
 $root = $project_base . '/'; 
-if ($root === '/') {
-    $root = '/sms/';
-}
 ?>
 <?php if (isReadOnly()): ?>
     <div style="background: linear-gradient(90deg, #6366f1 0%, #4f46e5 100%); color: white; padding: 8px 15px; text-align: center; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.5px; display: flex; align-items: center; justify-content: center; gap: 10px;">
@@ -102,10 +99,10 @@ if ($root === '/') {
                     </div>
                 </div>
                 <div class="dropdown-body">
-                    <a href="/modules/Profile.php" class="dropdown-link">
+                    <a href="<?php echo $root; ?>modules/Profile.php" class="dropdown-link">
                         <i class="fas fa-user-circle"></i> My Profile
                     </a>
-                    <a href="/modules/Settings.php" class="dropdown-link">
+                    <a href="<?php echo $root; ?>modules/Settings.php" class="dropdown-link">
                         <i class="fas fa-cog"></i> Account Settings
                     </a>
                     <hr>
