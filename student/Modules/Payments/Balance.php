@@ -198,24 +198,23 @@ session_start();
                 if ($enrollment) {
                     $balance = $enrollment->balance;
                     $total_fee = $enrollment->total_fee;
+                    
+                    // Read actual persisted fees
+                    $tuition = $enrollment->tuition_fee ?? 0;
+                    $misc = $enrollment->misc_fee ?? 0;
+                    $lab = $enrollment->lab_fee ?? 0;
                     $enrolled = true;
                 }
             } catch (PDOException $e) {
                 // error fetching
             }
 
-            // Fallback / Persistence for "Hindi ma reset bigla"
-            // If no data found or balance is 0, show default amounts for display stability
-            if ($balance <= 0 && $total_fee <= 0) {
-                $balance = 8500.50;
-                $total_fee = 22500.00;
-                $enrolled = true;
+            // Fallback for empty/new assessments to avoid empty UI
+            if ($enrolled && $total_fee <= 0) {
+                 // If total fee is 0 but they are enrolled, maybe it's not yet assessed
+                 // We can keep everything at 0 or show a message
             }
-
-            // Calculate mock breakdown based on total_fee
-            $tuition = $total_fee * 0.65;
-            $misc = $total_fee * 0.20;
-            $lab = $total_fee * 0.15;
+            
             $paid = $total_fee - $balance;
             ?>
             

@@ -1,10 +1,19 @@
 <?php
 session_start();
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'cashier') {
+if (!isset($_SESSION['role']) || ($_SESSION['role'] !== 'cashier' && $_SESSION['role'] !== 'superadmin')) {
     header("Location: ../../auth/Login.php");
     exit();
 }
 require_once '../../Database/config.php';
+
+// Lazy Migration / Column Check
+try {
+    $pdo->exec("ALTER TABLE enrollments ADD COLUMN IF NOT EXISTS tuition_fee DECIMAL(10,2) DEFAULT 0.00");
+    $pdo->exec("ALTER TABLE enrollments ADD COLUMN IF NOT EXISTS misc_fee DECIMAL(10,2) DEFAULT 0.00");
+    $pdo->exec("ALTER TABLE enrollments ADD COLUMN IF NOT EXISTS lab_fee DECIMAL(10,2) DEFAULT 0.00");
+    $pdo->exec("ALTER TABLE enrollments ADD COLUMN IF NOT EXISTS total_fee DECIMAL(10,2) DEFAULT 0.00");
+    $pdo->exec("ALTER TABLE enrollments ADD COLUMN IF NOT EXISTS balance DECIMAL(10,2) DEFAULT 0.00");
+} catch (PDOException $e) { /* Already exists */ }
 
 $student = null;
 $enrollment = null;
@@ -15,14 +24,29 @@ $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'update_balance') {
     try {
         $enrollment_id = $_POST['enrollment_id'];
+        $tuition = floatval($_POST['tuition']);
+        $misc = floatval($_POST['misc']);
+        $lab = floatval($_POST['lab']);
+        $total_fee = $tuition + $misc + $lab;
+        
+        // If they explicitly edited the balance, use it, otherwise calculate from total
+        // In a real system, balance is often (Total - Payments).
+        // For simplicity here, we allow manual balance override but suggest the calculation.
         $new_balance = floatval($_POST['new_balance']);
-        $new_total = floatval($_POST['new_total']);
         $student_id_val = $_POST['student_id'];
 
-        $stmt = $pdo->prepare("UPDATE enrollments SET balance = ?, total_fee = ? WHERE id = ?");
-        $stmt->execute([$new_balance, $new_total, $enrollment_id]);
+        $sql = "UPDATE enrollments SET 
+                tuition_fee = ?, 
+                misc_fee = ?, 
+                lab_fee = ?, 
+                total_fee = ?, 
+                balance = ? 
+                WHERE id = ?";
         
-        $message = "Balance updated successfully for Student ID: " . htmlspecialchars($student_id_val);
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$tuition, $misc, $lab, $total_fee, $new_balance, $enrollment_id]);
+        
+        $message = "Assessment updated successfully for Student ID: " . htmlspecialchars($student_id_val);
         // Persist search
         $_GET['search'] = $student_id_val;
     } catch (PDOException $e) {
@@ -34,10 +58,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 $search = trim($_GET['search'] ?? '');
 if ($search) {
     try {
-        // Search by ID or Name
-        // Join students and enrollments to get full picture
-        // Assuming unique enrollment per student for now or getting latest
-        $sql = "SELECT s.*, e.id as enrollment_id, e.reference_code, e.course_id, e.year_level as enr_year, e.status as enr_status, e.balance, e.total_fee, e.created_at as assessment_date 
+        $sql = "SELECT s.*, e.id as enrollment_id, e.reference_code, e.course_id, e.year_level as enr_year, e.status as enr_status, 
+                e.tuition_fee, e.misc_fee, e.lab_fee, e.balance, e.total_fee, e.created_at as assessment_date 
                 FROM students s 
                 LEFT JOIN enrollments e ON s.email = e.email 
                 WHERE s.student_id LIKE ? OR s.first_name LIKE ? OR s.last_name LIKE ? 
@@ -141,8 +163,21 @@ if ($search) {
                     <h3 style="margin-bottom: 15px; font-size: 1rem; color: #64748b;">CURRENT BALANCE DETAILS</h3>
                     
                     <div class="fee-item">
-                        <span>Total Assessment Fee</span>
-                        <span style="font-weight: 600;">₱<?php echo number_format($student['total_fee'], 2); ?></span>
+                        <span>Tuition Fee</span>
+                        <span style="font-weight: 600;">₱<?php echo number_format($student['tuition_fee'] ?? 0, 2); ?></span>
+                    </div>
+                    <div class="fee-item">
+                        <span>Miscellaneous Fees</span>
+                        <span style="font-weight: 600;">₱<?php echo number_format($student['misc_fee'] ?? 0, 2); ?></span>
+                    </div>
+                    <div class="fee-item">
+                        <span>Laboratory Fees</span>
+                        <span style="font-weight: 600;">₱<?php echo number_format($student['lab_fee'] ?? 0, 2); ?></span>
+                    </div>
+                    
+                    <div class="fee-item" style="border-top: 1px solid #1648bc; margin-top: 5px;">
+                        <span style="font-weight: 700;">TOTAL ASSESSMENT</span>
+                        <span style="font-weight: 700; color: var(--primary);">₱<?php echo number_format($student['total_fee'], 2); ?></span>
                     </div>
 
                     <div class="total-row" style="margin-top: 20px;">
@@ -154,7 +189,7 @@ if ($search) {
                 <div style="display: flex; justify-content: flex-end;">
                     <button class="btn-action btn-print"><i class="fas fa-print"></i> Print Statement</button>
                     <button class="btn-action btn-assess" onclick="openAdjustmentModal()">
-                        <i class="fas fa-edit"></i> Edit Balance
+                        <i class="fas fa-edit"></i> Update Fees
                     </button>
                 </div>
             </div>
@@ -168,19 +203,41 @@ if ($search) {
                         <input type="hidden" name="student_id" value="<?php echo $student['student_id']; ?>">
                         
                         <div class="modal-header">
-                            <h2 style="font-weight: 800;">Edit Student Balance</h2>
-                            <p style="font-size: 0.85rem; color: #64748b;">Manually override balance and total fees.</p>
+                            <h2 style="font-weight: 800;">Update Assessment Fees</h2>
+                            <p style="font-size: 0.85rem; color: #64748b;">Set specific fee amounts for the student.</p>
                         </div>
                         <div class="modal-body">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                                <div>
+                                    <label style="display: block; font-size: 0.85rem; color: #64748b; margin-bottom: 5px;">Tuition Fee (₱)</label>
+                                    <input type="number" step="0.01" name="tuition" id="f_tuition" value="<?php echo $student['tuition_fee'] ?? 0; ?>" oninput="calcTotal()"
+                                        style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0; font-weight: 600;">
+                                </div>
+                                <div>
+                                    <label style="display: block; font-size: 0.85rem; color: #64748b; margin-bottom: 5px;">Miscellaneous (₱)</label>
+                                    <input type="number" step="0.01" name="misc" id="f_misc" value="<?php echo $student['misc_fee'] ?? 0; ?>" oninput="calcTotal()"
+                                        style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0; font-weight: 600;">
+                                </div>
+                            </div>
                             <div style="margin-bottom: 20px;">
-                                <label style="display: block; font-size: 0.85rem; color: #64748b; margin-bottom: 5px;">Total Assessment Fee (₱)</label>
-                                <input type="number" step="0.01" name="new_total" value="<?php echo $student['total_fee']; ?>"
+                                <label style="display: block; font-size: 0.85rem; color: #64748b; margin-bottom: 5px;">Laboratory Fees (₱)</label>
+                                <input type="number" step="0.01" name="lab" id="f_lab" value="<?php echo $student['lab_fee'] ?? 0; ?>" oninput="calcTotal()"
                                     style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0; font-weight: 600;">
                             </div>
+                            
+                            <div style="background: #eef2ff; padding: 15px; border-radius: 15px; margin-bottom: 20px;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                    <span style="font-size: 0.9rem; font-weight: 600;">Calculated Total Fee:</span>
+                                    <span style="font-weight: 800; color: #1648bc;">₱<span id="total_display"><?php echo number_format($student['total_fee'], 2); ?></span></span>
+                                </div>
+                                <p style="font-size: 0.75rem; color: #64748b;">(Total = Tuition + Misc + Lab)</p>
+                            </div>
+
                             <div>
                                 <label style="display: block; font-size: 0.85rem; color: #64748b; margin-bottom: 5px;">Outstanding Balance (₱)</label>
                                 <input type="number" step="0.01" name="new_balance" value="<?php echo $student['balance']; ?>"
                                     style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0; font-weight: 600; color: #1648bc;">
+                                <p style="font-size: 0.75rem; color: #64748b; margin-top: 5px;">* Balance should be adjusted manually if payments were made.</p>
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -189,7 +246,7 @@ if ($search) {
                                 onclick="closeModal()">Cancel</button>
                             <button type="submit"
                                 style="padding: 12px 24px; border-radius: 12px; background: var(--primary); color: white; border: none; font-weight: 700; cursor: pointer;">
-                                Save Changes
+                                Save Assessment
                             </button>
                         </div>
                     </form>
@@ -211,10 +268,18 @@ if ($search) {
         function openAdjustmentModal() {
             document.getElementById('adjModal').style.display = 'block';
             document.body.style.overflow = 'hidden';
+            calcTotal();
         }
         function closeModal() {
             document.getElementById('adjModal').style.display = 'none';
             document.body.style.overflow = 'auto';
+        }
+        function calcTotal() {
+            const t = parseFloat(document.getElementById('f_tuition').value) || 0;
+            const m = parseFloat(document.getElementById('f_misc').value) || 0;
+            const l = parseFloat(document.getElementById('f_lab').value) || 0;
+            const total = t + m + l;
+            document.getElementById('total_display').innerText = total.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
         }
     </script>
 </body>

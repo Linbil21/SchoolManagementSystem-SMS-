@@ -224,11 +224,15 @@ $root = $project_base . '/';
     });
 
     function openLogoutModal() {
-        document.getElementById('logoutModal').style.display = 'flex';
+        const modal = document.getElementById('logoutModal');
+        modal.classList.add('show');
+        document.body.style.overflow = 'hidden';
     }
 
     function closeLogoutModal() {
-        document.getElementById('logoutModal').style.display = 'none';
+        const modal = document.getElementById('logoutModal');
+        modal.classList.remove('show');
+        document.body.style.overflow = 'auto';
     }
 
     window.onclick = function(e) {
@@ -237,25 +241,113 @@ $root = $project_base . '/';
 </script>
 
 <!-- Logout Modal -->
-<div id="logoutModal" class="modal centered" style="display: none;">
-    <div class="modal-content premium" style="width: 440px; border: none; overflow: visible;">
-        <div style="text-align: center; padding: 50px 35px; position: relative;">
-            <!-- Premium Icon Header -->
-            <div style="position: absolute; top: -35px; left: 50%; transform: translateX(-50%); width: 85px; height: 85px; background: var(--surface-color); border-radius: 28px; display: flex; align-items: center; justify-content: center; box-shadow: 0 15px 30px rgba(244, 63, 94, 0.2); border: 1px solid var(--border-color);">
-                <div style="width: 65px; height: 65px; background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%); color: white; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem;">
-                    <i class="fas fa-power-off"></i>
-                </div>
-            </div>
-            
-            <div style="margin-top: 35px;">
-                <h2 style="font-weight: 800; color: var(--text-color); margin-bottom: 15px; font-size: 1.7rem; letter-spacing: -1px;">End Session?</h2>
-                <p style="color: var(--text-muted); margin-bottom: 35px; line-height: 1.6; font-size: 1.05rem; font-weight: 500;">Are you sure you want to exit the Super Admin panel?</p>
-                
-                <div style="display: flex; gap: 12px;">
-                    <button onclick="closeLogoutModal()" style="flex: 1; padding: 15px; border-radius: 16px; border: 1.5px solid var(--border-color); background: var(--surface-color); color: var(--text-color); font-weight: 700; cursor: pointer; transition: 0.3s; font-size: 0.95rem;" onmouseover="this.style.background='var(--hover-bg)'" onmouseout="this.style.background='var(--surface-color)'">No, Stay</button>
-                    <a href="<?php echo $root; ?>auth/logout.php" style="flex: 1; padding: 15px; border-radius: 16px; background: #0f172a; color: white; font-weight: 700; text-decoration: none; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 15px rgba(15, 23, 42, 0.2); transition: 0.3s; font-size: 0.95rem;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 15px 25px rgba(15, 23, 42, 0.3)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 10px 15px rgba(15, 23, 42, 0.2)'">Yes, Log Out</a>
-                </div>
-            </div>
+<div id="logoutModal" class="logout-modal-overlay">
+    <div class="logout-modal-content">
+        <div class="logout-modal-icon">
+            <i class="fas fa-power-off"></i>
+        </div>
+        <h2>End Session?</h2>
+        <p>Are you sure you want to end your Super Admin session? High-level access remains protected.</p>
+        <div class="logout-modal-buttons">
+            <button onclick="closeLogoutModal()" class="btn-cancel">Stay Here</button>
+            <a href="<?php echo $root; ?>auth/logout.php" class="btn-logout">Exit Portal</a>
         </div>
     </div>
 </div>
+
+<style>
+.logout-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 23, 42, 0.75);
+    backdrop-filter: blur(10px);
+    z-index: 200000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.logout-modal-overlay.show {
+    display: flex;
+    animation: fadeIn 0.3s ease;
+}
+
+.logout-modal-content {
+    background: var(--surface-color, #ffffff);
+    border: 1px solid var(--border-color, #e2e8f0);
+    padding: 45px 40px;
+    border-radius: 32px;
+    max-width: 440px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    transform: scale(0.9);
+}
+
+.logout-modal-overlay.show .logout-modal-content {
+    animation: modalPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes modalPop { 
+    0% { transform: scale(0.9); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.logout-modal-icon {
+    width: 85px;
+    height: 85px;
+    background: #fef2f2;
+    color: #ef4444;
+    border-radius: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 25px;
+    font-size: 2.2rem;
+    transform: rotate(-10deg);
+}
+
+.logout-modal-content h2 {
+    color: var(--text-color, #1e293b);
+    font-weight: 800;
+    font-size: 1.7rem;
+    margin-bottom: 12px;
+    letter-spacing: -0.5px;
+}
+
+.logout-modal-content p {
+    color: var(--text-muted, #64748b);
+    line-height: 1.6;
+    margin-bottom: 35px;
+    font-size: 1rem;
+}
+
+.logout-modal-buttons {
+    display: flex; gap: 15px;
+}
+
+.logout-modal-buttons button, .logout-modal-buttons a {
+    flex: 1; padding: 15px; border-radius: 16px; font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: all 0.3s ease; text-decoration: none; font-family: 'Poppins', sans-serif; display: flex; align-items: center; justify-content: center;
+}
+
+.btn-cancel {
+    background: var(--hover-bg, #f1f5f9); color: var(--text-color, #1e293b); border: 1px solid var(--border-color, #e2e8f0);
+}
+
+.btn-cancel:hover {
+    background: var(--border-color, #e2e8f0);
+}
+
+.btn-logout {
+    background: #0f172a; color: white; border: none; box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.3);
+}
+
+.btn-logout:hover {
+    background: #1e293b; transform: translateY(-2px); box-shadow: 0 15px 25px -5px rgba(15, 23, 42, 0.4);
+}
+</style>

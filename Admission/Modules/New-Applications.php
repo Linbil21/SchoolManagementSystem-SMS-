@@ -77,41 +77,41 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admission') {
             font-size: 0.9rem;
         }
 
-        /* Modal Styles */
+        /* Premium Modal Styles */
         .modal {
             display: none;
             position: fixed;
-            z-index: 2000;
+            z-index: 9999;
             left: 0;
             top: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(5px);
+            background: rgba(15, 23, 42, 0.8) !important;
+            backdrop-filter: blur(12px) !important;
             overflow-y: auto;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal[style*="display: block"] {
+            display: flex !important;
         }
 
         .modal-content {
             background: white;
-            margin: 50px auto;
-            width: 90%;
-            max-width: 800px;
-            border-radius: 20px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            margin: auto;
+            width: 95%;
+            max-width: 850px;
+            border-radius: 28px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
             overflow: hidden;
-            animation: modalSlide 0.3s ease-out;
+            animation: modalPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        @keyframes modalSlide {
-            from {
-                transform: translateY(-30px);
-                opacity: 0;
-            }
-
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
+        @keyframes modalPop {
+            from { transform: scale(0.9) translateY(20px); opacity: 0; }
+            to { transform: scale(1) translateY(0); opacity: 1; }
         }
 
         .modal-header {

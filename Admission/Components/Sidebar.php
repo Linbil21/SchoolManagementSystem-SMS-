@@ -1,6 +1,21 @@
 <?php
 // Admission Sidebar Component
 $current_page = basename($_SERVER['PHP_SELF']);
+
+// Robust absolute-relative path logic
+$script_name = $_SERVER['SCRIPT_NAME'];
+$check_paths = ['/Super-admin/', '/modules/', '/Admin/', '/submodules/', '/Cashier/', '/Admission/', '/auth/', '/student/'];
+$project_base = '';
+
+foreach ($check_paths as $path) {
+    if (($pos = stripos($script_name, $path)) !== false) {
+        $project_base = rtrim(substr($script_name, 0, $pos), '/');
+        break;
+    }
+}
+$root = $project_base . '/';
+if ($root === '/') $root = '/sms/'; // Common XAMPP fallback
+
 $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'admission';
 $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admission@sms.com';
 ?>
@@ -480,11 +495,15 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admission@sms.com';
     });
 
     function openLogoutModal() {
-        document.getElementById('logoutModal').style.display = 'block';
+        const modal = document.getElementById('logoutModal');
+        modal.classList.add('show');
+        document.body.style.overflow = 'hidden';
     }
 
     function closeLogoutModal() {
-        document.getElementById('logoutModal').style.display = 'none';
+        const modal = document.getElementById('logoutModal');
+        modal.classList.remove('show');
+        document.body.style.overflow = 'auto';
     }
 
     window.onclick = function (event) {
@@ -496,24 +515,132 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admission@sms.com';
 </script>
 
 <!-- Logout Confirmation Modal -->
-<div id="logoutModal" class="modal"
-    style="display:none; z-index: 9999; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); position: fixed; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden;">
-    <div class="modal-content"
-        style="max-width: 400px; text-align: center; border-radius: 24px; padding: 40px; margin: 15% auto; position: relative; background-color: var(--surface-color); color: var(--text-color); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); border: 1px solid var(--border-color); font-family: 'Poppins', sans-serif;">
-        <div
-            style="width: 70px; height: 70px; background: #fee2e2; color: #ef4444; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 1.8rem;">
+<div id="logoutModal" class="logout-modal-overlay">
+    <div class="logout-modal-content">
+        <div class="logout-modal-icon">
             <i class="fas fa-sign-out-alt"></i>
         </div>
-        <h2 style="margin-bottom: 12px; color: var(--text-color); font-weight: 700; font-size: 1.5rem;">Confirm Logout</h2>
-        <p style="color: var(--text-muted); margin-bottom: 32px; line-height: 1.6; font-size: 0.95rem;">Are you sure you want to
-            end your session? Any unsaved changes might be lost.</p>
-        <div style="display: flex; gap: 12px; justify-content: center;">
-            <button onclick="closeLogoutModal()"
-                style="flex: 1; padding: 12px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--hover-bg); color: var(--text-color); font-weight: 600; cursor: pointer; transition: 0.3s; font-family: inherit;">Stay
-                Here</button>
-            <a href="/auth/logout.php"
-                style="flex: 1; padding: 12px; border-radius: 12px; background: #ef4444; color: white; font-weight: 600; text-decoration: none; display: inline-block; transition: 0.3s; font-family: inherit; font-size: 0.95rem; border: none; box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.2);">Sign
-                Out</a>
+        <h2>Sign Out?</h2>
+        <p>You are about to end your session in the Admission Portal. Any unsaved progress may be lost.</p>
+        <div class="logout-modal-buttons">
+            <button onclick="closeLogoutModal()" class="btn-cancel">Stay Here</button>
+            <a href="<?php echo $root; ?>auth/logout.php" class="btn-logout">Logout</a>
         </div>
     </div>
 </div>
+
+<style>
+.logout-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 23, 42, 0.75);
+    backdrop-filter: blur(10px);
+    z-index: 200000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.logout-modal-overlay.show {
+    display: flex;
+    animation: fadeIn 0.3s ease;
+}
+
+.logout-modal-content {
+    background: var(--surface-color, #ffffff);
+    border: 1px solid var(--border-color, #e2e8f0);
+    padding: 45px 40px;
+    border-radius: 32px;
+    max-width: 440px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    transform: scale(0.9);
+}
+
+.logout-modal-overlay.show .logout-modal-content {
+    animation: modalPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes modalPop { 
+    0% { transform: scale(0.9); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.logout-modal-icon {
+    width: 85px;
+    height: 85px;
+    background: #fef2f2;
+    color: #ef4444;
+    border-radius: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 25px;
+    font-size: 2.2rem;
+    transform: rotate(-10deg);
+}
+
+.logout-modal-content h2 {
+    color: var(--text-color, #1e293b);
+    font-weight: 800;
+    font-size: 1.7rem;
+    margin-bottom: 12px;
+    letter-spacing: -0.5px;
+}
+
+.logout-modal-content p {
+    color: var(--text-muted, #64748b);
+    line-height: 1.6;
+    margin-bottom: 35px;
+    font-size: 1rem;
+}
+
+.logout-modal-buttons {
+    display: flex;
+    gap: 15px;
+}
+
+.logout-modal-buttons button, .logout-modal-buttons a {
+    flex: 1;
+    padding: 15px;
+    border-radius: 16px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-cancel {
+    background: var(--hover-bg, #f1f5f9);
+    color: var(--text-color, #1e293b);
+    border: 1px solid var(--border-color, #e2e8f0);
+}
+
+.btn-cancel:hover {
+    background: var(--border-color, #e2e8f0);
+}
+
+.btn-logout {
+    background: #ef4444;
+    color: white;
+    border: none;
+    box-shadow: 0 10px 15px -3px rgba(239, 68, 68, 0.3);
+}
+
+.btn-logout:hover {
+    background: #dc2626;
+    transform: translateY(-2px);
+    box-shadow: 0 15px 25px -5px rgba(239, 68, 68, 0.4);
+}
+</style>

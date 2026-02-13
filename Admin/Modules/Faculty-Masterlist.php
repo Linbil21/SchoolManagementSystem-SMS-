@@ -12,139 +12,51 @@ checkRole(['admin', 'superadmin']);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Faculty Masterlist - Admin</title>
+    <link rel="icon" type="image/x-icon" href="../../Assets/image/logo.png">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="/Assets/css/theme.css">
+    <link rel="stylesheet" href="../Assets/layout.css">
     <style>
-        :root {
-            --primary: #4f46e5;
-            --secondary: #64748b;
-            --bg: #f8fafc;
-            --text-main: #1e293b;
-            --table-header: #f1f5f9;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
-
-        body {
-            background: var(--bg);
-            display: flex;
-            min-height: 100vh;
-        }
-
-        .main-wrapper {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .content-area {
-            padding: 40px;
-            max-width: 1400px;
-            margin: 0 auto;
-            width: 100%;
-        }
-
-        .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-
-        .page-title h1 {
-            font-size: 1.75rem;
-            font-weight: 800;
-            color: var(--text-main);
-            margin-bottom: 5px;
-        }
-        
-        .page-title p {
-            color: var(--secondary);
-            font-size: 0.95rem;
-        }
-
-        .card {
-            background: var(--card-bg, #ffffff);
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-            padding: 25px;
-            border: 1px solid var(--border-color);
-        }
-
-        .table-responsive {
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th, td {
-            padding: 15px 20px;
-            text-align: left;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        th {
-            background: var(--table-header);
-            font-weight: 600;
-            color: var(--secondary);
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        td {
-            color: var(--text-main);
-            font-size: 0.95rem;
-        }
-
-        .loading-state {
-            text-align: center;
-            padding: 50px;
-            color: var(--secondary);
-        }
-
-        .error-state {
-            text-align: center;
-            padding: 50px;
-            color: #ef4444;
-            background: #fef2f2;
-            border-radius: 12px;
-            border: 1px solid #fee2e2;
-        }
-
         .faculty-avatar {
             width: 40px;
             height: 40px;
-            border-radius: 50%;
-            background: var(--primary);
+            border-radius: 12px;
+            background: var(--primary-blue, #1648bc);
             color: white;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 700;
             font-size: 0.9rem;
-        }
-        
-        .badge {
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
+            box-shadow: 0 4px 10px rgba(22, 72, 188, 0.2);
         }
         
         .badge-dept {
-            background: #e0e7ff;
-            color: var(--primary);
+            background: rgba(22, 72, 188, 0.1);
+            color: var(--primary-blue, #1648bc);
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .btn-refresh {
+            background: var(--primary-blue, #1648bc);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-refresh:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(22, 72, 188, 0.3);
         }
     </style>
 </head>
@@ -155,25 +67,28 @@ checkRole(['admin', 'superadmin']);
         <?php include '../Components/Head-bar.php'; ?>
         
         <div class="content-area">
-            <div class="page-header">
-                <div class="page-title">
-                    <h1>External Faculty Masterlist</h1>
-                    <p>Live data from Faculty Management System API</p>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+                <div>
+                    <h1 style="font-size: 1.75rem; font-weight: 800; color: var(--text-dark, #1e293b); margin-bottom: 5px;">External Faculty Masterlist</h1>
+                    <p style="color: var(--text-muted, #64748b); font-size: 0.95rem;">Live data from Faculty Management System API</p>
                 </div>
-                <button onclick="fetchFacultyData()" class="btn-refresh" style="padding: 10px 20px; background: var(--primary); color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: 600;">
+                <button onclick="fetchFacultyData()" class="btn-refresh">
                     <i class="fas fa-sync-alt"></i> Refresh Data
                 </button>
             </div>
 
-            <div class="card">
+            <div class="table-container">
+                <div class="table-header">
+                    <h2>Faculty Records</h2>
+                </div>
                 <div class="table-responsive">
                     <table id="facultyTable">
                         <thead>
                             <tr>
-                                <th>Faculty</th>
-                                <th>Email</th>
+                                <th>Faculty Member</th>
+                                <th>Email Address</th>
                                 <th>Department</th>
-                                <th>Position</th>
+                                <th>Position / Role</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
