@@ -63,6 +63,15 @@ $current_page = basename($_SERVER['PHP_SELF']);
                             <span>Account Status</span></a></li>
                 </ul>
             </li>
+
+
+            <!-- New Faculty External Link -->
+            <li class="<?php echo ($current_page == 'Faculty-Masterlist.php') ? 'active' : ''; ?>">
+                <a href="/Admin/Modules/Faculty-Masterlist.php">
+                    <i class="fas fa-chalkboard-teacher"></i> 
+                    <span>External Faculty</span>
+                </a>
+            </li>
         </ul>
 
         <!-- <p class="menu-label">OPERATIONS</p>
