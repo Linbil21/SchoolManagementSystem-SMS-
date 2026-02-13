@@ -27,7 +27,10 @@ foreach ($check_paths as $path) {
     }
 }
 
-$root = $project_base . '/'; // Ensures trailing slash
+$root = $project_base . '/'; 
+if ($root === '/') {
+    $root = '/sms/'; // Fallback for XAMPP usually
+}
 ?>
 <?php if (isReadOnly()): ?>
     <div style="background: linear-gradient(90deg, #6366f1 0%, #4f46e5 100%); color: white; padding: 8px 15px; text-align: center; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.5px; display: flex; align-items: center; justify-content: center; gap: 10px;">

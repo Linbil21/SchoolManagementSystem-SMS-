@@ -26,7 +26,10 @@ foreach ($check_paths as $path) {
     }
 }
 
-$root = $project_base . '/';
+$root = $project_base . '/'; 
+if ($root === '/') {
+    $root = '/sms/'; 
+}
 ?>
 <link rel="stylesheet" href="<?php echo $root; ?>Assets/css/theme.css">
 <div class="head-bar">

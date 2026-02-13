@@ -31,7 +31,10 @@ foreach ($check_paths as $path) {
     }
 }
 
-$root = $project_base . '/'; // Ensures trailing slash
+$root = $project_base . '/'; 
+if ($root === '/') {
+    $root = '/sms/'; 
+}
 
 // Improved initials logic
 $name_parts = explode(' ', trim($student_name));
