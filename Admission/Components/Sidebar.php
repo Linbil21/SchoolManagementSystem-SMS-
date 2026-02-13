@@ -93,7 +93,7 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admission@sms.com';
                     <li class="<?php echo ($current_page == 'Student-Grades.php') ? 'active' : ''; ?>"><a href="/Admission/Modules/Student-Grades.php">My Grades</a></li>
                     <li class="<?php echo ($current_page == 'Student-Attendance.php') ? 'active' : ''; ?>"><a href="/Admission/Modules/Student-Attendance.php">Attendance</a></li>
                     <li class="<?php echo ($current_page == 'Teacher-Management.php') ? 'active' : ''; ?>"><a href="/Admission/Modules/Teacher-Management.php"><i class="fas fa-chalkboard-teacher" style="font-size: 0.75rem; color: #3b82f6;"></i> Teacher Management</a></li>
-                    <li class="<?php echo ($current_page == 'Fetch-Table.php') ? 'active' : ''; ?>"><a href="/Admission/Modules/Fetch-Table.php"><i class="fas fa-sync-alt" style="font-size: 0.75rem; color: #10b981;"></i> Current Subject Fetcher</a></li>
+                    <li class="<?php echo ($current_page == 'Fetch-Table.php') ? 'active' : ''; ?>"><a href="/Admission/Modules/Fetch-Table.php"><i class="fas fa-satellite-dish" style="font-size: 0.75rem; color: #10b981;"></i> Live Masterlist</a></li>
                 </ul>
             </li>
         </ul>

@@ -4,27 +4,21 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admission') {
     header("Location: ../../auth/Login.php");
     exit();
 }
-require_once '../../integration/faculty.php';
+// require_once '../../integration/faculty.php'; // No longer needed for external API
 
-// Handle AJAX Request for Faculty Fetch
+// Handle AJAX Request for Live Faculty Fetch
 if (isset($_GET['ajax'])) {
     header('Content-Type: application/json');
-    $portal = new FacultyPortal();
-    $data = $portal->getAllFaculty();
+    $api_url = 'https://sis.jampzdev.com/config/api/get_masterlist.php';
     
-    // Auto-adapter for API response structure
-    $response = [
-        'success' => false,
-        'data' => []
-    ];
-
-    if ($data) {
-        $response['success'] = true;
-        // Handle if data is directly the array or wrapped in a 'data'/'faculty' key
-        $response['data'] = $data['data'] ?? $data['faculty'] ?? $data['list'] ?? (is_array($data) ? $data : []);
+    // Suppress errors and fetch content
+    $json_data = @file_get_contents($api_url);
+    
+    if ($json_data === FALSE) {
+        echo json_encode(['status' => 'error', 'message' => 'Failed to connect to API']);
+    } else {
+        echo $json_data;
     }
-    
-    echo json_encode($response);
     exit;
 }
 
@@ -164,10 +158,10 @@ $current_page = 'Teacher-Management.php';
             <div class="header-strip">
                 <div>
                     <h1>Teacher Management</h1>
-                    <p style="color: var(--text-muted); font-size: 0.85rem;">Live Faculty Repository Feed</p>
+                    <p style="color: var(--text-muted); font-size: 0.85rem;">Live Faculty Schedule Feed</p>
                 </div>
                 <div class="live-indicator">
-                    <span class="pulse-dot"></span> FACULTY API CONNECTED
+                    <span class="pulse-dot"></span> LIVE ACADEMIC FEED
                 </div>
             </div>
 
@@ -175,14 +169,14 @@ $current_page = 'Teacher-Management.php';
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th>ID</th>
+                            <th>#</th>
                             <th>Faculty Name</th>
-                            <th>Department</th>
                             <th>Subject</th>
                             <th>Section</th>
                             <th>Room</th>
                             <th>Day</th>
                             <th>Schedule</th>
+                            <th>Status</th>
                         </tr>
                     </thead>
                     <tbody id="fetch-body">
@@ -191,7 +185,7 @@ $current_page = 'Teacher-Management.php';
                 </table>
                 <div id="loading-overlay">
                     <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: #3b82f6; margin-bottom: 15px;"></i>
-                    <p style="color: var(--text-muted); font-weight: 600;">Fetching Faculty Data...</p>
+                    <p style="color: var(--text-muted); font-weight: 600;">Fetching Real-time Data...</p>
                 </div>
             </div>
 
@@ -202,58 +196,74 @@ $current_page = 'Teacher-Management.php';
         document.addEventListener('DOMContentLoaded', function() {
             const tbody = document.getElementById('fetch-body');
             const loader = document.getElementById('loading-overlay');
+            let isFirstLoad = true;
 
-            // Automatic Fetch from Teacher API
-            fetch('?ajax=1')
-                .then(response => response.json())
-                .then(res => {
-                    loader.style.display = 'none';
-                    const faculties = res.data?.faculties || [];
-                    if (res && res.success && faculties.length > 0) {
-                        let globalIndex = 0;
-                        faculties.forEach((faculty) => {
-                            const prof = faculty.professorInfo || {};
-                            const fullName = `${prof.firstName} ${prof.lastName}`;
-                            const email = prof.workEmail || 'N/A';
-                            const position = prof.position || 'Professor';
-                            
-                            (faculty.sections || []).forEach((section) => {
-                                const sectionName = section.name || 'N/A';
-                                const room = section.room || 'TBA';
-                                const program = section.program?.toUpperCase() || 'GE';
-                                
-                                (section.subjects || []).forEach((subject) => {
-                                    setTimeout(() => {
-                                        const row = `
-                                            <tr class="fade-in">
-                                                <td><span style="font-weight: 700; color: var(--text-muted);">${++globalIndex}</span></td>
-                                                <td>
-                                                    <div style="font-weight: 700;">${fullName}</div>
-                                                    <div style="font-size: 0.7rem; color: var(--text-muted);">${email}</div>
-                                                </td>
-                                                <td><div style="font-weight: 600;">${position}</div></td>
-                                                <td>
-                                                    <div style="font-weight: 700;">${subject.name || 'Unknown'}</div>
-                                                    <div style="font-size: 0.7rem; color: var(--text-muted);">ID: ${subject.id?.substring(0,8) || 'N/A'}</div>
-                                                </td>
-                                                <td><div style="font-weight: 600;">${sectionName} [${program}]</div></td>
-                                                <td><span class="badge-room">${room}</span></td>
-                                                <td><span class="badge-day">${subject.day || '-'}</span></td>
-                                                <td><div style="font-weight: 600;">${subject.startTime} - ${subject.endTime}</div></td>
-                                            </tr>
-                                        `;
-                                        tbody.insertAdjacentHTML('beforeend', row);
-                                    }, globalIndex * 60);
-                                });
-                            });
-                        });
-                    } else {
-                        tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 40px; color: #ef4444; font-weight: 600;">No live faculty data available.</td></tr>';
+            const fetchData = async () => {
+                try {
+                    const response = await fetch('?ajax=1');
+                    const result = await response.json();
+
+                    if (isFirstLoad) {
+                        loader.style.display = 'none';
+                        isFirstLoad = false;
                     }
-                })
-                .catch(err => {
-                    loader.innerHTML = '<i class="fas fa-exclamation-triangle" style="font-size: 2rem; color: #ef4444;"></i><p style="color: #ef4444; margin-top: 15px;">Connection to Faculty API failed.</p>';
+
+                    // The API returns { status: "success", data: [...] }
+                    if (result && result.status === 'success' && Array.isArray(result.data)) {
+                        updateTable(result.data);
+                    } else {
+                        console.error('Invalid data format received', result);
+                        if(tbody.innerHTML === '') {
+                             tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 40px; color: #ef4444; font-weight: 600;">No live data available.</td></tr>';
+                        }
+                    }
+                } catch (error) {
+                    console.error('Fetch error:', error);
+                    loader.innerHTML = '<i class="fas fa-exclamation-triangle" style="font-size: 2rem; color: #ef4444;"></i><p style="color: #ef4444; margin-top: 15px;">Connection to API failed.</p>';
+                }
+            };
+
+            const updateTable = (data) => {
+                tbody.innerHTML = '';
+                
+                if (data.length === 0) {
+                     tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 40px; color: var(--text-muted); font-weight: 600;">No active schedules found.</td></tr>';
+                     return;
+                }
+
+                data.forEach((item, index) => {
+                    // Only display items that have a teacher assigned
+                    if (!item.teacherName && !item.teacherID) return;
+
+                    const row = document.createElement('tr');
+                    row.className = 'fade-in';
+                    row.style.animationDelay = `${index * 50}ms`;
+                    
+                    row.innerHTML = `
+                        <td><span style="font-weight: 700; color: var(--text-muted);">${index + 1}</span></td>
+                        <td>
+                            <div style="font-weight: 700;">${item.teacherName || 'TBA'}</div>
+                            <div style="font-size: 0.7rem; color: var(--text-muted);">ID: ${item.teacherID || 'N/A'}</div>
+                        </td>
+                        <td>
+                            <div style="font-weight: 600; color: var(--primary);">${item.subjectName || 'N/A'}</div>
+                            <div style="font-size: 0.7rem; color: var(--text-muted);">${item.subjectID || ''}</div>
+                        </td>
+                        <td><div style="font-weight: 600;">${item.sectionName}</div></td>
+                        <td><span class="badge-room">${item.roomName}</span></td>
+                        <td><span class="badge-day">${item.day}</span></td>
+                        <td><div style="font-weight: 600;">${item.startTime} - ${item.endTime}</div></td>
+                        <td><span style="color: #10b981; font-weight: 600; font-size: 0.75rem;">Active</span></td>
+                    `;
+                    tbody.appendChild(row);
                 });
+            };
+
+            // Initial Fetch
+            fetchData();
+            
+            // Poll every 5 seconds
+            setInterval(fetchData, 5000);
         });
     </script>
 </body>
