@@ -73,3 +73,17 @@ textarea {
 .text-muted {
     color: var(--text-muted) !important;
 }
+
+/* GLOBAL OVERLAY FIX - Vital for preventing black screen on load */
+.modal-overlay:not(.show),
+.logout-modal-overlay:not(.show),
+.id-viewer-overlay:not(.show) {
+    display: none !important;
+}
+
+/* Ensure they show when active */
+.modal-overlay.show,
+.logout-modal-overlay.show,
+.id-viewer-overlay.show {
+    display: flex !important;
+}
