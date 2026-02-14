@@ -253,7 +253,13 @@ try {
                     </div>
                 <?php endif; ?>
 
-                <table>
+                <div style="margin-bottom: 20px; position: relative;">
+                    <i class="fas fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #94a3b8;"></i>
+                    <input type="text" id="paymentSearch" onkeyup="filterTable('paymentSearch', 'paymentsTable')" placeholder="Search payments..." 
+                        style="width: 100%; padding: 12px 15px 12px 45px; border-radius: 12px; border: 1px solid #e2e8f0; outline: none; font-size: 0.95rem;">
+                </div>
+
+                <table id="paymentsTable">
                     <thead>
                         <tr>
                             <th>Student</th>
@@ -364,6 +370,28 @@ try {
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
+        function filterTable(inputId, tableId) {
+            const input = document.getElementById(inputId);
+            const filter = input.value.toLowerCase();
+            const table = document.getElementById(tableId);
+            const tr = table.getElementsByTagName("tr");
+
+            for (let i = 1; i < tr.length; i++) {
+                let rowVisible = false;
+                const td = tr[i].getElementsByTagName("td");
+                for (let j = 0; j < td.length; j++) {
+                    if (td[j]) {
+                        const txtValue = td[j].textContent || td[j].innerText;
+                        if (txtValue.toLowerCase().indexOf(filter) > -1) {
+                            rowVisible = true;
+                            break;
+                        }
+                    }
+                }
+                tr[i].style.display = rowVisible ? "" : "none";
+            }
+        }
+
         let currentPaymentId = null;
 
         function openModal(data) {

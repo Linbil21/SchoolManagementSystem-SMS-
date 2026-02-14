@@ -212,12 +212,19 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admission') {
     <div class="main-wrapper">
         <?php include '../Components/header.php'; ?>
         <div class="content-area">
-            <div class="module-header">
-                <h1>New Applications</h1>
-                <p>Manage and process incoming student applications.</p>
+            <div class="module-header" style="display: flex; justify-content: space-between; align-items: flex-end;">
+                <div>
+                    <h1>New Applications</h1>
+                    <p>Manage and process incoming student applications.</p>
+                </div>
+                <div class="search-box" style="position: relative;">
+                    <i class="fas fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #94a3b8;"></i>
+                    <input type="text" id="appSearch" onkeyup="filterTable('appSearch', 'appTable')" placeholder="Search applications..." 
+                        style="padding: 10px 15px 10px 40px; border-radius: 10px; border: 1px solid #e2e8f0; outline: none; width: 280px;">
+                </div>
             </div>
             <div class="table-card">
-                <table>
+                <table id="appTable">
                     <thead>
                         <tr>
                             <th>Student ID</th>
@@ -337,6 +344,28 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admission') {
     </div>
 
     <script>
+        function filterTable(inputId, tableId) {
+            const input = document.getElementById(inputId);
+            const filter = input.value.toLowerCase();
+            const table = document.getElementById(tableId);
+            const tr = table.getElementsByTagName("tr");
+
+            for (let i = 1; i < tr.length; i++) {
+                let rowVisible = false;
+                const td = tr[i].getElementsByTagName("td");
+                for (let j = 0; j < td.length; j++) {
+                    if (td[j]) {
+                        const txtValue = td[j].textContent || td[j].innerText;
+                        if (txtValue.toLowerCase().indexOf(filter) > -1) {
+                            rowVisible = true;
+                            break;
+                        }
+                    }
+                }
+                tr[i].style.display = rowVisible ? "" : "none";
+            }
+        }
+
         function openViewModal(name, id, course, date) {
             document.getElementById('modalFullName').textContent = name;
             document.getElementById('modalProfileName').textContent = name;

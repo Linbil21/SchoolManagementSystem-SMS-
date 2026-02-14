@@ -38,12 +38,12 @@ try {
                 <div class="table-header">
                     <h2>Enrollment Archive</h2>
                     <div style="display:flex; gap:10px;">
-                        <input type="text" placeholder="Search record..."
+                        <input type="text" id="archiveSearch" onkeyup="filterTable('archiveSearch', 'archiveTable')" placeholder="Search record..."
                             style="padding:8px; border:1px solid #ddd; border-radius:6px; font-size:0.9rem;">
                     </div>
                 </div>
                 <div class="table-responsive">
-                    <table>
+                    <table id="archiveTable">
                         <thead>
                             <tr>
                                 <th>Ref Code</th>
@@ -108,6 +108,28 @@ try {
     </div>
 
     <script>
+        function filterTable(inputId, tableId) {
+            const input = document.getElementById(inputId);
+            const filter = input.value.toLowerCase();
+            const table = document.getElementById(tableId);
+            const tr = table.getElementsByTagName("tr");
+
+            for (let i = 1; i < tr.length; i++) {
+                let rowVisible = false;
+                const td = tr[i].getElementsByTagName("td");
+                for (let j = 0; j < td.length; j++) {
+                    if (td[j]) {
+                        const txtValue = td[j].textContent || td[j].innerText;
+                        if (txtValue.toLowerCase().indexOf(filter) > -1) {
+                            rowVisible = true;
+                            break;
+                        }
+                    }
+                }
+                tr[i].style.display = rowVisible ? "" : "none";
+            }
+        }
+
         function viewArchive(data) {
             const modal = document.getElementById('archiveModal');
             const container = document.getElementById('archiveData');

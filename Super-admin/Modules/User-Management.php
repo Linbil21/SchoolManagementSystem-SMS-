@@ -30,13 +30,20 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'superadmin') {
                     <h1>User Management</h1>
                     <p>Manage system administrators and staff accounts with ease.</p>
                 </div>
-                <button class="btn-premium" onclick="openUserModal()">
-                    <i class="fas fa-plus-circle"></i> Add New User
-                </button>
+                <div style="display: flex; gap: 15px; align-items: center;">
+                    <div class="search-box" style="position: relative;">
+                        <i class="fas fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+                        <input type="text" id="userSearch" onkeyup="filterTable('userSearch', 'userTable')" placeholder="Search users..." 
+                            style="padding: 12px 15px 12px 40px; border-radius: 12px; border: 1.5px solid var(--border-color); outline: none; width: 250px; transition: 0.3s;">
+                    </div>
+                    <button class="btn-premium" onclick="openUserModal()">
+                        <i class="fas fa-plus-circle"></i> Add New User
+                    </button>
+                </div>
             </div>
 
             <div class="table-card">
-                <table>
+                <table id="userTable">
                     <thead>
                         <tr>
                             <th>User Profile</th>
@@ -156,6 +163,28 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'superadmin') {
     </div>
 
     <script>
+        function filterTable(inputId, tableId) {
+            const input = document.getElementById(inputId);
+            const filter = input.value.toLowerCase();
+            const table = document.getElementById(tableId);
+            const tr = table.getElementsByTagName("tr");
+
+            for (let i = 1; i < tr.length; i++) {
+                let rowVisible = false;
+                const td = tr[i].getElementsByTagName("td");
+                for (let j = 0; j < td.length; j++) {
+                    if (td[j]) {
+                        const txtValue = td[j].textContent || td[j].innerText;
+                        if (txtValue.toLowerCase().indexOf(filter) > -1) {
+                            rowVisible = true;
+                            break;
+                        }
+                    }
+                }
+                tr[i].style.display = rowVisible ? "" : "none";
+            }
+        }
+
         function openUserModal() {
             document.getElementById('modalTitle').textContent = 'Add New User';
             document.getElementById('userModal').style.display = 'flex';

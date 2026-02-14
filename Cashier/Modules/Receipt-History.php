@@ -179,12 +179,12 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'cashier') {
             <h1 style="font-weight: 800; margin-bottom: 30px;">Receipt History</h1>
 
             <div class="search-bar">
-                <input type="text" placeholder="Search by OR Number, Student Name, or Date...">
-                <button class="btn-filter"><i class="fas fa-search"></i> Search</button>
+                <input type="text" id="receiptSearch" onkeyup="filterTable('receiptSearch', 'receiptTable')" placeholder="Search by OR Number, Student Name, or Date...">
+                <button class="btn-filter" onclick="filterTable('receiptSearch', 'receiptTable')"><i class="fas fa-search"></i> Search</button>
             </div>
 
             <div class="history-card">
-                <table>
+                <table id="receiptTable">
                     <thead>
                         <tr>
                             <th>OR Number</th>
@@ -248,6 +248,28 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'cashier') {
     </div>
 
     <script>
+        function filterTable(inputId, tableId) {
+            const input = document.getElementById(inputId);
+            const filter = input.value.toLowerCase();
+            const table = document.getElementById(tableId);
+            const tr = table.getElementsByTagName("tr");
+
+            for (let i = 1; i < tr.length; i++) {
+                let rowVisible = false;
+                const td = tr[i].getElementsByTagName("td");
+                for (let j = 0; j < td.length; j++) {
+                    if (td[j]) {
+                        const txtValue = td[j].textContent || td[j].innerText;
+                        if (txtValue.toLowerCase().indexOf(filter) > -1) {
+                            rowVisible = true;
+                            break;
+                        }
+                    }
+                }
+                tr[i].style.display = rowVisible ? "" : "none";
+            }
+        }
+
         function openModal(or) {
             document.getElementById('orVal').textContent = or;
             document.getElementById('viewModal').style.display = 'block';

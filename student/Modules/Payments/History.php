@@ -235,10 +235,17 @@ session_start();
     <div class="main-wrapper">
         <?php include '../../Components/Header.php'; ?>
         <div class="content-area">
-            <h1 class="page-title">Payment History</h1>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+                <h1 class="page-title">Payment History</h1>
+                <div class="search-box" style="position: relative;">
+                    <i class="fas fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #94a3b8;"></i>
+                    <input type="text" id="paymentSearch" onkeyup="filterTable('paymentSearch', 'paymentTable')" placeholder="Search payments..." 
+                        style="padding: 10px 15px 10px 40px; border-radius: 12px; border: 1px solid #e2e8f0; outline: none; width: 280px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+                </div>
+            </div>
 
             <div class="table-card">
-                <table>
+                <table id="paymentTable">
                     <thead>
                         <tr>
                             <th>Date</th>
@@ -346,6 +353,28 @@ session_start();
     </div>
 
     <script>
+        function filterTable(inputId, tableId) {
+            const input = document.getElementById(inputId);
+            const filter = input.value.toLowerCase();
+            const table = document.getElementById(tableId);
+            const tr = table.getElementsByTagName("tr");
+
+            for (let i = 1; i < tr.length; i++) {
+                let rowVisible = false;
+                const td = tr[i].getElementsByTagName("td");
+                for (let j = 0; j < td.length; j++) {
+                    if (td[j]) {
+                        const txtValue = td[j].textContent || td[j].innerText;
+                        if (txtValue.toLowerCase().indexOf(filter) > -1) {
+                            rowVisible = true;
+                            break;
+                        }
+                    }
+                }
+                tr[i].style.display = rowVisible ? "" : "none";
+            }
+        }
+
         const modal = document.getElementById('receiptModal');
 
         function openModal(ref, channel, amount, date, status, image) {

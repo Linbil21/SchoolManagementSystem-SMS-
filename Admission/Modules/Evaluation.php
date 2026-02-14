@@ -282,10 +282,15 @@ checkRole(['admission']);
             </div>
 
             <div class="evaluation-table-card">
-                <div class="table-header">
+                <div class="table-header" style="display: flex; justify-content: space-between; align-items: center;">
                     <h3 style="font-size: 1.1rem; font-weight: 700;">Recent Submissions</h3>
+                    <div class="search-box" style="position: relative;">
+                        <i class="fas fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #94a3b8;"></i>
+                        <input type="text" id="evalSearch" onkeyup="filterTable('evalSearch', 'evalTable')" placeholder="Search submissions..." 
+                            style="padding: 10px 15px 10px 40px; border-radius: 10px; border: 1px solid #edf2f7; outline: none; width: 280px; font-size: 0.9rem;">
+                    </div>
                 </div>
-                <table>
+                <table id="evalTable">
                     <thead>
                         <tr>
                             <th>Student Name</th>
@@ -406,6 +411,28 @@ checkRole(['admission']);
     </div>
 
     <script>
+        function filterTable(inputId, tableId) {
+            const input = document.getElementById(inputId);
+            const filter = input.value.toLowerCase();
+            const table = document.getElementById(tableId);
+            const tr = table.getElementsByTagName("tr");
+
+            for (let i = 1; i < tr.length; i++) {
+                let rowVisible = false;
+                const td = tr[i].getElementsByTagName("td");
+                for (let j = 0; j < td.length; j++) {
+                    if (td[j]) {
+                        const txtValue = td[j].textContent || td[j].innerText;
+                        if (txtValue.toLowerCase().indexOf(filter) > -1) {
+                            rowVisible = true;
+                            break;
+                        }
+                    }
+                }
+                tr[i].style.display = rowVisible ? "" : "none";
+            }
+        }
+
         function openReviewModal(name, course) {
             document.getElementById('modalStudentName').textContent = name;
             document.getElementById('modalStudentCourse').textContent = course;
