@@ -127,13 +127,20 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'cashier') {
         <div class="content-area">
             <h1 style="font-weight: 800; margin-bottom: 30px;">Void / Refund Control</h1>
 
+            <?php
+            require_once '../../Database/config.php';
+            
+            // Stats
+            $pending_count = $pdo->query("SELECT COUNT(*) FROM payments WHERE status = 'Refund Pending'")->fetchColumn() ?: 0;
+            $processed_today = $pdo->query("SELECT SUM(amount) FROM payments WHERE status = 'Refunded' AND DATE(created_at) = CURDATE()")->fetchColumn() ?: 0;
+            ?>
             <div class="stats-banner">
                 <div class="stat-item">
                     <div class="stat-icon" style="background: #fff1f2; color: #e11d48;"><i class="fas fa-undo-alt"></i>
                     </div>
                     <div>
                         <p style="font-size: 0.8rem; color: #64748b;">Pending Refunds</p>
-                        <h3 style="font-weight: 800;">4 Requests</h3>
+                        <h3 style="font-weight: 800;"><?php echo $pending_count; ?> Requests</h3>
                     </div>
                 </div>
                 <div class="stat-item">
@@ -141,7 +148,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'cashier') {
                             class="fas fa-check-circle"></i></div>
                     <div>
                         <p style="font-size: 0.8rem; color: #64748b;">Processed Today</p>
-                        <h3 style="font-weight: 800;">₱12,450.00</h3>
+                        <h3 style="font-weight: 800;">₱<?php echo number_format($processed_today, 2); ?></h3>
                     </div>
                 </div>
             </div>
@@ -155,29 +162,46 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'cashier') {
                             <th>Student</th>
                             <th>Amount</th>
                             <th>Reason</th>
-                            <th>Requested By</th>
+                            <th>Date</th>
                             <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td style="font-family: monospace; font-weight: 700;">OR-882905</td>
-                            <td>James Wilson</td>
-                            <td style="font-weight: 700;">₱4,200.00</td>
-                            <td><span style="color: #64748b;">Duplicate Payment</span></td>
-                            <td style="font-size: 0.85rem;">Admin Staff</td>
-                            <td><button class="btn-refund" onclick="confirmRefund('OR-882905')">Approve Refund</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="font-family: monospace; font-weight: 700;">OR-882901</td>
-                            <td>Mia Thorne</td>
-                            <td style="font-weight: 700;">₱15,000.00</td>
-                            <td><span style="color: #64748b;">Wrong Assessment</span></td>
-                            <td style="font-size: 0.85rem;">Registrar</td>
-                            <td><button class="btn-refund" onclick="confirmRefund('OR-882901')">Approve Refund</button>
-                            </td>
-                        </tr>
+                        <?php
+                        try {
+                            $stmt = $pdo->query("
+                                SELECT p.*, e.first_name, e.last_name 
+                                FROM payments p 
+                                JOIN enrollments e ON p.enrollment_id = e.enrollmentId 
+                                WHERE p.status = 'Refund Pending'
+                                ORDER BY p.created_at DESC
+                            ");
+                            $requests = $stmt->fetchAll();
+                            
+                            if (empty($requests)) {
+                                echo '<tr><td colspan="6" style="text-align: center; padding: 20px; color: #64748b;">No pending refund requests.</td></tr>';
+                            } else {
+                                foreach ($requests as $row) {
+                                    $name = htmlspecialchars($row->first_name . " " . $row->last_name);
+                                    $ref = htmlspecialchars($row->transaction_id);
+                                    $amount = number_format($row->amount, 2);
+                                    $reason = htmlspecialchars($row->description ?? "N/A");
+                                    $date = date('M d, Y', strtotime($row->created_at));
+
+                                    echo "<tr>
+                                            <td style='font-family: monospace; font-weight: 700;'>$ref</td>
+                                            <td>$name</td>
+                                            <td style='font-weight: 700;'>₱$amount</td>
+                                            <td><span style='color: #64748b;'>$reason</span></td>
+                                            <td style='font-size: 0.85rem;'>$date</td>
+                                            <td><button class='btn-refund' onclick=\"confirmRefund('$ref')\">Approve Refund</button></td>
+                                        </tr>";
+                                }
+                            }
+                        } catch (PDOException $e) {
+                            echo "<tr><td colspan='6' style='text-align: center;'>Error fetching data</td></tr>";
+                        }
+                        ?>
                     </tbody>
                 </table>
             </div>

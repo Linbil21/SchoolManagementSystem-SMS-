@@ -237,32 +237,48 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'cashier') {
                 </p>
             </div>
 
+            <?php
+            require_once '../../Database/config.php';
+            
+            // Metrics for TODAY
+            $today = date('Y-m-d');
+            $total_today = $pdo->query("SELECT SUM(amount) FROM payments WHERE status = 'Completed' AND DATE(created_at) = '$today'")->fetchColumn() ?: 0;
+            $count_today = $pdo->query("SELECT COUNT(*) FROM payments WHERE DATE(created_at) = '$today'")->fetchColumn() ?: 0;
+            $cash_today = $pdo->query("SELECT SUM(amount) FROM payments WHERE status = 'Completed' AND payment_method = 'Cash' AND DATE(created_at) = '$today'")->fetchColumn() ?: 0;
+            $digital_today = $pdo->query("SELECT SUM(amount) FROM payments WHERE status = 'Completed' AND payment_method != 'Cash' AND DATE(created_at) = '$today'")->fetchColumn() ?: 0;
+            
+            // Previous day for comparison
+            $yesterday = date('Y-m-d', strtotime('-1 day'));
+            $total_yesterday = $pdo->query("SELECT SUM(amount) FROM payments WHERE status = 'Completed' AND DATE(created_at) = '$yesterday'")->fetchColumn() ?: 1; // Prevent div by zero
+            $change_percent = (($total_today - $total_yesterday) / $total_yesterday) * 100;
+            ?>
             <!-- Key Metrics -->
             <div class="stats-grid">
                 <div class="stat-card">
                     <i class="fas fa-coins stat-icon"></i>
                     <p class="stat-label">Total Collected Today</p>
-                    <h3 class="stat-value">₱124,500.00</h3>
-                    <span style="color: #22c55e; font-size: 0.85rem;"><i class="fas fa-arrow-up"></i> 12% vs
-                        yesterday</span>
+                    <h3 class="stat-value">₱<?php echo number_format($total_today, 2); ?></h3>
+                    <span style="color: <?php echo $change_percent >= 0 ? '#22c55e' : '#ef4444'; ?>; font-size: 0.85rem;">
+                        <i class="fas fa-arrow-<?php echo $change_percent >= 0 ? 'up' : 'down'; ?>"></i> 
+                        <?php echo abs(round($change_percent, 1)); ?>% vs yesterday
+                    </span>
                 </div>
                 <div class="stat-card">
                     <i class="fas fa-receipt stat-icon"></i>
                     <p class="stat-label">Transactions Processed</p>
-                    <h3 class="stat-value">45</h3>
-                    <span style="color: #22c55e; font-size: 0.85rem;"><i class="fas fa-arrow-up"></i> 5 new
-                        transactions</span>
+                    <h3 class="stat-value"><?php echo $count_today; ?></h3>
+                    <span style="color: #22c55e; font-size: 0.85rem;">Activity logged today</span>
                 </div>
                 <div class="stat-card">
                     <i class="fas fa-wallet stat-icon"></i>
                     <p class="stat-label">Cash on Hand</p>
-                    <h3 class="stat-value">₱45,200.00</h3>
-                    <span style="color: #64748b; font-size: 0.85rem;">For deposit</span>
+                    <h3 class="stat-value">₱<?php echo number_format($cash_today, 2); ?></h3>
+                    <span style="color: #64748b; font-size: 0.85rem;">From walk-in payments</span>
                 </div>
                 <div class="stat-card">
                     <i class="fas fa-credit-card stat-icon"></i>
                     <p class="stat-label">Digital Payments</p>
-                    <h3 class="stat-value">₱79,300.00</h3>
+                    <h3 class="stat-value">₱<?php echo number_format($digital_today, 2); ?></h3>
                     <span style="color: #64748b; font-size: 0.85rem;">Bank & E-wallets</span>
                 </div>
             </div>
@@ -286,10 +302,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'cashier') {
             <!-- Recent Transactions Table -->
             <div class="table-card">
                 <div class="chart-header">
-                    <h3 class="chart-title">Recent Transactions</h3>
-                    <button
-                        style="border:none; background: #eef2ff; color: var(--primary); padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer;">View
-                        All</button>
+                    <h3 class="chart-title">Today's Transactions</h3>
                 </div>
                 <table>
                     <thead>
@@ -303,48 +316,43 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'cashier') {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>OR-2023-001</td>
-                            <td>
-                                <div style="display: flex; align-items: center; gap: 10px;">
-                                    <img src="https://ui-avatars.com/api/?name=John+Doe&background=random"
-                                        style="width: 30px; height: 30px; border-radius: 50%;" alt="">
-                                    <span>John Doe</span>
-                                </div>
-                            </td>
-                            <td>Tuition Fee - Prelims</td>
-                            <td>Cash</td>
-                            <td style="font-weight: 600;">₱5,000.00</td>
-                            <td><span class="badge bg-success">Verified</span></td>
-                        </tr>
-                        <tr>
-                            <td>OR-2023-002</td>
-                            <td>
-                                <div style="display: flex; align-items: center; gap: 10px;">
-                                    <img src="https://ui-avatars.com/api/?name=Jane+Smith&background=random"
-                                        style="width: 30px; height: 30px; border-radius: 50%;" alt="">
-                                    <span>Jane Smith</span>
-                                </div>
-                            </td>
-                            <td>Miscellaneous Fee</td>
-                            <td>GCash</td>
-                            <td style="font-weight: 600;">₱3,500.00</td>
-                            <td><span class="badge bg-success">Verified</span></td>
-                        </tr>
-                        <tr>
-                            <td>OR-2023-003</td>
-                            <td>
-                                <div style="display: flex; align-items: center; gap: 10px;">
-                                    <img src="https://ui-avatars.com/api/?name=Mike+Ross&background=random"
-                                        style="width: 30px; height: 30px; border-radius: 50%;" alt="">
-                                    <span>Mike Ross</span>
-                                </div>
-                            </td>
-                            <td>Old Account Balance</td>
-                            <td>Bank Transfer</td>
-                            <td style="font-weight: 600;">₱12,000.00</td>
-                            <td><span class="badge bg-warning">Pending</span></td>
-                        </tr>
+                        <?php
+                        try {
+                            $stmt = $pdo->query("
+                                SELECT p.*, e.first_name, e.last_name 
+                                FROM payments p 
+                                JOIN enrollments e ON p.enrollment_id = e.enrollmentId 
+                                WHERE DATE(p.created_at) = '$today'
+                                ORDER BY p.created_at DESC
+                            ");
+                            $today_txns = $stmt->fetchAll();
+                            
+                            if (empty($today_txns)) {
+                                echo '<tr><td colspan="6" style="text-align: center; padding: 20px;">No transactions found for today.</td></tr>';
+                            } else {
+                                foreach ($today_txns as $row) {
+                                    $name = htmlspecialchars($row->first_name . " " . $row->last_name);
+                                    $ref = htmlspecialchars($row->transaction_id);
+                                    $desc = htmlspecialchars($row->description ?? "Fee Payment");
+                                    $method = htmlspecialchars($row->payment_method);
+                                    $amount = number_format($row->amount, 2);
+                                    $status = $row->status;
+                                    $badge = ($status === 'Completed' || $status === 'Verified') ? 'bg-success' : 'bg-warning';
+
+                                    echo "<tr>
+                                            <td>$ref</td>
+                                            <td>$name</td>
+                                            <td>$desc</td>
+                                            <td>$method</td>
+                                            <td style='font-weight: 600;'>₱$amount</td>
+                                            <td><span class='badge $badge'>$status</span></td>
+                                        </tr>";
+                                }
+                            }
+                        } catch (PDOException $e) {
+                            echo "<tr><td colspan='6'>Error loading transactions</td></tr>";
+                        }
+                        ?>
                     </tbody>
                 </table>
             </div>

@@ -4,6 +4,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'cashier') {
     header("Location: ../../auth/Login.php");
     exit();
 }
+require_once '../../Database/config.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -196,30 +197,39 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'cashier') {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td style="font-family: monospace; font-weight: 700; color: var(--primary);">OR-882910</td>
-                            <td>John Michael Doe</td>
-                            <td>Jan 11, 2024</td>
-                            <td style="font-weight: 700;">₱5,000.00</td>
-                            <td><span class="badge badge-success">Active</span></td>
-                            <td><button class="btn-view" onclick="openModal('OR-882910')">View Details</button></td>
-                        </tr>
-                        <tr>
-                            <td style="font-family: monospace; font-weight: 700; color: var(--primary);">OR-882909</td>
-                            <td>Sarah Johnson</td>
-                            <td>Jan 10, 2024</td>
-                            <td style="font-weight: 700;">₱12,500.00</td>
-                            <td><span class="badge badge-success">Active</span></td>
-                            <td><button class="btn-view" onclick="openModal('OR-882909')">View Details</button></td>
-                        </tr>
-                        <tr>
-                            <td style="font-family: monospace; font-weight: 700; color: var(--primary);">OR-882908</td>
-                            <td>Mark Lee</td>
-                            <td>Jan 09, 2024</td>
-                            <td style="font-weight: 700;">₱3,000.00</td>
-                            <td><span class="badge badge-void">Voided</span></td>
-                            <td><button class="btn-view" onclick="openModal('OR-882908')">View Details</button></td>
-                        </tr>
+                        <?php
+                        try {
+                            $stmt = $pdo->query("
+                                SELECT p.*, e.first_name, e.last_name 
+                                FROM payments p 
+                                JOIN enrollments e ON p.enrollment_id = e.enrollmentId 
+                                WHERE p.status IN ('Completed', 'Voided')
+                                ORDER BY p.created_at DESC
+                            ");
+                            $history = $stmt->fetchAll();
+                            
+                            foreach ($history as $row) {
+                                $name = htmlspecialchars($row->first_name . " " . $row->last_name);
+                                $ref = htmlspecialchars($row->transaction_id);
+                                $date = date('M d, Y', strtotime($row->created_at));
+                                $amount = number_format($row->amount, 2);
+                                $status = $row->status;
+                                $badge_class = ($status === 'Voided') ? 'badge-void' : 'badge-success';
+                                $display_status = ($status === 'Voided') ? 'Voided' : 'Active';
+
+                                echo "<tr>
+                                        <td style='font-family: monospace; font-weight: 700; color: var(--primary);'>$ref</td>
+                                        <td>$name</td>
+                                        <td>$date</td>
+                                        <td style='font-weight: 700;'>₱$amount</td>
+                                        <td><span class='badge $badge_class'>$display_status</span></td>
+                                        <td><button class='btn-view' onclick=\"openModal('$ref')\">View Details</button></td>
+                                    </tr>";
+                            }
+                        } catch (PDOException $e) {
+                            echo "<tr><td colspan='6' style='text-align: center;'>Error fetching data</td></tr>";
+                        }
+                        ?>
                     </tbody>
                 </table>
             </div>
