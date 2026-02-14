@@ -488,20 +488,17 @@ if (count($name_parts) >= 2) {
     }
 
     function markAllRead() {
+        // Instant UI feedback
         const badge = document.querySelector('.notification-btn .badge');
+        if (badge) badge.style.display = 'none';
         
+        document.querySelectorAll('.dropdown-item.unread').forEach(item => {
+            item.classList.remove('unread');
+        });
+
+        // Backend sync
         fetch('/student/api/mark_notifications_read.php')
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    if (badge) badge.style.display = 'none';
-                    document.querySelectorAll('.dropdown-item.unread').forEach(item => {
-                        item.classList.remove('unread');
-                    });
-                    // Refresh if needed or just update UI
-                }
-            })
-            .catch(err => console.error('Error marking notifications as read:', err));
+            .catch(err => console.error('Error:', err));
     }
 
     window.addEventListener('click', function(e) {

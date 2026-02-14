@@ -493,9 +493,17 @@ $root = $project_base . '/';
     updateClock();
 
     function markAllAsRead() {
+        const badge = document.querySelector('.notification .badge');
+        if(badge) badge.style.display = 'none';
+        
+        document.querySelectorAll('.dropdown-item.unread').forEach(item => {
+            item.classList.remove('unread');
+        });
+
+        // Backend Sync
         fetch('/Admin/api/mark_notifications_read.php', {
             method: 'POST'
-        }).then(() => location.reload());
+        }).catch(err => console.error(err));
     }
 
     function toggleDropdown(id) {

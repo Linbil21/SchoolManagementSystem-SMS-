@@ -184,17 +184,19 @@ if (!empty($root) && $root[0] !== '/') {
 
     // Mark all notifications as read
     function markAllAsRead() {
+        // Immediate UI update
+        const badge = document.querySelector('.notification .badge');
+        if(badge) badge.style.display = 'none';
+        
+        document.querySelectorAll('.dropdown-item.unread').forEach(item => {
+            item.classList.remove('unread');
+        });
+
+        // Backend Sync
         fetch('/Admin/api/mark_notifications_read.php', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'}
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                location.reload();
-            }
-        })
-        .catch(error => console.error('Error:', error));
+        }).catch(error => console.error('Error:', error));
     }
 </script>
 <script>

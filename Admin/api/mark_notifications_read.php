@@ -2,8 +2,9 @@
 session_start();
 require_once '../../Database/config.php';
 
-// Check if admin/superadmin
-if (!isset($_SESSION['role']) || ($_SESSION['role'] !== 'admin' && $_SESSION['role'] !== 'superadmin')) {
+// Check if authorized role
+$allowed_roles = ['admin', 'superadmin', 'admission', 'cashier'];
+if (!isset($_SESSION['role']) || !in_array($_SESSION['role'], $allowed_roles)) {
     echo json_encode(['success' => false, 'message' => 'Unauthorized']);
     exit();
 }
