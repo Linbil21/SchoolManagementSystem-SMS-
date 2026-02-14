@@ -11,7 +11,27 @@ if (session_status() === PHP_SESSION_NONE) {
  * 
  * @param array|string $allowed_roles List of roles allowed to access the page
  */
+// Detect Project Root
+$script_name = $_SERVER['SCRIPT_NAME'];
+$check_paths = ['/Super-admin/', '/Admin/', '/Cashier/', '/Admission/', '/auth/', '/student/', '/modules/'];
+$project_base = '';
+
+foreach ($check_paths as $path) {
+    if (($pos = stripos($script_name, $path)) !== false) {
+        $project_base = rtrim(substr($script_name, 0, $pos), '/');
+        break;
+    }
+}
+$root_path = $project_base . '/';
+
+/**
+ * Checks if the current user has access based on their role.
+ * If not, redirects them to their appropriate dashboard.
+ * 
+ * @param array|string $allowed_roles List of roles allowed to access the page
+ */
 function checkRole($allowed_roles) {
+    global $root_path;
     // Normalize to array
     if (!is_array($allowed_roles)) {
         $allowed_roles = [$allowed_roles];
@@ -24,8 +44,7 @@ function checkRole($allowed_roles) {
 
     // 1. Check if logged in
     if (!isset($_SESSION['role'])) {
-        // Use absolute path for reliability
-        header("Location: /auth/Login.php");
+        header("Location: " . $root_path . "auth/Login.php");
         exit();
     }
 
@@ -36,22 +55,22 @@ function checkRole($allowed_roles) {
         // Redirect based on their ACTUAL role
         switch ($current_role) {
             case 'superadmin':
-                header("Location: /Super-admin/Dashboard.php");
+                header("Location: " . $root_path . "Super-admin/Dashboard.php");
                 break;
             case 'admin':
-                header("Location: /Admin/Dashboard.php");
+                header("Location: " . $root_path . "Admin/Dashboard.php");
                 break;
             case 'admission':
-                header("Location: /Admission/Dashboard.php");
+                header("Location: " . $root_path . "Admission/Dashboard.php");
                 break;
             case 'cashier':
-                header("Location: /Cashier/Dashboard.php");
+                header("Location: " . $root_path . "Cashier/Dashboard.php");
                 break;
             case 'student':
-                header("Location: /student/Dashboard.php");
+                header("Location: " . $root_path . "student/Dashboard.php");
                 break;
             default:
-                header("Location: /auth/Login.php");
+                header("Location: " . $root_path . "auth/Login.php");
                 break;
         }
         exit();

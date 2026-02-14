@@ -29,7 +29,7 @@ $recent_transactions = $stmt->fetchAll();
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="/Assets/css/theme.css">
+    <link rel="stylesheet" href="<?php echo $root_path; ?>Assets/css/theme.css">
     <style>
         * {
             margin: 0;
@@ -343,13 +343,13 @@ $recent_transactions = $stmt->fetchAll();
                 <div class="action-card">
                     <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
                     <div class="quick-actions-list">
-                        <a href="/Cashier/Modules/Walk-in-Payments.php" class="action-btn">
+                        <a href="<?php echo $root_path; ?>Cashier/Modules/Walk-in-Payments.php" class="action-btn">
                             <i class="fas fa-plus-circle"></i> Record Walk-in
                         </a>
-                        <a href="/Cashier/Submodules/Payment-Status.php" class="action-btn">
+                        <a href="<?php echo $root_path; ?>Cashier/Submodules/Payment-Status.php" class="action-btn">
                             <i class="fas fa-search"></i> Find Student Account
                         </a>
-                        <a href="/Cashier/Modules/Issue-Receipt.php" class="action-btn">
+                        <a href="<?php echo $root_path; ?>Cashier/Modules/Issue-Receipt.php" class="action-btn">
                             <i class="fas fa-file-invoice-dollar"></i> Generate Billing
                         </a>
                     </div>
