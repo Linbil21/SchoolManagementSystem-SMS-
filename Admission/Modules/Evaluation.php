@@ -1,7 +1,88 @@
 <?php
 session_start();
 require_once '../../auth/Security.php';
+require_once '../../Database/config.php';
 checkRole(['admission']);
+
+$message = '';
+$error = '';
+
+// Handle Evaluation Submission
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+    try {
+        $app_id = $_POST['application_id'];
+        $status = $_POST['status'];
+        $notes = $_POST['notes'];
+
+        if ($status === 'Approved') {
+            // Get application details
+            $stmt = $pdo->prepare("SELECT * FROM admission_applications WHERE applicationId = ?");
+            $stmt->execute([$app_id]);
+            $app = $stmt->fetch();
+
+            if ($app) {
+                // 1. Update Application Status
+                $pdo->prepare("UPDATE admission_applications SET status = 'Approved' WHERE applicationId = ?")
+                    ->execute([$app_id]);
+
+                // 2. Create/Update Student Record if doesn't exist
+                $stmt = $pdo->prepare("SELECT * FROM students WHERE email = ?");
+                $stmt->execute([$app->email]);
+                $student = $stmt->fetch();
+
+                if (!$student) {
+                    $student_id = "STU-" . date('Y') . "-" . str_pad(rand(1, 999), 3, '0', STR_PAD_LEFT);
+                    $pdo->prepare("INSERT INTO students (student_id, first_name, last_name, email, course, password) VALUES (?, ?, ?, ?, ?, ?)")
+                        ->execute([$student_id, $app->first_name, $app->last_name, $app->email, $app->preferred_course_1, 'student123']);
+                }
+
+                // 3. Create Enrollment & Assign Default Fees
+                $ref_code = "ENR-" . date('Y') . "-" . strtoupper(substr(md5(uniqid()), 0, 6));
+                
+                // Check if tuition_fee column exists (it might have been added by Cashier module lazy migration)
+                try {
+                    $pdo->exec("ALTER TABLE enrollments ADD COLUMN IF NOT EXISTS tuition_fee DECIMAL(10,2) DEFAULT 0.00");
+                    $pdo->exec("ALTER TABLE enrollments ADD COLUMN IF NOT EXISTS misc_fee DECIMAL(10,2) DEFAULT 0.00");
+                    $pdo->exec("ALTER TABLE enrollments ADD COLUMN IF NOT EXISTS total_fee DECIMAL(10,2) DEFAULT 0.00");
+                    $pdo->exec("ALTER TABLE enrollments ADD COLUMN IF NOT EXISTS balance DECIMAL(10,2) DEFAULT 0.00");
+                } catch (Exception $e) {}
+
+                $tuition = 15000.00;
+                $misc = 2500.00;
+                $total = $tuition + $misc;
+
+                $sql = "INSERT INTO enrollments (reference_code, admission_type, first_name, last_name, email, year_level, status, tuition_fee, misc_fee, total_fee, balance) 
+                        VALUES (?, ?, ?, ?, ?, 'First Year', 'Enrolled', ?, ?, ?, ?)";
+                $pdo->prepare($sql)->execute([
+                    $ref_code, 
+                    $app->student_type, 
+                    $app->first_name, 
+                    $app->last_name, 
+                    $app->email,
+                    $tuition,
+                    $misc,
+                    $total,
+                    $total
+                ]);
+
+                $message = "Application #{$app->application_no} approved. Student record created and Tuition Fees (₱" . number_format($total, 2) . ") assigned automatically.";
+            }
+        } else {
+            $pdo->prepare("UPDATE admission_applications SET status = ? WHERE applicationId = ?")
+                ->execute([$status, $app_id]);
+            $message = "Application status updated to $status.";
+        }
+    } catch (Exception $e) {
+        $error = "Error: " . $e->getMessage();
+    }
+}
+
+// Fetch pending and processing applications
+$apps = $pdo->query("SELECT * FROM admission_applications WHERE status IN ('Pending', 'Processing') ORDER BY submission_date DESC")->fetchAll();
+
+// Stats
+$pending_count = $pdo->query("SELECT COUNT(*) FROM admission_applications WHERE status = 'Pending'")->fetchColumn();
+$approved_today = $pdo->query("SELECT COUNT(*) FROM admission_applications WHERE status = 'Approved' AND DATE(submission_date) = CURDATE()")->fetchColumn();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -262,21 +343,33 @@ checkRole(['admission']);
                 <button class="btn-evaluate"><i class="fas fa-filter"></i> Filter</button>
             </div>
 
+            <?php if ($message): ?>
+                <div style="background: #dcfce7; color: #166534; padding: 15px; border-radius: 12px; margin-bottom: 25px; border: 1px solid #bbf7d0; font-size: 0.9rem;">
+                    <i class="fas fa-check-circle"></i> <?php echo $message; ?>
+                </div>
+            <?php endif; ?>
+
+            <?php if ($error): ?>
+                <div style="background: #fee2e2; color: #991b1b; padding: 15px; border-radius: 12px; margin-bottom: 25px; border: 1px solid #fecaca; font-size: 0.9rem;">
+                    <i class="fas fa-exclamation-circle"></i> <?php echo $error; ?>
+                </div>
+            <?php endif; ?>
+
             <div class="stats-row">
                 <div class="stat-card">
                     <div class="stat-icon" style="background: #eef2ff; color: #1648bc;"><i class="fas fa-clock"></i>
                     </div>
                     <div>
                         <p style="font-size: 0.8rem; color: var(--text-gray);">Pending Review</p>
-                        <h3 style="font-size: 1.2rem;">24</h3>
+                        <h3 style="font-size: 1.2rem;"><?php echo $pending_count; ?></h3>
                     </div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-icon" style="background: #ecfdf5; color: #10b981;"><i
                             class="fas fa-check-circle"></i></div>
                     <div>
-                        <p style="font-size: 0.8rem; color: var(--text-gray);">Reviewed Today</p>
-                        <h3 style="font-size: 1.2rem;">12</h3>
+                        <p style="font-size: 0.8rem; color: var(--text-gray);">Approved Today</p>
+                        <h3 style="font-size: 1.2rem;"><?php echo $approved_today; ?></h3>
                     </div>
                 </div>
             </div>
@@ -301,23 +394,27 @@ checkRole(['admission']);
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td style="font-weight: 600;">Alice Johnson</td>
-                            <td>Bachelor of Science in Engineering</td>
-                            <td>4/5 Verified</td>
-                            <td><span class="badge badge-processing">In Progress</span></td>
-                            <td><button class="btn-evaluate"
-                                    onclick="openReviewModal('Alice Johnson', 'B.S. Engineering')">Review</button></td>
-                        </tr>
-                        <tr>
-                            <td style="font-weight: 600;">Michael Brown</td>
-                            <td>Bachelor of Secondary Education</td>
-                            <td>0/5 Verified</td>
-                            <td><span class="badge badge-pending">Waiting</span></td>
-                            <td><button class="btn-evaluate"
-                                    onclick="openReviewModal('Michael Brown', 'B.S. Education')">Start Review</button>
-                            </td>
-                        </tr>
+                        <?php foreach ($apps as $app): ?>
+                            <tr>
+                                <td style="font-weight: 600;"><?php echo htmlspecialchars($app->first_name . ' ' . $app->last_name); ?></td>
+                                <td><?php echo htmlspecialchars($app->preferred_course_1); ?></td>
+                                <td>PSA, Report Card</td>
+                                <td><span class="badge <?php echo ($app->status == 'Pending') ? 'badge-pending' : 'badge-processing'; ?>">
+                                    <?php echo htmlspecialchars($app->status); ?></span>
+                                </td>
+                                <td><button class="btn-evaluate"
+                                        onclick="openReviewModal(
+                                            '<?php echo $app->applicationId; ?>',
+                                            '<?php echo addslashes($app->first_name . ' ' . $app->last_name); ?>', 
+                                            '<?php echo addslashes($app->preferred_course_1); ?>'
+                                        )">Evaluate</button></td>
+                            </tr>
+                        <?php endforeach; ?>
+                        <?php if (empty($apps)): ?>
+                            <tr>
+                                <td colspan="5" style="text-align: center; padding: 40px; color: #94a3b8;">No applications for evaluation.</td>
+                            </tr>
+                        <?php endif; ?>
                     </tbody>
                 </table>
             </div>
@@ -386,26 +483,27 @@ checkRole(['admission']);
                     </div>
                 </div>
 
-                <div>
-                    <h4 style="color: #1e293b; font-size: 0.9rem; font-weight: 700; margin-bottom: 12px;">Evaluation
-                        Status & Notes</h4>
-                    <select
-                        style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 16px; outline: none; font-family: inherit;">
-                        <option>Approve Application</option>
-                        <option>Return for Correction</option>
-                        <option>Reject Application</option>
-                    </select>
-                    <textarea placeholder="Add internal notes for this evaluation..."
-                        style="width: 100%; height: 120px; padding: 16px; border-radius: 16px; border: 1px solid #e2e8f0; outline: none; resize: none; font-family: inherit; font-size: 0.9rem; color: #475569;"></textarea>
-                </div>
+                <form id="evaluationForm" method="POST">
+                    <input type="hidden" name="action" value="submit_evaluation">
+                    <input type="hidden" name="application_id" id="modalAppId">
+                    <div>
+                        <h4 style="color: #1e293b; font-size: 0.9rem; font-weight: 700; margin-bottom: 12px;">Evaluation Status & Notes</h4>
+                        <select name="status" id="modalEvalStatus"
+                            style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 16px; outline: none; font-family: inherit;">
+                            <option value="Approved">Approve Application</option>
+                            <option value="Processing">Keep for Further Review</option>
+                            <option value="Rejected">Reject Application</option>
+                        </select>
+                        <textarea name="notes" placeholder="Add internal notes for this evaluation..."
+                            style="width: 100%; height: 120px; padding: 16px; border-radius: 16px; border: 1px solid #e2e8f0; outline: none; resize: none; font-family: inherit; font-size: 0.9rem; color: #475569;"></textarea>
+                    </div>
+                </form>
             </div>
             <div class="modal-footer">
                 <button onclick="closeReviewModal()"
-                    style="padding: 12px 24px; border-radius: 12px; border: 1px solid #e2e8f0; background: white; color: #475569; font-weight: 600; cursor: pointer; transition: 0.2s;">Cancel
-                    Changes</button>
+                    style="padding: 12px 24px; border-radius: 12px; border: 1px solid #e2e8f0; background: white; color: #475569; font-weight: 600; cursor: pointer; transition: 0.2s;">Cancel Changes</button>
                 <button onclick="saveEvaluation()"
-                    style="padding: 12px 28px; border-radius: 12px; background: var(--primary-blue); color: white; border: none; font-weight: 600; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 6px -1px rgba(22, 72, 188, 0.2);">Confirm
-                    & Save</button>
+                    style="padding: 12px 28px; border-radius: 12px; background: var(--primary-blue); color: white; border: none; font-weight: 600; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 6px -1px rgba(22, 72, 188, 0.2);">Confirm & Save</button>
             </div>
         </div>
     </div>
@@ -433,7 +531,8 @@ checkRole(['admission']);
             }
         }
 
-        function openReviewModal(name, course) {
+        function openReviewModal(id, name, course) {
+            document.getElementById('modalAppId').value = id;
             document.getElementById('modalStudentName').textContent = name;
             document.getElementById('modalStudentCourse').textContent = course;
             document.getElementById('reviewModal').style.display = 'block';
@@ -446,8 +545,14 @@ checkRole(['admission']);
         }
 
         function saveEvaluation() {
-            alert('Evaluation for has been successfully saved!');
-            closeReviewModal();
+            const status = document.getElementById('modalEvalStatus').value;
+            const confirmMsg = status === 'Approved' 
+                ? 'Approving this application will automatically create a Student Record and assign Tuition Fees. Proceed?' 
+                : 'Save evaluation changes?';
+            
+            if (confirm(confirmMsg)) {
+                document.getElementById('evaluationForm').submit();
+            }
         }
 
         window.onclick = function (event) {

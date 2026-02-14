@@ -4,6 +4,15 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admission') {
     header("Location: ../../auth/Login.php");
     exit();
 }
+require_once '../../Database/config.php';
+
+try {
+    $stmt = $pdo->prepare("SELECT * FROM admission_applications WHERE status = 'Processing' ORDER BY submission_date DESC");
+    $stmt->execute();
+    $processing_apps = $stmt->fetchAll();
+} catch (PDOException $e) {
+    $processing_apps = [];
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -63,14 +72,21 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admission') {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>#APP-2024-003</td>
-                            <td>Michael Brown</td>
-                            <td>BS Accounting</td>
-                            <td><span style="background: #e0f2fe; color: #0284c7; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem;">Under Review</span></td>
-                            <!-- Updated Button -->
-                            <td><button onclick="openViewModal('Michael Brown', '#APP-2024-003', 'BS Accounting', 'Under Review', 'Mark Evaluated')" style="border: none; background: #1648bc; color: white; padding: 6px 12px; border-radius: 6px; cursor: pointer;">Review</button></td>
-                        </tr>
+                        <?php if (empty($processing_apps)): ?>
+                            <tr>
+                                <td colspan="5" style="text-align: center; padding: 40px; color: #94a3b8;">No applications currently for evaluation.</td>
+                            </tr>
+                        <?php else: ?>
+                            <?php foreach ($processing_apps as $app): ?>
+                                <tr>
+                                    <td><?php echo htmlspecialchars($app->application_no); ?></td>
+                                    <td><?php echo htmlspecialchars($app->first_name . ' ' . $app->last_name); ?></td>
+                                    <td><?php echo htmlspecialchars($app->preferred_course_1); ?></td>
+                                    <td><span style="background: #e0f2fe; color: #0284c7; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem;">Under Review</span></td>
+                                    <td><button onclick="window.location.href='Evaluation.php'" style="border: none; background: #1648bc; color: white; padding: 6px 12px; border-radius: 6px; cursor: pointer;">Evaluate</button></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
                     </tbody>
                 </table>
             </div>

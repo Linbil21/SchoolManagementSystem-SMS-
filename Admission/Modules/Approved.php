@@ -4,6 +4,15 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admission') {
     header("Location: ../../auth/Login.php");
     exit();
 }
+require_once '../../Database/config.php';
+
+try {
+    $stmt = $pdo->prepare("SELECT * FROM admission_applications WHERE status = 'Approved' ORDER BY submission_date DESC");
+    $stmt->execute();
+    $approved_apps = $stmt->fetchAll();
+} catch (PDOException $e) {
+    $approved_apps = [];
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -106,13 +115,21 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admission') {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>#APP-2024-001</td>
-                            <td>Alice Johnson</td>
-                            <td>BS Information Technology</td>
-                            <td>2024-01-15</td>
-                            <td><span style="background: #dcfce7; color: #16a34a; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem;">Approved</span></td>
-                        </tr>
+                        <?php if (empty($approved_apps)): ?>
+                            <tr>
+                                <td colspan="5" style="text-align: center; padding: 40px; color: #94a3b8;">No approved applications found.</td>
+                            </tr>
+                        <?php else: ?>
+                            <?php foreach ($approved_apps as $app): ?>
+                                <tr>
+                                    <td><?php echo htmlspecialchars($app->application_no); ?></td>
+                                    <td><?php echo htmlspecialchars($app->first_name . ' ' . $app->last_name); ?></td>
+                                    <td><?php echo htmlspecialchars($app->preferred_course_1); ?></td>
+                                    <td><?php echo date('Y-m-d', strtotime($app->submission_date)); ?></td>
+                                    <td><span style="background: #dcfce7; color: #16a34a; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem;">Approved</span></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
                     </tbody>
                 </table>
             </div>
