@@ -3,7 +3,7 @@
  * COMPREHENSIVE DUMMY DATA INJECTION
  * Target: Students, Enrollments, Payments
  */
-require_once 'Database/config.php';
+require_once '../Database/config.php';
 
 try {
     $pdo->beginTransaction();
@@ -61,7 +61,7 @@ try {
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         
         $params = [
-            $ref, 'Freshman', $courses[array_rand($courses)], 'First Year', $n[0], $n[1], 'N/A', '2005-01-01', '09123456789', $email, 'Sample Address', 'uploads/id/default.png', 'Guardian', 'Last', 'g@test.com', '0999', 'Parent', 'Addr', 'Pri', '2017', 'Sec', '2023', 'Enrolled', $tuition, $misc, $lab, $total, $total
+            $ref, 'Freshman', $courses[array_rand($courses)], 'First Year', $n[0], $n[1], 'N/A', '2005-01-01', '09123456789', $email, 'Sample Address', 'Assets/image/uploads/students/default.png', 'Guardian', 'Last', 'g@test.com', '0999', 'Parent', 'Addr', 'Pri', '2017', 'Sec', '2023', 'Enrolled', $tuition, $misc, $lab, $total, $total
         ];
         $stmt->execute($params);
         
@@ -80,7 +80,7 @@ try {
         if ($i % 3 == 0) {
             $amt2 = rand(2000, 5000);
             $stmt = $pdo->prepare("INSERT INTO payments (enrollment_id, amount, payment_method, status, transaction_id, proof_of_payment, created_at, description) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-            $stmt->execute([$enrollment_id, $amt2, 'E-Wallet (GCash/Maya)', 'Pending', "TXN-" . rand(100000, 999999), "uploads/receipts/dummy_receipt.png", date('Y-m-d H:i:s'), 'Monthly Installment']);
+            $stmt->execute([$enrollment_id, $amt2, 'E-Wallet (GCash/Maya)', 'Pending', "TXN-" . rand(100000, 999999), "Assets/image/uploads/payments/dummy_receipt.png", date('Y-m-d H:i:s'), 'Monthly Installment']);
         }
 
         // Scenario C: Refund Requested
