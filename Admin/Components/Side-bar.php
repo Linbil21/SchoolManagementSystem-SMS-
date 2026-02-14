@@ -4,7 +4,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
 // Robust absolute-relative path logic
 $script_name = $_SERVER['SCRIPT_NAME'];
-$check_paths = ['/Super-admin/', '/modules/', '/Admin/', '/submodules/', '/Cashier/', '/Admission/', '/auth/', '/student/'];
+$check_paths = ['/Super-admin/', '/Admin/', '/Cashier/', '/Admission/', '/auth/', '/student/', '/modules/', '/submodules/'];
 $project_base = '';
 foreach ($check_paths as $path) {
     if (($pos = stripos($script_name, $path)) !== false) {
