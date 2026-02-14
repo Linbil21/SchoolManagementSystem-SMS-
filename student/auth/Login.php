@@ -403,6 +403,12 @@ $csrf_token = generateCsrfToken();
                     <a href="forgot_password.php">Forgot password?</a>
                     <a href="../../auth/Login.php?action=register">New? Enroll here</a>
                 </div>
+
+                <div style="margin-top: 25px; text-align: center; border-top: 1px solid #f1f5f9; padding-top: 20px;">
+                    <p style="font-size: 0.85rem; color: #64748b; font-weight: 600;">
+                        Need help? <a href="javascript:void(0)" id="contactSupport" style="color: var(--primary); text-decoration: none; font-weight: 800; margin-left: 5px;">Contact support</a>
+                    </p>
+                </div>
             </form>
         </div>
         <p class="footer-copyright">© 2026 SMS Student Portal. Powered by SMS Intelligence.</p>
@@ -585,6 +591,54 @@ $csrf_token = generateCsrfToken();
             password.setAttribute("type", type);
             this.classList.toggle("fa-eye");
             this.classList.toggle("fa-eye-slash");
+        });
+
+        // Support Modal Handler
+        document.getElementById('contactSupport')?.addEventListener('click', function() {
+            Swal.fire({
+                title: 'System Support',
+                html: `
+                    <div style="text-align: left; padding: 10px;">
+                        <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 20px;">
+                            If you are experiencing issues with your account or the enrollment process, please contact the <b>Administrative Office</b>:
+                        </p>
+                        <div style="display: flex; flex-direction: column; gap: 15px;">
+                            <div style="display: flex; align-items: center; gap: 12px; background: #f8fafc; padding: 12px; border-radius: 12px;">
+                                <div style="width: 40px; height: 40px; background: #dbeafe; color: #1e40af; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fas fa-envelope"></i>
+                                </div>
+                                <div>
+                                    <p style="font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; font-weight: 800; margin: 0;">Email Support</p>
+                                    <p style="font-size: 0.9rem; color: #1e293b; font-weight: 700; margin: 0;">admin@jampzdev.com</p>
+                                </div>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 12px; background: #f8fafc; padding: 12px; border-radius: 12px;">
+                                <div style="width: 40px; height: 40px; background: #fcf6e5; color: #da9100; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fas fa-phone"></i>
+                                </div>
+                                <div>
+                                    <p style="font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; font-weight: 800; margin: 0;">Hotline</p>
+                                    <p style="font-size: 0.9rem; color: #1e293b; font-weight: 700; margin: 0;">+63 912 345 6789</p>
+                                </div>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 12px; background: #f8fafc; padding: 12px; border-radius: 12px;">
+                                <div style="width: 40px; height: 40px; background: #ecfdf5; color: #059669; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fas fa-building-columns"></i>
+                                </div>
+                                <div>
+                                    <p style="font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; font-weight: 800; margin: 0;">Office Hours</p>
+                                    <p style="font-size: 0.9rem; color: #1e293b; font-weight: 700; margin: 0;">Mon - Fri, 8:00 AM - 5:00 PM</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `,
+                showConfirmButton: true,
+                confirmButtonText: 'Got it',
+                confirmButtonColor: '#1e40af',
+                width: '420px',
+                padding: '2em'
+            });
         });
     </script>
 </body>
