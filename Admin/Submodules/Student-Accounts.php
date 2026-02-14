@@ -28,6 +28,39 @@ try {
         ORDER BY s.created_at DESC
     ");
     $students = $stmt->fetchAll();
+
+    // DUMMY DATA FOR STUDENTS
+    if (empty($students)) {
+        $s1 = new stdClass();
+        $s1->student_id = '2024-0001';
+        $s1->first_name = 'Juan';
+        $s1->last_name = 'Dela Cruz';
+        $s1->email = 'juan.delacruz@example.com';
+        $s1->contact_number = '09123456789';
+        $s1->address = '123 Rizal St, Manila';
+        $s1->profile_image = '';
+        $s1->year_level = '1st Year';
+        $s1->created_at = date('Y-m-d H:i:s');
+        $s1->course_code = 'BSIT';
+        $s1->course_name = 'Bachelor of Science in Information Technology';
+        $s1->account_status = 'Active';
+
+        $s2 = new stdClass();
+        $s2->student_id = '2024-0002';
+        $s2->first_name = 'Maria';
+        $s2->last_name = 'Santos';
+        $s2->email = 'maria.santos@example.com';
+        $s2->contact_number = '09223334444';
+        $s2->address = '456 Mabini St, Quezon City';
+        $s2->profile_image = '';
+        $s2->year_level = '2nd Year';
+        $s2->created_at = date('Y-m-d H:i:s', strtotime('-1 day'));
+        $s2->course_code = 'BSBA';
+        $s2->course_name = 'Bachelor of Science in Business Administration';
+        $s2->account_status = 'Active';
+
+        $students = [$s1, $s2];
+    }
 } catch (PDOException $e) { 
     $students = []; 
 }
