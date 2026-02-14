@@ -4,6 +4,15 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admission') {
     header("Location: ../../auth/Login.php");
     exit();
 }
+require_once '../../Database/config.php';
+
+try {
+    $stmt = $pdo->prepare("SELECT * FROM admission_applications WHERE status = 'Archived' ORDER BY submission_date DESC");
+    $stmt->execute();
+    $archived_apps = $stmt->fetchAll();
+} catch (PDOException $e) {
+    $archived_apps = [];
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -47,13 +56,21 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admission') {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>#APP-2023-099</td>
-                            <td>Old Student</td>
-                            <td>BSCS</td>
-                            <td>2023-12-01</td>
-                            <td><button onclick="handleSimpleAction('Restore Application')" style="border: none; background: #64748b; color: white; padding: 6px 12px; border-radius: 6px; cursor: pointer;">Restore</button></td>
-                        </tr>
+                        <?php if (empty($archived_apps)): ?>
+                            <tr>
+                                <td colspan="5" style="text-align: center; padding: 40px; color: #94a3b8;">No archived applications.</td>
+                            </tr>
+                        <?php else: ?>
+                            <?php foreach ($archived_apps as $app): ?>
+                                <tr>
+                                    <td><?php echo htmlspecialchars($app->application_no); ?></td>
+                                    <td><?php echo htmlspecialchars($app->first_name . ' ' . $app->last_name); ?></td>
+                                    <td><?php echo htmlspecialchars($app->preferred_course_1); ?></td>
+                                    <td><?php echo date('Y-m-d', strtotime($app->submission_date)); ?></td>
+                                    <td><button onclick="handleRestore('<?php echo $app->applicationId; ?>')" style="border: none; background: #64748b; color: white; padding: 6px 12px; border-radius: 6px; cursor: pointer;">Restore</button></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
                     </tbody>
                 </table>
             </div>

@@ -4,6 +4,15 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admission') {
     header("Location: ../../auth/Login.php");
     exit();
 }
+require_once '../../Database/config.php';
+
+try {
+    $stmt = $pdo->prepare("SELECT * FROM admission_applications WHERE status = 'Rejected' ORDER BY submission_date DESC");
+    $stmt->execute();
+    $rejected_apps = $stmt->fetchAll();
+} catch (PDOException $e) {
+    $rejected_apps = [];
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -99,13 +108,21 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admission') {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>#APP-2024-00x</td>
-                            <td>Mark Davis</td>
-                            <td>BSBA</td>
-                            <td>2024-01-12</td>
-                            <td>Incomplete Documents</td>
-                        </tr>
+                        <?php if (empty($rejected_apps)): ?>
+                            <tr>
+                                <td colspan="5" style="text-align: center; padding: 40px; color: #94a3b8;">No rejected applications.</td>
+                            </tr>
+                        <?php else: ?>
+                            <?php foreach ($rejected_apps as $app): ?>
+                                <tr>
+                                    <td><?php echo htmlspecialchars($app->application_no); ?></td>
+                                    <td><?php echo htmlspecialchars($app->first_name . ' ' . $app->last_name); ?></td>
+                                    <td><?php echo htmlspecialchars($app->preferred_course_1); ?></td>
+                                    <td><?php echo date('Y-m-d', strtotime($app->submission_date)); ?></td>
+                                    <td>Incomplete Documents</td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
                     </tbody>
                 </table>
             </div>

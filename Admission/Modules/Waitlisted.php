@@ -1,5 +1,18 @@
 <?php
-// ... header ...
+session_start();
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admission') {
+    header("Location: ../../auth/Login.php");
+    exit();
+}
+require_once '../../Database/config.php';
+
+try {
+    $stmt = $pdo->prepare("SELECT * FROM admission_applications WHERE status = 'Waitlisted' ORDER BY submission_date DESC");
+    $stmt->execute();
+    $waitlisted_apps = $stmt->fetchAll();
+} catch (PDOException $e) {
+    $waitlisted_apps = [];
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -44,13 +57,21 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>High</td>
-                            <td>Ron Weasley</td>
-                            <td>BSBA</td>
-                            <td>2 Days</td>
-                            <td><button onclick="handleSimpleAction('Admit Student')" style="border: none; background: #1648bc; color: white; padding: 6px 12px; border-radius: 6px; cursor: pointer;">Admit</button></td>
-                        </tr>
+                        <?php if (empty($waitlisted_apps)): ?>
+                            <tr>
+                                <td colspan="5" style="text-align: center; padding: 40px; color: #94a3b8;">No waitlisted applications.</td>
+                            </tr>
+                        <?php else: ?>
+                            <?php foreach ($waitlisted_apps as $app): ?>
+                                <tr>
+                                    <td>Medium</td>
+                                    <td><?php echo htmlspecialchars($app->first_name . ' ' . $app->last_name); ?></td>
+                                    <td><?php echo htmlspecialchars($app->preferred_course_1); ?></td>
+                                    <td>1 Day</td>
+                                    <td><button onclick="window.location.href='Evaluation.php'" style="border: none; background: #1648bc; color: white; padding: 6px 12px; border-radius: 6px; cursor: pointer;">Review</button></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
                     </tbody>
                 </table>
             </div>
