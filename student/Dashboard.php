@@ -545,7 +545,7 @@ if ($current_day !== 'Sunday') {
 </div> <!-- Close Main Wrapper -->
 
     <!-- Schedule Modal -->
-    <div id="scheduleModal" class="modal-overlay">
+    <div id="scheduleModal" class="modal-overlay" style="display: none;">
         <div class="modal-content">
             <div class="modal-icon">
                 <i class="fas fa-calendar-alt"></i>

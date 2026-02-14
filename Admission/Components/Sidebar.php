@@ -514,7 +514,7 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admission@sms.com';
 </script>
 
 <!-- Logout Confirmation Modal -->
-<div id="logoutModal" class="logout-modal-overlay">
+<div id="logoutModal" class="logout-modal-overlay" style="display: none;">
     <div class="logout-modal-content">
         <div class="logout-modal-icon">
             <i class="fas fa-sign-out-alt"></i>

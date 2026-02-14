@@ -424,7 +424,7 @@ $root = $project_base . '/';
 </script>
 
 <!-- Logout Modal -->
-<div id="logoutModal" class="logout-modal-overlay">
+<div id="logoutModal" class="logout-modal-overlay" style="display: none;">
     <div class="logout-modal-content">
         <div class="logout-modal-icon">
             <i class="fas fa-sign-out-alt"></i>
