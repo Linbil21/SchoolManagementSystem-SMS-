@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../../Database/config.php';
+require_once '../../../Database/config.php';
 
 $message = '';
 $status = '';
