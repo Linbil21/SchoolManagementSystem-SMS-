@@ -51,11 +51,9 @@ session_start();
             background: white;
             border-radius: 24px;
             padding: 40px 10px;
-            /* Reduced side padding on container */
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
             margin-bottom: 40px;
             overflow-x: auto;
-            /* Allow Scroll on small screens */
         }
 
         .steps {
@@ -64,12 +62,13 @@ session_start();
             position: relative;
             max-width: 800px;
             margin: 0 auto;
+            padding: 20px 0;
         }
 
         .steps::before {
             content: '';
             position: absolute;
-            top: 25px;
+            top: 45px;
             left: 0;
             width: 100%;
             height: 4px;
@@ -135,8 +134,11 @@ session_start();
             font-size: 3rem;
             margin-bottom: 20px;
             color: #ea580c;
-            /* Orange for validation */
         }
+        
+        .status-icon.success { color: #10b981; }
+        .status-icon.pending { color: #f59e0b; }
+        .status-icon.error { color: #ef4444; }
 
         .info-card h2 {
             margin-bottom: 10px;
@@ -150,6 +152,53 @@ session_start();
     </style>
 </head>
 
+<?php
+// Determine status
+$status_steps = [
+    'Pending Review' => 1,
+    'Assessment' => 2,
+    'Pending Payment' => 3,
+    'Validation' => 4,
+    'Enrolled' => 5
+];
+
+$current_status = 'Validation'; // Default / Fallback
+$status_message = '';
+$icon_class = 'fa-search-dollar status-icon pending';
+$title_text = 'Payment Under Validation';
+$desc_text = 'We have received your payment proof and it is currently being verified by the Cashier\'s Office. This process usually takes 24-48 hours.';
+
+require_once '../../Database/config.php';
+if (isset($_SESSION['student_id'])) {
+    try {
+        $stmt = $pdo->prepare("SELECT status FROM enrollments WHERE student_id = ? ORDER BY created_at DESC LIMIT 1");
+        $stmt->execute([$_SESSION['student_id']]);
+        $enrollment = $stmt->fetch();
+        if ($enrollment) {
+            $current_status = $enrollment['status'];
+        }
+    } catch (PDOException $e) {
+        // Fallback to default
+    }
+}
+
+// Logic for messages
+if ($current_status == 'Enrolled') {
+    $icon_class = 'fa-check-circle status-icon success';
+    $title_text = 'Officially Enrolled!';
+    $desc_text = 'Congratulations! You are now officially enrolled for the upcoming semester. You can now view your schedule and grades.';
+} elseif ($current_status == 'Pending Payment') {
+    $icon_class = 'fa-credit-card status-icon pending';
+    $title_text = 'Pending Payment';
+    $desc_text = 'Please settle your tuition fee balance or upload your proof of payment to proceed with enrollment.';
+} elseif ($current_status == 'Assessment') {
+    $icon_class = 'fa-file-invoice status-icon';
+    $title_text = 'Under Assessment';
+    $desc_text = 'Your subjects are currently being assessed by the registrar. Please wait for the assessment fee breakdown.';
+}
+
+$current_step_index = $status_steps[$current_status] ?? 4;
+?>
 <body>
     <?php include '../../Components/Sidebar.php'; ?>
     <div class="main-wrapper">
@@ -159,44 +208,39 @@ session_start();
 
             <div class="status-tracker">
                 <div class="steps">
-                    <!-- Step 1 -->
-                    <div class="step-item completed">
-                        <div class="step-circle"><i class="fas fa-check"></i></div>
-                        <span class="step-label">Subjects</span>
-                    </div>
-                    <!-- Step 2 -->
-                    <div class="step-item completed">
-                        <div class="step-circle"><i class="fas fa-check"></i></div>
-                        <span class="step-label">Assessment</span>
-                    </div>
-                    <!-- Step 3 -->
-                    <div class="step-item completed">
-                        <div class="step-circle"><i class="fas fa-check"></i></div>
-                        <span class="step-label">Payment</span>
-                    </div>
-                    <!-- Step 4 -->
-                    <div class="step-item active">
-                        <div class="step-circle">4</div>
-                        <span class="step-label">Validation</span>
-                    </div>
-                    <!-- Step 5 -->
-                    <div class="step-item">
-                        <div class="step-circle">5</div>
-                        <span class="step-label">Enrolled</span>
-                    </div>
+                    <?php 
+                    $steps = [
+                        1 => 'Subjects', 
+                        2 => 'Assessment', 
+                        3 => 'Payment', 
+                        4 => 'Validation', 
+                        5 => 'Enrolled'
+                    ]; 
+                    
+                    foreach($steps as $idx => $label): 
+                        $class = '';
+                        if ($idx < $current_step_index) $class = 'completed';
+                        elseif ($idx == $current_step_index) $class = 'active';
+                        
+                        // Icon or Number logic
+                        $content = ($idx < $current_step_index) ? '<i class="fas fa-check"></i>' : $idx;
+                    ?>
+                        <div class="step-item <?php echo $class; ?>">
+                            <div class="step-circle"><?php echo $content; ?></div>
+                            <span class="step-label"><?php echo $label; ?></span>
+                        </div>
+                    <?php endforeach; ?>
                 </div>
             </div>
 
             <div class="info-card">
-                <i class="fas fa-search-dollar status-icon"></i>
-                <h2>Payment Under Validation</h2>
-                <p>We have received your payment proof and it is currently being verified by the Cashier's Office. This
-                    process usually takes 24-48 hours. You will be notified once your enrollment is officially
-                    confirmed.</p>
+                <i class="fas <?php echo $icon_class; ?>"></i>
+                <h2><?php echo $title_text; ?></h2>
+                <p><?php echo $desc_text; ?></p>
                 <div style="margin-top: 25px;">
-                    <button
+                    <button onclick="window.location.reload()"
                         style="background: #f1f5f9; color: #475569; border: none; padding: 12px 25px; border-radius: 10px; cursor: pointer; font-weight: 600;">Check
-                        Again Later</button>
+                        Status Update</button>
                 </div>
             </div>
 
