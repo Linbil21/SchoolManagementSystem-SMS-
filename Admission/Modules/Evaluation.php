@@ -36,36 +36,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                         ->execute([$student_id, $app->first_name, $app->last_name, $app->email, $app->preferred_course_1, 'student123']);
                 }
 
-                // 3. Create Enrollment & Assign Default Fees
-                $ref_code = "ENR-" . date('Y') . "-" . strtoupper(substr(md5(uniqid()), 0, 6));
-                
-                // Check if tuition_fee column exists (it might have been added by Cashier module lazy migration)
-                try {
-                    $pdo->exec("ALTER TABLE enrollments ADD COLUMN IF NOT EXISTS tuition_fee DECIMAL(10,2) DEFAULT 0.00");
-                    $pdo->exec("ALTER TABLE enrollments ADD COLUMN IF NOT EXISTS misc_fee DECIMAL(10,2) DEFAULT 0.00");
-                    $pdo->exec("ALTER TABLE enrollments ADD COLUMN IF NOT EXISTS total_fee DECIMAL(10,2) DEFAULT 0.00");
-                    $pdo->exec("ALTER TABLE enrollments ADD COLUMN IF NOT EXISTS balance DECIMAL(10,2) DEFAULT 0.00");
-                } catch (Exception $e) {}
-
+                // 3. Create or Update Enrollment & Assign Default Fees
                 $tuition = 15000.00;
                 $misc = 2500.00;
                 $total = $tuition + $misc;
 
-                $sql = "INSERT INTO enrollments (reference_code, admission_type, first_name, last_name, email, year_level, status, tuition_fee, misc_fee, total_fee, balance) 
-                        VALUES (?, ?, ?, ?, ?, 'First Year', 'Enrolled', ?, ?, ?, ?)";
-                $pdo->prepare($sql)->execute([
-                    $ref_code, 
-                    $app->student_type, 
-                    $app->first_name, 
-                    $app->last_name, 
-                    $app->email,
-                    $tuition,
-                    $misc,
-                    $total,
-                    $total
-                ]);
+                // Check if already enrolled to avoid duplicate email error
+                $stmt = $pdo->prepare("SELECT enrollmentId FROM enrollments WHERE email = ?");
+                $stmt->execute([$app->email]);
+                $existing_enr = $stmt->fetch();
 
-                $message = "Application #{$app->application_no} approved. Student record created and Tuition Fees (₱" . number_format($total, 2) . ") assigned automatically.";
+                if ($existing_enr) {
+                    // Update existing
+                    $sql = "UPDATE enrollments SET 
+                            tuition_fee = ?, 
+                            misc_fee = ?, 
+                            total_fee = ?, 
+                            balance = ?,
+                            status = 'Enrolled'
+                            WHERE enrollmentId = ?";
+                    $pdo->prepare($sql)->execute([$tuition, $misc, $total, $total, $existing_enr->enrollmentId]);
+                    $message = "Application #{$app->application_no} approved. Assessment updated for existing record.";
+                } else {
+                    // Insert new
+                    $ref_code = "ENR-" . date('Y') . "-" . strtoupper(substr(md5(uniqid()), 0, 6));
+                    $sql = "INSERT INTO enrollments (reference_code, admission_type, first_name, last_name, email, year_level, status, tuition_fee, misc_fee, total_fee, balance) 
+                            VALUES (?, ?, ?, ?, ?, 'First Year', 'Enrolled', ?, ?, ?, ?)";
+                    $pdo->prepare($sql)->execute([
+                        $ref_code, 
+                        $app->student_type, 
+                        $app->first_name, 
+                        $app->last_name, 
+                        $app->email,
+                        $tuition,
+                        $misc,
+                        $total,
+                        $total
+                    ]);
+                    $message = "Application #{$app->application_no} approved. Student record created and Tuition Fees assigned.";
+                }
             }
         } else {
             $pdo->prepare("UPDATE admission_applications SET status = ? WHERE applicationId = ?")
