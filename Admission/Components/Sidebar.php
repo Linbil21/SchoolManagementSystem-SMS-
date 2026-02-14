@@ -91,7 +91,7 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admission@sms.com';
             </li>
 
             <!-- Student Management -->
-            <li class="has-dropdown <?php echo (in_array($current_page, ['Generate-ID.php', 'ID-Verification.php', 'Print-Export-ID.php', 'Lost-Replacement-IDs.php', 'Student-Grades.php', 'Student-Attendance.php'])) ? 'active open' : ''; ?>">
+            <li class="has-dropdown <?php echo (in_array($current_page, ['Generate-ID.php', 'ID-Verification.php', 'Print-Export-ID.php', 'Lost-Replacement-IDs.php', 'Student-Requirements.php', 'Student-Grades.php', 'Student-Attendance.php'])) ? 'active open' : ''; ?>">
                 <a href="javascript:void(0)" class="dropdown-toggle">
                     <div class="icon-box">
                         <i class="fas fa-id-card"></i>
@@ -104,6 +104,7 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admission@sms.com';
                     <li class="<?php echo ($current_page == 'ID-Verification.php') ? 'active' : ''; ?>"><a href="<?php echo $root; ?>Admission/Modules/ID-Verification.php">ID Verification</a></li>
                     <li class="<?php echo ($current_page == 'Print-Export-ID.php') ? 'active' : ''; ?>"><a href="<?php echo $root; ?>Admission/Modules/Print-Export-ID.php">Print / Export ID</a></li>
                     <li class="<?php echo ($current_page == 'Lost-Replacement-IDs.php') ? 'active' : ''; ?>"><a href="<?php echo $root; ?>Admission/Modules/Lost-Replacement-IDs.php">Lost / Replacement IDs</a></li>
+                    <li class="<?php echo ($current_page == 'Student-Requirements.php') ? 'active' : ''; ?>"><a href="<?php echo $root; ?>Admission/Modules/Student-Requirements.php">Requirements</a></li>
                     <li class="<?php echo ($current_page == 'Student-Grades.php') ? 'active' : ''; ?>"><a href="<?php echo $root; ?>Admission/Modules/Student-Grades.php">My Grades</a></li>
                     <li class="<?php echo ($current_page == 'Student-Attendance.php') ? 'active' : ''; ?>"><a href="<?php echo $root; ?>Admission/Modules/Student-Attendance.php">Attendance</a></li>
                     <li class="<?php echo ($current_page == 'Teacher-Management.php') ? 'active' : ''; ?>"><a href="<?php echo $root; ?>Admission/Modules/Teacher-Management.php"><i class="fas fa-chalkboard-teacher" style="font-size: 0.75rem; color: #3b82f6;"></i> Teacher Management</a></li>

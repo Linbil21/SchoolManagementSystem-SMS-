@@ -21,7 +21,7 @@ function isDropdownOpen($searchStrings)
 
 // Robust absolute-relative path logic
 $script_name = $_SERVER['SCRIPT_NAME'];
-$check_paths = ['/Super-admin/', '/Admin/', '/Cashier/', '/Admission/', '/auth/', '/student/', '/modules/'];
+$check_paths = ['/student/', '/Super-admin/', '/Admin/', '/Cashier/', '/Admission/', '/auth/', '/modules/'];
 $project_base = '';
 foreach ($check_paths as $path) {
     if (($pos = stripos($script_name, $path)) !== false) {
