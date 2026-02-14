@@ -18,6 +18,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $course2 = $_POST['course2'];
         $last_school = $_POST['last_school'];
         
+        // Basic Validation
+        if (!preg_match('/^[0-9]{11}$/', $phone)) {
+            throw new Exception("Phone number must be exactly 11 digits.");
+        }
+        
         // Generate Application Number
         $year = date('Y');
         $stmt = $pdo->query("SELECT MAX(applicationId) FROM admission_applications");
@@ -32,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         header("Location: Result.php?status=success&app_no=" . urlencode($app_no));
         exit();
-    } catch (PDOException $e) {
+    } catch (Exception $e) {
         $message = "Error: " . $e->getMessage();
         $status = "error";
     }
@@ -229,7 +234,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         </div>
                         <div class="form-group">
                             <label class="form-label">Phone Number</label>
-                            <input type="tel" name="phone" class="form-input" placeholder="e.g. 09123456789" required>
+                            <input type="tel" name="phone" id="phoneInput" class="form-input" placeholder="e.g. 09123456789" 
+                                pattern="[0-9]{11}" maxlength="11" minlength="11" 
+                                oninput="this.value = this.value.replace(/[^0-9]/g, '');" required>
                         </div>
                     </div>
                 </div>
@@ -281,6 +288,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </form>
         </div>
     </div>
+    <script>
+        document.getElementById('phoneInput').addEventListener('keypress', function(e) {
+            if (e.which < 48 || e.which > 57) {
+                e.preventDefault();
+            }
+        });
+    </script>
 </body>
 
 </html>
