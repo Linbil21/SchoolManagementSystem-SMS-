@@ -20,6 +20,25 @@ try {
     // Recent Payments for Report Table
     $stmt = $pdo->query("SELECT p.*, e.first_name, e.last_name FROM payments p JOIN enrollments e ON p.enrollment_id = e.enrollmentId ORDER BY p.created_at DESC LIMIT 10");
     $recent_reports = $stmt->fetchAll();
+
+    // DUMMY DATA FOR REPORTS
+    if (empty($recent_reports)) {
+        $rep1 = new stdClass();
+        $rep1->transaction_id = 'TRX-998877';
+        $rep1->first_name = 'Juan';
+        $rep1->last_name = 'Dela Cruz';
+        $rep1->amount = 5000.00;
+        $rep1->created_at = date('Y-m-d H:i:s');
+
+        $rep2 = new stdClass();
+        $rep2->transaction_id = 'TRX-112233';
+        $rep2->first_name = 'Maria';
+        $rep2->last_name = 'Santos';
+        $rep2->amount = 2500.00;
+        $rep2->created_at = date('Y-m-d H:i:s', strtotime('-1 day'));
+
+        $recent_reports = [$rep1, $rep2];
+    }
 } catch (PDOException $e) {
     $stats = ['total_enroll_req' => 0, 'enrolled' => 0, 'pending' => 0, 'rejected' => 0, 'total_revenue' => 0];
     $recent_reports = [];

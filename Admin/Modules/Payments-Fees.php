@@ -9,8 +9,34 @@ if (!isset($_SESSION['role']) || ($_SESSION['role'] !== 'admin' && $_SESSION['ro
 
 // Fetch Payments
 try {
-    $stmt = $pdo->query("SELECT p.*, e.first_name, e.last_name, e.reference_code, e.email as student_email FROM payments p JOIN enrollments e ON p.enrollment_id = e.enrollmentId ORDER BY p.created_at DESC");
     $payments = $stmt->fetchAll();
+
+    // DUMMY DATA FOR PAYMENTS
+    if (empty($payments)) {
+        $pay1 = new stdClass();
+        $pay1->paymentId = 9991;
+        $pay1->transaction_id = 'TRX-998877';
+        $pay1->first_name = 'Juan';
+        $pay1->last_name = 'Dela Cruz';
+        $pay1->amount = 5000.00;
+        $pay1->payment_method = 'GCash';
+        $pay1->status = 'Pending';
+        $pay1->created_at = date('Y-m-d H:i:s');
+        $pay1->proof_of_payment = '';
+
+        $pay2 = new stdClass();
+        $pay2->paymentId = 9992;
+        $pay2->transaction_id = 'TRX-112233';
+        $pay2->first_name = 'Maria';
+        $pay2->last_name = 'Santos';
+        $pay2->amount = 2500.00;
+        $pay2->payment_method = 'Bank Transfer';
+        $pay2->status = 'Completed';
+        $pay2->created_at = date('Y-m-d H:i:s', strtotime('-1 day'));
+        $pay2->proof_of_payment = '';
+
+        $payments = [$pay1, $pay2];
+    }
 } catch (PDOException $e) {
     $payments = [];
 }

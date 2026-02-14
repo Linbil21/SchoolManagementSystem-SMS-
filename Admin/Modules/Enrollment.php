@@ -89,6 +89,71 @@ $role = $_SESSION['role'];
 try {
     $stmt = $pdo->query("SELECT e.*, c.course_name FROM enrollments e LEFT JOIN courses c ON e.course_id = c.courseId ORDER BY e.created_at DESC");
     $enrollments = $stmt->fetchAll();
+
+    // DUMMY DATA INJECTION IF EMPTY
+    if (empty($enrollments)) {
+        $dummy1 = new stdClass();
+        $dummy1->enrollmentId = 9991;
+        $dummy1->reference_code = 'REF-2024-001';
+        $dummy1->first_name = 'Juan';
+        $dummy1->middle_name = 'A.';
+        $dummy1->last_name = 'Dela Cruz';
+        $dummy1->status = 'Pending Payment';
+        $dummy1->email = 'juan.delacruz@example.com';
+        $dummy1->contact_number = '09123456789';
+        $dummy1->admission_type = 'New Student';
+        $dummy1->course_name = 'BS Computer Science';
+        $dummy1->year_level = '1st Year';
+        $dummy1->gender = 'Male';
+        $dummy1->birthdate = '2005-05-15';
+        $dummy1->address = '123 Rizal St, Manila';
+        $dummy1->guardian_first = 'Maria';
+        $dummy1->guardian_last = 'Dela Cruz';
+        $dummy1->relationship = 'Mother';
+        $dummy1->guardian_contact = '09987654321';
+        $dummy1->primary_school = 'Manila Elementary';
+        $dummy1->primary_year = '2017';
+        $dummy1->secondary_school = 'Manila High School';
+        $dummy1->secondary_year = '2023';
+        $dummy1->id_picture = ''; 
+        $dummy1->birth_cert = '';
+        $dummy1->form_138 = '';
+        $dummy1->form_137 = '';
+        $dummy1->good_moral = '';
+        $dummy1->barangay_clearance = '';
+
+        $dummy2 = new stdClass();
+        $dummy2->enrollmentId = 9992;
+        $dummy2->reference_code = 'REF-2024-002';
+        $dummy2->first_name = 'Maria';
+        $dummy2->middle_name = 'B.';
+        $dummy2->last_name = 'Santos';
+        $dummy2->status = 'Enrolled';
+        $dummy2->email = 'maria.santos@example.com';
+        $dummy2->contact_number = '09223334444';
+        $dummy2->admission_type = 'Transferee';
+        $dummy2->course_name = 'BS Accountancy';
+        $dummy2->year_level = '2nd Year';
+        $dummy2->gender = 'Female';
+        $dummy2->birthdate = '2004-08-20';
+        $dummy2->address = '456 Mabini St, Quezon City';
+        $dummy2->guardian_first = 'Pedro';
+        $dummy2->guardian_last = 'Santos';
+        $dummy2->relationship = 'Father';
+        $dummy2->guardian_contact = '09112223333';
+        $dummy2->primary_school = 'QC Elementary';
+        $dummy2->primary_year = '2016';
+        $dummy2->secondary_school = 'QC Science High';
+        $dummy2->secondary_year = '2022';
+        $dummy2->id_picture = '';
+        $dummy2->birth_cert = '';
+        $dummy2->form_138 = '';
+        $dummy2->form_137 = '';
+        $dummy2->good_moral = '';
+        $dummy2->barangay_clearance = '';
+
+        $enrollments = [$dummy1, $dummy2];
+    }
 } catch (PDOException $e) {
     die("Database error: " . $e->getMessage());
 }

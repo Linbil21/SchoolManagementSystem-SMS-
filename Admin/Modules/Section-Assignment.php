@@ -80,6 +80,35 @@ try {
 try {
     $stmt = $pdo->query("SELECT s.*, c.course_code FROM sections s LEFT JOIN courses c ON s.course_id = c.courseId ORDER BY s.section_name");
     $sections = $stmt->fetchAll();
+
+    // DUMMY DATA FOR SECTIONS
+    if (empty($sections)) {
+        $sec1 = new stdClass();
+        $sec1->sectionId = 9991;
+        $sec1->section_name = 'BSIT-1A';
+        $sec1->course_code = 'BSIT';
+        $sec1->year_level = '1st Year';
+        $sec1->capacity = 40;
+        $sec1->course_id = 1;
+
+        $sec2 = new stdClass();
+        $sec2->sectionId = 9992;
+        $sec2->section_name = 'BSIT-2A';
+        $sec2->course_code = 'BSIT';
+        $sec2->year_level = '2nd Year';
+        $sec2->capacity = 40;
+        $sec2->course_id = 1;
+
+        $sec3 = new stdClass();
+        $sec3->sectionId = 9993;
+        $sec3->section_name = 'BSBA-1A';
+        $sec3->course_code = 'BSBA';
+        $sec3->year_level = '1st Year';
+        $sec3->capacity = 35;
+        $sec3->course_id = 2;
+
+        $sections = [$sec1, $sec2, $sec3];
+    }
 } catch (PDOException $e) {
     $sections = [];
 }
