@@ -465,15 +465,36 @@ body {
 
 .notification .badge {
     position: absolute;
-    top: -5px;
-    right: -5px;
+    top: -6px;
+    right: -6px;
     background: #f43f5e;
     color: white;
-    font-size: 0.6rem;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
     font-weight: 800;
-    padding: 2px 5px;
-    border-radius: 10px;
+    border-radius: 9px;
     border: 2px solid var(--surface-color);
+    z-index: 10;
+    animation: pulse-red 2s infinite;
+}
+
+@keyframes pulse-red {
+    0% {
+        box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.7);
+    }
+
+    70% {
+        box-shadow: 0 0 0 6px rgba(244, 63, 94, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(244, 63, 94, 0);
+    }
 }
 
 /* Dropdown System */
@@ -576,12 +597,18 @@ body {
 .notif-profile-img {
     width: 48px;
     height: 48px;
-    border-radius: 12px;
+    border-radius: 50%;
     object-fit: cover;
     flex-shrink: 0;
     border: 2px solid var(--surface-color);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
     background: #f1f5f9;
+}
+
+.dropdown-item:hover .notif-profile-img {
+    transform: scale(1.05);
+    border-color: var(--accent-color);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
 }
 
 .notif-type-icon {
@@ -694,9 +721,9 @@ body {
 }
 
 .avatar-circle {
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
     background: linear-gradient(135deg, var(--accent-color) 0%, #4f46e5 100%);
     color: white;
     display: flex;

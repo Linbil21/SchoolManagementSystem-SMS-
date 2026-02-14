@@ -52,13 +52,13 @@ $root = $project_base . '/';
                 </a>
                 <ul class="sub-menu">
                     <li class="<?php echo ($current_page == 'User-Management.php') ? 'active' : ''; ?>">
-                        <a href="<?php echo $base; ?>modules/User-Management.php">
+                        <a href="<?php echo $base; ?>Modules/User-Management.php">
                             <i class="fas fa-users-cog"></i>
                             <span>Staff Accounts</span>
                         </a>
                     </li>
                     <li class="<?php echo ($current_page == 'Roles.php') ? 'active' : ''; ?>">
-                        <a href="<?php echo $base; ?>modules/Roles.php">
+                        <a href="<?php echo $base; ?>Modules/Roles.php">
                             <i class="fas fa-user-tag"></i>
                             <span>Roles & Permissions</span>
                         </a>
@@ -70,7 +70,7 @@ $root = $project_base . '/';
         <p class="menu-label">ADMISSION CONTROL</p>
         <ul class="main-menu">
             <!-- Admission Summary Dropdown -->
-            <li class="has-dropdown <?php echo (stripos($_SERVER['PHP_SELF'], '/submodules/') !== false && stripos($_SERVER['PHP_SELF'], 'Admission') !== false) ? 'active open' : ''; ?>">
+            <li class="has-dropdown <?php echo (stripos($_SERVER['PHP_SELF'], '/Submodules/') !== false && stripos($_SERVER['PHP_SELF'], 'Admission') !== false) ? 'active open' : ''; ?>">
                 <a href="javascript:void(0)" class="dropdown-toggle">
                     <i class="fas fa-user-graduate"></i>
                     <span>Admission Hub</span>
@@ -78,31 +78,31 @@ $root = $project_base . '/';
                 </a>
                 <ul class="sub-menu">
                     <li class="<?php echo ($current_page == 'Admission-Dashboard.php') ? 'active' : ''; ?>">
-                        <a href="<?php echo $base; ?>submodules/Admission-Dashboard.php">
+                        <a href="<?php echo $base; ?>Submodules/Admission-Dashboard.php">
                             <i class="fas fa-chart-line"></i>
                             <span>Admission Dashboard</span>
                         </a>
                     </li>
                     <li class="<?php echo ($current_page == 'Applications-Manager.php') ? 'active' : ''; ?>">
-                        <a href="<?php echo $base; ?>submodules/Applications-Manager.php">
+                        <a href="<?php echo $base; ?>Submodules/Applications-Manager.php">
                             <i class="fas fa-file-invoice"></i>
                             <span>Applications Manager</span>
                         </a>
                     </li>
                     <li class="<?php echo ($current_page == 'Evaluation-Desk.php') ? 'active' : ''; ?>">
-                        <a href="<?php echo $base; ?>submodules/Evaluation-Desk.php">
+                        <a href="<?php echo $base; ?>Submodules/Evaluation-Desk.php">
                             <i class="fas fa-clipboard-check"></i>
                             <span>Evaluation Desk</span>
                         </a>
                     </li>
                     <li class="<?php echo ($current_page == 'Student-ID-Center.php') ? 'active' : ''; ?>">
-                        <a href="<?php echo $base; ?>submodules/Student-ID-Center.php">
+                        <a href="<?php echo $base; ?>Submodules/Student-ID-Center.php">
                             <i class="fas fa-id-card"></i>
                             <span>Student ID Center</span>
                         </a>
                     </li>
                     <li class="<?php echo ($current_page == 'Requirements-Config.php') ? 'active' : ''; ?>">
-                        <a href="<?php echo $base; ?>submodules/Requirements-Config.php">
+                        <a href="<?php echo $base; ?>Submodules/Requirements-Config.php">
                             <i class="fas fa-cogs"></i>
                             <span>Requirements Config</span>
                         </a>
