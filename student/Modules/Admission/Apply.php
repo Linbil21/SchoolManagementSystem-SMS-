@@ -1,6 +1,42 @@
 <?php
 session_start();
-// Ideally, check for student role here
+require_once '../../Database/config.php';
+
+$message = '';
+$status = '';
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    try {
+        $first_name = $_POST['first_name'];
+        $last_name = $_POST['last_name'];
+        $dob = $_POST['dob'];
+        $gender = $_POST['gender'];
+        $email = $_POST['email'];
+        $phone = $_POST['phone'];
+        $student_type = $_POST['student_type'];
+        $course1 = $_POST['course1'];
+        $course2 = $_POST['course2'];
+        $last_school = $_POST['last_school'];
+        
+        // Generate Application Number
+        $year = date('Y');
+        $stmt = $pdo->query("SELECT MAX(applicationId) FROM admission_applications");
+        $next_id = ($stmt->fetchColumn() ?: 0) + 1;
+        $app_no = "APP-" . $year . "-" . str_pad($next_id, 3, '0', STR_PAD_LEFT);
+
+        $sql = "INSERT INTO admission_applications (application_no, first_name, last_name, date_of_birth, gender, email, phone_number, student_type, preferred_course_1, preferred_course_2, last_school_attended) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([$app_no, $first_name, $last_name, $dob, $gender, $email, $phone, $student_type, $course1, $course2, $last_school]);
+
+        header("Location: Result.php?status=success&app_no=" . urlencode($app_no));
+        exit();
+    } catch (PDOException $e) {
+        $message = "Error: " . $e->getMessage();
+        $status = "error";
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -168,19 +204,19 @@ session_start();
                     <div class="form-grid">
                         <div class="form-group">
                             <label class="form-label">First Name</label>
-                            <input type="text" class="form-input" placeholder="e.g. John" required>
+                            <input type="text" name="first_name" class="form-input" placeholder="e.g. John" required>
                         </div>
                         <div class="form-group">
                             <label class="form-label">Last Name</label>
-                            <input type="text" class="form-input" placeholder="e.g. Doe" required>
+                            <input type="text" name="last_name" class="form-input" placeholder="e.g. Doe" required>
                         </div>
                         <div class="form-group">
                             <label class="form-label">Date of Birth</label>
-                            <input type="date" class="form-input" required>
+                            <input type="date" name="dob" class="form-input" required>
                         </div>
                         <div class="form-group">
                             <label class="form-label">Gender</label>
-                            <select class="form-select" required>
+                            <select name="gender" class="form-select" required>
                                 <option value="">Select Gender</option>
                                 <option>Male</option>
                                 <option>Female</option>
@@ -189,11 +225,11 @@ session_start();
                         </div>
                         <div class="form-group">
                             <label class="form-label">Email Address</label>
-                            <input type="email" class="form-input" placeholder="e.g. john@example.com" required>
+                            <input type="email" name="email" class="form-input" placeholder="e.g. john@example.com" required>
                         </div>
                         <div class="form-group">
                             <label class="form-label">Phone Number</label>
-                            <input type="tel" class="form-input" placeholder="e.g. 09123456789" required>
+                            <input type="tel" name="phone" class="form-input" placeholder="e.g. 09123456789" required>
                         </div>
                     </div>
                 </div>
@@ -205,7 +241,7 @@ session_start();
                     <div class="form-grid">
                         <div class="form-group">
                             <label class="form-label">Student Type</label>
-                            <select class="form-select" required>
+                            <select name="student_type" class="form-select" required>
                                 <option value="">Select Type</option>
                                 <option>Incoming Freshman</option>
                                 <option>Transferee</option>
@@ -214,7 +250,7 @@ session_start();
                         </div>
                         <div class="form-group">
                             <label class="form-label">Preferred Course (1st Choice)</label>
-                            <select class="form-select" required>
+                            <select name="course1" class="form-select" required>
                                 <option value="">Select Course</option>
                                 <option>BS Information Technology</option>
                                 <option>BS Computer Science</option>
@@ -224,7 +260,7 @@ session_start();
                         </div>
                         <div class="form-group">
                             <label class="form-label">Preferred Course (2nd Choice)</label>
-                            <select class="form-select">
+                            <select name="course2" class="form-select">
                                 <option value="">Select Course</option>
                                 <option>BS Information Technology</option>
                                 <option>BS Computer Science</option>
@@ -234,7 +270,7 @@ session_start();
                         </div>
                         <div class="form-group">
                             <label class="form-label">Last School Attended</label>
-                            <input type="text" class="form-input" placeholder="School Name">
+                            <input type="text" name="last_school" class="form-input" placeholder="School Name">
                         </div>
                     </div>
                 </div>

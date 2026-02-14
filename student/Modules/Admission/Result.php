@@ -146,31 +146,58 @@ session_start();
         <?php include '../../Components/Header.php'; ?>
         <div class="content-area">
             
-            <div class="result-card">
-                <div class="confetti-decoration"></div>
-                <div class="result-icon">
-                    <i class="fas fa-check"></i>
-                </div>
-                <h1 class="result-title">Congratulations!</h1>
-                <p class="result-message">
-                    We are pleased to inform you that you have <strong>PASSED</strong> the Entrance Examination for the <strong>BS Information Technology</strong> program.
-                </p>
-
-                <div class="score-box">
-                    <div class="score-item">
-                        <h4>92%</h4>
-                        <span>Exam Score</span>
+            <?php if (isset($_GET['status']) && $_GET['status'] == 'success'): ?>
+                <div class="result-card">
+                    <div class="result-icon" style="background: #e0f2fe; color: #0284c7;">
+                        <i class="fas fa-paper-plane"></i>
                     </div>
-                    <div class="score-item">
-                        <h4>Passed</h4>
-                        <span>Interview</span>
-                    </div>
-                </div>
+                    <h1 class="result-title">Application Submitted!</h1>
+                    <p class="result-message">
+                        Thank you for applying. Your application has been received and is now in the review process.
+                    </p>
 
-                <a href="../Enrollment/Subject-Selection.php" class="action-btn">
-                    Proceed to Enrollment <i class="fas fa-arrow-right" style="margin-left: 8px;"></i>
-                </a>
-            </div>
+                    <div class="score-box">
+                        <div class="score-item">
+                            <h4 style="color: #0284c7;"><?php echo htmlspecialchars($_GET['app_no'] ?? ''); ?></h4>
+                            <span>Application No.</span>
+                        </div>
+                        <div class="score-item">
+                            <h4 style="color: #d97706;">Pending</h4>
+                            <span>Status</span>
+                        </div>
+                    </div>
+
+                    <a href="../../Dashboard.php" class="action-btn" style="background: #0284c7;">
+                        Back to Dashboard <i class="fas fa-home" style="margin-left: 8px;"></i>
+                    </a>
+                </div>
+            <?php else: ?>
+                <div class="result-card">
+                    <div class="confetti-decoration"></div>
+                    <div class="result-icon">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <h1 class="result-title">Congratulations!</h1>
+                    <p class="result-message">
+                        We are pleased to inform you that you have <strong>PASSED</strong> the Entrance Examination for the <strong>BS Information Technology</strong> program.
+                    </p>
+
+                    <div class="score-box">
+                        <div class="score-item">
+                            <h4>92%</h4>
+                            <span>Exam Score</span>
+                        </div>
+                        <div class="score-item">
+                            <h4>Passed</h4>
+                            <span>Interview</span>
+                        </div>
+                    </div>
+
+                    <a href="../Enrollment/Subject-Selection.php" class="action-btn">
+                        Proceed to Enrollment <i class="fas fa-arrow-right" style="margin-left: 8px;"></i>
+                    </a>
+                </div>
+            <?php endif; ?>
 
         </div>
     </div>

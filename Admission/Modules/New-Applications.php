@@ -4,6 +4,16 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admission') {
     header("Location: ../../auth/Login.php");
     exit();
 }
+
+require_once '../../Database/config.php';
+
+try {
+    $stmt = $pdo->prepare("SELECT * FROM admission_applications WHERE status = 'Pending' ORDER BY submission_date DESC");
+    $stmt->execute();
+    $applications = $stmt->fetchAll();
+} catch (PDOException $e) {
+    $applications = [];
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -236,32 +246,44 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admission') {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>#APP-2024-001</td>
-                            <td>John Doe</td>
-                            <td>BS Information Technology</td>
-                            <td>2024-01-10</td>
-                            <td><span
-                                    style="background: #fef3c7; color: #d97706; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem;">Pending</span>
-                            </td>
-                            <td><button
-                                    onclick="openViewModal('John Doe', '#APP-2024-001', 'BS Information Technology', '2024-01-10')"
-                                    style="border: none; background: #1648bc; color: white; padding: 6px 12px; border-radius: 6px; cursor: pointer;">View</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>#APP-2024-002</td>
-                            <td>Jane Smith</td>
-                            <td>BS Computer Science</td>
-                            <td>2024-01-11</td>
-                            <td><span
-                                    style="background: #fef3c7; color: #d97706; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem;">Pending</span>
-                            </td>
-                            <td><button
-                                    onclick="openViewModal('Jane Smith', '#APP-2024-002', 'BS Computer Science', '2024-01-11')"
-                                    style="border: none; background: #1648bc; color: white; padding: 6px 12px; border-radius: 6px; cursor: pointer;">View</button>
-                            </td>
-                        </tr>
+                        <?php if (empty($applications)): ?>
+                            <tr>
+                                <td colspan="6" style="text-align: center; padding: 40px; color: #64748b;">
+                                    <div style="display: flex; flex-direction: column; align-items: center; gap: 15px;">
+                                        <i class="fas fa-folder-open" style="font-size: 3rem; color: #e2e8f0;"></i>
+                                        <p>No new applications found.</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        <?php else: ?>
+                            <?php foreach ($applications as $app): ?>
+                                <tr>
+                                    <td><?php echo htmlspecialchars($app->application_no); ?></td>
+                                    <td><?php echo htmlspecialchars($app->first_name . ' ' . $app->last_name); ?></td>
+                                    <td><?php echo htmlspecialchars($app->preferred_course_1); ?></td>
+                                    <td><?php echo date('Y-m-d', strtotime($app->submission_date)); ?></td>
+                                    <td>
+                                        <span style="background: #fef3c7; color: #d97706; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem;">
+                                            <?php echo htmlspecialchars($app->status); ?>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <button
+                                            onclick="openViewModal(
+                                                '<?php echo addslashes($app->first_name . ' ' . $app->last_name); ?>', 
+                                                '<?php echo addslashes($app->application_no); ?>', 
+                                                '<?php echo addslashes($app->preferred_course_1); ?>', 
+                                                '<?php echo date('Y-m-d', strtotime($app->submission_date)); ?>',
+                                                '<?php echo addslashes($app->email); ?>',
+                                                '<?php echo addslashes($app->phone_number); ?>'
+                                            )"
+                                            style="border: none; background: #1648bc; color: white; padding: 6px 12px; border-radius: 6px; cursor: pointer;">
+                                            View
+                                        </button>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
                     </tbody>
                 </table>
             </div>
@@ -366,19 +388,19 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admission') {
             }
         }
 
-        function openViewModal(name, id, course, date) {
+        function openViewModal(name, id, course, date, email, contact) {
             document.getElementById('modalFullName').textContent = name;
             document.getElementById('modalProfileName').textContent = name;
             document.getElementById('modalAppId').textContent = id;
             document.getElementById('modalCourse').textContent = course;
             document.getElementById('modalProfileCourse').textContent = course;
             document.getElementById('modalDate').textContent = date;
+            document.getElementById('modalEmail').textContent = email;
+            document.getElementById('modalContact').textContent = contact;
 
             // Set initials for avatar
             const initials = name.split(' ').map(n => n[0]).join('').toUpperCase();
             document.getElementById('modalAvatar').textContent = initials;
-
-            document.getElementById('modalEmail').textContent = name.toLowerCase().replace(' ', '.') + '@example.com';
 
             document.getElementById('viewModal').style.display = 'block';
             document.body.style.overflow = 'hidden';
