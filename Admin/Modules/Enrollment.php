@@ -10,18 +10,28 @@ if (!isset($_SESSION['role']) || ($_SESSION['role'] !== 'admin' && $_SESSION['ro
 
 // Detect root path for assets
 $script_name = $_SERVER['SCRIPT_NAME'];
-$check_paths = ['/Super-admin/', '/modules/', '/Admin/', '/submodules/', '/Cashier/', '/Admission/', '/auth/', '/student/'];
+$check_paths = ['/Admin/', '/Super-admin/', '/Cashier/', '/Admission/', '/student/', '/modules/', '/submodules/', '/auth/'];
 $project_base = '';
+
 foreach ($check_paths as $path) {
     if (($pos = stripos($script_name, $path)) !== false) {
-        $project_base = rtrim(substr($script_name, 0, $pos), '/');
+        // Extract everything BEFORE the module folder
+        $project_base = substr($script_name, 0, $pos);
         break;
     }
 }
-$root = $project_base . '/';
-if (!empty($root) && $root[0] !== '/') {
-    $root = '/' . $root;
+
+// Build root path - ensure it starts with / and ends with /
+if (empty($project_base) || $project_base === '') {
+    $root = '/';
+} else {
+    $root = rtrim($project_base, '/') . '/';
+    if ($root[0] !== '/') {
+        $root = '/' . $root;
+    }
 }
+
+
 
 // 1. Handle AJAX Status Updates (Self-submission)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
