@@ -44,7 +44,7 @@ $root = $project_base . '/';
         <ul class="main-menu">
             <!-- User Management Dropdown -->
             <li
-                class="has-dropdown <?php echo (stripos($_SERVER['PHP_SELF'], '/modules/') !== false) ? 'active open' : ''; ?>">
+                class="has-dropdown <?php echo (stripos($_SERVER['PHP_SELF'], '/modules/') !== false && stripos($_SERVER['PHP_SELF'], '/submodules/') === false) ? 'active open' : ''; ?>">
                 <a href="javascript:void(0)" class="dropdown-toggle">
                     <i class="fas fa-user-shield"></i>
                     <span>User Accounts</span>
@@ -70,7 +70,7 @@ $root = $project_base . '/';
         <p class="menu-label">ADMISSION CONTROL</p>
         <ul class="main-menu">
             <!-- Admission Summary Dropdown -->
-            <li class="has-dropdown <?php echo (stripos($_SERVER['PHP_SELF'], '/Submodules/') !== false && stripos($_SERVER['PHP_SELF'], 'Admission') !== false) ? 'active open' : ''; ?>">
+            <li class="has-dropdown <?php echo (stripos($_SERVER['PHP_SELF'], '/Submodules/') !== false) ? 'active open' : ''; ?>">
                 <a href="javascript:void(0)" class="dropdown-toggle">
                     <i class="fas fa-user-graduate"></i>
                     <span>Admission Hub</span>
