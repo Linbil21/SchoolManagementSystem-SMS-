@@ -145,7 +145,9 @@ if (empty($students)) {
 
             container.innerHTML = `
                 <div style="display: flex; gap: 30px; align-items: center; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid #eee;">
-                    <img src="/${data.profile_image}" style="width: 120px; height: 120px; border-radius: 15px; object-fit: cover; border: 4px solid #f1f5f9;" onerror="this.src='https://ui-avatars.com/api/?name=${data.first_name}+${data.last_name}&background=1648bc&color=fff&size=128'">
+                    <img src="${data.profile_image ? (data.profile_image.startsWith('/') ? data.profile_image : '/' + data.profile_image) : `https://ui-avatars.com/api/?name=${data.first_name}+${data.last_name}&background=1648bc&color=fff&size=128`}" 
+                         style="width: 120px; height: 120px; border-radius: 15px; object-fit: cover; border: 4px solid #f1f5f9; box-shadow: 0 5px 15px rgba(0,0,0,0.08);" 
+                         onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=${data.first_name}+${data.last_name}&background=1648bc&color=fff&size=128'">
                     <div>
                         <h2 style="margin: 0; color: #1648bc;">${data.last_name}, ${data.first_name}</h2>
                         <p style="color: #718096; margin: 5px 0; font-weight: 600;">ID: ${studentId}</p>
