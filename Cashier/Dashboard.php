@@ -8,8 +8,11 @@ $role = $_SESSION['role'];
 // Fetch Statistics
 $total_collections = $pdo->query("SELECT SUM(amount) FROM payments WHERE status = 'Completed'")->fetchColumn() ?: 0;
 $pending_verification = $pdo->query("SELECT COUNT(*) FROM payments WHERE status = 'Pending'")->fetchColumn() ?: 0;
-// Using current date for new assessments
 $new_assessments = $pdo->query("SELECT COUNT(*) FROM enrollments WHERE DATE(created_at) = CURDATE()")->fetchColumn() ?: 0;
+
+// New Financial Estimates
+$total_revenue_estimate = $pdo->query("SELECT SUM(total_fee) FROM enrollments")->fetchColumn() ?: 0;
+$total_outstanding = $pdo->query("SELECT SUM(balance) FROM enrollments")->fetchColumn() ?: 0;
 
 // Fetch Recent Transactions
 $stmt = $pdo->query("SELECT p.*, e.first_name, e.last_name 
@@ -283,27 +286,38 @@ $recent_transactions = $stmt->fetchAll();
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-info">
-                        <span>Total Collections</span>
-                        <h2>₱<?php echo number_format($total_collections, 2); ?></h2>
+                        <span>Projected Revenue</span>
+                        <h2 style="color: #1648bc;">₱<?php echo number_format($total_revenue_estimate, 2); ?></h2>
                     </div>
-                    <div class="stat-icon"><i class="fas fa-coins"></i></div>
+                    <div class="stat-icon" style="background: rgba(22, 72, 188, 0.1); color: #1648bc;">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <span>Total Collections</span>
+                        <h2 style="color: #059669;">₱<?php echo number_format($total_collections, 2); ?></h2>
+                    </div>
+                    <div class="stat-icon" style="background: rgba(5, 150, 105, 0.1); color: #059669;">
+                        <i class="fas fa-wallet"></i>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <span>Outstanding Bal</span>
+                        <h2 style="color: #dc2626;">₱<?php echo number_format($total_outstanding, 2); ?></h2>
+                    </div>
+                    <div class="stat-icon" style="background: rgba(220, 38, 38, 0.1); color: #dc2626;">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                    </div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-info">
                         <span>Pending Verification</span>
-                        <h2><?php echo $pending_verification; ?></h2>
+                        <h2 style="color: #f97316;"><?php echo $pending_verification; ?></h2>
                     </div>
                     <div class="stat-icon" style="background: rgba(249, 115, 22, 0.1); color: #f97316;">
                         <i class="fas fa-clock"></i>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-info">
-                        <span>New Assessments</span>
-                        <h2><?php echo $new_assessments; ?></h2>
-                    </div>
-                    <div class="stat-icon" style="background: rgba(34, 197, 94, 0.1); color: #22c55e;">
-                        <i class="fas fa-file-invoice"></i>
                     </div>
                 </div>
             </div>
