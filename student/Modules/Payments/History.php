@@ -1,5 +1,8 @@
 <?php
 session_start();
+// Security check
+require_once '../../auth/Security.php';
+checkRole(['student']);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -237,10 +240,15 @@ session_start();
         <div class="content-area">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
                 <h1 class="page-title">Payment History</h1>
-                <div class="search-box" style="position: relative;">
-                    <i class="fas fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #94a3b8;"></i>
-                    <input type="text" id="paymentSearch" onkeyup="filterTable('paymentSearch', 'paymentTable')" placeholder="Search payments..." 
-                        style="padding: 10px 15px 10px 40px; border-radius: 12px; border: 1px solid #e2e8f0; outline: none; width: 280px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+                <div style="display: flex; gap: 15px; align-items: center;">
+                    <button onclick="openGatewayModal()" style="background: linear-gradient(135deg, #1648bc 0%, #2563eb 100%); color: white; border: none; padding: 10px 20px; border-radius: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(22, 72, 188, 0.25);">
+                        <i class="fas fa-credit-card"></i> Pay via Gateway
+                    </button>
+                    <div class="search-box" style="position: relative;">
+                        <i class="fas fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #94a3b8;"></i>
+                        <input type="text" id="paymentSearch" onkeyup="filterTable('paymentSearch', 'paymentTable')" placeholder="Search payments..." 
+                            style="padding: 10px 15px 10px 40px; border-radius: 12px; border: 1px solid #e2e8f0; outline: none; width: 280px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+                    </div>
                 </div>
             </div>
 
@@ -352,7 +360,104 @@ session_start();
         </div>
     </div>
 
+    <!-- Gateway Modal -->
+    <div class="modal" id="gatewayModal">
+        <div class="modal-content" style="max-width: 450px;">
+            <div class="modal-header">
+                <h3 class="modal-title">Secure Payment Gateway</h3>
+                <button class="close-btn" onclick="closeGatewayModal()">&times;</button>
+            </div>
+            <div id="gatewayForm">
+                <div style="margin-bottom: 20px; text-align: center;">
+                    <div style="display: inline-flex; background: #eff6ff; color: #2563eb; padding: 15px; border-radius: 50%; font-size: 1.5rem; margin-bottom: 15px;">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <p style="font-size: 0.9rem; color: #64748b;">Enter the amount you wish to pay. This transaction is secured by SMS Gateway.</p>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; font-size: 0.8rem; font-weight: 700; color: #475569; margin-bottom: 5px;">PAYMENT AMOUNT (PHP)</label>
+                    <input type="number" id="payAmount" value="5000" style="width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 1.1rem; font-weight: 700;">
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; font-size: 0.8rem; font-weight: 700; color: #475569; margin-bottom: 5px;">PAYMENT METHOD</label>
+                    <select id="payMethod" style="width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; font-weight: 600;">
+                        <option value="GCash">GCash</option>
+                        <option value="Maya">Maya</option>
+                        <option value="Credit/Debit Card">Credit/Debit Card</option>
+                        <option value="Online Banking">Online Banking</option>
+                    </select>
+                </div>
+                <button onclick="processGatewayPayment()" id="processBtn" style="width: 100%; background: #1648bc; color: white; border: none; padding: 15px; border-radius: 12px; font-weight: 700; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.2s;">
+                    Process Payment <i class="fas fa-lock"></i>
+                </button>
+            </div>
+            <div id="gatewayProcessing" style="display: none; text-align: center; padding: 30px 0;">
+                <div class="loader" style="border: 4px solid #f3f3f3; border-top: 4px solid #1648bc; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 20px;"></div>
+                <p style="font-weight: 600; color: #1e293b;">Verifying Transaction...</p>
+                <p style="font-size: 0.85rem; color: #64748b;">Please do not close this window.</p>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+
     <script>
+        function openGatewayModal() {
+            document.getElementById('gatewayModal').classList.add('active');
+            document.getElementById('gatewayForm').style.display = 'block';
+            document.getElementById('gatewayProcessing').style.display = 'none';
+        }
+
+        function closeGatewayModal() {
+            document.getElementById('gatewayModal').classList.remove('active');
+        }
+
+        async function processGatewayPayment() {
+            const amount = document.getElementById('payAmount').value;
+            const method = document.getElementById('payMethod').value;
+            const btn = document.getElementById('processBtn');
+            const form = document.getElementById('gatewayForm');
+            const processing = document.getElementById('gatewayProcessing');
+
+            if (amount <= 0) {
+                alert("Please enter a valid amount.");
+                return;
+            }
+
+            form.style.display = 'none';
+            processing.style.display = 'block';
+
+            try {
+                const response = await fetch('../../api/payment_gateway.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ amount, method, description: "Tuition Fee via Gateway" })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    processing.innerHTML = `
+                        <div style="color: #16a34a; font-size: 3.5rem; margin-bottom: 15px;"><i class="fas fa-check-circle"></i></div>
+                        <h4 style="margin-bottom: 10px; font-size: 1.2rem;">Payment Approved!</h4>
+                        <p style="font-size: 0.9rem; color: #64748b; margin-bottom: 20px;">Ref: ${result.transaction.id}</p>
+                        <button onclick="location.reload()" style="background: #1648bc; color: white; border: none; padding: 10px 30px; border-radius: 10px; font-weight: 700; cursor: pointer;">View Receipt</button>
+                    `;
+                } else {
+                    alert("Gateway Error: " + result.message);
+                    form.style.display = 'block';
+                    processing.style.display = 'none';
+                }
+            } catch (error) {
+                console.error(error);
+                alert("An error occurred during processing.");
+                form.style.display = 'block';
+                processing.style.display = 'none';
+            }
+        }
+
         function filterTable(inputId, tableId) {
             const input = document.getElementById(inputId);
             const filter = input.value.toLowerCase();
@@ -401,8 +506,13 @@ session_start();
 
         // Close on outside click
         window.onclick = function (event) {
-            if (event.target == modal) {
+            const rModal = document.getElementById('receiptModal');
+            const gModal = document.getElementById('gatewayModal');
+            if (event.target == rModal) {
                 closeModal();
+            }
+            if (event.target == gModal) {
+                closeGatewayModal();
             }
         }
     </script>
