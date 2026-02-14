@@ -69,8 +69,8 @@ checkRole(['admin', 'superadmin']);
         <div class="content-area">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
                 <div>
-                    <h1 style="font-size: 1.75rem; font-weight: 800; color: var(--text-dark, #1e293b); margin-bottom: 5px;">External Faculty Masterlist</h1>
-                    <p style="color: var(--text-muted, #64748b); font-size: 0.95rem;">Live data from Faculty Management System API</p>
+                    <h1 style="font-size: 1.75rem; font-weight: 800; color: var(--text-dark, #1e293b); margin-bottom: 5px;">Faculty Masterlist</h1>
+                    <p style="color: var(--text-muted, #64748b); font-size: 0.95rem;"> Faculty Management System </p>
                 </div>
                 <button onclick="fetchFacultyData()" class="btn-refresh">
                     <i class="fas fa-sync-alt"></i> Refresh Data
