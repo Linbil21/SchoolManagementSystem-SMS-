@@ -59,7 +59,7 @@ try {
                                         <td>
                                             <div style="display: flex; gap: 8px;">
                                                 <button onclick='openEditModal(<?php echo json_encode($role); ?>)' class="btn-view" style="padding: 6px 12px; font-size: 0.8rem; border:none; cursor:pointer; background: var(--primary-blue); color: white; border-radius: 4px;">Edit Permissions</button>
-                                                <button onclick="deleteRole(<?php echo $role->roleId; ?>)" class="btn-view" style="padding: 6px 12px; font-size: 0.8rem; border:none; cursor:pointer; background: #ef4444; color: white; border-radius: 4px;"><i class="fas fa-trash"></i></button>
+                                                <button onclick="deleteRole(<?php echo $role->roleId; ?>)" class="btn-view" style="padding: 6px 12px; font-size: 0.8rem; border:none; cursor:pointer; background: #f59e0b; color: white; border-radius: 4px;"><i class="fas fa-archive"></i></button>
                                             </div>
                                         </td>
                                     </tr>

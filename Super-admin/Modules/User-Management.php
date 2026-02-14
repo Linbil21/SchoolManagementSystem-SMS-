@@ -79,8 +79,8 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'superadmin') {
                                     <button class="btn-action" onclick="editUser('Admin User')" title="Edit User">
                                         <i class="fas fa-edit"></i>
                                     </button>
-                                    <button class="btn-action" style="color: #ef4444; border-color: #fee2e2; background: #fff1f2;" title="Remove User">
-                                        <i class="fas fa-trash-alt"></i>
+                                    <button class="btn-action" style="color: #f59e0b; border-color: #fef3c7; background: #fffbeb;" title="Archive User">
+                                        <i class="fas fa-archive"></i>
                                     </button>
                                 </div>
                             </td>
@@ -110,8 +110,8 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'superadmin') {
                                     <button class="btn-action" onclick="editUser('Sarah Miller')" title="Edit User">
                                         <i class="fas fa-edit"></i>
                                     </button>
-                                    <button class="btn-action" style="color: #ef4444; border-color: #fee2e2; background: #fff1f2;" title="Remove User">
-                                        <i class="fas fa-trash-alt"></i>
+                                    <button class="btn-action" style="color: #f59e0b; border-color: #fef3c7; background: #fffbeb;" title="Archive User">
+                                        <i class="fas fa-archive"></i>
                                     </button>
                                 </div>
                             </td>

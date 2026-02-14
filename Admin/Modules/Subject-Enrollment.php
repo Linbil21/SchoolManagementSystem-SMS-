@@ -105,7 +105,7 @@ try {
                 <script>Swal.fire('Updated!', 'Subject updated successfully.', 'success');</script>
             <?php endif; ?>
             <?php if (isset($_GET['deleted'])): ?>
-                <script>Swal.fire('Deleted!', 'Subject has been removed.', 'success');</script>
+                <script>Swal.fire('Archived!', 'Subject has been archived.', 'success');</script>
             <?php endif; ?>
 
             <div class="table-container">
@@ -140,7 +140,7 @@ try {
                                             <button class="btn-view" style="padding: 6px 12px; font-size: 0.8rem;"
                                                 onclick='openEditModal(<?php echo json_encode($subject); ?>)'><i class="fas fa-edit"></i> Edit</button>
                                             <button class="btn-reject" style="padding: 6px 12px; font-size: 0.8rem;"
-                                                onclick="confirmDelete(<?php echo $subject->subjectId; ?>)"><i class="fas fa-trash"></i> Delete</button>
+                                                onclick="confirmArchive(<?php echo $subject->subjectId; ?>)"><i class="fas fa-archive"></i> Archive</button>
                                         <?php else: ?>
                                             <span style="color: #64748b; font-size: 0.75rem; font-style: italic;">
                                                 <i class="fas fa-eye"></i> View Only
@@ -241,14 +241,14 @@ try {
 
         function closeModal() { modal.style.display = "none"; }
 
-        function confirmDelete(id) {
+        function confirmArchive(id) {
             Swal.fire({
-                title: 'Are you sure?',
-                text: "Removing this subject might affect enrollment records!",
+                title: 'Archive this subject?',
+                text: "This subject will be moved to archives and hidden from active lists.",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#ef4444',
-                confirmButtonText: 'Yes, delete it!'
+                confirmButtonColor: '#f59e0b',
+                confirmButtonText: 'Yes, archive it!'
             }).then((result) => {
                 if (result.isConfirmed) window.location.href = 'Subject-Enrollment.php?delete=' + id;
             });

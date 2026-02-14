@@ -98,10 +98,10 @@ try {
                 <script>Swal.fire('Updated!', 'Admin account updated successfully.', 'success');</script>
             <?php endif; ?>
             <?php if (isset($_GET['deleted'])): ?>
-                <script>Swal.fire('Deleted!', 'Admin account has been removed.', 'success');</script>
+                <script>Swal.fire('Archived!', 'Admin account has been archived.', 'success');</script>
             <?php endif; ?>
             <?php if (isset($_GET['error']) && $_GET['error'] == 'self_delete'): ?>
-                <script>Swal.fire('Error!', 'You cannot delete your own account.', 'error');</script>
+                <script>Swal.fire('Error!', 'You cannot archive your own account.', 'error');</script>
             <?php endif; ?>
 
             <div class="table-container">
@@ -135,7 +135,7 @@ try {
                                         <button class="btn-view" style="padding: 6px 12px; font-size: 0.8rem;"
                                             onclick='openEditModal(<?php echo json_encode($admin); ?>)'>Edit</button>
                                         <button class="btn-reject" style="padding: 6px 12px; font-size: 0.8rem;"
-                                            onclick="confirmDelete(<?php echo $admin->userId; ?>)">Delete</button>
+                                            onclick="confirmArchive(<?php echo $admin->userId; ?>)">Archive</button>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
@@ -220,14 +220,14 @@ try {
 
         function closeModal() { modal.style.display = "none"; }
 
-        function confirmDelete(id) {
+        function confirmArchive(id) {
             Swal.fire({
-                title: 'Are you sure?',
-                text: "This action cannot be undone!",
+                title: 'Archive this admin?',
+                text: "This account will be moved to archives.",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#ef4444',
-                confirmButtonText: 'Yes, delete it!'
+                confirmButtonColor: '#f59e0b',
+                confirmButtonText: 'Yes, archive it!'
             }).then((result) => {
                 if (result.isConfirmed) window.location.href = 'Admin-Users.php?delete=' + id;
             });
