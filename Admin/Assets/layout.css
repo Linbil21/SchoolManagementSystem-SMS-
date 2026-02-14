@@ -731,13 +731,14 @@ tbody tr:hover td {
 
 .notification .badge {
     position: absolute;
-    top: -5px;
-    right: -5px;
+    top: -6px;
+    right: -6px;
     background: #ef4444;
     color: white;
-    width: 20px;
+    min-width: 20px;
     height: 20px;
-    border-radius: 50%;
+    padding: 0 5px;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -745,7 +746,22 @@ tbody tr:hover td {
     font-weight: 700;
     border: 2px solid var(--header-bg, #fff);
     box-shadow: 0 2px 5px rgba(239, 68, 68, 0.4);
-    z-index: 10;
+    z-index: 100;
+    animation: pulse-red 2s infinite;
+}
+
+@keyframes pulse-red {
+    0% {
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+    }
+
+    70% {
+        box-shadow: 0 0 0 6px rgba(239, 68, 68, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+    }
 }
 
 .search-box {
