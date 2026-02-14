@@ -8,6 +8,21 @@ if (!isset($_SESSION['role']) || ($_SESSION['role'] !== 'admin' && $_SESSION['ro
     exit();
 }
 
+// Detect root path for assets
+$script_name = $_SERVER['SCRIPT_NAME'];
+$check_paths = ['/Super-admin/', '/modules/', '/Admin/', '/submodules/', '/Cashier/', '/Admission/', '/auth/', '/student/'];
+$project_base = '';
+foreach ($check_paths as $path) {
+    if (($pos = stripos($script_name, $path)) !== false) {
+        $project_base = rtrim(substr($script_name, 0, $pos), '/');
+        break;
+    }
+}
+$root = $project_base . '/';
+if (!empty($root) && $root[0] !== '/') {
+    $root = '/' . $root;
+}
+
 // 1. Handle AJAX Status Updates (Self-submission)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     require_once '../../auth/Security.php';
@@ -75,7 +90,7 @@ try {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Enrollment Management - SMS</title>
-    <link rel="icon" type="image/png" href="../../Assets/image/logo.png">
+    <link rel="icon" type="image/png" href="<?php echo $root; ?>Assets/image/logo.png">
     <!-- Google Fonts: Poppins -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
@@ -84,7 +99,7 @@ try {
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- External CSS -->
-    <link rel="stylesheet" href="../Assets/layout.css">
+    <link rel="stylesheet" href="<?php echo $root; ?>Admin/Assets/layout.css">
 </head>
 
 <body>
