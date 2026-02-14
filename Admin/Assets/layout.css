@@ -533,7 +533,7 @@ tbody tr:hover td {
 .notif-profile-img {
     width: 45px;
     height: 45px;
-    border-radius: 12px;
+    border-radius: 50%;
     object-fit: cover;
     flex-shrink: 0;
     border: 2px solid #f1f5f9;
