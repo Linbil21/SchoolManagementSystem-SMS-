@@ -495,13 +495,15 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admission@sms.com';
 
     function openLogoutModal() {
         const modal = document.getElementById('logoutModal');
-        modal.classList.add('show');
+        modal.style.display = 'flex'; // Override inline display:none
+        setTimeout(() => { modal.classList.add('show'); }, 10);
         document.body.style.overflow = 'hidden';
     }
 
     function closeLogoutModal() {
         const modal = document.getElementById('logoutModal');
         modal.classList.remove('show');
+        setTimeout(() => { modal.style.display = 'none'; }, 300); // Wait for transition
         document.body.style.overflow = 'auto';
     }
 
