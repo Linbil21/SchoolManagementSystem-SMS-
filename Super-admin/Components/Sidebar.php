@@ -47,7 +47,7 @@ $root = $project_base . '/';
                         </a>
                     </li>
                     <li>
-                        <a href="<?php echo $root; ?>Cashier/Modules/Collection-Report.php">
+                        <a href="<?php echo $root; ?>Cashier/Submodules/Daily-Collection.php">
                             <i class="fas fa-receipt"></i>
                             <span>Collections</span>
                         </a>
