@@ -12,10 +12,9 @@ $pending_verification = $pdo->query("SELECT COUNT(*) FROM payments WHERE status 
 $new_assessments = $pdo->query("SELECT COUNT(*) FROM enrollments WHERE DATE(created_at) = CURDATE()")->fetchColumn() ?: 0;
 
 // Fetch Recent Transactions
-$stmt = $pdo->query("SELECT p.*, s.first_name, s.last_name 
+$stmt = $pdo->query("SELECT p.*, e.first_name, e.last_name 
                      FROM payments p 
-                     JOIN enrollments e ON p.enrollment_id = e.id 
-                     JOIN students s ON e.email = s.email 
+                     JOIN enrollments e ON p.enrollment_id = e.enrollmentId 
                      ORDER BY p.created_at DESC LIMIT 5");
 $recent_transactions = $stmt->fetchAll();
 ?>

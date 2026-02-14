@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 // Search Logic
 if ($search) {
     try {
-        $stmt = $pdo->prepare("SELECT s.first_name, s.last_name, s.student_id, e.id as enrollment_id, e.balance 
+        $stmt = $pdo->prepare("SELECT s.first_name, s.last_name, s.student_id, e.enrollmentId as enrollment_id, e.balance 
                                FROM students s 
                                JOIN enrollments e ON s.email = e.email 
                                WHERE s.student_id LIKE ? OR s.last_name LIKE ? OR s.first_name LIKE ?");

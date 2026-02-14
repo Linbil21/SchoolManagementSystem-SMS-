@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                 lab_fee = ?, 
                 total_fee = ?, 
                 balance = ? 
-                WHERE id = ?";
+                WHERE enrollmentId = ?";
         
         $stmt = $pdo->prepare($sql);
         $stmt->execute([$tuition, $misc, $lab, $total_fee, $new_balance, $enrollment_id]);
@@ -58,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 $search = trim($_GET['search'] ?? '');
 if ($search) {
     try {
-        $sql = "SELECT s.*, e.id as enrollment_id, e.reference_code, e.course_id, e.year_level as enr_year, e.status as enr_status, 
+        $sql = "SELECT s.*, e.enrollmentId as enrollment_id, e.reference_code, e.course_id, e.year_level as enr_year, e.status as enr_status, 
                 e.tuition_fee, e.misc_fee, e.lab_fee, e.balance, e.total_fee, e.created_at as assessment_date 
                 FROM students s 
                 LEFT JOIN enrollments e ON s.email = e.email 
