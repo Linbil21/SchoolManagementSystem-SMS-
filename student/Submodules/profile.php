@@ -265,10 +265,11 @@ $profile_img = !empty($student->profile_image)
                     <!-- Profile Photo Card -->
                     <div class="card profile-photo-card">
                         <div class="photo-container">
-                            <img src="<?php echo $profile_img; ?>" alt="Profile Photo">
-                            <div class="upload-btn">
+                            <img src="<?php echo $profile_img; ?>" alt="Profile Photo" id="profileImageDisplay">
+                            <div class="upload-btn" onclick="document.getElementById('profileUploadInput').click()">
                                 <i class="fas fa-camera"></i>
                             </div>
+                            <input type="file" id="profileUploadInput" style="display: none;" accept="image/*" onchange="uploadProfileImage(this)">
                         </div>
                         <div class="profile-name">
                             <h2>
@@ -359,6 +360,50 @@ $profile_img = !empty($student->profile_image)
                 </div>
             </div>
         </div>
+    <script>
+        function uploadProfileImage(input) {
+            if (input.files && input.files[0]) {
+                const formData = new FormData();
+                formData.append('profile_image', input.files[0]);
+
+                // Basic validation
+                const file = input.files[0];
+                if (file.size > 5 * 1024 * 1024) {
+                    alert("File size checks: Max size allowed is 5MB.");
+                    return;
+                }
+
+                // Show loading state (optional: replace icon with spinner)
+                const btn = document.querySelector('.upload-btn');
+                const originalIcon = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+                fetch('../api/upload_profile_image.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update image src immediately
+                        // Add cache buster to force refresh
+                        document.getElementById('profileImageDisplay').src = data.image_path + '?t=' + new Date().getTime();
+                        // Also update header if possible, but that's harder without reload
+                        alert("Profile photo updated successfully!");
+                    } else {
+                        alert("Update failed: " + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert("An error occurred while uploading. Please try again.");
+                })
+                .finally(() => {
+                    btn.innerHTML = originalIcon; // Restore icon
+                });
+            }
+        }
+    </script>
     </div>
 </body>
 
