@@ -63,3 +63,69 @@ function sendOTP($recipientEmail, $otp, $type = 'Verification')
         return false;
     }
 }
+
+function sendEnrollmentEmail($recipientEmail, $details)
+{
+    global $last_mail_error;
+    $mail = new PHPMailer(true);
+
+    try {
+        $mail->isSMTP();
+        $mail->Host = 'smtp.gmail.com';
+        $mail->SMTPAuth = true;
+        $mail->Username = 'linbilcelestre31@gmail.com';
+        $mail->Password = 'ncim rfhg jisu zzam';
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port = 587;
+        
+        $mail->setFrom('linbilcelestre31@gmail.com', 'SMS Official');
+        $mail->addAddress($recipientEmail);
+
+        $mail->isHTML(true);
+        $mail->Subject = "Official Enrollment Notification - SMS";
+
+        $student_name = strtoupper($details['first_name'] . ' ' . $details['last_name']);
+        $student_id = $details['student_id'];
+        $course = $details['course'];
+        $year = $details['year_level'];
+        $ref = $details['reference_code'];
+
+        $mail->Body = "
+        <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333;'>
+            <div style='background: #1e40af; padding: 30px; text-align: center; border-radius: 10px 10px 0 0;'>
+                <h1 style='color: white; margin: 0; font-size: 24px;'>Official Enrollment Slip</h1>
+            </div>
+            <div style='padding: 30px; border: 1px solid #e2e8f0; border-top: none; border-radius: 0 0 10px 10px;'>
+                <p>Dear <strong>$student_name</strong>,</p>
+                <p>Congratulations! You have been successfully pre-enrolled in our system. Below are your official enrollment details:</p>
+                
+                <div style='background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;'>
+                    <table style='width: 100%; font-size: 14px;'>
+                        <tr><td style='color: #64748b; padding-bottom: 5px;'>Student ID:</td><td><strong>$student_id</strong></td></tr>
+                        <tr><td style='color: #64748b; padding-bottom: 5px;'>Reference Code:</td><td><strong>$ref</strong></td></tr>
+                        <tr><td style='color: #64748b; padding-bottom: 5px;'>Course:</td><td><strong>$course</strong></td></tr>
+                        <tr><td style='color: #64748b; padding-bottom: 5px;'>Year Level:</td><td>$year</td></tr>
+                        <tr><td style='color: #64748b; padding-bottom: 5px;'>Status:</td><td><span style='color: #16a34a; font-weight: 700;'>PRE-ENROLLED</span></td></tr>
+                    </table>
+                </div>
+
+                <p>Please use your registered email and password to log in to the student portal. You will need to verify your account using the code sent in a separate email.</p>
+                
+                <p style='font-size: 13px; color: #64748b; margin-top: 30px;'>
+                    This is an automated notification. Please do not reply to this email.
+                </p>
+                <hr style='border: 0; border-top: 1px solid #e2e8f0; margin: 20px 0;'>
+                <p style='text-align: center; font-size: 12px; color: #94a3b8;'>
+                    &copy; 2026 SMS Official Portal. Empowering Your Academic Journey.
+                </p>
+            </div>
+        </div>
+        ";
+
+        $mail->send();
+        return true;
+    } catch (Exception $e) {
+        $last_mail_error = $e->getMessage();
+        return false;
+    }
+}

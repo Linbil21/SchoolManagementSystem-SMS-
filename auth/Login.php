@@ -814,6 +814,43 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                                     </div>
 
                                     <div class="btns-group" style="justify-content: center; flex-direction: column; gap: 20px;">
+                                        <!-- OFFICIAL ENROLLMENT PREVIEW CARD -->
+                                        <div id="official-enrollment-card" style="width: 100%; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.05); margin-bottom: 10px;">
+                                            <div style="background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%); padding: 15px; color: white; display: flex; align-items: center; gap: 12px;">
+                                                <img src="../Assets/image/logo.png" style="width: 30px; height: 30px; filter: brightness(0) invert(1);">
+                                                <div style="text-align: left;">
+                                                    <h4 style="margin: 0; font-size: 0.85rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">Official Enrollment</h4>
+                                                    <p style="margin: 0; font-size: 0.65rem; opacity: 0.8;">Student Academic Identity</p>
+                                                </div>
+                                            </div>
+                                            <div style="padding: 25px; display: flex; flex-direction: column; align-items: center; position: relative;">
+                                                <div style="width: 120px; height: 120px; border-radius: 50%; border: 4px solid #f1f5f9; overflow: hidden; background: #f8fafc; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                                                    <img id="preview-photo" src="../Assets/image/avatar.png" style="width: 100%; height: 100%; object-fit: cover;">
+                                                </div>
+                                                <h3 id="preview-name" style="color: #1e293b; font-size: 1.4rem; font-weight: 800; margin-bottom: 5px; text-transform: uppercase;">Student Full Name</h3>
+                                                <p id="preview-course" style="color: #2563eb; font-weight: 700; font-size: 0.9rem; background: #eff6ff; padding: 4px 15px; border-radius: 20px; margin-bottom: 15px;">---</p>
+                                                
+                                                <div style="width: 100%; height: 1px; background: #f1f5f9; margin: 10px 0;"></div>
+                                                
+                                                <div style="width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
+                                                    <div style="text-align: left;">
+                                                        <span style="display: block; font-size: 0.65rem; color: #94a3b8; text-transform: uppercase; font-weight: 700;">Year Level</span>
+                                                        <span id="preview-year" style="font-size: 0.85rem; color: #1e293b; font-weight: 700;">---</span>
+                                                    </div>
+                                                    <div style="text-align: right;">
+                                                        <span style="display: block; font-size: 0.65rem; color: #94a3b8; text-transform: uppercase; font-weight: 700;">Status</span>
+                                                        <span style="font-size: 0.85rem; color: #16a34a; font-weight: 700;">PRE-ENROLLED</span>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Watermark -->
+                                                <i class="fas fa-graduation-cap" style="position: absolute; bottom: 10px; right: 15px; font-size: 4rem; color: rgba(30, 64, 175, 0.03); transform: rotate(-15deg);"></i>
+                                            </div>
+                                            <div style="background: #f8fafc; padding: 12px; font-size: 0.75rem; color: #64748b; font-weight: 600; border-top: 1px solid #f1f5f9;">
+                                                <i class="fas fa-info-circle" style="color: #2563eb; margin-right: 5px;"></i> verify credentials above before proceeding.
+                                            </div>
+                                        </div>
+
                                         <!-- AI SUGGESTION CARD -->
                                         <div id="ai-suggestion-card" style="display: none; width: 100%; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border: 1px solid #bae6fd; border-radius: 12px; padding: 20px; text-align: left; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
                                             <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
@@ -1085,6 +1122,42 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                 guardianAddressInput.value = this.value;
             });
         }
+
+        // OFFICIAL ENROLLMENT PREVIEW SYNC
+        function updateOfficialPreview() {
+            const firstName = document.querySelector('input[name="first_name"]')?.value || '';
+            const midName = document.querySelector('input[name="middle_name"]')?.value || '';
+            const lastName = document.querySelector('input[name="last_name"]')?.value || '';
+            const course = document.querySelector('select[name="course"]')?.value || '---';
+            const year = document.querySelector('select[name="year_level"]')?.value || '---';
+            
+            const fullName = `${firstName} ${midName} ${lastName}`.trim().toUpperCase();
+            const previewName = document.getElementById('preview-name');
+            if (previewName) previewName.innerText = fullName || 'STUDENT NAME';
+            
+            const previewCourse = document.getElementById('preview-course');
+            if (previewCourse) previewCourse.innerText = course;
+            
+            const previewYear = document.getElementById('preview-year');
+            if (previewYear) previewYear.innerText = year;
+
+            // Photo Sync
+            const photoInput = document.querySelector('input[name="id_picture"]');
+            if (photoInput && photoInput.files && photoInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('preview-photo').src = e.target.result;
+                }
+                reader.readAsDataURL(photoInput.files[0]);
+            }
+        }
+
+        // Listen for next button clicks to update preview
+        document.querySelectorAll('.btn-next').forEach(btn => {
+            btn.addEventListener('click', () => {
+                setTimeout(updateOfficialPreview, 100);
+            });
+        });
 
         document.querySelectorAll('.toggle-password').forEach(icon => {
             icon.addEventListener('click', function () {

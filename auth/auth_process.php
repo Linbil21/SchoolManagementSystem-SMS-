@@ -129,6 +129,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $notif_stmt = $pdo->prepare("INSERT INTO notifications (user_id, type, title, message, profile_image, icon, icon_bg, icon_color, link) VALUES (NULL, 'student_registration', 'New Student Registration', ?, ?, 'fa-user-plus', '#d1fae5', '#059669', '/Admin/Submodules/Student-Accounts.php')");
                 $notif_stmt->execute([$first_name . " " . $last_name . " has registered.", $profile_image_path]);
 
+                // Send Enrollment Notification Email
+                sendEnrollmentEmail($email, [
+                    'first_name' => $first_name,
+                    'last_name' => $last_name,
+                    'student_id' => $student_id,
+                    'course' => $full_course_name,
+                    'year_level' => $year_level,
+                    'reference_code' => $reference_code
+                ]);
+
                 // Send OTP
                 if (sendOTP($email, $otp, 'Registration Verification')) {
                     if ($isAjax) {
