@@ -10,7 +10,7 @@ if (!isset($_SESSION['role']) || ($_SESSION['role'] !== 'admin' && $_SESSION['ro
 
 // Detect root path for assets
 $script_name = $_SERVER['SCRIPT_NAME'];
-$check_paths = ['/Super-admin/', '/Admin/', '/Cashier/', '/Admission/', '/auth/', '/student/', '/modules/', '/submodules/'];
+$check_paths = ['/Super-admin/', '/Admin/', '/Cashier/', '/Admission/', '/auth/', '/student/', '/modules/'];
 $project_base = '';
 
 foreach ($check_paths as $path) {

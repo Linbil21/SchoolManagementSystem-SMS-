@@ -20,7 +20,7 @@ $script_name = $_SERVER['SCRIPT_NAME'];
 $check_paths = ['/Super-admin/', '/Admin/', '/Cashier/', '/Admission/', '/auth/', '/student/', '/modules/'];
 $project_base = '';
 
-foreach (['/Super-admin/', '/Admin/', '/Cashier/', '/Admission/', '/auth/', '/student/', '/modules/'] as $path) {
+foreach ($check_paths as $path) {
     if (($pos = stripos($script_name, $path)) !== false) {
         $project_base = rtrim(substr($script_name, 0, $pos), '/');
         break;
