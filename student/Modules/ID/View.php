@@ -2,10 +2,9 @@
 session_start();
 require_once '../../../Database/config.php';
 
-if (!isset($_SESSION['student_id'])) {
-    header("Location: ../../auth/Login.php");
-    exit();
-}
+// Security check
+require_once '../../../auth/Security.php';
+checkRole(['student']);
 
 try {
     $stmt = $pdo->prepare("SELECT * FROM students WHERE student_id = ?");

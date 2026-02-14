@@ -1,5 +1,8 @@
 <?php
 session_start();
+// Security check
+require_once '../../../auth/Security.php';
+checkRole(['student']);
 ?>
 <!DOCTYPE html>
 <html lang="en">
