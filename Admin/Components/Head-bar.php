@@ -202,3 +202,40 @@ if (!empty($root) && $root[0] !== '/') {
     window.smsRoot = "<?php echo $root; ?>";
 </script>
 <script src="<?php echo $root; ?>Assets/js/global-search.js"></script>
+
+<style>
+    /* Force Notification Badge Styling - ensures robust display */
+    .notification {
+        position: relative !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        overflow: visible !important; /* Critical */
+    }
+    .head-actions .notification .badge {
+        position: absolute !important;
+        top: -6px !important;
+        right: -6px !important;
+        background: #ef4444 !important;
+        color: white !important;
+        min-width: 18px !important;
+        height: 18px !important;
+        border-radius: 9px !important; /* Pill shape */
+        padding: 0 4px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-size: 0.65rem !important;
+        font-weight: 800 !important;
+        border: 2px solid white !important;
+        box-shadow: 0 2px 4px rgba(239, 68, 68, 0.4) !important;
+        z-index: 100 !important;
+        line-height: normal !important;
+        animation: pulse-badge 2s infinite;
+    }
+    @keyframes pulse-badge {
+        0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+        70% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    }
+</style>
