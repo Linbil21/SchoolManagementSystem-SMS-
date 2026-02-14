@@ -20,11 +20,11 @@ try {
             s.profile_image,
             s.year_level,
             s.created_at,
-            c.course_code, 
-            c.course_name,
+            COALESCE(c.course_code, s.course) as course_code, 
+            COALESCE(c.course_name, s.course) as course_name,
             'Active' as account_status
         FROM students s 
-        LEFT JOIN courses c ON s.course_id = c.courseId 
+        LEFT JOIN courses c ON s.course = c.course_name 
         ORDER BY s.created_at DESC
     ");
     $students = $stmt->fetchAll();
@@ -143,11 +143,23 @@ if (empty($students)) {
             const container = document.getElementById('profileData');
             const studentId = data.student_id;
 
+            // Image path logic
+            let imgSrc = data.profile_image;
+            if (imgSrc && !imgSrc.startsWith('http') && !imgSrc.startsWith('/')) {
+                // Assume relative path from root, e.g. 'Assets/...'
+                // Current location: Admin/Submodules/
+                imgSrc = '../../' + imgSrc;
+            }
+            
+            // Fallback avatar
+            const avatarUrl = `https://ui-avatars.com/api/?name=${data.first_name}+${data.last_name}&background=1648bc&color=fff&size=128`;
+            const finalImage = imgSrc || avatarUrl;
+
             container.innerHTML = `
                 <div style="display: flex; gap: 30px; align-items: center; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid #eee;">
-                    <img src="${data.profile_image ? (data.profile_image.startsWith('/') ? data.profile_image : '/' + data.profile_image) : `https://ui-avatars.com/api/?name=${data.first_name}+${data.last_name}&background=1648bc&color=fff&size=128`}" 
+                    <img src="${finalImage}" 
                          style="width: 120px; height: 120px; border-radius: 15px; object-fit: cover; border: 4px solid #f1f5f9; box-shadow: 0 5px 15px rgba(0,0,0,0.08);" 
-                         onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=${data.first_name}+${data.last_name}&background=1648bc&color=fff&size=128'">
+                         onerror="this.onerror=null; this.src='${avatarUrl}'">
                     <div>
                         <h2 style="margin: 0; color: #1648bc;">${data.last_name}, ${data.first_name}</h2>
                         <p style="color: #718096; margin: 5px 0; font-weight: 600;">ID: ${studentId}</p>
