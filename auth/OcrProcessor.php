@@ -14,25 +14,56 @@ class OcrProcessor {
      * @param string $imagePath Local path to the image file
      * @return array Extracted data
      */
-    public function scanDocument($imagePath) {
-        // SIMULATION MODE: If no API key, return demo data
+    public function scanDocument($imagePath, $type = 'generic') {
+        // 1. Basic Image Validation (Aspect Ratio check for ID photos)
+        if ($type === 'id_picture') {
+            $imgSize = getimagesize($imagePath);
+            if ($imgSize) {
+                $width = $imgSize[0];
+                $height = $imgSize[1];
+                $aspect = $width / $height;
+
+                // ID Photo should be Portrait (approx 3:4) or Square (1:1)
+                // Range: 0.7 (3:4 is 0.75) to 1.2 (Square with margin)
+                if ($aspect < 0.6 || $aspect > 1.3) {
+                    return [
+                        'error' => 'Invalid ID Photo Format. Please upload a formal portrait-oriented photo (2x2 or Passport Size).',
+                        'is_valid' => false
+                    ];
+                }
+            }
+        }
+
+        // SIMULATION MODE
         if (empty($this->apiKey) || $this->apiKey === 'YOUR_GOOGLE_CLOUD_API_KEY_HERE') {
+            if ($type === 'id_picture') {
+                return [
+                    'is_simulation' => true,
+                    'is_valid' => true,
+                    'document_type' => 'Formal ID Photo',
+                    'confidence' => 99.5,
+                    'recommendation' => 'Valid ID Photo format detected.'
+                ];
+            }
             return $this->getSimulationData();
         }
 
         $imageData = base64_encode(file_get_contents($imagePath));
+        
+        // Determine features based on document type
+        $features = [["type" => "TEXT_DETECTION"]];
+        if ($type === 'id_picture') {
+            $features = [
+                ["type" => "FACE_DETECTION"],
+                ["type" => "LANDMARK_DETECTION"] // Optional, helps confirm it's a person/headshot
+            ];
+        }
 
         $requestBody = [
             "requests" => [
                 [
-                    "image" => [
-                        "content" => $imageData
-                    ],
-                    "features" => [
-                        [
-                            "type" => "TEXT_DETECTION"
-                        ]
-                    ]
+                    "image" => [ "content" => $imageData ],
+                    "features" => $features
                 ]
             ]
         ];
@@ -49,10 +80,49 @@ class OcrProcessor {
         curl_close($ch);
 
         if ($httpCode !== 200) {
-            return ['error' => 'API Request failed with code ' . $httpCode, 'raw' => $response];
+            return ['error' => 'API Request failed with code ' . $httpCode];
         }
 
         $result = json_decode($response, true);
+        
+        // Handle ID Photo Logic
+        if ($type === 'id_picture') {
+            $faces = $result['responses'][0]['faceAnnotations'] ?? [];
+            if (empty($faces)) {
+                return [
+                    'error' => 'No face detected. Please ensure the photo is clear and contains a visible face.',
+                    'is_valid' => false
+                ];
+            }
+            if (count($faces) > 1) {
+                return [
+                    'error' => 'Multiple faces detected. Please upload a solo ID photo.',
+                    'is_valid' => false
+                ];
+            }
+            
+            // Check for formal pose (Head tilt/pan) - Basic logic
+            $face = $faces[0];
+            $panAngle = abs($face['panAngle'] ?? 0);
+            $tiltAngle = abs($face['tiltAngle'] ?? 0);
+            
+            if ($panAngle > 20 || $tiltAngle > 20) {
+                 return [
+                    'error' => 'Face is not facing forward. Please look directly at the camera for a formal photo.',
+                    'is_valid' => false,
+                    'debug_angles' => "Pan: $panAngle, Tilt: $tiltAngle"
+                ];
+            }
+
+            return [
+                'is_valid' => true,
+                'document_type' => 'Formal ID Photo',
+                'confidence' => ($face['detectionConfidence'] ?? 0.9) * 100,
+                'recommendation' => 'Formal ID Photo Verified.'
+            ];
+        }
+        
+        // Default Text Logic
         $text = $result['responses'][0]['fullTextAnnotation']['text'] ?? '';
         $confidence = $result['responses'][0]['fullTextAnnotation']['pages'][0]['confidence'] ?? 0;
 
@@ -61,14 +131,18 @@ class OcrProcessor {
         }
 
         $parsedData = $this->parseExtractedText($text);
-        $dataConfidence = round($confidence * 100, 2);
         
-        // If document is not PSA/Form 137, reduce accuracy significantly
+        // Calculate confidence
+        $finalConfidence = round($confidence * 100, 2);
+        
+        // Apply modifier if set (e.g. for unknown docs)
         if (isset($parsedData['confidence_mod'])) {
-            $dataConfidence = $dataConfidence * $parsedData['confidence_mod'];
+            $finalConfidence = $finalConfidence * $parsedData['confidence_mod'];
+            unset($parsedData['confidence_mod']);
         }
         
-        $parsedData['confidence'] = $dataConfidence;
+        $parsedData['confidence'] = $finalConfidence;
+        
         return $parsedData;
     }
 

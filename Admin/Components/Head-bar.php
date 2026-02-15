@@ -37,7 +37,7 @@ if (!empty($root) && $root[0] !== '/') {
 <?php if (isReadOnly()): ?>
     <div style="background: linear-gradient(90deg, #6366f1 0%, #4f46e5 100%); color: white; padding: 8px 15px; text-align: center; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.5px; display: flex; align-items: center; justify-content: center; gap: 10px;">
         <i class="fas fa-eye"></i> <span>PEEK MODE: You are viewing the Admin Portal as a Super Admin. Data modification is disabled.</span>
-        <a href="/Super-admin/Dashboard.php" style="color: white; text-decoration: underline; margin-left:10px;">Return to Control Center</a>
+        <a href="/super-admin/Dashboard.php" style="color: white; text-decoration: underline; margin-left:10px;">Return to Control Center</a>
     </div>
 <?php endif; ?>
 <div class="head-bar">

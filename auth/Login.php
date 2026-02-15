@@ -664,7 +664,7 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                                         </div>
                                         <div class="col input-group">
                                             <label>Passport Size ID <span>*</span></label>
-                                            <input type="file" name="id_picture" required class="ocr-input">
+                                            <input type="file" name="id_picture" required class="ocr-input" data-type="id_picture">
                                             <div class="ocr-badge" onclick="triggerScan(this)"><i class="fas fa-magic"></i> Smart Scan</div>
                                             <div class="ocr-status"></div>
                                         </div>
@@ -972,6 +972,10 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
             const file = fileInput.files[0];
             const formData = new FormData();
             formData.append('document', file);
+            
+            // Get document type
+            const docType = fileInput.getAttribute('data-type') || 'generic';
+            formData.append('type', docType);
 
             // UI Feedback
             badge.classList.add('ocr-scanning');

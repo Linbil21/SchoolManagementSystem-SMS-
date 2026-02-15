@@ -23,9 +23,9 @@ switch ($role) {
         break;
     case 'superadmin':
     case 'super-admin':
-        $sidebar_path = '../Super-admin/Components/Sidebar.php';
-        $header_path = '../Super-admin/Components/header.php';
-        $css_path = '../Super-admin/assets/super-admin.css';
+        $sidebar_path = '../super-admin/Components/Sidebar.php';
+        $header_path = '../super-admin/Components/header.php';
+        $css_path = '../super-admin/assets/super-admin.css';
         break;
     case 'admission':
         $sidebar_path = '../Admission/Components/Sidebar.php';

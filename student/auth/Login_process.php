@@ -53,7 +53,7 @@ try {
 
             $redirectMap = [
                 'admin' => '../../Admin/Dashboard.php',
-                'superadmin' => '../../Super-admin/Dashboard.php',
+                'superadmin' => '../../super-admin/Dashboard.php',
                 'admission' => '../../Admission/Dashboard.php',
                 'cashier' => '../../Cashier/Dashboard.php'
             ];
