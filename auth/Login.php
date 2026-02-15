@@ -844,7 +844,7 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                                             </div>
                                             <div style="padding: 25px; display: flex; flex-direction: column; align-items: center; position: relative;">
                                                 <div style="width: 120px; height: 120px; border-radius: 50%; border: 4px solid #f1f5f9; overflow: hidden; background: #f8fafc; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
-                                                    <img id="preview-photo" src="../Assets/image/avatar.png" style="width: 100%; height: 100%; object-fit: cover;">
+                                                    <img id="preview-photo" src="https://ui-avatars.com/api/?name=New+Student&background=random&color=fff&size=128" style="width: 100%; height: 100%; object-fit: cover;">
                                                 </div>
                                                 <h3 id="preview-name" style="color: #1e293b; font-size: 1.4rem; font-weight: 800; margin-bottom: 5px; text-transform: uppercase;">Student Full Name</h3>
                                                 <p id="preview-course" style="color: #2563eb; font-weight: 700; font-size: 0.9rem; background: #eff6ff; padding: 4px 15px; border-radius: 20px; margin-bottom: 15px;">---</p>
