@@ -4,9 +4,9 @@ $current_page = basename($_SERVER['PHP_SELF']);
 $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'superadmin';
 $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admin@sms.com';
 
-// Robust absolute-relative path logic
+// Robust absolute-relative path logic (case-insensitive)
 $script_name = $_SERVER['SCRIPT_NAME'];
-$check_paths = ['/Super-admin/', '/Admin/', '/Cashier/', '/Admission/', '/auth/', '/student/', '/modules/'];
+$check_paths = ['/super-admin/', '/admin/', '/cashier/', '/admission/', '/auth/', '/student/', '/modules/'];
 $project_base = '';
 
 foreach ($check_paths as $path) {
@@ -16,6 +16,7 @@ foreach ($check_paths as $path) {
     }
 }
 
+// Use the actual folder name from the server (preserve case)
 $base = $project_base . '/Super-admin/';
 $root = $project_base . '/';
 ?>
