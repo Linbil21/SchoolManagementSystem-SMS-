@@ -331,6 +331,18 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
         .ocr-status.success { color: #059669; }
         .ocr-status.error { color: #ef4444; }
         .ocr-status.loading { color: #3b82f6; }
+        
+        .input-error {
+            border-color: #ef4444 !important;
+            background-color: #fef2f2 !important;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+        }
+        
+        .input-success {
+            border-color: #059669 !important;
+            background-color: #ecfdf5 !important;
+            box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1) !important;
+        }
     </style>
 </head>
 
@@ -992,17 +1004,29 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
 
                 if (result.error) {
                     statusDiv.innerHTML = `<span class="error"><i class="fas fa-times-circle"></i> ${result.error}</span>`;
+                    inputGroup.querySelector('input').classList.add('input-error');
+                    inputGroup.querySelector('input').classList.remove('input-success');
                 } else if (!result.is_valid) {
-                    statusDiv.innerHTML = `<span class="error"><i class="fas fa-times-circle"></i> Unrecognized Document. Please upload PSA or Form 137.</span>`;
+                    statusDiv.innerHTML = `<span class="error"><i class="fas fa-times-circle"></i> Invalid Document. Please check requirements.</span>`;
+                    inputGroup.querySelector('input').classList.add('input-error');
+                    inputGroup.querySelector('input').classList.remove('input-success');
+                    
+                    let msg = 'The uploaded file does not appear to be valid.';
+                    if (result.error) msg = result.error;
+                    
                     Swal.fire({
                         title: 'Invalid Document',
-                        text: 'The uploaded file does not appear to be a PSA Birth Certificate or Form 137. AI extraction might be inaccurate.',
-                        icon: 'warning',
-                        confirmButtonColor: '#3b82f6'
+                        text: msg,
+                        icon: 'error',
+                        confirmButtonColor: '#ef4444'
                     });
                 } else {
                     const confidence = parseFloat(result.confidence) || 0;
                     statusDiv.innerHTML = `<span class="success"><i class="fas fa-check-circle"></i> ${result.document_type} Detected! (${confidence}% Accurate)</span>`;
+                    
+                    // Add Success Styling
+                    inputGroup.querySelector('input').classList.remove('input-error');
+                    inputGroup.querySelector('input').classList.add('input-success');
                     
                     // Update Global Results
                     scanResults.count++;
