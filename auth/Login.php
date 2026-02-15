@@ -628,7 +628,7 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                                         </div>
                                         <div class="col col-2 input-group">
                                             <label>Contact Num <span>*</span></label>
-                                            <input type="text" name="contact_number" placeholder="09123456789" required maxlength="12">
+                                            <input type="text" name="contact_number" placeholder="09123456789" required maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                                         </div>
                                     </div>
                                     <div class="row">
@@ -748,7 +748,7 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                                         </div>
                                         <div class="col col-2 input-group">
                                             <label>Contact Num <span>*</span></label>
-                                            <input type="text" name="guardian_contact" required maxlength="12" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                                            <input type="text" name="guardian_contact" required maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                                         </div>
                                     </div>
                                     <div class="row">
