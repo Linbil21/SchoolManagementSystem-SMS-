@@ -154,12 +154,12 @@ function updateFormSteps() {
 function updateProgressbar() {
     // Current Step Labels Mapping
     const stepLabels = [
-        "Enrollment Information",
-        "Student Information",
+        "Enrollment & Basic Info",
+        "Primary Documents",
         "Secondary Documents",
         "Guardian Information",
         "Educational Background",
-        "Account Credentials"
+        "Account Summary & Credentials"
     ];
 
     // Update Part X of 6 Text

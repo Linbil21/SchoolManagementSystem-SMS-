@@ -61,7 +61,14 @@ class OcrProcessor {
         }
 
         $parsedData = $this->parseExtractedText($text);
-        $parsedData['confidence'] = round($confidence * 100, 2);
+        $dataConfidence = round($confidence * 100, 2);
+        
+        // If document is not PSA/Form 137, reduce accuracy significantly
+        if (isset($parsedData['confidence_mod'])) {
+            $dataConfidence = $dataConfidence * $parsedData['confidence_mod'];
+        }
+        
+        $parsedData['confidence'] = $dataConfidence;
         return $parsedData;
     }
 
@@ -71,6 +78,8 @@ class OcrProcessor {
     private function getSimulationData() {
         return [
             'is_simulation' => true,
+            'is_valid' => true,
+            'document_type' => 'PSA Birth Certificate',
             'confidence' => rand(95, 99) . '.' . rand(10, 99),
             'first_name' => 'JUAN',
             'middle_name' => 'PROTOTYPE',
@@ -83,7 +92,7 @@ class OcrProcessor {
             'guardian_contact' => '09987654321',
             'guardian_email' => 'maria.delacruz@example.com',
             'relationship' => 'Mother',
-            'recommendation' => 'BS Information Technology',
+            'recommendation' => '',
             'raw_text' => 'SIMULATED DATA: PHILIPPINE STATISTICS AUTHORITY Birth Certificate Juan Prototype Dela Cruz May 15, 2005 Male. Mother: Maria Dela Cruz. Address: 123 Street, City, Province. Contact: 09123456789. High honors in Computer Studies.'
         ];
     }
@@ -99,33 +108,57 @@ class OcrProcessor {
             'middle_name' => '',
             'last_name' => '',
             'birthdate' => '',
-            'gender' => ''
+            'gender' => '',
+            'document_type' => 'Unknown',
+            'is_valid' => false
         ];
 
-        // Example regex for PSA birth certificate (very simplified)
-        // Note: Real OCR parsing typically requires more sophisticated logic or specific document AI models
-        
+        // Check for Document Type
+        if (preg_match('/(PHILIPPINE STATISTICS AUTHORITY|BIRTH CERTIFICATE|CERTIFICATE OF LIVE BIRTH)/i', $text)) {
+            $data['document_type'] = 'PSA Birth Certificate';
+            $data['is_valid'] = true;
+        } elseif (preg_match('/(FORM 137|PERMANENT RECORD|STUDENT CUMULATIVE RECORD)/i', $text)) {
+            $data['document_type'] = 'Form 137';
+            $data['is_valid'] = true;
+        }
+
+        // If not a recognized document, lower the confidence or mark as invalid
+        if (!$data['is_valid']) {
+            $data['confidence_mod'] = 0.5; // Reduce confidence for unknown documents
+        }
+
         // Try to find Birthdate (Format: Month Day, Year or similar)
-        if (preg_match('/(?:Date of Birth|DATE OF BIRTH)[:\s]*([A-Za-z]+ \d{1,2}, \d{4})/i', $text, $matches)) {
-            $data['birthdate'] = date('Y-m-d', strtotime($matches[1]));
+        if (preg_match('/(?:Date of Birth|DATE OF BIRTH|Born on)[:\s]*([A-Za-z]+ \d{1,2}, \d{4})/i', $text, $matches)) {
+            $timestamp = strtotime($matches[1]);
+            if ($timestamp) {
+                $data['birthdate'] = date('Y-m-d', $timestamp);
+            }
         }
 
         // Try to find Gender
         if (preg_match('/(?:Sex|SEX)[:\s]*(Male|Female|M|F)/i', $text, $matches)) {
-            $val = strtoupper($matches[1]);
+            $val = strtoupper(trim($matches[1]));
             $data['gender'] = ($val === 'M' || $val === 'MALE') ? 'Male' : 'Female';
         }
 
-        // Try to find Names (This is tricky with plain OCR without high-perf models)
-        // Usually PSA has labels like "First Name", "Middle Name", "Last Name"
-        if (preg_match('/(?:First Name|FIRST NAME)[:\s]*([A-Z\s]+)/i', $text, $matches)) {
+        // Try to find Names (More robust parsing)
+        if (preg_match('/(?:First Name|FIRST NAME)[:\s]*([A-Z\s.-]+)/i', $text, $matches)) {
             $data['first_name'] = trim(explode("\n", $matches[1])[0]);
         }
-        if (preg_match('/(?:Middle Name|MIDDLE NAME)[:\s]*([A-Z\s]+)/i', $text, $matches)) {
+        if (preg_match('/(?:Middle Name|MIDDLE NAME)[:\s]*([A-Z\s.-]+)/i', $text, $matches)) {
             $data['middle_name'] = trim(explode("\n", $matches[1])[0]);
         }
-        if (preg_match('/(?:Last Name|LAST NAME)[:\s]*([A-Z\s]+)/i', $text, $matches)) {
+        if (preg_match('/(?:Last Name|LAST NAME)[:\s]*([A-Z\s.-]+)/i', $text, $matches)) {
             $data['last_name'] = trim(explode("\n", $matches[1])[0]);
+        }
+
+        // Fallback name detection if specific labels aren't found
+        if (empty($data['first_name']) && preg_match('/NAME OF CHILD[:\s]*([A-Z\s,]+)/i', $text, $matches)) {
+             $nameParts = explode(',', $matches[1]);
+             if (count($nameParts) >= 2) {
+                 $data['last_name'] = trim($nameParts[0]);
+                 $data['first_name'] = trim($nameParts[1]);
+             }
         }
 
         // Try to find Guardian (Father/Mother on Birth Cert)
@@ -133,13 +166,8 @@ class OcrProcessor {
             $data['guardian_name'] = trim(explode("\n", $matches[1])[0]);
         }
 
-        // Simple Recommendation Logic
-        $data['recommendation'] = "General Academic";
-        if (preg_match('/(Computer|Technology|IT|Programming|Science|Math|Information)/i', $text)) {
-            $data['recommendation'] = "BS Information Technology / Computer Science";
-        } elseif (preg_match('/(Business|Management|Accountancy|Audit|Accountant)/i', $text)) {
-            $data['recommendation'] = "BS Business Administration / Accountancy";
-        }
+        // SIMPLE RECOMMENDATION REMOVED AS REQUESTED BY USER
+        $data['recommendation'] = ""; 
 
         return $data;
     }

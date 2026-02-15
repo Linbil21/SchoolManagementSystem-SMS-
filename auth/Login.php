@@ -549,15 +549,15 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                                         <div class="h-step-line"></div>
                                         <div class="h-step" data-step="6">6</div>
                                     </div>
-                                    <span class="step-text" id="step-text">Part 1 of 6: Enrollment Information</span>
+                                    <span class="step-text" id="step-text">Part 1 of 6: Enrollment & Basic Info</span>
                                 </div>
                             </div>
 
                             <!-- Form Content with Scroll -->
                             <div class="register-container-scroll">
-                                <!-- Step 1: Enrollment Information -->
+                                <!-- Step 1: Enrollment & Basic Information -->
                                 <div class="form-step form-step-active">
-                                    <h3 class="step-title">Enrollment Information</h3>
+                                    <h3 class="step-title">Enrollment & Basic Information</h3>
                                     
                                     <div class="row">
                                         <div class="col col-full input-group">
@@ -596,65 +596,21 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                                         </div>
                                     </div>
 
-                                    <h4 class="sub-step-title">Other Documents (If Available)</h4>
-                                    <div class="row row-3">
-                                        <div class="col input-group">
-                                            <label>Birth Cert (PSA)</label>
-                                            <input type="file" name="birth_cert" class="ocr-input" data-type="birth_cert">
-                                            <div class="ocr-badge" onclick="triggerScan(this)"><i class="fas fa-magic"></i> Smart Scan</div>
-                                            <div class="ocr-status"></div>
-                                        </div>
-                                        <div class="col input-group">
-                                            <label>Form 138</label>
-                                            <input type="file" name="form_138" class="ocr-input">
-                                            <div class="ocr-badge" onclick="triggerScan(this)"><i class="fas fa-magic"></i> Smart Scan</div>
-                                            <div class="ocr-status"></div>
-                                        </div>
-                                        <div class="col input-group">
-                                            <label>Passport Size ID <span>*</span></label>
-                                            <input type="file" name="id_picture" required class="ocr-input">
-                                            <div class="ocr-badge" onclick="triggerScan(this)"><i class="fas fa-magic"></i> Smart Scan</div>
-                                            <div class="ocr-status"></div>
-                                        </div>
-                                    </div>
-
-                                    <div class="row" style="margin-top: 5px;">
-                                        <div class="col input-group col-full">
-                                            <label style="color: var(--primary-blue); font-weight: 600;">Secondary Documents Requirements? <span>*</span></label>
-                                            <div style="display: flex; gap: 30px; margin-top: 10px; background: #f8fafc; padding: 15px; border-radius: 10px; border: 1px dashed #e2e8f0; width: fit-content;">
-                                                <label style="font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 10px; margin-bottom: 0;">
-                                                    <input type="radio" name="has_secondary_docs" value="yes" checked style="width: 18px; height: 18px;"> Yes
-                                                </label>
-                                                <label style="font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 10px; margin-bottom: 0;">
-                                                    <input type="radio" name="has_secondary_docs" value="no" style="width: 18px; height: 18px;"> No
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="btns-group">
-                                        <a href="../student/auth/Login.php" style="margin-right: auto; text-decoration: none; color: #64748b; font-weight: 700; font-size: 0.85rem;">Already Enrolled?</a>
-                                        <a href="#" class="btn btn-next">CONTINUE <i class="fas fa-chevron-right" style="margin-left: 10px;"></i></a>
-                                    </div>
-                                </div>
-
-                                <!-- Step 2: Student Information -->
-                                <div class="form-step">
-                                    <h3 class="step-title">Student Information</h3>
+                                    <h4 class="sub-step-title">Student Details</h4>
                                     <div class="row">
                                         <div class="col col-2 input-group">
                                             <label>First Name <span>*</span></label>
-                                            <input type="text" name="first_name" placeholder="John" required>
+                                            <input type="text" name="first_name" placeholder="First Name" required>
                                         </div>
                                         <div class="col col-2 input-group">
                                             <label>Middle Name</label>
-                                            <input type="text" name="middle_name" placeholder="Quincy">
+                                            <input type="text" name="middle_name" placeholder="Middle Name">
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col col-2 input-group">
                                             <label>Last Name <span>*</span></label>
-                                            <input type="text" name="last_name" placeholder="Doe" required>
+                                            <input type="text" name="last_name" placeholder="Last Name" required>
                                         </div>
                                         <div class="col col-2 input-group">
                                             <label>Gender <span>*</span></label>
@@ -668,18 +624,63 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                                     <div class="row">
                                         <div class="col col-2 input-group">
                                             <label>Birthdate <span>*</span></label>
-                                            <input type="date" name="birthdate" value="2010-01-10" required>
+                                            <input type="date" name="birthdate" required>
                                         </div>
                                         <div class="col col-2 input-group">
                                             <label>Contact Num <span>*</span></label>
-                                            <input type="text" name="contact_number" placeholder="09123456789" required maxlength="12" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                                            <input type="text" name="contact_number" placeholder="09123456789" required maxlength="12">
                                         </div>
                                     </div>
-
                                     <div class="row">
                                         <div class="col col-full input-group">
                                             <label>Complete Address <span>*</span></label>
                                             <input type="text" name="address" placeholder="123 Street, City, Province" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="btns-group">
+                                        <a href="../student/auth/Login.php" style="margin-right: auto; text-decoration: none; color: #64748b; font-weight: 700; font-size: 0.85rem;">Already Enrolled?</a>
+                                        <a href="#" class="btn btn-next">CONTINUE <i class="fas fa-chevron-right" style="margin-left: 10px;"></i></a>
+                                    </div>
+                                </div>
+
+                                <!-- Step 2: Primary Documents -->
+                                <div class="form-step">
+                                    <h3 class="step-title">Primary Documents</h3>
+                                    <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 20px;">Please upload clear copies of your documents. Use <b>Smart Scan</b> for PSA to auto-fill your info.</p>
+                                    
+                                    <div class="row row-3">
+                                        <div class="col input-group">
+                                            <label>Birth Cert (PSA) <span>*</span></label>
+                                            <input type="file" name="birth_cert" class="ocr-input" data-type="birth_cert" required>
+                                            <div class="ocr-badge" onclick="triggerScan(this)"><i class="fas fa-magic"></i> Smart Scan</div>
+                                            <div class="ocr-status"></div>
+                                        </div>
+                                        <div class="col input-group">
+                                            <label>Form 138 <span>*</span></label>
+                                            <input type="file" name="form_138" class="ocr-input" required>
+                                            <div class="ocr-badge" onclick="triggerScan(this)"><i class="fas fa-magic"></i> Smart Scan</div>
+                                            <div class="ocr-status"></div>
+                                        </div>
+                                        <div class="col input-group">
+                                            <label>Passport Size ID <span>*</span></label>
+                                            <input type="file" name="id_picture" required class="ocr-input">
+                                            <div class="ocr-badge" onclick="triggerScan(this)"><i class="fas fa-magic"></i> Smart Scan</div>
+                                            <div class="ocr-status"></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row" style="margin-top: 15px;">
+                                        <div class="col input-group col-full">
+                                            <label style="color: var(--primary-blue); font-weight: 600;">Secondary Documents Requirements? <span>*</span></label>
+                                            <div style="display: flex; gap: 30px; margin-top: 10px; background: #f8fafc; padding: 15px; border-radius: 10px; border: 1px dashed #e2e8f0; width: fit-content;">
+                                                <label style="font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 10px; margin-bottom: 0;">
+                                                    <input type="radio" name="has_secondary_docs" value="yes" checked style="width: 18px; height: 18px;"> Yes
+                                                </label>
+                                                <label style="font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 10px; margin-bottom: 0;">
+                                                    <input type="radio" name="has_secondary_docs" value="no" style="width: 18px; height: 18px;"> No
+                                                </label>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -857,26 +858,15 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                                             </div>
                                         </div>
 
-                                        <!-- AI SUGGESTION CARD -->
-                                        <div id="ai-suggestion-card" style="display: none; width: 100%; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border: 1px solid #bae6fd; border-radius: 12px; padding: 20px; text-align: left; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
-                                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
-                                                <div style="width: 40px; height: 40px; background: #0ea5e9; color: white; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
-                                                    <i class="fas fa-robot"></i>
-                                                </div>
-                                                <div>
-                                                    <h4 style="margin: 0; color: #0369a1; font-weight: 800; font-size: 1rem;">SMS AI RECOMMENDATION</h4>
-                                                    <p style="margin: 0; font-size: 0.75rem; color: #0ea5e9; font-weight: 600;" id="ai-scan-count">Based on 0 scanned documents</p>
-                                                </div>
-                                            </div>
-                                            <p style="color: #334155; font-size: 0.9rem; line-height: 1.5; margin-bottom: 15px;">
-                                                "Our AI has analyzed your submitted documents. Based on the keywords and data found, we suggest the following course path:"
-                                            </p>
-                                            <div style="background: white; border: 1.5px dashed #0ea5e9; border-radius: 8px; padding: 12px; font-weight: 800; color: #0369a1; font-size: 1.1rem; text-align: center;" id="ai-recommendation-text">
-                                                Analyzing documents...
-                                            </div>
-                                            <div style="margin-top: 15px; font-size: 0.8rem; color: #64748b; display: flex; justify-content: space-between;">
-                                                <span><i class="fas fa-shield-check"></i> Verification Score: <strong id="ai-final-confidence">0%</strong></span>
-                                                <span id="ai-simulation-indicator" style="display:none; color: #f59e0b;"><i class="fas fa-flask"></i> Simulation Mode</span>
+                                        <!-- ACCOUNT SUMMARY -->
+                                        <div id="account-summary-card" style="width: 100%; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; text-align: left; margin-bottom: 20px;">
+                                            <h4 style="margin: 0 0 15px; color: #1e3a8a; font-weight: 800; font-size: 1rem; text-transform: uppercase;">Enrollment Summary</h4>
+                                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.85rem;">
+                                                <div><span style="color: #64748b;">Full Name:</span> <br><strong id="summary-name">---</strong></div>
+                                                <div><span style="color: #64748b;">Course:</span> <br><strong id="summary-course">---</strong></div>
+                                                <div><span style="color: #64748b;">Year Level:</span> <br><strong id="summary-year">---</strong></div>
+                                                <div><span style="color: #64748b;">Contact:</span> <br><strong id="summary-contact">---</strong></div>
+                                                <div style="grid-column: span 2;"><span style="color: #64748b;">Address:</span> <br><strong id="summary-address">---</strong></div>
                                             </div>
                                         </div>
 
@@ -901,10 +891,10 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                             
                             <ul class="vertical-progressbar">
                                 <li class="v-step active-v-step" data-step="0">
-                                    <span class="v-dot"></span> Enrollment Details
+                                    <span class="v-dot"></span> Basic Info
                                 </li>
                                 <li class="v-step" data-step="1">
-                                    <span class="v-dot"></span> Personal Details
+                                    <span class="v-dot"></span> Primary Docs
                                 </li>
                                 <li class="v-step" data-step="2">
                                     <span class="v-dot"></span> Secondary Documents
@@ -998,9 +988,17 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
 
                 if (result.error) {
                     statusDiv.innerHTML = `<span class="error"><i class="fas fa-times-circle"></i> ${result.error}</span>`;
+                } else if (!result.is_valid) {
+                    statusDiv.innerHTML = `<span class="error"><i class="fas fa-times-circle"></i> Unrecognized Document. Please upload PSA or Form 137.</span>`;
+                    Swal.fire({
+                        title: 'Invalid Document',
+                        text: 'The uploaded file does not appear to be a PSA Birth Certificate or Form 137. AI extraction might be inaccurate.',
+                        icon: 'warning',
+                        confirmButtonColor: '#3b82f6'
+                    });
                 } else {
                     const confidence = parseFloat(result.confidence) || 0;
-                    statusDiv.innerHTML = `<span class="success"><i class="fas fa-check-circle"></i> Details extracted! (${confidence}% Accurate)</span>`;
+                    statusDiv.innerHTML = `<span class="success"><i class="fas fa-check-circle"></i> ${result.document_type} Detected! (${confidence}% Accurate)</span>`;
                     
                     // Update Global Results
                     scanResults.count++;
@@ -1047,19 +1045,13 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                         if (gAddress) gAddress.value = result.address;
                     }
 
-                    // Update UI for Step 5
-                    updateAISummary();
+                    // Update Previews
+                    updateOfficialPreview();
 
                     // If data was extracted, show a tooltip
-                    let alertText = `We found ${result.first_name || 'data'} in the document. Fields have been auto-filled. (Accuracy: ${confidence}%)`;
+                    let alertText = `${result.document_type || 'Document'} scanned successfully. Fields have been auto-filled. (Accuracy: ${confidence}%)`;
                     if (result.is_simulation) {
                         alertText += "\n\n(Note: Simulation Mode)";
-                    }
-
-                    // Auto-fill Email if found in OCR (though usually rare in PSA)
-                    if (result.email) {
-                        const emailInput = document.querySelector('input[name="reg_email"]');
-                        if (emailInput) emailInput.value = result.email;
                     }
 
                     Swal.fire({
@@ -1070,36 +1062,15 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                         toast: true,
                         position: 'top-end',
                         showConfirmButton: false,
-                        timer: 3000
+                        timer: 4000
                     });
                 }
             } catch (err) {
                 console.error(err);
-                statusDiv.innerHTML = '<span class="error"><i class="fas fa-times-circle"></i> Error processing request.</span>';
+                statusDiv.innerHTML = '<span class="error"><i class="fas fa-times-circle"></i> Error processing document.</span>';
             } finally {
                 badge.classList.remove('ocr-scanning');
                 badge.innerHTML = '<i class="fas fa-magic"></i> Smart Scan';
-            }
-        }
-
-        function updateAISummary() {
-            const card = document.getElementById('ai-suggestion-card');
-            if (scanResults.count > 0) {
-                card.style.display = 'block';
-                document.getElementById('ai-scan-count').innerText = `Based on ${scanResults.count} scanned document(s)`;
-                
-                // Calculate average confidence
-                const avgConf = (scanResults.confidences.reduce((a, b) => a + b, 0) / scanResults.confidences.length).toFixed(2);
-                document.getElementById('ai-final-confidence').innerText = `${avgConf}%`;
-                
-                // Get most frequent recommendation or just the last one
-                if (scanResults.recommendations.length > 0) {
-                    document.getElementById('ai-recommendation-text').innerText = scanResults.recommendations[scanResults.recommendations.length - 1];
-                }
-
-                if (scanResults.isSimulation) {
-                    document.getElementById('ai-simulation-indicator').style.display = 'block';
-                }
             }
         }
 
@@ -1136,6 +1107,8 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
             const lastName = document.querySelector('input[name="last_name"]')?.value || '';
             const course = document.querySelector('select[name="course"]')?.value || '---';
             const year = document.querySelector('select[name="year_level"]')?.value || '---';
+            const contact = document.querySelector('input[name="contact_number"]')?.value || '---';
+            const address = document.querySelector('input[name="address"]')?.value || '---';
             
             const fullName = `${firstName} ${midName} ${lastName}`.trim().toUpperCase();
             const previewName = document.getElementById('preview-name');
@@ -1147,12 +1120,25 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
             const previewYear = document.getElementById('preview-year');
             if (previewYear) previewYear.innerText = year;
 
+            // Summary Card Sync
+            const summaryName = document.getElementById('summary-name');
+            if (summaryName) summaryName.innerText = fullName || '---';
+            const summaryCourse = document.getElementById('summary-course');
+            if (summaryCourse) summaryCourse.innerText = course;
+            const summaryYear = document.getElementById('summary-year');
+            if (summaryYear) summaryYear.innerText = year;
+            const summaryContact = document.getElementById('summary-contact');
+            if (summaryContact) summaryContact.innerText = contact;
+            const summaryAddress = document.getElementById('summary-address');
+            if (summaryAddress) summaryAddress.innerText = address;
+
             // Photo Sync
             const photoInput = document.querySelector('input[name="id_picture"]');
             if (photoInput && photoInput.files && photoInput.files[0]) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    document.getElementById('preview-photo').src = e.target.result;
+                    const previewPhoto = document.getElementById('preview-photo');
+                    if (previewPhoto) previewPhoto.src = e.target.result;
                 }
                 reader.readAsDataURL(photoInput.files[0]);
             }
