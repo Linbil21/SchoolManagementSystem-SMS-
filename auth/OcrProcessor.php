@@ -24,10 +24,20 @@ class OcrProcessor {
                 $aspect = $width / $height;
 
                 // ID Photo should be Portrait (approx 3:4) or Square (1:1)
-                // Range: 0.7 (3:4 is 0.75) to 1.2 (Square with margin)
-                if ($aspect < 0.6 || $aspect > 1.3) {
+                // Strict Range: 0.65 (Tall Portrait) to 1.05 (Square with margin)
+                // Rejects Landscape photos immediately.
+                if ($aspect < 0.65 || $aspect > 1.05) {
                     return [
-                        'error' => 'Invalid ID Photo Format. Please upload a formal portrait-oriented photo (2x2 or Passport Size).',
+                        'error' => 'Invalid ID Photo Format. Photo must be PORTRAIT or SQUARE (Passport Size/2x2). Landscape photos are not allowed.',
+                        'is_valid' => false,
+                        'debug_aspect' => $aspect
+                    ];
+                }
+                
+                // File Size Check (e.g. Reject very small images/thumbnails)
+                if (filesize($imagePath) < 5000) { // < 5KB
+                     return [
+                        'error' => 'Image too small. Please upload a high-quality ID photo.',
                         'is_valid' => false
                     ];
                 }
