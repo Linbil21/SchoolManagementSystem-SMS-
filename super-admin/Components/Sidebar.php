@@ -72,19 +72,19 @@ $root = $project_base . '/';
                 </a>
                 <ul class="sub-menu">
                     <li>
-                        <a href="<?php echo $base; ?>Submodules/Admission-Dashboard.php">
+                        <a href="<?php echo $base; ?>submodules/Admission-Dashboard.php">
                             <i class="fas fa-tachometer-alt"></i>
                             <span>Admission Stats</span>
                         </a>
                     </li>
                     <li>
-                        <a href="<?php echo $base; ?>Submodules/Applications-Manager.php">
+                        <a href="<?php echo $base; ?>submodules/Applications-Manager.php">
                             <i class="fas fa-tasks"></i>
                             <span>App Manager</span>
                         </a>
                     </li>
                     <li>
-                        <a href="<?php echo $base; ?>Submodules/Student-ID-Center.php">
+                        <a href="<?php echo $base; ?>submodules/Student-ID-Center.php">
                             <i class="fas fa-id-card"></i>
                             <span>ID Center</span>
                         </a>
