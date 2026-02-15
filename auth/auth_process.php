@@ -235,7 +235,7 @@ function process_login($email, $password, $pdo, $isAjax = false)
 
                 $redirects = [
                     'admin' => '../Admin/Dashboard.php',
-                    'superadmin' => '../Super-admin/Dashboard.php',
+                    'superadmin' => '../super-admin/Dashboard.php',
                     'admission' => '../Admission/Dashboard.php',
                     'cashier' => '../Cashier/Dashboard.php',
                     'student' => '../student/Dashboard.php'

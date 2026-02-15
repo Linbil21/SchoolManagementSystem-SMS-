@@ -55,7 +55,7 @@ function checkRole($allowed_roles) {
         // Redirect based on their ACTUAL role
         switch ($current_role) {
             case 'superadmin':
-                header("Location: " . $root_path . "Super-admin/Dashboard.php");
+                header("Location: " . $root_path . "super-admin/Dashboard.php");
                 break;
             case 'admin':
                 header("Location: " . $root_path . "Admin/Dashboard.php");

@@ -121,7 +121,7 @@ $root = $project_base . '/';
                         </a>
                     </li>
                     <li class="<?php echo ($current_page == 'Courses.php') ? 'active' : ''; ?>">
-                        <a href="<?php echo $root; ?>Super-admin/Modules/Courses.php">
+                        <a href="<?php echo $root; ?>super-admin/Modules/Courses.php">
                             <i class="fas fa-graduation-cap"></i>
                             <span>Course Management</span>
                         </a>
