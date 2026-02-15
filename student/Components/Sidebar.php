@@ -30,6 +30,20 @@ foreach ($check_paths as $path) {
     }
 }
 $root = $project_base . '/';
+
+// --- Refresh Enrollment Status & Student ID ---
+if (isset($_SESSION['email'])) {
+    try {
+        require_once $_SERVER['DOCUMENT_ROOT'] . $root . 'Database/config.php';
+        $stmt = $pdo->prepare("SELECT s.student_id, e.status as enrollment_status FROM students s LEFT JOIN enrollments e ON s.email = e.email WHERE s.email = ?");
+        $stmt->execute([$_SESSION['email']]);
+        $fresh = $stmt->fetch();
+        if ($fresh) {
+            $_SESSION['student_id'] = $fresh->student_id;
+            $_SESSION['enrollment_status'] = $fresh->enrollment_status;
+        }
+    } catch (Exception $e) {}
+}
 ?>
 <div class="sidebar">
     <div class="sidebar-brand">
@@ -54,18 +68,14 @@ $root = $project_base . '/';
         <p class="menu-label">ACADEMIC</p>
         <ul class="main-menu">
             <!-- Admission -->
-            <li
-                class="has-dropdown <?php echo isDropdownOpen(['Admission-Apply', 'Requirements', 'Exam-Schedule', 'Interview', 'Admission-Result', 'Admission-History']); ?>">
+            <li class="has-dropdown <?php echo isDropdownOpen(['Requirements', 'Admission-Result', 'Admission-History']); ?>">
                 <a href="javascript:void(0)" class="dropdown-toggle">
                     <i class="fas fa-university"></i>
                     <span>Admission</span>
                     <i class="fas fa-chevron-right arrow-icon"></i>
                 </a>
                 <ul class="sub-menu">
-                    <li><a href="/student/Modules/Admission/Apply.php">Apply for Admission</a></li>
                     <li><a href="/student/Modules/Admission/Requirements.php">Upload Requirements</a></li>
-                    <li><a href="/student/Modules/Admission/Exam-Schedule.php">Entrance Exam Schedule</a></li>
-                    <li><a href="/student/Modules/Admission/Interview.php">Interview Schedule</a></li>
                     <li><a href="/student/Modules/Admission/Result.php">View Admission Result</a></li>
                     <li><a href="/student/Modules/Admission/History.php">Admission History</a></li>
                 </ul>
@@ -124,7 +134,11 @@ $root = $project_base . '/';
 
         <p class="menu-label">SERVICES</p>
         <ul class="main-menu">
-            <!-- Student ID -->
+            <!-- Student ID - Only show if Enrolled -->
+            <?php 
+            $enrollment_status = $_SESSION['enrollment_status'] ?? 'Pending';
+            if ($enrollment_status === 'Enrolled'): 
+            ?>
             <li class="has-dropdown <?php echo isDropdownOpen(['View-ID', 'Download-ID', 'Replacement']); ?>">
                 <a href="javascript:void(0)" class="dropdown-toggle">
                     <i class="fas fa-id-card"></i>
@@ -137,6 +151,7 @@ $root = $project_base . '/';
                     <li><a href="/student/Modules/ID/Replacement.php">Replacement Request</a></li>
                 </ul>
             </li>
+            <?php endif; ?>
 
             <!-- Support -->
             <li class="has-dropdown <?php echo isDropdownOpen(['Announcements', 'Messages', 'Help']); ?>">

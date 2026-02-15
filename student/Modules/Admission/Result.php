@@ -145,25 +145,23 @@ session_start();
     <div class="main-wrapper">
         <?php include '../../Components/Header.php'; ?>
         <div class="content-area">
-            
-            <?php if (isset($_GET['status']) && $_GET['status'] == 'success'): ?>
+            <?php 
+            $enrollment_status = $_SESSION['enrollment_status'] ?? 'Pending Review';
+            if ($enrollment_status === 'Pending Review' || $enrollment_status === 'Pending'): 
+            ?>
                 <div class="result-card">
                     <div class="result-icon" style="background: #e0f2fe; color: #0284c7;">
-                        <i class="fas fa-paper-plane"></i>
+                        <i class="fas fa-clock"></i>
                     </div>
-                    <h1 class="result-title">Application Submitted!</h1>
+                    <h1 class="result-title">Application Under Review</h1>
                     <p class="result-message">
-                        Thank you for applying. Your application has been received and is now in the review process.
+                        Your application is currently being evaluated by the Admission Office. Please check back later for updates.
                     </p>
 
                     <div class="score-box">
                         <div class="score-item">
-                            <h4 style="color: #0284c7;"><?php echo htmlspecialchars($_GET['app_no'] ?? ''); ?></h4>
-                            <span>Application No.</span>
-                        </div>
-                        <div class="score-item">
-                            <h4 style="color: #d97706;">Pending</h4>
-                            <span>Status</span>
+                            <h4 style="color: #0284c7;">Pending</h4>
+                            <span>Evaluation Status</span>
                         </div>
                     </div>
 
@@ -171,34 +169,68 @@ session_start();
                         Back to Dashboard <i class="fas fa-home" style="margin-left: 8px;"></i>
                     </a>
                 </div>
-            <?php else: ?>
+            <?php elseif ($enrollment_status === 'Pending Payment'): ?>
                 <div class="result-card">
-                    <div class="confetti-decoration"></div>
-                    <div class="result-icon">
-                        <i class="fas fa-check"></i>
+                    <div class="result-icon" style="background: #fef3c7; color: #d97706;">
+                        <i class="fas fa-check-circle"></i>
                     </div>
-                    <h1 class="result-title">Congratulations!</h1>
+                    <h1 class="result-title">Admission Approved!</h1>
                     <p class="result-message">
-                        We are pleased to inform you that you have <strong>PASSED</strong> the Entrance Examination for the <strong>BS Information Technology</strong> program.
+                        Congratulations! Your application has been <strong>APPROVED</strong>. You may now proceed to payment to finalize your enrollment.
                     </p>
 
                     <div class="score-box">
                         <div class="score-item">
-                            <h4>92%</h4>
-                            <span>Exam Score</span>
-                        </div>
-                        <div class="score-item">
-                            <h4>Passed</h4>
-                            <span>Interview</span>
+                            <h4 style="color: #d97706;">Approved</h4>
+                            <span>Status</span>
                         </div>
                     </div>
 
-                    <a href="../Enrollment/Subject-Selection.php" class="action-btn">
-                        Proceed to Enrollment <i class="fas fa-arrow-right" style="margin-left: 8px;"></i>
+                    <a href="../Enrollment/Upload-Payment.php" class="action-btn" style="background: #d97706;">
+                        Proceed to Payment <i class="fas fa-wallet" style="margin-left: 8px;"></i>
+                    </a>
+                </div>
+            <?php elseif ($enrollment_status === 'Enrolled'): ?>
+                <div class="result-card">
+                    <div class="confetti-decoration"></div>
+                    <div class="result-icon" style="background: #dcfce7; color: #16a34a;">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <h1 class="result-title">Officially Enrolled!</h1>
+                    <p class="result-message">
+                        Welcome to the institution! Your enrollment is complete. You can now access your class schedule and other services.
+                    </p>
+
+                    <div class="score-box">
+                        <div class="score-item">
+                            <h4 style="color: #16a34a;">Active</h4>
+                            <span>Enrollment</span>
+                        </div>
+                        <div class="score-item">
+                            <h4 style="color: #16a34a;">Verified</h4>
+                            <span>Payment</span>
+                        </div>
+                    </div>
+
+                    <a href="../Academic/Schedule.php" class="action-btn" style="background: #16a34a;">
+                        View Class Schedule <i class="fas fa-calendar-alt" style="margin-left: 8px;"></i>
+                    </a>
+                </div>
+            <?php else: ?>
+                <!-- Default or Rejected -->
+                <div class="result-card">
+                    <div class="result-icon" style="background: #fee2e2; color: #ef4444;">
+                        <i class="fas fa-times-circle"></i>
+                    </div>
+                    <h1 class="result-title">Result Pending</h1>
+                    <p class="result-message">
+                        Your application status is currently: <strong><?php echo htmlspecialchars($enrollment_status); ?></strong>.
+                    </p>
+                    <a href="../../Dashboard.php" class="action-btn" style="background: #ef4444;">
+                        Back to Dashboard <i class="fas fa-home" style="margin-left: 8px;"></i>
                     </a>
                 </div>
             <?php endif; ?>
-
         </div>
     </div>
 </body>

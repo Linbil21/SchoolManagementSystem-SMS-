@@ -30,12 +30,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 $stmt->execute([$app->email]);
                 $student = $stmt->fetch();
 
-                if (!$student) {
-                    $student_id = "STU-" . date('Y') . "-" . str_pad(rand(1, 999), 3, '0', STR_PAD_LEFT);
-                    $pdo->prepare("INSERT INTO students (student_id, first_name, last_name, email, course, password) VALUES (?, ?, ?, ?, ?, ?)")
-                        ->execute([$student_id, $app->first_name, $app->last_name, $app->email, $app->preferred_course_1, 'student123']);
-                }
-
                 // 3. Create or Update Enrollment & Assign Default Fees
                 $tuition = 15000.00;
                 $misc = 2500.00;
@@ -53,15 +47,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                             misc_fee = ?, 
                             total_fee = ?, 
                             balance = ?,
-                            status = 'Enrolled'
+                            status = 'Pending Payment'
                             WHERE enrollmentId = ?";
                     $pdo->prepare($sql)->execute([$tuition, $misc, $total, $total, $existing_enr->enrollmentId]);
-                    $message = "Application #{$app->application_no} approved. Assessment updated for existing record.";
+                    $message = "Application #{$app->application_no} approved. Assessment updated. Status set to Pending Payment.";
                 } else {
                     // Insert new
                     $ref_code = "ENR-" . date('Y') . "-" . strtoupper(substr(md5(uniqid()), 0, 6));
                     $sql = "INSERT INTO enrollments (reference_code, admission_type, first_name, last_name, email, year_level, status, tuition_fee, misc_fee, total_fee, balance) 
-                            VALUES (?, ?, ?, ?, ?, 'First Year', 'Enrolled', ?, ?, ?, ?)";
+                            VALUES (?, ?, ?, ?, ?, 'First Year', 'Pending Payment', ?, ?, ?, ?)";
                     $pdo->prepare($sql)->execute([
                         $ref_code, 
                         $app->student_type, 
@@ -73,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                         $total,
                         $total
                     ]);
-                    $message = "Application #{$app->application_no} approved. Student record created and Tuition Fees assigned.";
+                    $message = "Application #{$app->application_no} approved. Assessment assigned. Status set to Pending Payment.";
                 }
             }
         } else {

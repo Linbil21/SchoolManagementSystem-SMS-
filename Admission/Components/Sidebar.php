@@ -84,8 +84,6 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admission@sms.com';
                 </a>
                 <ul class="sub-menu">
                     <li class="<?php echo ($current_page == 'Document-Review.php') ? 'active' : ''; ?>"><a href="<?php echo $root; ?>Admission/Modules/Document-Review.php">Document Review</a></li>
-                    <li class="<?php echo ($current_page == 'Exam-Results.php') ? 'active' : ''; ?>"><a href="<?php echo $root; ?>Admission/Modules/Exam-Results.php">Entrance Exam Results</a></li>
-                    <li class="<?php echo ($current_page == 'Interview-Assessment.php') ? 'active' : ''; ?>"><a href="<?php echo $root; ?>Admission/Modules/Interview-Assessment.php">Interview Assessment</a></li>
                     <li class="<?php echo ($current_page == 'Evaluation-Summary.php') ? 'active' : ''; ?>"><a href="<?php echo $root; ?>Admission/Modules/Evaluation-Summary.php">Evaluation Summary</a></li>
                 </ul>
             </li>

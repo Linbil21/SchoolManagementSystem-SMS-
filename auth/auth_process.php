@@ -77,16 +77,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $secondary_school = $_POST['secondary_school'] ?? '';
             $secondary_year = $_POST['secondary_year'] ?? '';
 
-            // Generate IDs
-            $year = date('Y');
             $stmt = $pdo->query("SELECT MAX(id) as last_id FROM students");
             $last_id = $stmt->fetch()->last_id ?? 0;
-            $new_id_num = str_pad($last_id + 1, 4, '0', STR_PAD_LEFT);
-            $student_id = "$year-$new_id_num";
 
             $ref_year = date('y');
             $ref_num = str_pad($last_id + 1, 7, '0', STR_PAD_LEFT);
             $reference_code = "ENR$ref_year$ref_num";
+            
+            // Use Reference Code as temporary ID until officially enrolled
+            $student_id = $reference_code; 
 
             $course_map = ['BSIT' => 1, 'BSCS' => 2, 'BSBA' => 3];
             $course_id = $course_map[$course] ?? 1;
@@ -120,20 +119,34 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                          VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Regular', ?, ?, 0)");
                 $student_stmt->execute([$student_id, $first_name, $middle_name, $last_name, $email, $hashed_password, $full_course_name, $year_level, $profile_image_path, $otp]);
 
-                $enroll_stmt = $pdo->prepare("INSERT INTO enrollments (reference_code, admission_type, course_id, year_level, first_name, mid_name, last_name, gender, birthdate, contact_number, email, address, id_picture, guardian_first, guardian_middle, guardian_last, guardian_email, guardian_contact, relationship, guardian_address, primary_school, primary_year, secondary_school, secondary_year) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                $enroll_stmt = $pdo->prepare("INSERT INTO enrollments (reference_code, admission_type, course_id, year_level, first_name, mid_name, last_name, gender, birthdate, contact_number, email, address, id_picture, guardian_first, guardian_middle, guardian_last, guardian_email, guardian_contact, relationship, guardian_address, primary_school, primary_year, secondary_school, secondary_year, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending Review')");
                 $enroll_stmt->execute([$reference_code, $admission_type, $course_id, $year_level, $first_name, $middle_name, $last_name, $gender, $birthdate, $contact_number, $email, $address, $profile_image_path, $guardian_first, $guardian_middle, $guardian_last, $guardian_email, $guardian_contact, $relationship, $guardian_address, $primary_school, $primary_year, $secondary_school, $secondary_year]);
+
+                // Create Admission Application automatically
+                $app_stmt = $pdo->prepare("INSERT INTO admission_applications (application_no, first_name, last_name, date_of_birth, gender, email, phone_number, student_type, preferred_course_1, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending')");
+                $app_stmt->execute([
+                    'APP-' . time(), 
+                    $first_name, 
+                    $last_name, 
+                    $birthdate, 
+                    $gender, 
+                    $email, 
+                    $contact_number, 
+                    $admission_type, 
+                    $full_course_name
+                ]);
 
                 $pdo->commit();
 
                 // Notification
-                $notif_stmt = $pdo->prepare("INSERT INTO notifications (user_id, type, title, message, profile_image, icon, icon_bg, icon_color, link) VALUES (NULL, 'student_registration', 'New Student Registration', ?, ?, 'fa-user-plus', '#d1fae5', '#059669', '/Admin/Submodules/Student-Accounts.php')");
-                $notif_stmt->execute([$first_name . " " . $last_name . " has registered.", $profile_image_path]);
+                $notif_stmt = $pdo->prepare("INSERT INTO notifications (user_id, type, title, message, profile_image, icon, icon_bg, icon_color, link) VALUES (NULL, 'student_registration', 'New Student Registration', ?, ?, 'fa-user-plus', '#d1fae5', '#059669', '/Admission/Modules/Evaluation.php')");
+                $notif_stmt->execute([$first_name . " " . $last_name . " has registered and applied.", $profile_image_path]);
 
                 // Send Enrollment Notification Email
                 sendEnrollmentEmail($email, [
                     'first_name' => $first_name,
                     'last_name' => $last_name,
-                    'student_id' => $student_id,
+                    'student_id' => 'PENDING',
                     'course' => $full_course_name,
                     'year_level' => $year_level,
                     'reference_code' => $reference_code
