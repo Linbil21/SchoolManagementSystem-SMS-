@@ -1,9 +1,8 @@
 <?php
 session_start();
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'cashier') {
-    header("Location: ../../auth/Login.php");
-    exit();
-}
+require_once '../../auth/Security.php';
+checkRole(['cashier', 'superadmin']);
+$role = $_SESSION['role'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -290,7 +289,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'cashier') {
                                             <td>
                                                 <button class='btn-view' style='background: #1648bc; color: white; border-radius: 12px; padding: 10px 18px; font-weight: 700; box-shadow: 0 4px 12px rgba(22, 72, 188, 0.2); border: none; cursor: pointer; transition: 0.3s;' 
                                                     onclick=\"openVerifyModal('$name', '$ref', '₱$amount', '$method', '$img', '{$row->payment_id}', '$purpose')\">
-                                                    <i class='fas fa-shield-check' style='margin-right: 8px;'></i>Verify
+                                                    <i class='fas fa-eye' style='margin-right: 8px;'></i><?php echo $role === 'superadmin' ? 'View Details' : 'Verify'; ?>
                                                 </button>
                                             </td>
                                         </tr>";
@@ -358,8 +357,12 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'cashier') {
                 </div>
             </div>
             <div class="modal-footer">
+                <?php if ($role === 'cashier'): ?>
                 <button class="btn-reject" onclick="processStatus('Rejected')">Reject Payment</button>
                 <button class="btn-approve" onclick="processStatus('Verified')">Approve & Post</button>
+                <?php else: ?>
+                <button class="btn-view" style="background: #64748b; color: white;" onclick="closeVerifyModal()">Close Review</button>
+                <?php endif; ?>
             </div>
         </div>
     </div>

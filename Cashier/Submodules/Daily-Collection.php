@@ -1,9 +1,8 @@
 <?php
 session_start();
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'cashier') {
-    header("Location: ../../auth/Login.php");
-    exit();
-}
+require_once '../../auth/Security.php';
+checkRole(['cashier', 'superadmin']);
+$role = $_SESSION['role'];
 ?>
 <!DOCTYPE html>
 <html lang="en">

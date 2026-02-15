@@ -2,7 +2,7 @@
 session_start();
 require_once '../auth/Security.php';
 require_once '../Database/config.php';
-checkRole(['cashier']);
+checkRole(['cashier', 'superadmin']);
 $role = $_SESSION['role'];
 
 // Fetch Statistics
@@ -353,6 +353,7 @@ $recent_transactions = $stmt->fetchAll();
                     </table>
                 </div>
 
+                <?php if ($role === 'cashier'): ?>
                 <div class="action-card">
                     <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
                     <div class="quick-actions-list">
@@ -367,6 +368,12 @@ $recent_transactions = $stmt->fetchAll();
                         </a>
                     </div>
                 </div>
+                <?php else: ?>
+                <div class="data-card" style="background: #eff6ff; border: 1px dashed #3b82f6;">
+                    <h3 style="color: #1e40af;"><i class="fas fa-info-circle"></i> View Only Mode</h3>
+                    <p style="color: #1e40af; font-size: 0.9rem;">You are viewing the finance dashboard with read-only permissions. Actions are reserved for the Cashier Office.</p>
+                </div>
+                <?php endif; ?>
             </div>
         </div>
     </div>

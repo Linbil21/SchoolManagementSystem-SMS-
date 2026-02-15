@@ -77,6 +77,12 @@ $root = $project_base . '/';
                             <span>Enrollment Control</span>
                         </a>
                     </li>
+                    <li class="<?php echo ($current_page == 'Courses.php') ? 'active' : ''; ?>">
+                        <a href="<?php echo $root; ?>Super-admin/Modules/Courses.php">
+                            <i class="fas fa-graduation-cap"></i>
+                            <span>Course Management</span>
+                        </a>
+                    </li>
                 </ul>
             </li>
             <li class="has-dropdown <?php echo (stripos($_SERVER['PHP_SELF'], '/student/') !== false) ? 'active open' : ''; ?>">

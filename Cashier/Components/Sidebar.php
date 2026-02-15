@@ -101,23 +101,7 @@ $root = $project_base . '/';
             </li>
         </ul>
 
-        <p class="menu-label">REPORTS & ANALYTICS</p>
-        <ul class="main-menu">
-            <li
-                class="has-dropdown <?php echo (in_array(basename($_SERVER['PHP_SELF']), ['Daily-Collection.php', 'Monthly-Summary.php', 'Method-Reports.php', 'Outstanding-Report.php'])) ? 'active open' : ''; ?>">
-                <a href="javascript:void(0)" class="dropdown-toggle">
-                    <i class="fas fa-chart-line"></i>
-                    <span>Financial Reports</span>
-                    <i class="fas fa-chevron-right arrow-icon"></i>
-                </a>
-                <ul class="sub-menu">
-                    <li><a href="<?php echo $root; ?>Cashier/Submodules/Daily-Collection.php">Daily Collection</a></li>
-                    <li><a href="<?php echo $root; ?>Cashier/Submodules/Monthly-Summary.php">Monthly Summary</a></li>
-                    <li><a href="<?php echo $root; ?>Cashier/Submodules/Method-Reports.php">Payment Methods</a></li>
-                    <li><a href="<?php echo $root; ?>Cashier/Submodules/Outstanding-Report.php">Outstanding Report</a></li>
-                </ul>
-            </li>
-        </ul>
+
 
         <p class="menu-label">ACCOUNT & SETTINGS</p>
         <ul class="main-menu">
