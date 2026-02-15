@@ -1,9 +1,12 @@
 <?php
 session_start();
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'superadmin') {
-    header("Location: ../../auth/Login.php");
-    exit();
-}
+require_once '../../auth/Security.php';
+require_once '../../Database/config.php';
+checkRole(['superadmin']);
+
+// Fetch students for the ID center
+$stmt = $pdo->query("SELECT * FROM students ORDER BY last_name ASC");
+$students = $stmt->fetchAll();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -18,198 +21,34 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'superadmin') {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="../assets/super-admin.css">
     <style>
-        :root {
-            --id-gold: #fbbf24;
-            --id-blue: #1e3a8a;
-        }
-
-        /* Official Vertical ID Card Style */
-        .student-id-card {
-            width: 320px;
+        .id-card-preview {
+            width: 350px;
             height: 500px;
-            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+            background: linear-gradient(135deg, #1648bc 0%, #2563eb 100%);
             border-radius: 20px;
-            box-shadow: 0 20px 40px -5px rgba(30, 58, 138, 0.4);
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
+            padding: 20px;
             color: white;
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            cursor: pointer;
-            margin: 0 auto;
-        }
-
-        .student-id-card:hover {
-            transform: translateY(-10px) scale(1.02);
-            box-shadow: 0 30px 60px rgba(30, 58, 138, 0.5);
-        }
-
-        .card-bg-pattern {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image:
-                radial-gradient(circle at 100% 0%, rgba(255, 255, 255, 0.1) 20%, transparent 20%),
-                radial-gradient(circle at 0% 100%, rgba(255, 255, 255, 0.1) 20%, transparent 20%);
-            z-index: 0;
-        }
-
-        .id-header {
-            padding: 24px 20px;
-            text-align: center;
-            z-index: 1;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(5px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .school-name {
-            font-size: 0.85rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 2px;
-        }
-
-        .id-photo-area {
-            padding: 30px 0 20px;
-            display: flex;
-            justify-content: center;
-            z-index: 1;
             position: relative;
+            box-shadow: 0 15px 35px rgba(22, 72, 188, 0.3);
+            margin: 20px auto;
         }
-
-        .photo-frame {
-            width: 140px;
-            height: 140px;
-            border-radius: 50%;
-            border: 4px solid var(--id-gold);
+        .id-photo {
+            width: 150px;
+            height: 150px;
+            background: white;
+            border-radius: 15px;
+            margin: 40px auto 20px;
+            border: 4px solid rgba(255,255,255,0.3);
             overflow: hidden;
-            background: white;
-            padding: 4px;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
         }
-
-        .photo-frame img {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-
-        .id-details {
-            text-align: center;
-            padding: 0 20px;
-            flex-grow: 1;
-            z-index: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .student-name {
-            font-size: 1.3rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            margin-bottom: 4px;
-            color: var(--id-gold);
-            line-height: 1.2;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .student-no {
-            font-size: 1rem;
-            opacity: 0.9;
-            margin-bottom: 8px;
-            letter-spacing: 1px;
-            font-weight: 500;
-        }
-
-        .course-info {
-            font-size: 0.75rem;
-            background: rgba(255, 255, 255, 0.15);
-            padding: 6px 14px;
-            border-radius: 20px;
-            display: inline-block;
-            margin-bottom: 25px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .qr-section {
-            background: white;
-            padding: 8px;
-            border-radius: 12px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-
-        .validity {
-            font-size: 0.65rem;
-            opacity: 0.7;
-            position: absolute;
-            bottom: 18px;
-            width: 100%;
-            text-align: center;
-            left: 0;
-            z-index: 1;
-            letter-spacing: 0.5px;
-        }
-
-        /* Modal Styles */
-        .id-viewer-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(15, 23, 42, 0.85);
-            backdrop-filter: blur(8px);
-            z-index: 200000;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: 0.3s ease;
-        }
-
-        .id-viewer-overlay.show {
-            display: flex;
-            opacity: 1;
-        }
-
-        .id-viewer-content {
-            transform: scale(0.9);
-            transition: 0.3s ease;
-        }
-
-        .id-viewer-overlay.show .id-viewer-content {
-            transform: scale(1);
-        }
-
-        .close-btn {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .id-photo img { width: 100%; height: 100%; object-fit: cover; }
+        .student-item {
+            padding: 15px;
+            border-bottom: 1px solid #f1f5f9;
             cursor: pointer;
             transition: 0.2s;
-            z-index: 200001;
         }
-
-        .close-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: rotate(90deg);
-        }
+        .student-item:hover { background: #f8fafc; }
     </style>
 </head>
 
@@ -218,41 +57,6 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'superadmin') {
     <div class="main-wrapper">
         <?php include '../Components/header.php'; ?>
         <div class="content-area">
-            <h1 style="font-weight: 800; margin-bottom: 30px; letter-spacing: -1px; color: #1e293b;">Student ID Center</h1>
-            
-            <div style="display: flex; flex-direction: column; gap: 40px;">
-                <div class="preview-card-container">
-                    <h3 style="margin-bottom: 25px; font-weight: 700; color: #64748b; font-size: 1.1rem; display: flex; align-items: center; gap: 10px;">
-                        <i class="fas fa-eye" style="color: #3b82f6;"></i> Official ID Template Preview
-                    </h3>
-                    
-                    <!-- Vertical ID Card -->
-                    <div class="student-id-card" onclick="openIDViewer()">
-                        <div class="card-bg-pattern"></div>
-                        <div class="id-header">
-                            <div class="school-name">UNIVERSITY OF TECHNOLOGY</div>
-                            <div style="font-size: 0.6rem; opacity: 0.8; letter-spacing: 0.5px;">ESTABLISHED 2026</div>
-                        </div>
-
-                        <div class="id-photo-area">
-                            <div class="photo-frame">
-                                <img src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=256&h=256&auto=format&fit=crop" alt="Student Portrait">
-                            </div>
-                        </div>
-
-                        <div class="id-details">
-                            <div class="student-name">JUAN DELA CRUZ</div>
-                            <div class="student-no">2024-0001</div>
-                            <div class="course-info">BS COMPUTER SCIENCE</div>
-                            
-                            <div class="qr-section">
-                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=60x60&data=2024-0001" alt="QR Code" style="display: block;">
-                            </div>
-                        </div>
-
-                        <div class="validity">
-                            VALID UNTIL: JULY 2027<br>
-                            STUDENT SIGNATURE
                         </div>
                     </div>
                 </div>

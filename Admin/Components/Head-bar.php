@@ -108,7 +108,7 @@ if (!empty($root) && $root[0] !== '/') {
                         <i class="fas fa-user-cog"></i> Admin Settings
                     </a>
                     <a href="javascript:void(0)" onclick="openLogoutModal()" class="dropdown-link logout-link">
-                        <i class="fas fa-power-off"></i> Sign Out
+                        <i class="fas fa-power-off"></i> End Session
                     </a>
                 </div>
             </div>

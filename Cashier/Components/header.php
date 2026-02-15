@@ -102,7 +102,7 @@ $root = $project_base . '/';
                         <i class="fas fa-user-circle"></i> My Profile
                     </a>
                     <a href="javascript:void(0)" onclick="openLogoutModal()" class="dropdown-link logout-link">
-                        <i class="fas fa-power-off"></i> Sign Out
+                        <i class="fas fa-power-off"></i> End Session
                     </a>
                 </div>
             </div>

@@ -90,7 +90,7 @@ $root = $project_base . '/';
             </li>
             <li>
                 <a href="javascript:void(0)" onclick="openLogoutModal()" style="color: #ef4444;"><i
-                        class="fas fa-power-off"></i> <span>Log Out</span></a>
+                        class="fas fa-power-off"></i> <span>End Session</span></a>
             </li>
         </ul>
     </div>
@@ -179,13 +179,13 @@ $root = $project_base . '/';
 <div id="logoutModal" class="logout-modal-overlay" style="display: none;">
     <div class="logout-modal-content">
         <div class="logout-modal-icon">
-            <i class="fas fa-sign-out-alt"></i>
+            <i class="fas fa-power-off"></i>
         </div>
-        <h2>Ready to Leave?</h2>
-        <p>Your current session will be ended. Make sure you've saved any changes before logging out.</p>
+        <h2>End Session?</h2>
+        <p>Your current session will be terminated. For your security, an automatic session timeout occurs after periods of inactivity.</p>
         <div class="logout-modal-buttons">
             <button onclick="closeLogoutModal()" class="btn-cancel">Stay Here</button>
-            <a href="<?php echo $root; ?>auth/logout.php" class="btn-logout">Sign Out</a>
+            <a href="<?php echo $root; ?>auth/logout.php" class="btn-logout">End Session</a>
         </div>
     </div>
 </div>

@@ -120,7 +120,7 @@ $root = $project_base . '/';
             <li>
                 <a href="javascript:void(0)" onclick="openLogoutModal()" style="color: #ef4444;">
                     <i class="fas fa-sign-out-alt"></i>
-                    <span>Log Out</span>
+                    <span>End Session</span>
                 </a>
             </li>
         </ul>
@@ -380,10 +380,10 @@ $root = $project_base . '/';
             <i class="fas fa-power-off"></i>
         </div>
         <h2>End Session?</h2>
-        <p>Are you sure you want to log out of the Cashier panel? Your current transaction work will be saved.</p>
+        <p>Your cashier session will be terminated. For your security, an automatic session timeout occurs after periods of inactivity.</p>
         <div class="logout-modal-buttons">
-            <button onclick="closeLogoutModal()" class="btn-cancel">Cancel</button>
-            <a href="<?php echo $root; ?>auth/logout.php" class="btn-logout">Log Out</a>
+            <button onclick="closeLogoutModal()" class="btn-cancel">Stay Here</button>
+            <a href="<?php echo $root; ?>auth/logout.php" class="btn-logout">End Session</a>
         </div>
     </div>
 </div>

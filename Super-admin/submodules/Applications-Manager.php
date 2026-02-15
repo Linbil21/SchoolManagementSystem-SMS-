@@ -1,9 +1,29 @@
 <?php
 session_start();
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'superadmin') {
-    header("Location: ../../auth/Login.php");
-    exit();
+require_once '../../auth/Security.php';
+require_once '../../Database/config.php';
+checkRole(['superadmin']);
+
+$success_msg = "";
+$error_msg = "";
+
+// Handle status overrides
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'override') {
+    try {
+        $id = $_POST['enrollment_id'];
+        $new_status = $_POST['new_status'];
+        
+        $stmt = $pdo->prepare("UPDATE enrollments SET status = ? WHERE enrollmentId = ?");
+        $stmt->execute([$new_status, $id]);
+        $success_msg = "Application status force-updated to $new_status.";
+    } catch (PDOException $e) {
+        $error_msg = "Error: " . $e->getMessage();
+    }
 }
+
+// Fetch applications (enrollments)
+$stmt = $pdo->query("SELECT e.*, c.course_name FROM enrollments e LEFT JOIN courses c ON e.course_id = c.courseId ORDER BY e.created_at DESC");
+$apps = $stmt->fetchAll();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -17,6 +37,16 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'superadmin') {
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="../assets/super-admin.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        .avatar-circle { width: 40px; height: 40px; border-radius: 10px; background: #eef2ff; color: #6366f1; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+        .status-pill { padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; }
+        .status-enrolled { background: #dcfce7; color: #166534; }
+        .status-pending { background: #fff7ed; color: #c2410c; }
+        .status-rejected { background: #fef2f2; color: #991b1b; }
+        .btn-action { width: 36px; height: 36px; border-radius: 8px; border: 1px solid #e2e8f0; background: white; cursor: pointer; transition: 0.2s; }
+        .btn-action:hover { border-color: #6366f1; color: #6366f1; transform: translateY(-2px); }
+    </style>
 </head>
 
 <body>
@@ -24,477 +54,128 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'superadmin') {
     <div class="main-wrapper">
         <?php include '../Components/header.php'; ?>
         <div class="content-area">
-            <div class="module-header">
+            <div class="module-header" style="margin-bottom: 30px;">
                 <div>
-                    <h1 style="font-weight: 800; color: #1e293b;">Applications Manager</h1>
+                    <h1 style="font-weight: 800; letter-spacing: -1px; color: #1e293b;">Applications Manager</h1>
                     <p style="color: #64748b;">Oversee and audit student admission applications.</p>
                 </div>
             </div>
 
-            <div class="table-card">
-                <table>
+            <div class="table-card" style="background: white; border-radius: 24px; padding: 30px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+                <table style="width: 100%; border-collapse: collapse;">
                     <thead>
-                        <tr>
-                            <th>Student Name</th>
-                            <th>Reference ID</th>
-                            <th>Applied Course</th>
-                            <th>Status</th>
-                            <th>Actions</th>
+                        <tr style="text-align: left; border-bottom: 2px solid #f1f5f9;">
+                            <th style="padding: 15px; color: #64748b; font-size: 0.85rem; text-transform: uppercase;">Applicant</th>
+                            <th style="padding: 15px; color: #64748b; font-size: 0.85rem; text-transform: uppercase;">Reference</th>
+                            <th style="padding: 15px; color: #64748b; font-size: 0.85rem; text-transform: uppercase;">Course</th>
+                            <th style="padding: 15px; color: #64748b; font-size: 0.85rem; text-transform: uppercase;">Status</th>
+                            <th style="padding: 15px; color: #64748b; font-size: 0.85rem; text-transform: uppercase;">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>
-                                <div style="display: flex; align-items: center; gap: 15px;">
-                                    <div class="avatar-circle">JD</div>
+                        <?php foreach ($apps as $app): 
+                            $initials = strtoupper(substr($app->first_name, 0, 1) . substr($app->last_name, 0, 1));
+                            $status_class = 'status-' . strtolower(str_replace(' ', '-', $app->status));
+                        ?>
+                        <tr style="border-bottom: 1px solid #f1f5f9;">
+                            <td style="padding: 15px;">
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <div class="avatar-circle"><?php echo $initials; ?></div>
                                     <div>
-                                        <p style="font-weight: 700;">John Doe</p>
-                                        <p style="font-size: 0.8rem; color: var(--text-gray);">john@sms.com</p>
+                                        <p style="font-weight: 700; color: #1e293b; margin: 0;"><?php echo htmlspecialchars($app->first_name . ' ' . $app->last_name); ?></p>
+                                        <p style="font-size: 0.75rem; color: #64748b; margin: 0;"><?php echo htmlspecialchars($app->email); ?></p>
                                     </div>
                                 </div>
                             </td>
-                            <td><span style="font-weight: 600;">#APP-2024-001</span></td>
-                            <td>BS Architecture</td>
-                            <td><span class="status-pill status-pending">Pending Review</span></td>
-                            <td>
-                                <button class="btn-action" title="Manage Application"
-                                    onclick="openModal('John Doe', '#APP-2024-001', 'BS Architecture', 'Pending Review')">
-                                    <i class="fas fa-cog"></i>
+                            <td style="padding: 15px;"><span style="font-weight: 600; font-family: monospace;"><?php echo htmlspecialchars($app->reference_code); ?></span></td>
+                            <td style="padding: 15px; color: #475569;"><?php echo htmlspecialchars($app->course_name ?? 'Not Assigned'); ?></td>
+                            <td style="padding: 15px;">
+                                <span class="status-pill <?php echo $status_class; ?>">
+                                    <?php echo htmlspecialchars($app->status); ?>
+                                </span>
+                            </td>
+                            <td style="padding: 15px;">
+                                <button class="btn-action" onclick='openOverrideModal(<?php echo json_encode($app); ?>)' title="Override Status">
+                                    <i class="fas fa-shield-alt"></i>
                                 </button>
                             </td>
                         </tr>
-                        <tr>
-                            <td>
-                                <div style="display: flex; align-items: center; gap: 15px;">
-                                    <div class="avatar-circle" style="background: #3b82f6;">JS</div>
-                                    <div>
-                                        <p style="font-weight: 700;">Jane Smith</p>
-                                        <p style="font-size: 0.8rem; color: var(--text-gray);">jane@sms.com</p>
-                                    </div>
-                                </div>
-                            </td>
-                            <td><span style="font-weight: 600;">#APP-2024-002</span></td>
-                            <td>BS Computer Science</td>
-                            <td><span class="status-pill status-approved">Approved</span></td>
-                            <td>
-                                <button class="btn-action" title="Manage Application"
-                                    onclick="openModal('Jane Smith', '#APP-2024-002', 'BS Computer Science', 'Approved')">
-                                    <i class="fas fa-cog"></i>
-                                </button>
-                            </td>
-                        </tr>
+                        <?php endforeach; ?>
+                        <?php if (empty($apps)): ?>
+                            <tr><td colspan="5" style="text-align: center; padding: 40px; color: #94a3b8;">No applications found.</td></tr>
+                        <?php endif; ?>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <!-- Application Action Modal -->
-    <div id="actionModal" class="modal-overlay">
-        <div class="modal-content-premium">
-            <div class="modal-header-premium">
-                <div class="modal-title-group">
-                    <div class="modal-icon-bg">
-                        <i class="fas fa-file-signature"></i>
-                    </div>
-                    <div>
-                        <h2>Application Review</h2>
-                        <p>Manage and override application status</p>
-                    </div>
-                </div>
-                <button class="modal-close" onclick="closeModal()">
-                    <i class="fas fa-times"></i>
-                </button>
+    <!-- Override Modal -->
+    <div id="overrideModal" class="modal" style="display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px); align-items: center; justify-content: center;">
+        <div class="modal-content" style="background: white; width: 500px; max-width: 90%; border-radius: 24px; padding: 40px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                <h2 style="font-weight: 800; color: #1e293b; margin: 0;">Status Override</h2>
+                <i class="fas fa-times" style="cursor: pointer; color: #94a3b8;" onclick="closeModal()"></i>
             </div>
             
-            <div class="modal-body-premium">
-                <!-- Applicant Details Card -->
-                <div class="details-card">
-                    <h3 class="section-label">Applicant Information</h3>
-                    <div class="details-grid">
-                        <div class="detail-item">
-                            <span class="label">Full Name</span>
-                            <span class="value" id="valName">--</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="label">Application ID</span>
-                            <span class="value mono" id="valId">--</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="label">Target Course</span>
-                            <span class="value highlight" id="valCourse">--</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="label">Current Status</span>
-                            <span class="status-badge" id="valStatusBadge">--</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Action Section -->
-                <div class="action-section">
-                    <h3 class="section-label">Super Admin Override</h3>
-                    <div class="form-group-premium">
-                        <label>Update Status</label>
-                        <div class="select-wrapper">
-                            <i class="fas fa-shield-alt select-icon"></i>
-                            <select class="premium-select">
-                                <option>Keep Current Status</option>
-                                <option value="approved">Force Approve</option>
-                                <option value="rejected">Force Reject</option>
-                                <option value="reeval">Request Re-evaluation</option>
-                            </select>
-                            <i class="fas fa-chevron-down arrow-down"></i>
-                        </div>
-                        <p class="field-hint">This action will override any ongoing evaluation processes.</p>
-                    </div>
-                </div>
+            <div style="background: #f8fafc; padding: 20px; border-radius: 16px; margin-bottom: 25px; border: 1px solid #e2e8f0;">
+                <p style="font-size: 0.8rem; color: #64748b; margin-bottom: 4px; font-weight: 600;">Currently reviewing:</p>
+                <h3 id="modalName" style="font-weight: 700; color: #1e293b; margin: 0;">--</h3>
+                <p id="modalRef" style="font-family: monospace; color: #6366f1; margin-top: 5px; font-weight: 700;">--</p>
             </div>
 
-            <div class="modal-footer-premium">
-                <button onclick="closeModal()" class="btn-cancel-premium">Cancel</button>
-                <button onclick="closeModal()" class="btn-save-premium">
-                    <i class="fas fa-save"></i> Save Changes
-                </button>
-            </div>
+            <form method="POST">
+                <input type="hidden" name="action" value="override">
+                <input type="hidden" name="enrollment_id" id="modalId">
+                
+                <div class="form-group" style="margin-bottom: 25px;">
+                    <label style="display: block; font-weight: 700; color: #475569; margin-bottom: 10px; font-size: 0.85rem;">Select New Status</label>
+                    <select name="new_status" id="modalStatusSelect" style="width: 100%; padding: 14px; border-radius: 12px; border: 1.5px solid #e2e8f0; outline: none; background: white; font-weight: 600; font-family: inherit;">
+                        <option value="Pending Review">Pending Review</option>
+                        <option value="Document Verified">Document Verified</option>
+                        <option value="For Medical">For Medical</option>
+                        <option value="Enrolled">Enrolled (Complete)</option>
+                        <option value="Rejected">Rejected</option>
+                    </select>
+                    <p style="font-size: 0.75rem; color: #94a3b8; margin-top: 8px;"><i class="fas fa-info-circle"></i> This will bypass all admission checks.</p>
+                </div>
+
+                <div style="display: flex; gap: 12px;">
+                    <button type="button" onclick="closeModal()" style="flex: 1; padding: 14px; border-radius: 12px; border: 1.5px solid #e2e8f0; background: white; font-weight: 700; cursor: pointer;">Cancel</button>
+                    <button type="submit" style="flex: 1; padding: 14px; border-radius: 12px; background: #6366f1; color: white; border: none; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);">Apply Override</button>
+                </div>
+            </form>
         </div>
     </div>
 
-    <style>
-        /* Premium Modal Styles */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(8px);
-            z-index: 2000;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .modal-overlay.show {
-            display: flex;
-            opacity: 1;
-        }
-
-        .modal-content-premium {
-            background: #ffffff;
-            width: 100%;
-            max-width: 550px;
-            border-radius: 20px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            transform: scale(0.95);
-            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            overflow: hidden;
-            border: 1px solid #e2e8f0;
-        }
-
-        .modal-overlay.show .modal-content-premium {
-            transform: scale(1);
-        }
-
-        .modal-header-premium {
-            padding: 24px 30px;
-            border-bottom: 1px solid #f1f5f9;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            background: #f8fafc;
-        }
-
-        .modal-title-group {
-            display: flex;
-            gap: 16px;
-            align-items: center;
-        }
-
-        .modal-icon-bg {
-            width: 48px;
-            height: 48px;
-            background: #eef2ff;
-            color: #6366f1;
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
-            border: 1px solid #e0e7ff;
-        }
-
-        .modal-header-premium h2 {
-            font-size: 1.15rem;
-            font-weight: 800;
-            color: #1e293b;
-            margin: 0;
-            line-height: 1.2;
-        }
-
-        .modal-header-premium p {
-            font-size: 0.85rem;
-            color: #64748b;
-            margin: 4px 0 0 0;
-            font-weight: 500;
-        }
-
-        .modal-close {
-            background: transparent;
-            border: none;
-            color: #94a3b8;
-            font-size: 1.25rem;
-            cursor: pointer;
-            padding: 8px;
-            border-radius: 8px;
-            transition: 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-close:hover {
-            background: #f1f5f9;
-            color: #ef4444;
-        }
-
-        .modal-body-premium {
-            padding: 30px;
-        }
-
-        .details-card {
-            background: #fcfcfc;
-            border: 1px solid #f1f5f9;
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 25px;
-        }
-
-        .section-label {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: #94a3b8;
-            font-weight: 700;
-            margin-bottom: 15px;
-            display: block;
-        }
-
-        .details-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        .detail-item {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .detail-item .label {
-            font-size: 0.8rem;
-            color: #64748b;
-            font-weight: 500;
-        }
-
-        .detail-item .value {
-            font-size: 0.95rem;
-            color: #1e293b;
-            font-weight: 600;
-        }
-
-        .detail-item .value.mono {
-            font-family: 'Courier New', monospace;
-            letter-spacing: -0.5px;
-            background: #f1f5f9;
-            padding: 2px 6px;
-            border-radius: 4px;
-            display: inline-block;
-            width: fit-content;
-        }
-
-        .detail-item .value.highlight {
-            color: #6366f1;
-        }
-
-        .status-badge {
-            display: inline-flex;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: capitalize;
-        }
-
-        .status-badge.pending { background: #fff7ed; color: #c2410c; border: 1px solid #ffedd5; }
-        .status-badge.approved { background: #f0fdf4; color: #15803d; border: 1px solid #dcfce7; }
-        .status-badge.rejected { background: #fef2f2; color: #b91c1c; border: 1px solid #fee2e2; }
-
-        .form-group-premium label {
-            display: block;
-            margin-bottom: 10px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: #1e293b;
-        }
-
-        .select-wrapper {
-            position: relative;
-        }
-
-        .select-icon {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #64748b;
-            pointer-events: none;
-        }
-
-        .arrow-down {
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #94a3b8;
-            pointer-events: none;
-            font-size: 0.8rem;
-        }
-
-        .premium-select {
-            width: 100%;
-            padding: 14px 40px;
-            border-radius: 12px;
-            border: 1px solid #e2e8f0;
-            font-size: 0.95rem;
-            color: #1e293b;
-            appearance: none;
-            background: #ffffff;
-            font-family: 'Poppins', sans-serif;
-            transition: all 0.2s;
-            cursor: pointer;
-        }
-
-        .premium-select:hover {
-            border-color: #cbd5e1;
-        }
-
-        .premium-select:focus {
-            outline: none;
-            border-color: #6366f1;
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-        }
-
-        .field-hint {
-            font-size: 0.8rem;
-            color: #94a3b8;
-            margin-top: 8px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .field-hint::before {
-            content: '\f05a';
-            font-family: 'Font Awesome 5 Free';
-            font-weight: 900;
-        }
-
-        .modal-footer-premium {
-            padding: 24px 30px;
-            border-top: 1px solid #f1f5f9;
-            background: #fcfcfc;
-            display: flex;
-            justify-content: flex-end;
-            gap: 12px;
-        }
-
-        .btn-cancel-premium {
-            padding: 12px 24px;
-            border-radius: 12px;
-            border: 1px solid #e2e8f0;
-            background: #ffffff;
-            color: #64748b;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.2s;
-            font-family: 'Poppins', sans-serif;
-        }
-
-        .btn-cancel-premium:hover {
-            background: #f8fafc;
-            color: #475569;
-        }
-
-        .btn-save-premium {
-            padding: 12px 24px;
-            border-radius: 12px;
-            border: none;
-            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-            color: #ffffff;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
-            transition: 0.2s;
-            font-family: 'Poppins', sans-serif;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn-save-premium:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 6px 16px rgba(79, 70, 229, 0.3);
-        }
-    </style>
-
     <script>
-        function openModal(name, id, course, status) {
-            document.getElementById('valName').textContent = name;
-            document.getElementById('valId').textContent = id;
-            document.getElementById('valCourse').textContent = course;
+        function openOverrideModal(data) {
+            document.getElementById('modalId').value = data.enrollmentId;
+            document.getElementById('modalName').textContent = data.first_name + ' ' + data.last_name;
+            document.getElementById('modalRef').textContent = '#' + data.reference_code;
+            document.getElementById('modalStatusSelect').value = data.status;
             
-            // Set status with correct badge style
-            const statusBadge = document.getElementById('valStatusBadge');
-            statusBadge.textContent = status;
-            
-            // Reset classes
-            statusBadge.className = 'status-badge';
-            
-            // Determine class based on status text
-            if (status.toLowerCase().includes('pending')) {
-                statusBadge.classList.add('pending');
-            } else if (status.toLowerCase().includes('approved')) {
-                statusBadge.classList.add('approved');
-            } else if (status.toLowerCase().includes('rejected')) {
-                statusBadge.classList.add('rejected');
-            } else {
-                statusBadge.classList.add('pending'); // Default
-            }
-
-            const modal = document.getElementById('actionModal');
-            modal.classList.add('show');
+            document.getElementById('overrideModal').style.display = 'flex';
             document.body.style.overflow = 'hidden';
         }
 
         function closeModal() {
-            const modal = document.getElementById('actionModal');
-            modal.classList.remove('show');
+            document.getElementById('overrideModal').style.display = 'none';
             document.body.style.overflow = 'auto';
         }
 
-        window.onclick = function (event) {
-            const modal = document.getElementById('actionModal');
-            if (event.target == modal) {
-                closeModal();
-            }
+        window.onclick = function(event) {
+            const modal = document.getElementById('overrideModal');
+            if (event.target == modal) closeModal();
         }
+
+        <?php if ($success_msg): ?>
+            Swal.fire('Updated!', '<?php echo $success_msg; ?>', 'success');
+        <?php endif; ?>
+        <?php if ($error_msg): ?>
+            Swal.fire('Error!', '<?php echo $error_msg; ?>', 'error');
+        <?php endif; ?>
     </script>
 </body>
-
 </html>
 

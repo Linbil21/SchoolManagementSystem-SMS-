@@ -1,9 +1,57 @@
 <?php
 session_start();
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'superadmin') {
-    header("Location: ../../auth/Login.php");
-    exit();
+require_once '../../auth/Security.php';
+require_once '../../Database/config.php';
+checkRole(['superadmin']);
+
+$success_msg = "";
+$error_msg = "";
+
+// Handle user actions
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['action'])) {
+        try {
+            if ($_POST['action'] === 'add') {
+                $name = $_POST['full_name'];
+                $email = $_POST['email'];
+                $role = strtolower($_POST['role']);
+                $password = $_POST['password'];
+                $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+                
+                // Insert into users table
+                $stmt = $pdo->prepare("INSERT INTO users (email, password, role, status) VALUES (?, ?, ?, 'offline')");
+                $stmt->execute([$email, $hashed_password, $role]);
+                
+                $success_msg = "Account created successfully for $name!";
+            } elseif ($_POST['action'] === 'edit') {
+                $id = $_POST['user_id'];
+                $role = strtolower($_POST['role']);
+                $email = $_POST['email'];
+                
+                if (!empty($_POST['password'])) {
+                    $hashed_password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+                    $stmt = $pdo->prepare("UPDATE users SET role = ?, email = ?, password = ? WHERE userId = ?");
+                    $stmt->execute([$role, $email, $hashed_password, $id]);
+                } else {
+                    $stmt = $pdo->prepare("UPDATE users SET role = ?, email = ? WHERE userId = ?");
+                    $stmt->execute([$role, $email, $id]);
+                }
+                $success_msg = "User account updated successfully!";
+            } elseif ($_POST['action'] === 'delete') {
+                $id = $_POST['user_id'];
+                $stmt = $pdo->prepare("DELETE FROM users WHERE userId = ?");
+                $stmt->execute([$id]);
+                $success_msg = "User account permanently removed.";
+            }
+        } catch (PDOException $e) {
+            $error_msg = "Error: " . $e->getMessage();
+        }
+    }
 }
+
+// Fetch all users
+$stmt = $pdo->query("SELECT * FROM users ORDER BY created_at DESC");
+$users = $stmt->fetchAll();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -17,7 +65,50 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'superadmin') {
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="../assets/super-admin.css">
-
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        .avatar-circle {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #1648bc 0%, #2563eb 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 10px rgba(22, 72, 188, 0.2);
+        }
+        .btn-action {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            border: 1.5px solid #e2e8f0;
+            background: white;
+            color: #64748b;
+            cursor: pointer;
+            transition: 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-action:hover {
+            border-color: #1648bc;
+            color: #1648bc;
+            background: #eff6ff;
+            transform: translateY(-2px);
+        }
+        .status-pill {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: capitalize;
+        }
+        .status-online { background: #dcfce7; color: #16a34a; }
+        .status-offline { background: #f1f5f9; color: #64748b; }
+    </style>
 </head>
 
 <body>
@@ -25,97 +116,71 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'superadmin') {
     <div class="main-wrapper">
         <?php include '../Components/header.php'; ?>
         <div class="content-area">
-            <div class="module-header">
+            <div class="module-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
                 <div>
-                    <h1>User Management</h1>
-                    <p>Manage system administrators and staff accounts with ease.</p>
+                    <h1 style="font-weight: 800; letter-spacing: -1px;">User Management</h1>
+                    <p style="color: #64748b;">Manage system administrators and staff accounts.</p>
                 </div>
                 <div style="display: flex; gap: 15px; align-items: center;">
-                    <div class="search-box" style="position: relative;">
-                        <i class="fas fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
-                        <input type="text" id="userSearch" onkeyup="filterTable('userSearch', 'userTable')" placeholder="Search users..." 
-                            style="padding: 12px 15px 12px 40px; border-radius: 12px; border: 1.5px solid var(--border-color); outline: none; width: 250px; transition: 0.3s;">
-                    </div>
-                    <button class="btn-premium" onclick="openUserModal()">
+                    <button class="btn-premium" onclick="openUserModal('add')" style="background: var(--primary); color: white; border: none; padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px;">
                         <i class="fas fa-plus-circle"></i> Add New User
                     </button>
                 </div>
             </div>
 
-            <div class="table-card">
-                <table id="userTable">
+            <div class="table-card" style="background: white; border-radius: 24px; padding: 30px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+                <table id="userTable" style="width: 100%; border-collapse: collapse;">
                     <thead>
-                        <tr>
-                            <th>User Profile</th>
-                            <th>Access Level</th>
-                            <th>Status Account</th>
-                            <th>Recent Activity</th>
-                            <th style="text-align: center;">Actions</th>
+                        <tr style="text-align: left; border-bottom: 2px solid #f1f5f9;">
+                            <th style="padding: 15px; color: #64748b; font-size: 0.85rem; text-transform: uppercase;">User Account</th>
+                            <th style="padding: 15px; color: #64748b; font-size: 0.85rem; text-transform: uppercase;">Access Level</th>
+                            <th style="padding: 15px; color: #64748b; font-size: 0.85rem; text-transform: uppercase;">Status</th>
+                            <th style="padding: 15px; color: #64748b; font-size: 0.85rem; text-transform: uppercase;">Created At</th>
+                            <th style="padding: 15px; color: #64748b; font-size: 0.85rem; text-transform: uppercase; text-align: center;">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>
+                        <?php foreach ($users as $u): 
+                            $initials = strtoupper(substr($u->email, 0, 2));
+                        ?>
+                        <tr style="border-bottom: 1px solid #f1f5f9;">
+                            <td style="padding: 20px 15px;">
                                 <div style="display: flex; align-items: center; gap: 15px;">
-                                    <div class="avatar-circle">AU</div>
+                                    <div class="avatar-circle"><?php echo $initials; ?></div>
                                     <div>
-                                        <p style="font-weight: 700; color: var(--text-color); margin: 0; font-size: 0.95rem;">Admin User</p>
-                                        <p style="font-size: 0.78rem; color: var(--text-muted); margin: 0; font-weight: 500;">admin@sms.com</p>
+                                        <p style="font-weight: 700; color: #1e293b; margin: 0;"><?php echo htmlspecialchars($u->email); ?></p>
+                                        <p style="font-size: 0.75rem; color: #64748b; margin: 0;">ID: #<?php echo $u->userId; ?></p>
                                     </div>
                                 </div>
                             </td>
-                            <td>
-                                <span style="font-weight: 700; color: var(--text-color); font-size: 0.9rem;">
-                                    <i class="fas fa-shield-check" style="color: var(--accent-color); margin-right: 6px;"></i>Super Admin
+                            <td style="padding: 20px 15px;">
+                                <span style="font-weight: 700; color: #1e293b; display: flex; align-items: center; gap: 8px;">
+                                    <i class="fas fa-id-badge" style="color: #1648bc;"></i>
+                                    <?php echo ucfirst($u->role); ?>
                                 </span>
                             </td>
-                            <td><span class="status-pill status-active">Active</span></td>
-                            <td>
-                                <p style="margin: 0; font-weight: 600; color: var(--text-color); font-size: 0.85rem;">Jan 11, 2024</p>
-                                <p style="margin: 0; font-size: 0.7rem; color: var(--text-muted);">10:45 AM</p>
+                            <td style="padding: 20px 15px;">
+                                <span class="status-pill <?php echo $u->status === 'online' ? 'status-online' : 'status-offline'; ?>">
+                                    <?php echo ucfirst($u->status); ?>
+                                </span>
                             </td>
-                            <td>
+                            <td style="padding: 20px 15px; color: #64748b; font-size: 0.85rem;">
+                                <?php echo date('M d, Y', strtotime($u->created_at)); ?>
+                            </td>
+                            <td style="padding: 20px 15px; text-align: center;">
                                 <div style="display: flex; gap: 10px; justify-content: center;">
-                                    <button class="btn-action" onclick="editUser('Admin User')" title="Edit User">
+                                    <button class="btn-action" onclick='openUserModal("edit", <?php echo json_encode($u); ?>)' title="Edit Account">
                                         <i class="fas fa-edit"></i>
                                     </button>
-                                    <button class="btn-action" style="color: #f59e0b; border-color: #fef3c7; background: #fffbeb;" title="Archive User">
-                                        <i class="fas fa-archive"></i>
+                                    <?php if ($u->role !== 'superadmin'): ?>
+                                    <button class="btn-action" style="color: #ef4444; border-color: #fee2e2; background: #fef2f2;" onclick="deleteUser(<?php echo $u->userId; ?>)" title="Remove Account">
+                                        <i class="fas fa-trash"></i>
                                     </button>
+                                    <?php endif; ?>
                                 </div>
                             </td>
                         </tr>
-                        <tr>
-                            <td>
-                                <div style="display: flex; align-items: center; gap: 15px;">
-                                    <div class="avatar-circle" style="background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);">SM</div>
-                                    <div>
-                                        <p style="font-weight: 700; color: var(--text-color); margin: 0; font-size: 0.95rem;">Sarah Miller</p>
-                                        <p style="font-size: 0.78rem; color: var(--text-muted); margin: 0; font-weight: 500;">sarah.m@sms.com</p>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>
-                                <span style="font-weight: 700; color: var(--text-color); font-size: 0.9rem;">
-                                    <i class="fas fa-user-graduate" style="color: #06b6d4; margin-right: 6px;"></i>Admission
-                                </span>
-                            </td>
-                            <td><span class="status-pill status-active">Active</span></td>
-                            <td>
-                                <p style="margin: 0; font-weight: 600; color: var(--text-color); font-size: 0.85rem;">Jan 10, 2024</p>
-                                <p style="margin: 0; font-size: 0.7rem; color: var(--text-muted);">02:30 PM</p>
-                            </td>
-                            <td>
-                                <div style="display: flex; gap: 10px; justify-content: center;">
-                                    <button class="btn-action" onclick="editUser('Sarah Miller')" title="Edit User">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="btn-action" style="color: #f59e0b; border-color: #fef3c7; background: #fffbeb;" title="Archive User">
-                                        <i class="fas fa-archive"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
+                        <?php endforeach; ?>
                     </tbody>
                 </table>
             </div>
@@ -123,96 +188,98 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'superadmin') {
     </div>
 
     <!-- User Modal Overlay -->
-    <div id="userModal" class="modal centered" style="display: none; align-items: center; justify-content: center;">
-        <div class="modal-content" style="width: 500px; max-width: 90%; border-radius: 28px; border: 1px solid var(--border-color);">
-            <div class="modal-header" style="padding: 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); background: var(--hover-bg);">
-                <h2 id="modalTitle" style="font-weight: 800; color: var(--text-color); letter-spacing: -0.5px; margin: 0;">Add New User</h2>
-                <div style="width: 36px; height: 36px; border-radius: 10px; background: white; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 1px solid var(--border-color); transition: 0.3s;" onclick="closeUserModal()" onmouseover="this.style.background='#fee2e2'; this.style.color='#ef4444'" onmouseout="this.style.background='white'; this.style.color='inherit'">
-                    <i class="fas fa-times"></i>
+    <div id="userModal" class="modal centered" style="display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); align-items: center; justify-content: center;">
+        <div class="modal-content" style="background: white; width: 500px; max-width: 90%; border-radius: 28px; padding: 40px; box-shadow: 0 20px 40px -5px rgba(0,0,0,0.25);">
+            <h2 id="modalTitle" style="font-weight: 800; margin-bottom: 25px; letter-spacing: -0.5px;">Add New User</h2>
+            <form method="POST">
+                <input type="hidden" name="action" id="formAction" value="add">
+                <input type="hidden" name="user_id" id="userId">
+                
+                <div id="nameGroup" class="form-group" style="margin-bottom: 20px;">
+                    <label style="display: block; font-weight: 700; color: #475569; margin-bottom: 8px; font-size: 0.85rem;">Full Name (Reference)</label>
+                    <input type="text" name="full_name" id="userName" placeholder="e.g. System Admin" style="width: 100%; padding: 12px; border-radius: 12px; border: 1.5px solid #e2e8f0; outline: none;">
                 </div>
-            </div>
-            <div class="modal-body" style="padding: 40px;">
-                <div class="form-group" style="margin-bottom: 25px;">
-                    <label style="display: block; font-weight: 700; color: var(--text-color); margin-bottom: 10px; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px;">Full Name</label>
-                    <input type="text" placeholder="e.g. John Doe" style="width: 100%; padding: 14px 18px; border-radius: 14px; border: 1.5px solid var(--border-color); background: var(--bg-color); color: var(--text-color); font-weight: 500; outline: none; transition: 0.3s;" onfocus="this.style.borderColor='var(--accent-color)'; this.style.boxShadow='0 0 0 4px rgba(22, 72, 188, 0.1)'" onblur="this.style.borderColor='var(--border-color)'; this.style.boxShadow='none'">
+
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label style="display: block; font-weight: 700; color: #475569; margin-bottom: 8px; font-size: 0.85rem;">Email Address</label>
+                    <input type="email" name="email" id="userEmail" required placeholder="e.g. admin@sms.com" style="width: 100%; padding: 12px; border-radius: 12px; border: 1.5px solid #e2e8f0; outline: none;">
                 </div>
-                <div class="form-group" style="margin-bottom: 25px;">
-                    <label style="display: block; font-weight: 700; color: var(--text-color); margin-bottom: 10px; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px;">Email Address</label>
-                    <input type="email" placeholder="e.g. john@sms.com" style="width: 100%; padding: 14px 18px; border-radius: 14px; border: 1.5px solid var(--border-color); background: var(--bg-color); color: var(--text-color); font-weight: 500; outline: none; transition: 0.3s;" onfocus="this.style.borderColor='var(--accent-color)'; this.style.boxShadow='0 0 0 4px rgba(22, 72, 188, 0.1)'" onblur="this.style.borderColor='var(--border-color)'; this.style.boxShadow='none'">
-                </div>
-                <div class="form-group" style="margin-bottom: 25px;">
-                    <label style="display: block; font-weight: 700; color: var(--text-color); margin-bottom: 10px; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px;">Assign Role</label>
-                    <select style="width: 100%; padding: 14px 18px; border-radius: 14px; border: 1.5px solid var(--border-color); background: var(--bg-color); color: var(--text-color); font-weight: 600; outline: none; appearance: none; background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2364748b%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22/%3E%3C/svg%3E'); background-repeat: no-repeat; background-position: right%2018px%20top%2050%25; background-size: 12px%20auto;">
-                        <option>Super Admin</option>
-                        <option>Admin</option>
-                        <option>Admission</option>
-                        <option>Cashier</option>
-                        <option>Student</option>
+
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label style="display: block; font-weight: 700; color: #475569; margin-bottom: 8px; font-size: 0.85rem;">User Role</label>
+                    <select name="role" id="userRole" required style="width: 100%; padding: 12px; border-radius: 12px; border: 1.5px solid #e2e8f0; outline: none; background: white;">
+                        <option value="superadmin">Super Admin</option>
+                        <option value="admin">Admin</option>
+                        <option value="admission">Admission</option>
+                        <option value="cashier">Cashier</option>
+                        <option value="registrar">Registrar</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label style="display: block; font-weight: 700; color: var(--text-color); margin-bottom: 10px; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px;">Initial Password</label>
-                    <input type="password" placeholder="********" style="width: 100%; padding: 14px 18px; border-radius: 14px; border: 1.5px solid var(--border-color); background: var(--bg-color); color: var(--text-color); font-weight: 500; outline: none; transition: 0.3s;" onfocus="this.style.borderColor='var(--accent-color)'; this.style.boxShadow='0 0 0 4px rgba(22, 72, 188, 0.1)'" onblur="this.style.borderColor='var(--border-color)'; this.style.boxShadow='none'">
+
+                <div class="form-group" style="margin-bottom: 30px;">
+                    <label style="display: block; font-weight: 700; color: #475569; margin-bottom: 8px; font-size: 0.85rem;">Password (Leave blank if no change)</label>
+                    <input type="password" name="password" id="userPassword" placeholder="********" style="width: 100%; padding: 12px; border-radius: 12px; border: 1.5px solid #e2e8f0; outline: none;">
                 </div>
-            </div>
-            <div class="modal-footer" style="padding: 30px; background: var(--hover-bg); display: flex; gap: 15px; justify-content: flex-end;">
-                <button onclick="closeUserModal()" style="padding: 14px 25px; border-radius: 12px; border: 1.5px solid var(--border-color); background: white; font-weight: 700; cursor: pointer; color: var(--text-muted); transition: 0.3s;" onmouseover="this.style.background='var(--bg-color)'" onmouseout="this.style.background='white'">Cancel</button>
-                <button onclick="saveUser()" class="btn-primary" style="padding: 14px 25px;">Create Account</button>
-            </div>
+
+                <div style="display: flex; gap: 12px;">
+                    <button type="button" onclick="closeUserModal()" style="flex: 1; padding: 14px; border-radius: 12px; border: 1.5px solid #e2e8f0; background: white; font-weight: 700; cursor: pointer;">Cancel</button>
+                    <button type="submit" class="btn-primary" style="flex: 1; padding: 14px; border-radius: 12px; background: #1648bc; color: white; border: none; font-weight: 700; cursor: pointer;">Save Account</button>
+                </div>
+            </form>
         </div>
     </div>
 
     <script>
-        function filterTable(inputId, tableId) {
-            const input = document.getElementById(inputId);
-            const filter = input.value.toLowerCase();
-            const table = document.getElementById(tableId);
-            const tr = table.getElementsByTagName("tr");
-
-            for (let i = 1; i < tr.length; i++) {
-                let rowVisible = false;
-                const td = tr[i].getElementsByTagName("td");
-                for (let j = 0; j < td.length; j++) {
-                    if (td[j]) {
-                        const txtValue = td[j].textContent || td[j].innerText;
-                        if (txtValue.toLowerCase().indexOf(filter) > -1) {
-                            rowVisible = true;
-                            break;
-                        }
-                    }
-                }
-                tr[i].style.display = rowVisible ? "" : "none";
-            }
-        }
-
-        function openUserModal() {
-            document.getElementById('modalTitle').textContent = 'Add New User';
+        function openUserModal(type, data = null) {
             document.getElementById('userModal').style.display = 'flex';
-            document.body.style.overflow = 'hidden';
+            document.getElementById('formAction').value = type;
+            document.getElementById('modalTitle').textContent = type === 'add' ? 'Create New Account' : 'Edit Account Access';
+            
+            if (data) {
+                document.getElementById('userId').value = data.userId;
+                document.getElementById('userEmail').value = data.email;
+                document.getElementById('userRole').value = data.role;
+                document.getElementById('nameGroup').style.display = 'none';
+                document.getElementById('userPassword').required = false;
+            } else {
+                document.getElementById('userId').value = '';
+                document.getElementById('userName').value = '';
+                document.getElementById('userEmail').value = '';
+                document.getElementById('userRole').value = 'admin';
+                document.getElementById('nameGroup').style.display = 'block';
+                document.getElementById('userPassword').required = true;
+            }
         }
 
         function closeUserModal() {
             document.getElementById('userModal').style.display = 'none';
-            document.body.style.overflow = 'auto';
         }
 
-        function editUser(name) {
-            document.getElementById('modalTitle').textContent = 'Update Profile: ' + name;
-            document.getElementById('userModal').style.display = 'flex';
+        function deleteUser(id) {
+            Swal.fire({
+                title: 'Delete Account?',
+                text: "This user will lose all system access immediately!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                confirmButtonText: 'Yes, remove them'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.innerHTML = `<input type="hidden" name="action" value="delete"><input type="hidden" name="user_id" value="${id}">`;
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            })
         }
 
-        function saveUser() {
-            alert('User profile processed successfully!');
-            closeUserModal();
-        }
-
-        window.onclick = function (event) {
-            if (event.target == document.getElementById('userModal')) {
-                closeUserModal();
-            }
-        }
+        <?php if ($success_msg): ?>
+            Swal.fire('Success!', '<?php echo $success_msg; ?>', 'success');
+        <?php endif; ?>
+        <?php if ($error_msg): ?>
+            Swal.fire('Error!', '<?php echo $error_msg; ?>', 'error');
+        <?php endif; ?>
     </script>
 </body>
-
 </html>
-

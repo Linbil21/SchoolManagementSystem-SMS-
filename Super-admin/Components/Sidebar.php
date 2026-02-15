@@ -34,6 +34,11 @@ $root = $project_base . '/';
         <ul>
             <li class="<?php echo ($current_page == 'Dashboard.php') ? 'active' : ''; ?>">
                 <a href="<?php echo $base; ?>Dashboard.php">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="has-dropdown <?php echo (stripos($_SERVER['PHP_SELF'], '/Cashier/') !== false) ? 'active open' : ''; ?>">
                 <a href="javascript:void(0)" class="dropdown-toggle">
                     <i class="fas fa-file-invoice-dollar"></i>
                     <span>Finance Hub</span>
@@ -56,8 +61,45 @@ $root = $project_base . '/';
             </li>
         </ul>
 
+        <p class="menu-label">ADMISSION & STUDENTS</p>
+        <ul>
+            <li class="has-dropdown <?php echo (stripos($_SERVER['PHP_SELF'], '/Super-admin/Submodules/') !== false) ? 'active open' : ''; ?>">
+                <a href="javascript:void(0)" class="dropdown-toggle">
+                    <i class="fas fa-user-graduate"></i>
+                    <span>Admissions</span>
+                    <i class="fas fa-chevron-right arrow-icon"></i>
+                </a>
+                <ul class="sub-menu">
+                    <li>
+                        <a href="<?php echo $base; ?>Submodules/Admission-Dashboard.php">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Admission Stats</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="<?php echo $base; ?>Submodules/Applications-Manager.php">
+                            <i class="fas fa-tasks"></i>
+                            <span>App Manager</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="<?php echo $base; ?>Submodules/Student-ID-Center.php">
+                            <i class="fas fa-id-card"></i>
+                            <span>ID Center</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+
         <p class="menu-label">ACADEMIC & SYSTEM</p>
         <ul class="main-menu">
+            <li class="<?php echo ($current_page == 'User-Management.php') ? 'active' : ''; ?>">
+                <a href="<?php echo $base; ?>Modules/User-Management.php">
+                    <i class="fas fa-users-cog"></i>
+                    <span>User Management</span>
+                </a>
+            </li>
             <li class="has-dropdown <?php echo (stripos($_SERVER['PHP_SELF'], '/Admin/') !== false) ? 'active open' : ''; ?>">
                 <a href="javascript:void(0)" class="dropdown-toggle">
                     <i class="fas fa-microchip"></i>
@@ -85,21 +127,6 @@ $root = $project_base . '/';
                     </li>
                 </ul>
             </li>
-            <li class="has-dropdown <?php echo (stripos($_SERVER['PHP_SELF'], '/student/') !== false) ? 'active open' : ''; ?>">
-                <a href="javascript:void(0)" class="dropdown-toggle">
-                    <i class="fas fa-user-circle"></i>
-                    <span>Student Central</span>
-                    <i class="fas fa-chevron-right arrow-icon"></i>
-                </a>
-                <ul class="sub-menu">
-                    <li>
-                        <a href="<?php echo $root; ?>student/Dashboard.php">
-                            <i class="fas fa-user-shield"></i>
-                            <span>Portal Access</span>
-                        </a>
-                    </li>
-                </ul>
-            </li>
         </ul>
 
         <p class="menu-label">ACCOUNT & SETTINGS</p>
@@ -123,7 +150,7 @@ $root = $project_base . '/';
             <li>
                 <a href="javascript:void(0)" onclick="openLogoutModal()" class="logout-link">
                     <i class="fas fa-sign-out-alt"></i>
-                    <span>Logout</span>
+                    <span>End Session</span>
                 </a>
             </li>
         </ul>
@@ -175,10 +202,10 @@ $root = $project_base . '/';
             <i class="fas fa-power-off"></i>
         </div>
         <h2>End Session?</h2>
-        <p>Are you sure you want to end your Super Admin session? High-level access remains protected.</p>
+        <p>Your Super Admin session will be terminated. For your security, an automatic session timeout occurs after periods of inactivity.</p>
         <div class="logout-modal-buttons">
             <button onclick="closeLogoutModal()" class="btn-cancel">Stay Here</button>
-            <a href="<?php echo $root; ?>auth/logout.php" class="btn-logout">Exit Portal</a>
+            <a href="<?php echo $root; ?>auth/logout.php" class="btn-logout">End Session</a>
         </div>
     </div>
 </div>
