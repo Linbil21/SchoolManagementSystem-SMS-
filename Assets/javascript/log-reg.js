@@ -61,6 +61,25 @@ let formStepsNum = 0;
 // Function to validate inputs in the current step
 function validateCurrentStep() {
     const activeStep = formSteps[formStepsNum];
+
+    // Check for scanner errors first (Added per user request to block invalid uploads)
+    const errorInputs = activeStep.querySelectorAll(".input-error");
+    if (errorInputs.length > 0) {
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                title: 'Please Fix Errors',
+                text: 'Some uploaded documents are invalid or do not meet requirements.',
+                icon: 'error',
+                confirmButtonColor: '#ef4444'
+            });
+        } else {
+            alert('Please fix the errors before proceeding.');
+        }
+        // focus the first error
+        errorInputs[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return false;
+    }
+
     const inputs = activeStep.querySelectorAll("input, select, textarea");
     for (let input of inputs) {
         if (!input.checkValidity()) {
