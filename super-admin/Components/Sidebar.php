@@ -16,8 +16,8 @@ foreach ($check_paths as $path) {
     }
 }
 
-// Use the actual folder name from the server (preserve case)
-$base = $project_base . '/Super-admin/';
+// Use lowercase for cross-platform compatibility
+$base = $project_base . '/super-admin/';
 $root = $project_base . '/';
 ?>
 <div class="sidebar">
@@ -64,7 +64,7 @@ $root = $project_base . '/';
 
         <p class="menu-label">ADMISSION & STUDENTS</p>
         <ul>
-            <li class="has-dropdown <?php echo (stripos($_SERVER['PHP_SELF'], '/Super-admin/Submodules/') !== false) ? 'active open' : ''; ?>">
+            <li class="has-dropdown <?php echo (stripos($_SERVER['PHP_SELF'], '/super-admin/submodules/') !== false) ? 'active open' : ''; ?>">
                 <a href="javascript:void(0)" class="dropdown-toggle">
                     <i class="fas fa-user-graduate"></i>
                     <span>Admissions</span>
