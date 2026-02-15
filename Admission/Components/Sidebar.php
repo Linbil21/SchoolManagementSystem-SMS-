@@ -67,6 +67,7 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admission@sms.com';
                 <ul class="sub-menu">
                     <li class="<?php echo ($current_page == 'New-Applications.php') ? 'active' : ''; ?>"><a href="<?php echo $root; ?>Admission/Modules/New-Applications.php">New Applications</a></li>
                     <li class="<?php echo ($current_page == 'For-Evaluation.php') ? 'active' : ''; ?>"><a href="<?php echo $root; ?>Admission/Modules/For-Evaluation.php">For Evaluation</a></li>
+                    <li class="<?php echo ($current_page == 'Enrollment-Validation.php') ? 'active' : ''; ?>"><a href="<?php echo $root; ?>Admission/Modules/Enrollment-Validation.php">Final Enrollment Check</a></li>
                     <li class="<?php echo ($current_page == 'Approved.php') ? 'active' : ''; ?>"><a href="<?php echo $root; ?>Admission/Modules/Approved.php">Approved</a></li>
                     <li class="<?php echo ($current_page == 'Rejected.php') ? 'active' : ''; ?>"><a href="<?php echo $root; ?>Admission/Modules/Rejected.php">Rejected</a></li>
                     <li class="<?php echo ($current_page == 'Archived.php') ? 'active' : ''; ?>"><a href="<?php echo $root; ?>Admission/Modules/Archived.php">Archived</a></li>

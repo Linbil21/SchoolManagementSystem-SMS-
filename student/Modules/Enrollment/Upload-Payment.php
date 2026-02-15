@@ -1,5 +1,57 @@
 <?php
 session_start();
+require_once '../../../Database/config.php';
+require_once '../../../auth/Security.php';
+checkRole(['student']);
+
+$message = '';
+$status = '';
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['proof'])) {
+    try {
+        $channel = $_POST['channel'];
+        $reference = $_POST['reference'];
+        $amount = $_POST['amount'];
+        $date = $_POST['payment_date'];
+        
+        // File Upload
+        $target_dir = "../../../Assets/image/uploads/payments/";
+        if (!is_dir($target_dir)) mkdir($target_dir, 0777, true);
+        
+        $file_ext = pathinfo($_FILES["proof"]["name"], PATHINFO_EXTENSION);
+        $filename = "PAY_" . $_SESSION['student_id'] . "_" . time() . "." . $file_ext;
+        $target_file = $target_dir . $filename;
+        
+        if (move_uploaded_file($_FILES["proof"]["tmp_name"], $target_file)) {
+            $proof_path = "Assets/image/uploads/payments/" . $filename;
+            
+            $pdo->beginTransaction();
+            
+            // 1. Insert into payments table
+            $stmt = $pdo->prepare("INSERT INTO payments (enrollment_id, amount, payment_method, status, transaction_id) 
+                                 SELECT enrollmentId, ?, ?, 'Pending', ? FROM enrollments WHERE email = ? LIMIT 1");
+            $stmt->execute([$amount, $channel, $reference, $_SESSION['email']]);
+            
+            // 2. Update enrollment status to 'Validation'
+            $stmt = $pdo->prepare("UPDATE enrollments SET status = 'Validation' WHERE email = ?");
+            $stmt->execute([$_SESSION['email']]);
+            
+            $pdo->commit();
+            
+            // Notification for Cashier
+            $notif_stmt = $pdo->prepare("INSERT INTO notifications (user_id, type, title, message, icon, icon_bg, icon_color, link) VALUES (NULL, 'online_payment', 'New Online Payment', ?, 'fa-file-invoice-dollar', '#fef2f2', '#ef4444', '/Cashier/Modules/Online-Payments.php')");
+            $notif_stmt->execute([$_SESSION['fullname'] . " has uploaded a payment proof for validation."]);
+            
+            header("Location: Enrollment-Status.php?status=payment_uploaded");
+            exit();
+        } else {
+            throw new Exception("Failed to upload file.");
+        }
+    } catch (Exception $e) {
+        $message = $e->getMessage();
+        $status = 'error';
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -241,10 +293,10 @@ session_start();
                     <div class="card-header">
                         <h3 class="card-title">Payment Details</h3>
                     </div>
-                    <form action="Enrollment-Status.php" method="POST" enctype="multipart/form-data">
+                    <form action="" method="POST" enctype="multipart/form-data">
                         <div class="form-group">
                             <label class="form-label">Payment Channel</label>
-                            <select class="form-select" required>
+                            <select name="channel" class="form-select" required>
                                 <option value="">Select Channel</option>
                                 <option>BDO Unibank</option>
                                 <option>GCash</option>
@@ -253,25 +305,25 @@ session_start();
                         </div>
                         <div class="form-group">
                             <label class="form-label">Reference Number</label>
-                            <input type="text" class="form-input" placeholder="e.g. 123456789" required>
+                            <input type="text" name="reference" class="form-input" placeholder="e.g. 123456789" required>
                         </div>
                         <div class="form-group">
                             <label class="form-label">Amount Paid</label>
-                            <input type="number" class="form-input" placeholder="0.00" required>
+                            <input type="number" name="amount" class="form-input" placeholder="0.00" step="0.01" required>
                         </div>
                         <div class="form-group">
                             <label class="form-label">Date of Payment</label>
-                            <input type="date" class="form-input" required>
+                            <input type="date" name="payment_date" class="form-input" required>
                         </div>
                         <div class="form-group">
                             <label class="form-label">Proof of Payment</label>
                             <div class="upload-box">
                                 <i class="fas fa-cloud-upload-alt" style="font-size: 2rem; color: #94a3b8; margin-bottom: 10px;"></i>
                                 <p style="font-size: 0.9rem; color: #64748b;">Click to upload image or PDF</p>
-                                <input type="file" required accept="image/*,.pdf">
+                                <input type="file" name="proof" required accept="image/*,.pdf">
                             </div>
                         </div>
-                        <button type="submit" class="submit-btn">Submit Payment</button>
+                        <button type="submit" class="submit-btn">Submit Payment Details</button>
                     </form>
                 </div>
             </div>

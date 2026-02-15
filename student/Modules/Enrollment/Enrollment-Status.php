@@ -174,6 +174,20 @@ $desc_text = 'We have received your payment proof and it is currently being veri
 require_once '../../Database/config.php';
 if (isset($_SESSION['student_id'])) {
     try {
+        // Handle Payment Method Selection
+        if (isset($_GET['action']) && $_GET['action'] == 'set_method') {
+            $method = $_GET['method'] ?? 'Walk-in';
+            $stmt = $pdo->prepare("UPDATE enrollments SET status = 'Pending Walk-in' WHERE student_id = ? AND status = 'Pending Payment'");
+            $stmt->execute([$_SESSION['student_id']]);
+            
+            // Notification for Cashier
+            $notif_stmt = $pdo->prepare("INSERT INTO notifications (user_id, type, title, message, icon, icon_bg, icon_color, link) VALUES (NULL, 'walkin_payment', 'New Walk-in Payment', ?, 'fa-walking', '#dbeafe', '#2563eb', '/Cashier/Modules/Walk-in-Payments.php')");
+            $notif_stmt->execute([$_SESSION['fullname'] . " has chosen Walk-in payment."]);
+            
+            header("Location: Enrollment-Status.php");
+            exit();
+        }
+
         $stmt = $pdo->prepare("SELECT status FROM enrollments WHERE student_id = ? ORDER BY created_at DESC LIMIT 1");
         $stmt->execute([$_SESSION['student_id']]);
         $enrollment = $stmt->fetch();
@@ -240,6 +254,28 @@ $current_step_index = $status_steps[$current_status] ?? 4;
                 <i class="fas <?php echo $icon_class; ?>"></i>
                 <h2><?php echo $title_text; ?></h2>
                 <p><?php echo $desc_text; ?></p>
+                
+                <?php if ($current_status == 'Pending Payment'): ?>
+                    <div style="margin-top: 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; text-align: left;">
+                        <a href="?action=set_method&method=Walk-in" 
+                           style="display: flex; flex-direction: column; align-items: center; padding: 25px; border: 2px solid #e2e8f0; border-radius: 20px; text-decoration: none; transition: 0.3s; background: #fff; text-align: center;">
+                            <div style="width: 60px; height: 60px; background: #eff6ff; border-radius: 15px; display: flex; align-items: center; justify-content: center; margin-bottom: 15px;">
+                                <i class="fas fa-walking" style="font-size: 1.8rem; color: #2563eb;"></i>
+                            </div>
+                            <span style="font-weight: 700; color: #1e293b; display: block;">Walk-In Payment</span>
+                            <p style="font-size: 0.75rem; color: #64748b; margin-top: 5px;">Pay personally at the school cashier counter.</p>
+                        </a>
+                        <a href="Upload-Payment.php" 
+                           style="display: flex; flex-direction: column; align-items: center; padding: 25px; border: 2px solid #e2e8f0; border-radius: 20px; text-decoration: none; transition: 0.3s; background: #fff; text-align: center;">
+                            <div style="width: 60px; height: 60px; background: #fef2f2; border-radius: 15px; display: flex; align-items: center; justify-content: center; margin-bottom: 15px;">
+                                <i class="fas fa-credit-card" style="font-size: 1.8rem; color: #ef4444;"></i>
+                            </div>
+                            <span style="font-weight: 700; color: #1e293b; display: block;">Online Payment</span>
+                            <p style="font-size: 0.75rem; color: #64748b; margin-top: 5px;">Upload proof of GCash or Bank Transfer.</p>
+                        </a>
+                    </div>
+                <?php endif; ?>
+
                 <div style="margin-top: 25px;">
                     <button onclick="window.location.reload()"
                         style="background: #f1f5f9; color: #475569; border: none; padding: 12px 25px; border-radius: 10px; cursor: pointer; font-weight: 600;">Check

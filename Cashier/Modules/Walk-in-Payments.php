@@ -25,8 +25,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         $stmt = $pdo->prepare("INSERT INTO payments (enrollment_id, amount, payment_method, transaction_id, status) VALUES (?, ?, ?, ?, 'Completed')");
         $stmt->execute([$enrollment_id, $amount, $method, $ref ?: 'WALKIN-'.time()]);
 
-        // 2. Update balance in enrollments table
-        $stmt = $pdo->prepare("UPDATE enrollments SET balance = balance - ? WHERE id = ?");
+        // 2. Update balance and status in enrollments table
+        $stmt = $pdo->prepare("UPDATE enrollments SET balance = balance - ?, status = 'Validation' WHERE enrollmentId = ?");
         $stmt->execute([$amount, $enrollment_id]);
 
         $pdo->commit();

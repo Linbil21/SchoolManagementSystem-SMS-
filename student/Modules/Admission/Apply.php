@@ -1,9 +1,8 @@
 <?php
 session_start();
-require_once '../../../Database/config.php';
-
-$message = '';
-$status = '';
+header("Location: Result.php");
+exit();
+?>
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     try {

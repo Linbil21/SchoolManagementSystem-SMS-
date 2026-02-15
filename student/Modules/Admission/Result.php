@@ -1,5 +1,19 @@
 <?php
 session_start();
+require_once '../../../Database/config.php';
+
+$email = $_SESSION['email'] ?? '';
+$app = null;
+
+if ($email) {
+    $stmt = $pdo->prepare("SELECT * FROM admission_applications WHERE email = ? ORDER BY submission_date DESC LIMIT 1");
+    $stmt->execute([$email]);
+    $app = $stmt->fetch();
+}
+
+$status = $app ? $app->status : 'Pending';
+$app_no = $app ? $app->application_no : 'N/A';
+$course = $app ? $app->preferred_course_1 : 'N/A';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -186,8 +200,8 @@ session_start();
                         </div>
                     </div>
 
-                    <a href="../Enrollment/Upload-Payment.php" class="action-btn" style="background: #d97706;">
-                        Proceed to Payment <i class="fas fa-wallet" style="margin-left: 8px;"></i>
+                    <a href="../Enrollment/Enrollment-Status.php" class="action-btn" style="background: #d97706;">
+                        Select Payment Method <i class="fas fa-wallet" style="margin-left: 8px;"></i>
                     </a>
                 </div>
             <?php elseif ($enrollment_status === 'Enrolled'): ?>

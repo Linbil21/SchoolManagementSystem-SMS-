@@ -493,9 +493,8 @@ $approved_today = $pdo->query("SELECT COUNT(*) FROM admission_applications WHERE
                         <h4 style="color: #1e293b; font-size: 0.9rem; font-weight: 700; margin-bottom: 12px;">Evaluation Status & Notes</h4>
                         <select name="status" id="modalEvalStatus"
                             style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 16px; outline: none; font-family: inherit;">
-                            <option value="Approved">Approve Application</option>
+                            <option value="Approved">Approve Documents & Assessment</option>
                             <option value="Processing">Keep for Further Review</option>
-                            <option value="Rejected">Reject Application</option>
                         </select>
                         <textarea name="notes" placeholder="Add internal notes for this evaluation..."
                             style="width: 100%; height: 120px; padding: 16px; border-radius: 16px; border: 1px solid #e2e8f0; outline: none; resize: none; font-family: inherit; font-size: 0.9rem; color: #475569;"></textarea>
