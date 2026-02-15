@@ -663,14 +663,14 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                                     
                                     <div class="row row-3">
                                         <div class="col input-group">
-                                            <label>Birth Cert (PSA) <span>*</span></label>
-                                            <input type="file" name="birth_cert" class="ocr-input" data-type="birth_cert" required>
+                                            <label>Birth Cert (PSA)</label>
+                                            <input type="file" name="birth_cert" class="ocr-input" data-type="birth_cert">
                                             <div class="ocr-badge" onclick="triggerScan(this)"><i class="fas fa-magic"></i> Smart Scan</div>
                                             <div class="ocr-status"></div>
                                         </div>
                                         <div class="col input-group">
-                                            <label>Form 138 <span>*</span></label>
-                                            <input type="file" name="form_138" class="ocr-input" required>
+                                            <label>Form 138</label>
+                                            <input type="file" name="form_138" class="ocr-input" data-type="form_138">
                                             <div class="ocr-badge" onclick="triggerScan(this)"><i class="fas fa-magic"></i> Smart Scan</div>
                                             <div class="ocr-status"></div>
                                         </div>
