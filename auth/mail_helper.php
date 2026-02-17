@@ -16,6 +16,14 @@ function get_last_mail_error() {
 function sendOTP($recipientEmail, $otp, $type = 'Verification')
 {
     global $last_mail_error;
+    // Skip sending for dummy/test emails to avoid "Address not found" bounces
+    $dummy_domains = ['@example.com', '@test.com', '@mailinator.com', '@yopmail.com'];
+    foreach ($dummy_domains as $domain) {
+        if (strpos($recipientEmail, $domain) !== false) {
+            return true; // Simulate success
+        }
+    }
+
     $mail = new PHPMailer(true);
 
     try {
@@ -67,6 +75,14 @@ function sendOTP($recipientEmail, $otp, $type = 'Verification')
 function sendEnrollmentEmail($recipientEmail, $details)
 {
     global $last_mail_error;
+    // Skip sending for dummy/test emails
+    $dummy_domains = ['@example.com', '@test.com', '@mailinator.com', '@yopmail.com'];
+    foreach ($dummy_domains as $domain) {
+        if (strpos($recipientEmail, $domain) !== false) {
+            return true;
+        }
+    }
+
     $mail = new PHPMailer(true);
 
     try {
@@ -133,6 +149,14 @@ function sendEnrollmentEmail($recipientEmail, $details)
 function sendPaymentInstructionEmail($recipientEmail, $details)
 {
     global $last_mail_error;
+    // Skip sending for dummy/test emails
+    $dummy_domains = ['@example.com', '@test.com', '@mailinator.com', '@yopmail.com'];
+    foreach ($dummy_domains as $domain) {
+        if (strpos($recipientEmail, $domain) !== false) {
+            return true;
+        }
+    }
+
     $mail = new PHPMailer(true);
 
     try {
