@@ -22,41 +22,43 @@ try {
         
         switch ($step) {
             case 'primary_docs':
-                // Validate required files for Step 2
-                $required = ['id_picture']; // Minimum requirement
-                $missing = [];
+                $detected = [];
+                $errors = [];
                 
-                foreach ($required as $field) {
-                    if (!isset($_FILES[$field]) || $_FILES[$field]['error'] !== 0) {
-                        $missing[] = $field;
+                // 1. Check ID Picture (Required & Quality Check)
+                if (isset($_FILES['id_picture']) && $_FILES['id_picture']['error'] === 0) {
+                    $res = $ocr->scanDocument($_FILES['id_picture']['tmp_name'], 'id_picture', $_FILES['id_picture']['name']);
+                    if (isset($res['error'])) {
+                        $errors[] = "ID Photo: " . $res['error'];
+                    } else {
+                        $detected[] = "Passport ID (" . ($res['confidence'] ?? '100') . "% quality)";
                     }
+                } else {
+                    $errors[] = "Passport Size ID is required.";
                 }
-                
-                if (!empty($missing)) {
+
+                // 2. Check PSA (Optional but Detect if present)
+                if (isset($_FILES['birth_cert']) && $_FILES['birth_cert']['error'] === 0) {
+                    $detected[] = "PSA Birth Certificate";
+                }
+
+                // 3. Check Form 138 (Optional but Detect if present)
+                if (isset($_FILES['form_138']) && $_FILES['form_138']['error'] === 0) {
+                    $detected[] = "Form 138 (Report Card)";
+                }
+
+                if (!empty($errors)) {
                     echo json_encode([
                         'status' => 'error',
-                        'message' => 'Required documents are missing.',
-                        'missing' => $missing
+                        'message' => implode("\n", $errors)
                     ]);
                     exit;
                 }
                 
-                // If files are present, we can perform a quick check
-                // For example, validating the ID picture format via OCR simulation
-                if (isset($_FILES['id_picture'])) {
-                    $result = $ocr->scanDocument($_FILES['id_picture']['tmp_name'], 'id_picture', $_FILES['id_picture']['name']);
-                    if (isset($result['error'])) {
-                        echo json_encode([
-                            'status' => 'error',
-                            'message' => 'ID Photo Validation Failed: ' . $result['error']
-                        ]);
-                        exit;
-                    }
-                }
-                
                 echo json_encode([
                     'status' => 'success',
-                    'message' => 'Primary documents validated successfully.'
+                    'message' => 'Documents Detected: ' . implode(", ", $detected),
+                    'detected_files' => $detected
                 ]);
                 break;
                 

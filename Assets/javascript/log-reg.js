@@ -141,6 +141,19 @@ nextBtns.forEach((btn) => {
                     btn.innerHTML = originalText;
                     btn.disabled = false;
                     return; // Stop here
+                } else {
+                    // Show success toast
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            title: 'Documents Verified!',
+                            text: result.message,
+                            icon: 'success',
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000
+                        });
+                    }
                 }
             } catch (err) {
                 console.error("API Error:", err);
