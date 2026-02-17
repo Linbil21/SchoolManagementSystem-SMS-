@@ -30,21 +30,31 @@ class OcrProcessor {
                 $height = $imgSize[1];
                 $aspect = $width / $height;
 
-                // ID Photo should be Portrait (approx 3:4) or Square (1:1)
-                // Strict Range: 0.65 (Tall Portrait) to 1.05 (Square with margin)
-                // Rejects Landscape photos immediately.
-                if ($aspect < 0.65 || $aspect > 1.05) {
+                // 2. Strict Orientation Check
+                // Reject all Landscape photos (Width > Height)
+                if ($width > $height) {
                     return [
-                        'error' => 'Invalid ID Photo Format. Photo must be PORTRAIT or SQUARE (Passport Size/2x2). Landscape photos are not allowed.',
+                        'error' => 'Invalid Format. ID Photos must be Portrait (Vertical). Landscape (Horizontal) photos are not allowed.',
+                        'is_valid' => false,
+                        'debug_dims' => "$width x $height"
+                    ];
+                }
+
+                // Aspect Ratio Check for Portrait/Square
+                // Allow 3:4 (0.75) to 1:1 (1.0). 
+                // We allow a bit of wiggle room: 0.6 to 1.05
+                if ($aspect < 0.6 || $aspect > 1.05) {
+                    return [
+                        'error' => 'Invalid Aspect Ratio. Please upload a standard 2x2 or Passport Size photo.',
                         'is_valid' => false,
                         'debug_aspect' => $aspect
                     ];
                 }
                 
-                // File Size Check (e.g. Reject very small images/thumbnails)
-                if (filesize($imagePath) < 5000) { // < 5KB
+                // File Size Check - Increased to 15KB to filter out low-res thumbnails/icons
+                if (filesize($imagePath) < 15000) { 
                      return [
-                        'error' => 'Image too small. Please upload a high-quality ID photo.',
+                        'error' => 'Image resolution too low. Please upload a high-quality ID photo.',
                         'is_valid' => false
                     ];
                 }
@@ -56,7 +66,7 @@ class OcrProcessor {
             if ($type === 'id_picture') {
                 // SIMULATE ERROR: If filename contains specific keywords, trigger the rejection logic
                 // This allows testing the error state even without a real API key.
-                $forbiddenKeywords = ['anime', 'cartoon', 'drawing', 'sketch', 'art', 'fake', 'test', 'invalid', 'animation'];
+                $forbiddenKeywords = ['anime', 'cartoon', 'drawing', 'sketch', 'art', 'fake', 'test', 'invalid', 'animation', 'admin', 'avatar', 'icon'];
                 foreach ($forbiddenKeywords as $keyword) {
                     if (stripos($originalFilename, $keyword) !== false) {
                         return [
