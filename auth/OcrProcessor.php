@@ -65,7 +65,8 @@ class OcrProcessor {
         if ($type === 'id_picture') {
             $features = [
                 ["type" => "FACE_DETECTION"],
-                ["type" => "LANDMARK_DETECTION"] // Optional, helps confirm it's a person/headshot
+                ["type" => "SAFE_SEARCH_DETECTION"],
+                ["type" => "LABEL_DETECTION"] // For anime/cartoon detection
             ];
         }
 
@@ -97,6 +98,29 @@ class OcrProcessor {
         
         // Handle ID Photo Logic
         if ($type === 'id_picture') {
+            // 1. Anime/Cartoon/Spoof Check
+            $safeSearch = $result['responses'][0]['safeSearchAnnotation'] ?? [];
+            $labels = $result['responses'][0]['labelAnnotations'] ?? [];
+            
+            // Check SafeSearch for Spoof (Cartoons/Drawings)
+            if (($safeSearch['spoof'] ?? '') === 'LIKELY' || ($safeSearch['spoof'] ?? '') === 'VERY_LIKELY') {
+                return [
+                    'error' => 'Invalid Photo. Animated, cartoon, or generated images are not allowed. Please upload a actual formal ID photo.',
+                    'is_valid' => false
+                ];
+            }
+
+            // Check Labels for generic cartoons (Double Check)
+            foreach ($labels as $label) {
+                $desc = strtolower($label['description']);
+                if (in_array($desc, ['anime', 'cartoon', 'animation', 'drawing', 'illustration', 'comics', 'fictional character']) && $label['score'] > 0.8) {
+                    return [
+                        'error' => 'Anime/Cartoon detected. Please upload a real formal ID photo.',
+                        'is_valid' => false
+                    ];
+                }
+            }
+
             $faces = $result['responses'][0]['faceAnnotations'] ?? [];
             if (empty($faces)) {
                 return [
