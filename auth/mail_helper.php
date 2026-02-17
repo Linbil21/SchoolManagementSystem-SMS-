@@ -129,3 +129,76 @@ function sendEnrollmentEmail($recipientEmail, $details)
         return false;
     }
 }
+
+function sendPaymentInstructionEmail($recipientEmail, $details)
+{
+    global $last_mail_error;
+    $mail = new PHPMailer(true);
+
+    try {
+        $mail->isSMTP();
+        $mail->Host = 'smtp.gmail.com';
+        $mail->SMTPAuth = true;
+        $mail->Username = 'linbilcelestre31@gmail.com';
+        $mail->Password = 'ncim rfhg jisu zzam';
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port = 587;
+        
+        $mail->setFrom('linbilcelestre31@gmail.com', 'SMS Admission Office');
+        $mail->addAddress($recipientEmail);
+
+        $mail->isHTML(true);
+        $mail->Subject = "Admission Approved: Payment Instructions - SMS";
+
+        $student_name = strtoupper($details['first_name'] . ' ' . $details['last_name']);
+        $ref = $details['reference_code'];
+        $total_fee = number_format($details['total_fee'], 2);
+
+        $mail->Body = "
+        <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333;'>
+            <div style='background: #2563eb; padding: 30px; text-align: center; border-radius: 10px 10px 0 0;'>
+                <h1 style='color: white; margin: 0; font-size: 24px;'>Admission Approved!</h1>
+            </div>
+            <div style='padding: 30px; border: 1px solid #e2e8f0; border-top: none; border-radius: 0 0 10px 10px;'>
+                <p>Dear <strong>$student_name</strong>,</p>
+                <p>We are pleased to inform you that your admission application has been approved by the Admission Office.</p>
+                <p style='color: #ef4444; font-weight: 700;'>CRITICAL STEP: You must settle your initial payment (Downpayment) before you can be officially enrolled.</p>
+                
+                <div style='background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;'>
+                    <h3 style='margin-top: 0; color: #1e293b;'>Payment Summary</h3>
+                    <table style='width: 100%; font-size: 14px;'>
+                        <tr><td style='color: #64748b; padding-bottom: 5px;'>Reference Code:</td><td><strong>$ref</strong></td></tr>
+                        <tr><td style='color: #64748b; padding-bottom: 5px;'>Total Assessment:</td><td style='color: #1e293b; font-weight: 700;'>₱$total_fee</td></tr>
+                    </table>
+                </div>
+
+                <p><strong>Payment Options:</strong></p>
+                <ul>
+                    <li><strong>Walk-in:</strong> Visit the School Cashier and present your Reference Code.</li>
+                    <li><strong>Online:</strong> You can pay via <b>Hello Money (AUB)</b>, <b>GCash</b>, or <b>Bank Transfer</b> through the student portal.</li>
+                </ul>
+
+                <p>After paying online, please upload your proof of payment in the student portal for validation.</p>
+                
+                <div style='text-align: center; margin-top: 30px;'>
+                    <a href='http://localhost/auth/Login.php' style='background: #2563eb; color: white; padding: 12px 25px; text-decoration: none; border-radius: 8px; font-weight: 700;'>Go to Student Portal</a>
+                </div>
+
+                <p style='font-size: 13px; color: #64748b; margin-top: 30px;'>
+                    This is an automated notification from the Admission Office.
+                </p>
+                <hr style='border: 0; border-top: 1px solid #e2e8f0; margin: 20px 0;'>
+                <p style='text-align: center; font-size: 12px; color: #94a3b8;'>
+                    &copy; 2026 SMS Official Portal. Admission Department.
+                </p>
+            </div>
+        </div>
+        ";
+
+        $mail->send();
+        return true;
+    } catch (Exception $e) {
+        $last_mail_error = $e->getMessage();
+        return false;
+    }
+}

@@ -260,19 +260,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['proof'])) {
                 <!-- Left: Bank Accounts -->
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">Bank Accounts</h3>
+                        <h3 class="card-title">Payment Accounts</h3>
                     </div>
                     <div class="accounts-list">
+                        <!-- Hello Money -->
                         <div class="account-item">
-                            <div class="bank-logo" style="color: #0056b3;">
-                                <i class="fas fa-university"></i>
+                            <div class="bank-logo" style="color: #ea580c;">
+                                <i class="fas fa-mobile-alt"></i>
                             </div>
                             <div class="bank-details">
-                                <h4>BDO Unibank</h4>
-                                <p>Account Name: School Management System</p>
-                                <p>Account No: <strong>0012-3456-7890</strong></p>
+                                <h4>AUB - Hello Money</h4>
+                                <p>Account Name: School Admin</p>
+                                <p>Account No: <strong>055-12-000123-4</strong></p>
                             </div>
                         </div>
+                        <!-- GCash -->
                         <div class="account-item">
                             <div class="bank-logo" style="color: #007bff;">
                                 <i class="fas fa-mobile-alt"></i>
@@ -283,14 +285,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['proof'])) {
                                 <p>Account No: <strong>0917-123-4567</strong></p>
                             </div>
                         </div>
+                        <!-- BDO -->
                         <div class="account-item">
-                            <div class="bank-logo" style="color: #dc3545;">
-                                <i class="fas fa-piggy-bank"></i>
+                            <div class="bank-logo" style="color: #0056b3;">
+                                <i class="fas fa-university"></i>
                             </div>
                             <div class="bank-details">
-                                <h4>BPI Family</h4>
+                                <h4>BDO Unibank</h4>
                                 <p>Account Name: School Management System</p>
-                                <p>Account No: <strong>1029-3847-56</strong></p>
+                                <p>Account No: <strong>0012-3456-7890</strong></p>
                             </div>
                         </div>
                     </div>
@@ -306,9 +309,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['proof'])) {
                             <label class="form-label">Payment Channel</label>
                             <select name="channel" class="form-select" required>
                                 <option value="">Select Channel</option>
-                                <option>BDO Unibank</option>
-                                <option>GCash</option>
-                                <option>BPI Family</option>
+                                <option value="HelloMoney" <?php echo $selected_method == 'HelloMoney' ? 'selected' : ''; ?>>Hello Money (AUB)</option>
+                                <option value="GCash" <?php echo $selected_method == 'GCash' ? 'selected' : ''; ?>>GCash</option>
+                                <option value="BankTransfer" <?php echo $selected_method == 'BankTransfer' ? 'selected' : ''; ?>>Bank Transfer (BDO/BPI)</option>
+                                <option value="Others" <?php echo $selected_method == 'Others' ? 'selected' : ''; ?>>Others</option>
                             </select>
                         </div>
                         <div class="form-group">

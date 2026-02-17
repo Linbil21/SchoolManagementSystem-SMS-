@@ -283,22 +283,45 @@ $current_step_index = $status_steps[$current_status] ?? 4;
                 <p><?php echo $desc_text; ?></p>
                 
                 <?php if ($current_status == 'Pending Payment'): ?>
-                    <div style="margin-top: 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; text-align: left;">
+                    <div style="margin-top: 30px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; text-align: left;">
+                        <!-- Walk-In Cash -->
                         <a href="?action=set_method&method=Walk-in" 
-                           style="display: flex; flex-direction: column; align-items: center; padding: 25px; border: 2px solid #e2e8f0; border-radius: 20px; text-decoration: none; transition: 0.3s; background: #fff; text-align: center;">
-                            <div style="width: 60px; height: 60px; background: #eff6ff; border-radius: 15px; display: flex; align-items: center; justify-content: center; margin-bottom: 15px;">
-                                <i class="fas fa-walking" style="font-size: 1.8rem; color: #2563eb;"></i>
+                           style="display: flex; flex-direction: column; align-items: center; padding: 20px; border: 2px solid #e2e8f0; border-radius: 20px; text-decoration: none; transition: 0.3s; background: #fff; text-align: center;">
+                            <div style="width: 50px; height: 50px; background: #f0fdf4; border-radius: 15px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px;">
+                                <i class="fas fa-money-bill-wave" style="font-size: 1.5rem; color: #16a34a;"></i>
                             </div>
-                            <span style="font-weight: 700; color: #1e293b; display: block;">Walk-In Payment</span>
-                            <p style="font-size: 0.75rem; color: #64748b; margin-top: 5px;">Pay personally at the school cashier counter.</p>
+                            <span style="font-weight: 700; color: #1e293b; display: block; font-size: 0.9rem;">Walk-In Cash</span>
+                            <p style="font-size: 0.7rem; color: #64748b; margin-top: 5px;">Pay at the school cashier counter.</p>
                         </a>
-                        <a href="Upload-Payment.php" 
-                           style="display: flex; flex-direction: column; align-items: center; padding: 25px; border: 2px solid #e2e8f0; border-radius: 20px; text-decoration: none; transition: 0.3s; background: #fff; text-align: center;">
-                            <div style="width: 60px; height: 60px; background: #fef2f2; border-radius: 15px; display: flex; align-items: center; justify-content: center; margin-bottom: 15px;">
-                                <i class="fas fa-credit-card" style="font-size: 1.8rem; color: #ef4444;"></i>
+
+                        <!-- Hello Money -->
+                        <a href="Upload-Payment.php?method=HelloMoney" 
+                           style="display: flex; flex-direction: column; align-items: center; padding: 20px; border: 2px solid #e2e8f0; border-radius: 20px; text-decoration: none; transition: 0.3s; background: #fff; text-align: center;">
+                            <div style="width: 50px; height: 50px; background: #fff7ed; border-radius: 15px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px;">
+                                <i class="fas fa-mobile-alt" style="font-size: 1.5rem; color: #ea580c;"></i>
                             </div>
-                            <span style="font-weight: 700; color: #1e293b; display: block;">Online Payment</span>
-                            <p style="font-size: 0.75rem; color: #64748b; margin-top: 5px;">Upload proof of GCash or Bank Transfer.</p>
+                            <span style="font-weight: 700; color: #1e293b; display: block; font-size: 0.9rem;">Hello Money</span>
+                            <p style="font-size: 0.7rem; color: #64748b; margin-top: 5px;">Upload AUB Hello Money proof.</p>
+                        </a>
+
+                        <!-- Bank Transfer -->
+                        <a href="Upload-Payment.php?method=BankTransfer" 
+                           style="display: flex; flex-direction: column; align-items: center; padding: 20px; border: 2px solid #e2e8f0; border-radius: 20px; text-decoration: none; transition: 0.3s; background: #fff; text-align: center;">
+                            <div style="width: 50px; height: 50px; background: #eff6ff; border-radius: 15px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px;">
+                                <i class="fas fa-university" style="font-size: 1.5rem; color: #2563eb;"></i>
+                            </div>
+                            <span style="font-weight: 700; color: #1e293b; display: block; font-size: 0.9rem;">Bank Transfer</span>
+                            <p style="font-size: 0.7rem; color: #64748b; margin-top: 5px;">BDO, BPI, or MetroBank.</p>
+                        </a>
+
+                        <!-- GCash -->
+                        <a href="Upload-Payment.php?method=GCash" 
+                           style="display: flex; flex-direction: column; align-items: center; padding: 20px; border: 2px solid #e2e8f0; border-radius: 20px; text-decoration: none; transition: 0.3s; background: #fff; text-align: center;">
+                            <div style="width: 50px; height: 50px; background: #fef2f2; border-radius: 15px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px;">
+                                <i class="fas fa-credit-card" style="font-size: 1.5rem; color: #ef4444;"></i>
+                            </div>
+                            <span style="font-weight: 700; color: #1e293b; display: block; font-size: 0.9rem;">GCash</span>
+                            <p style="font-size: 0.7rem; color: #64748b; margin-top: 5px;">Instant mobile payment.</p>
                         </a>
                     </div>
                 <?php endif; ?>

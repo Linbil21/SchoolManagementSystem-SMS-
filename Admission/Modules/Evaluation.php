@@ -2,6 +2,7 @@
 session_start();
 require_once '../../auth/Security.php';
 require_once '../../Database/config.php';
+require_once '../../auth/mail_helper.php';
 checkRole(['admission']);
 
 $message = '';
@@ -34,14 +35,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 $tuition = 15000.00;
                 $misc = 2500.00;
                 $total = $tuition + $misc;
+                $ref_code = "";
 
                 // Check if already enrolled to avoid duplicate email error
-                $stmt = $pdo->prepare("SELECT enrollmentId FROM enrollments WHERE email = ?");
+                $stmt = $pdo->prepare("SELECT enrollmentId, reference_code FROM enrollments WHERE email = ?");
                 $stmt->execute([$app->email]);
                 $existing_enr = $stmt->fetch();
 
                 if ($existing_enr) {
                     // Update existing
+                    $ref_code = $existing_enr->reference_code;
                     $sql = "UPDATE enrollments SET 
                             tuition_fee = ?, 
                             misc_fee = ?, 
@@ -69,6 +72,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     ]);
                     $message = "Application #{$app->application_no} approved and student record created. Status set to Pending Payment (Direct to Cashier).";
                 }
+
+                // 4. Send Email Notification with Payment Instructions
+                sendPaymentInstructionEmail($app->email, [
+                    'first_name' => $app->first_name,
+                    'last_name' => $app->last_name,
+                    'reference_code' => $ref_code,
+                    'total_fee' => $total
+                ]);
             }
         } else {
             $pdo->prepare("UPDATE admission_applications SET status = ? WHERE applicationId = ?")
