@@ -91,10 +91,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     }
 }
 
-// Fetch pending and processing applications
-$apps = $pdo->query("SELECT a.*, s.is_verified 
+// Fetch pending and processing applications with their documents from enrollments
+$apps = $pdo->query("SELECT a.*, s.is_verified, e.birth_cert, e.form_138, e.form_137, e.good_moral, e.barangay_clearance, e.id_picture
                    FROM admission_applications a 
                    LEFT JOIN students s ON a.email = s.email 
+                   LEFT JOIN enrollments e ON a.email = e.email
                    WHERE a.status IN ('Pending', 'Processing') 
                    ORDER BY a.submission_date DESC")->fetchAll();
 
@@ -345,6 +346,15 @@ $approved_today = $pdo->query("SELECT COUNT(*) FROM admission_applications WHERE
             font-size: 0.75rem;
             font-weight: 600;
         }
+
+        .eval-row:hover {
+            background-color: #f0f7ff !important;
+            transition: background-color 0.2s ease;
+        }
+
+        .eval-row:active {
+            background-color: #e0efff !important;
+        }
     </style>
 </head>
 
@@ -414,7 +424,17 @@ $approved_today = $pdo->query("SELECT COUNT(*) FROM admission_applications WHERE
                     </thead>
                     <tbody>
                         <?php foreach ($apps as $app): ?>
-                            <tr>
+                            <tr class="eval-row" style="cursor: pointer;"
+                                onclick="openReviewModal(
+                                    '<?php echo $app->applicationId; ?>',
+                                    '<?php echo addslashes($app->first_name . ' ' . $app->last_name); ?>', 
+                                    '<?php echo addslashes($app->preferred_course_1); ?>',
+                                    '<?php echo $app->birth_cert; ?>',
+                                    '<?php echo $app->form_138; ?>',
+                                    '<?php echo $app->form_137; ?>',
+                                    '<?php echo $app->good_moral; ?>',
+                                    '<?php echo $app->id_picture; ?>'
+                                )">
                                 <td style="font-weight: 600;">
                                     <?php echo htmlspecialchars($app->first_name . ' ' . $app->last_name); ?>
                                     <div style="font-size: 0.75rem; font-weight: 400; color: #64748b;"><?php echo htmlspecialchars($app->email); ?></div>
@@ -431,16 +451,21 @@ $approved_today = $pdo->query("SELECT COUNT(*) FROM admission_applications WHERE
                                     <?php endif; ?>
                                 </td>
                                 <td><?php echo htmlspecialchars($app->preferred_course_1); ?></td>
-                                <td>PSA, Report Card</td>
+                                <td>
+                                    <div style="font-size: 0.75rem; color: #64748b;">
+                                        <?php 
+                                        $docs = [];
+                                        if ($app->birth_cert) $docs[] = "PSA";
+                                        if ($app->form_138) $docs[] = "Form 138";
+                                        if ($app->form_137) $docs[] = "Form 137";
+                                        echo !empty($docs) ? implode(", ", $docs) : "No documents";
+                                        ?>
+                                    </div>
+                                </td>
                                 <td><span class="badge <?php echo ($app->status == 'Pending') ? 'badge-pending' : 'badge-processing'; ?>">
                                     <?php echo htmlspecialchars($app->status); ?></span>
                                 </td>
-                                <td><button class="btn-evaluate"
-                                         onclick="openReviewModal(
-                                             '<?php echo $app->applicationId; ?>',
-                                             '<?php echo addslashes($app->first_name . ' ' . $app->last_name); ?>', 
-                                             '<?php echo addslashes($app->preferred_course_1); ?>'
-                                         )">Evaluate</button></td>
+                                <td><button class="btn-evaluate">Evaluate</button></td>
                             </tr>
                         <?php endforeach; ?>
                         <?php if (empty($apps)): ?>
@@ -475,44 +500,8 @@ $approved_today = $pdo->query("SELECT COUNT(*) FROM admission_applications WHERE
                         <i class="fas fa-file-alt" style="color: var(--primary-blue);"></i> Submitted Documents
                     </h4>
 
-                    <div class="doc-item">
-                        <div style="display: flex; align-items: center; gap: 16px;">
-                            <div
-                                style="width: 48px; height: 48px; background: #fee2e2; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #ef4444;">
-                                <i class="fas fa-file-pdf"></i>
-                            </div>
-                            <div>
-                                <p style="font-weight: 600; font-size: 0.9rem; color: #1e293b;">High School Report Card
-                                    (Form 138)</p>
-                                <p style="font-size: 0.75rem; color: #64748b;">Verified by Admin on Jan 10</p>
-                            </div>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 12px;">
-                            <span class="status-pill" style="background: #ecfdf5; color: #10b981;">Verified</span>
-                            <button
-                                style="color: var(--primary-blue); background: none; border: none; cursor: pointer;"><i
-                                    class="fas fa-external-link-alt"></i></button>
-                        </div>
-                    </div>
-
-                    <div class="doc-item">
-                        <div style="display: flex; align-items: center; gap: 16px;">
-                            <div
-                                style="width: 48px; height: 48px; background: #eef2ff; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--primary-blue);">
-                                <i class="fas fa-id-card"></i>
-                            </div>
-                            <div>
-                                <p style="font-weight: 600; font-size: 0.9rem; color: #1e293b;">PSA Birth Certificate
-                                </p>
-                                <p style="font-size: 0.75rem; color: #64748b;">Pending Verification</p>
-                            </div>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 12px;">
-                            <span class="status-pill" style="background: #fef3c7; color: #d97706;">Pending</span>
-                            <button
-                                style="color: var(--primary-blue); background: none; border: none; cursor: pointer;"><i
-                                    class="fas fa-check" title="Quick Approve"></i></button>
-                        </div>
+                    <div id="modalDocList">
+                        <!-- Dynamic Docs Go Here -->
                     </div>
                 </div>
 
@@ -524,6 +513,8 @@ $approved_today = $pdo->query("SELECT COUNT(*) FROM admission_applications WHERE
                         <select name="status" id="modalEvalStatus"
                             style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 16px; outline: none; font-family: inherit;">
                             <option value="Approved">Accept Documents & Verify For Payment</option>
+                            <option value="Processing">Pre-verify & Keep Processing</option>
+                            <option value="Rejected">Reject Application (Incomplete/Invalid)</option>
                         </select>
                         <textarea name="notes" placeholder="Add internal notes for this evaluation..."
                             style="width: 100%; height: 120px; padding: 16px; border-radius: 16px; border: 1px solid #e2e8f0; outline: none; resize: none; font-family: inherit; font-size: 0.9rem; color: #475569;"></textarea>
@@ -532,7 +523,7 @@ $approved_today = $pdo->query("SELECT COUNT(*) FROM admission_applications WHERE
             </div>
             <div class="modal-footer">
                 <button onclick="closeReviewModal()"
-                    style="padding: 12px 24px; border-radius: 12px; border: 1px solid #e2e8f0; background: white; color: #475569; font-weight: 600; cursor: pointer; transition: 0.2s;">Cancel Changes</button>
+                    style="padding: 12px 24px; border-radius: 12px; border: 1px solid #e2e8f0; background: white; color: #475569; font-weight: 600; cursor: pointer; transition: 0.2s;">Cancel</button>
                 <button onclick="saveEvaluation()"
                     style="padding: 12px 28px; border-radius: 12px; background: var(--primary-blue); color: white; border: none; font-weight: 600; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 6px -1px rgba(22, 72, 188, 0.2);">Confirm & Save</button>
             </div>
@@ -562,10 +553,54 @@ $approved_today = $pdo->query("SELECT COUNT(*) FROM admission_applications WHERE
             }
         }
 
-        function openReviewModal(id, name, course) {
+        function openReviewModal(id, name, course, psa, f138, f137, moral, idpic) {
             document.getElementById('modalAppId').value = id;
             document.getElementById('modalStudentName').textContent = name;
             document.getElementById('modalStudentCourse').textContent = course;
+            
+            // Build Doc List
+            const list = document.getElementById('modalDocList');
+            list.innerHTML = '';
+            
+            const docs = [
+                { name: 'PSA Birth Certificate', path: psa, icon: 'fa-id-card', color: '#eef2ff', text: '#1648bc' },
+                { name: 'Form 138 (Report Card)', path: f138, icon: 'fa-file-pdf', color: '#fee2e2', text: '#ef4444' },
+                { name: 'Form 137 (TOR)', path: f137, icon: 'fa-scroll', color: '#f0fdf4', text: '#16a34a' },
+                { name: 'Good Moral Certificate', path: moral, icon: 'fa-certificate', color: '#fff7ed', text: '#ea580c' },
+                { name: 'Passport Size ID', path: idpic, icon: 'fa-id-badge', color: '#f5f3ff', text: '#7c3aed' }
+            ];
+
+            let docFound = false;
+            docs.forEach(doc => {
+                if (doc.path) {
+                    docFound = true;
+                    const item = document.createElement('div');
+                    item.className = 'doc-item';
+                    const fullPath = '../../' + doc.path;
+                    item.innerHTML = `
+                        <div style="display: flex; align-items: center; gap: 16px;">
+                            <div style="width: 48px; height: 48px; background: ${doc.color}; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: ${doc.text};">
+                                <i class="fas ${doc.icon}"></i>
+                            </div>
+                            <div>
+                                <p style="font-weight: 600; font-size: 0.9rem; color: #1e293b;">${doc.name}</p>
+                                <p style="font-size: 0.75rem; color: #64748b;">Uploaded File</p>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <a href="${fullPath}" target="_blank" style="color: var(--primary-blue); background: #f1f5f9; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none;">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                        </div>
+                    `;
+                    list.appendChild(item);
+                }
+            });
+
+            if (!docFound) {
+                list.innerHTML = '<div style="text-align: center; padding: 20px; color: #94a3b8; font-size: 0.9rem;">No documents uploaded.</div>';
+            }
+
             document.getElementById('reviewModal').style.display = 'block';
             document.body.style.overflow = 'hidden';
         }

@@ -91,17 +91,66 @@ function validateCurrentStep() {
 }
 
 nextBtns.forEach((btn) => {
-    btn.addEventListener("click", (e) => {
+    btn.addEventListener("click", async (e) => {
         e.preventDefault();
-        e.stopPropagation(); // Prevent other potential listeners
+        e.stopPropagation();
 
-        // VALIDATION: Prevent moving to next step if current step is invalid
+        // 1. Client-Side Validation
         if (!validateCurrentStep()) {
             console.log("Validation failed for step " + formStepsNum);
             return;
         }
 
-        // Skip Secondary Docs (index 2) if "no" is selected
+        // 2. Server-Side Document Validation (Step 1: Primary Docs)
+        if (formStepsNum === 1) {
+            const formData = new FormData();
+            const activeStep = formSteps[formStepsNum];
+            const fileInputs = activeStep.querySelectorAll('input[type="file"]');
+
+            fileInputs.forEach(input => {
+                if (input.files[0]) {
+                    formData.append(input.name, input.files[0]);
+                }
+            });
+            formData.append('action', 'validate_step');
+            formData.append('step', 'primary_docs');
+
+            // Show loading state
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Validating...';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch('../integration/Documents.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await response.json();
+
+                if (result.status === 'error') {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            title: 'Validation Failed',
+                            text: result.message,
+                            icon: 'error',
+                            confirmButtonColor: '#ef4444'
+                        });
+                    } else {
+                        alert(result.message);
+                    }
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                    return; // Stop here
+                }
+            } catch (err) {
+                console.error("API Error:", err);
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        // 3. Navigation Logic
         const hasSecondaryDocs = document.querySelector('input[name="has_secondary_docs"]:checked')?.value;
 
         if (formStepsNum === 1 && hasSecondaryDocs === "no") {
@@ -113,7 +162,6 @@ nextBtns.forEach((btn) => {
         updateFormSteps();
         updateProgressbar();
 
-        // Scroll to top of form on step change for better visibility
         const scrollContainer = document.querySelector(".register-container-scroll");
         if (scrollContainer) scrollContainer.scrollTop = 0;
     });

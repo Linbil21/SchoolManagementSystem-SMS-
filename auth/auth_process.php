@@ -97,17 +97,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             ];
             $full_course_name = $full_course_map[$course] ?? $course;
 
-            // File Upload
-            $profile_image_path = null;
-            if (isset($_FILES['id_picture']) && $_FILES['id_picture']['error'] == 0) {
-                $target_dir = "../Assets/image/uploads/students/";
-                if (!is_dir($target_dir)) mkdir($target_dir, 0777, true);
-                $file_extension = pathinfo($_FILES["id_picture"]["name"], PATHINFO_EXTENSION);
-                $new_filename = $student_id . "_" . time() . "." . $file_extension;
-                if (move_uploaded_file($_FILES["id_picture"]["tmp_name"], $target_dir . $new_filename)) {
-                    $profile_image_path = "Assets/image/uploads/students/" . $new_filename;
+            // File Uploads Handling
+            $upload_fields = [
+                'id_picture' => '../Assets/image/uploads/students/',
+                'birth_cert' => '../Assets/image/uploads/documents/psa/',
+                'form_138' => '../Assets/image/uploads/documents/grades/',
+                'form_137' => '../Assets/image/uploads/documents/grades/',
+                'good_moral' => '../Assets/image/uploads/documents/certificates/',
+                'barangay_clearance' => '../Assets/image/uploads/documents/certificates/'
+            ];
+
+            $uploaded_paths = [];
+            foreach ($upload_fields as $field => $dir) {
+                $uploaded_paths[$field] = null;
+                if (isset($_FILES[$field]) && $_FILES[$field]['error'] == 0) {
+                    if (!is_dir($dir)) mkdir($dir, 0777, true);
+                    $file_extension = pathinfo($_FILES[$field]["name"], PATHINFO_EXTENSION);
+                    $new_filename = $student_id . "_" . $field . "_" . time() . "." . $file_extension;
+                    if (move_uploaded_file($_FILES[$field]["tmp_name"], $dir . $new_filename)) {
+                        $uploaded_paths[$field] = str_replace('../', '', $dir) . $new_filename;
+                    }
                 }
             }
+            
+            $profile_image_path = $uploaded_paths['id_picture'];
 
             // Generate 6-digit OTP
             $otp = rand(100000, 999999);
@@ -119,8 +132,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                          VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Regular', ?, ?, 0)");
                 $student_stmt->execute([$student_id, $first_name, $middle_name, $last_name, $email, $hashed_password, $full_course_name, $year_level, $profile_image_path, $otp]);
 
-                $enroll_stmt = $pdo->prepare("INSERT INTO enrollments (reference_code, admission_type, course_id, year_level, first_name, mid_name, last_name, gender, birthdate, contact_number, email, address, id_picture, guardian_first, guardian_middle, guardian_last, guardian_email, guardian_contact, relationship, guardian_address, primary_school, primary_year, secondary_school, secondary_year, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending Review')");
-                $enroll_stmt->execute([$reference_code, $admission_type, $course_id, $year_level, $first_name, $middle_name, $last_name, $gender, $birthdate, $contact_number, $email, $address, $profile_image_path, $guardian_first, $guardian_middle, $guardian_last, $guardian_email, $guardian_contact, $relationship, $guardian_address, $primary_school, $primary_year, $secondary_school, $secondary_year]);
+                $enroll_stmt = $pdo->prepare("INSERT INTO enrollments (reference_code, admission_type, course_id, year_level, first_name, mid_name, last_name, gender, birthdate, contact_number, email, address, id_picture, birth_cert, form_138, form_137, good_moral, barangay_clearance, guardian_first, guardian_middle, guardian_last, guardian_email, guardian_contact, relationship, guardian_address, primary_school, primary_year, secondary_school, secondary_year, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending Review')");
+                $enroll_stmt->execute([
+                    $reference_code, $admission_type, $course_id, $year_level, 
+                    $first_name, $middle_name, $last_name, $gender, $birthdate, 
+                    $contact_number, $email, $address, 
+                    $uploaded_paths['id_picture'], 
+                    $uploaded_paths['birth_cert'], 
+                    $uploaded_paths['form_138'], 
+                    $uploaded_paths['form_137'], 
+                    $uploaded_paths['good_moral'], 
+                    $uploaded_paths['barangay_clearance'],
+                    $guardian_first, $guardian_middle, $guardian_last, $guardian_email, $guardian_contact, $relationship, $guardian_address, 
+                    $primary_school, $primary_year, $secondary_school, $secondary_year
+                ]);
 
                 // Create Admission Application automatically
                 $app_stmt = $pdo->prepare("INSERT INTO admission_applications (application_no, first_name, last_name, date_of_birth, gender, email, phone_number, student_type, preferred_course_1, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending')");
