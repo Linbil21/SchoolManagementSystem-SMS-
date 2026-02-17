@@ -181,7 +181,7 @@ function sendPaymentInstructionEmail($recipientEmail, $details)
                 <p>After paying online, please upload your proof of payment in the student portal for validation.</p>
                 
                 <div style='text-align: center; margin-top: 30px;'>
-                    <a href='http://localhost/auth/Login.php' style='background: #2563eb; color: white; padding: 12px 25px; text-decoration: none; border-radius: 8px; font-weight: 700;'>Go to Student Portal</a>
+                    <a href='https://ems.jampzdev.com/student/auth/Login.php' style='background: #2563eb; color: white; padding: 12px 25px; text-decoration: none; border-radius: 8px; font-weight: 700;'>Go to Student Portal</a>
                 </div>
 
                 <p style='font-size: 13px; color: #64748b; margin-top: 30px;'>
