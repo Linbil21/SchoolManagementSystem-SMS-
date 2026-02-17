@@ -92,10 +92,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 }
 
 // Fetch pending and processing applications with their documents from enrollments
-$apps = $pdo->query("SELECT a.*, s.is_verified, e.birth_cert, e.form_138, e.form_137, e.good_moral, e.barangay_clearance, e.id_picture
+$apps = $pdo->query("SELECT a.*, s.is_verified, 
+                          e.birth_cert, e.form_138, e.form_137, e.good_moral, e.barangay_clearance, e.id_picture
                    FROM admission_applications a 
-                   LEFT JOIN students s ON a.email = s.email 
-                   LEFT JOIN enrollments e ON a.email = e.email
+                   LEFT JOIN students s ON LOWER(a.email) = LOWER(s.email) 
+                   LEFT JOIN enrollments e ON LOWER(a.email) = LOWER(e.email)
                    WHERE a.status IN ('Pending', 'Processing') 
                    ORDER BY a.submission_date DESC")->fetchAll();
 
@@ -433,6 +434,7 @@ $approved_today = $pdo->query("SELECT COUNT(*) FROM admission_applications WHERE
                                     '<?php echo $app->form_138; ?>',
                                     '<?php echo $app->form_137; ?>',
                                     '<?php echo $app->good_moral; ?>',
+                                    '<?php echo $app->barangay_clearance; ?>',
                                     '<?php echo $app->id_picture; ?>'
                                 )">
                                 <td style="font-weight: 600;">
@@ -456,8 +458,11 @@ $approved_today = $pdo->query("SELECT COUNT(*) FROM admission_applications WHERE
                                         <?php 
                                         $docs = [];
                                         if ($app->birth_cert) $docs[] = "PSA";
-                                        if ($app->form_138) $docs[] = "Form 138";
-                                        if ($app->form_137) $docs[] = "Form 137";
+                                        if ($app->form_138) $docs[] = "F-138";
+                                        if ($app->form_137) $docs[] = "F-137";
+                                        if ($app->good_moral) $docs[] = "Moral";
+                                        if ($app->barangay_clearance) $docs[] = "Brgy";
+                                        if ($app->id_picture) $docs[] = "ID";
                                         echo !empty($docs) ? implode(", ", $docs) : "No documents";
                                         ?>
                                     </div>
@@ -553,7 +558,7 @@ $approved_today = $pdo->query("SELECT COUNT(*) FROM admission_applications WHERE
             }
         }
 
-        function openReviewModal(id, name, course, psa, f138, f137, moral, idpic) {
+        function openReviewModal(id, name, course, psa, f138, f137, moral, brgy, idpic) {
             document.getElementById('modalAppId').value = id;
             document.getElementById('modalStudentName').textContent = name;
             document.getElementById('modalStudentCourse').textContent = course;
@@ -567,6 +572,7 @@ $approved_today = $pdo->query("SELECT COUNT(*) FROM admission_applications WHERE
                 { name: 'Form 138 (Report Card)', path: f138, icon: 'fa-file-pdf', color: '#fee2e2', text: '#ef4444' },
                 { name: 'Form 137 (TOR)', path: f137, icon: 'fa-scroll', color: '#f0fdf4', text: '#16a34a' },
                 { name: 'Good Moral Certificate', path: moral, icon: 'fa-certificate', color: '#fff7ed', text: '#ea580c' },
+                { name: 'Barangay Clearance', path: brgy, icon: 'fa-map-marker-alt', color: '#f0f9ff', text: '#0369a1' },
                 { name: 'Passport Size ID', path: idpic, icon: 'fa-id-badge', color: '#f5f3ff', text: '#7c3aed' }
             ];
 
