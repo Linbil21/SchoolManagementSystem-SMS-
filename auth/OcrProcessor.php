@@ -214,26 +214,61 @@ class OcrProcessor {
      * Simulation data for demonstration when API key is missing
      */
     private function getSimulationData($originalFilename = '') {
-        // DEFAULT TO THE SPECIFIC DEMO DATA (LOWELL) TO SATISFY USER TESTING
-        $firstName = 'LOWELL JR.';
-        $middleName = 'ALEJAGA';
-        $lastName = 'TORIBIO';
-        $birthdate = '2001-12-01';
-        $address = 'Camalaniugan, Cagayan';
-        $guardian = 'SHEILAH ALEJAGA';
-        $guardianContact = '09987654321';
-        $guardianEmail = 'sheilah.alejaga@example.com';
+        // 1. Arrays for RANDOM generation (for generic files)
+        $firstNames = ['JAMES', 'JOHN', 'MICHAEL', 'ANGELO', 'JOSHUA', 'MARK', 'CHRISTIAN', 'DANIEL', 'MARIA', 'JOY', 'ANGEL', 'JESSICA', 'NICOLE', 'GRACE'];
+        $lastNames = ['SANTOS', 'REYES', 'CRUZ', 'BAUTISTA', 'OCAMPO', 'GARCIA', 'MENDOZA', 'TORRES', 'FLORES', 'CASTILLO'];
+        $middleNames = ['D.', 'A.', 'S.', 'M.', 'L.', 'R.', 'P.'];
+        $cities = ['Quezon City', 'Manila', 'Davao City', 'Cebu City', 'Zamboanga City', 'Antipolo', 'Pasig', 'Taguig', 'Cagayan de Oro', 'Parañaque'];
+        $provinces = ['Metro Manila', 'Cebu', 'Davao del Sur', 'Rizal', 'Misamis Oriental', 'Cavite', 'Laguna', 'Bulacan'];
+
+        // Default to Random Data initially
+        $randFirst = $firstNames[array_rand($firstNames)];
+        $randLast = $lastNames[array_rand($lastNames)];
+        $randMiddle = $middleNames[array_rand($middleNames)];
         
-        // Try to parse name from filename if provided (e.g. "Pedro_Penduko.jpg")
+        $firstName = $randFirst;
+        $middleName = $randMiddle;
+        $lastName = $randLast;
+        
+        // Random Date (between 2000 and 2005)
+        $timestamp = mt_rand(946684800, 1136073600);
+        $birthdate = date("Y-m-d", $timestamp);
+        
+        $city = $cities[array_rand($cities)];
+        $province = $provinces[array_rand($provinces)];
+        $address = "$city, $province";
+        
+        // 2. Try to parse name from filename if provided
         if (!empty($originalFilename)) {
-            // Remove extension
+            // DEMO SPECIFIC: If user uploads the specific "Lowell" document
+            if (stripos($originalFilename, 'lowell') !== false || stripos($originalFilename, 'toribio') !== false || stripos($originalFilename, 'alejaga') !== false) {
+                return [
+                    'is_simulation' => true,
+                    'is_valid' => true,
+                    'document_type' => 'PSA Birth Certificate',
+                    'confidence' => '99.85',
+                    'first_name' => 'LOWELL JR.',
+                    'middle_name' => 'ALEJAGA',
+                    'last_name' => 'TORIBIO',
+                    'birthdate' => '2001-12-01',
+                    'gender' => 'Male',
+                    'contact_number' => '09123456789',
+                    'address' => 'Camalaniugan, Cagayan',
+                    'guardian_name' => 'SHEILAH ALEJAGA',
+                    'guardian_contact' => '09987654321',
+                    'guardian_email' => 'sheilah.alejaga@example.com',
+                    'relationship' => 'Mother',
+                    'recommendation' => '',
+                    'raw_text' => "SIMULATED DATA: PSA Birth Certificate LOWELL JR. ALEJAGA TORIBIO Dec 01, 2001. Mother: SHEILAH ALEJAGA."
+                ];
+            }
+
+            // Remove extension and separators
             $namePart = pathinfo($originalFilename, PATHINFO_FILENAME);
-            // Replace separators with spaces
             $namePart = preg_replace('/[_-]/', ' ', $namePart);
             $parts = array_filter(explode(' ', $namePart));
             
-            // Check for HASH / GARBAGE filenames (e.g. 8A347F4C...)
-            // If the name contains long strings of mixed numbers/letters, ignore it
+            // Check for HASH / GARBAGE filenames
             $isGarbage = false;
             foreach ($parts as $part) {
                 if (preg_match('/[A-F0-9]{8,}/i', $part) && preg_match('/\d/', $part) && preg_match('/[a-zA-Z]/', $part)) {
@@ -243,47 +278,45 @@ class OcrProcessor {
             }
 
             if (!$isGarbage) {
+                // If it looks like a real filename name (e.g. "Juan_Dela_Cruz")
                 if (count($parts) >= 2) {
                     $possibleLast = strtoupper(array_pop($parts));
                     $possibleFirst = strtoupper(implode(' ', $parts));
                     
                     // Filter out generic names
-                    $ignored = ['BIRTH', 'CERT', 'PSA', 'IMAGE', 'SCAN', 'DOC', 'PHOTO', 'IMG', 'PICTURE', 'FB_IMG', 'MESSENGER'];
+                    $ignored = ['BIRTH', 'CERT', 'PSA', 'IMAGE', 'SCAN', 'DOC', 'PHOTO', 'IMG', 'PICTURE', 'FB_IMG', 'MESSENGER', 'UNKNOWN', 'FILE'];
                     if (!in_array($possibleFirst, $ignored) && !in_array($possibleLast, $ignored)) {
                         $firstName = $possibleFirst;
                         $lastName = $possibleLast;
-                        // Reset other fields to generic if it's a new custom name
-                        $middleName = 'PROTOTYPE';
-                        $birthdate = '2005-05-15';
-                        $address = '123 Street, City, Province';
-                        $guardian = 'MRS. ' . $lastName;
-                        $guardianContact = '09123456789';
-                        $guardianEmail = strtolower(str_replace(' ', '', $lastName)) . '.guardian@example.com';
+                        $middleName = 'PROTOTYPE'; // Keep middle generic if inferred
                     }
                 } elseif (count($parts) == 1) {
                     $val = strtoupper($parts[0]);
                     $ignored = ['BIRTH', 'CERT', 'PSA', 'IMAGE', 'SCAN', 'DOC', 'PHOTO', 'IMG', 'PICTURE'];
                      if (!in_array($val, $ignored)) {
                         $firstName = $val;
-                         // Keep default last name (Toribio) or change to something else? 
-                         // Let's keep it safe.
                      }
                 }
             }
         }
         
+        // Construct Guardian Data based on result name
+        $guardian = 'MRS. ' . $lastName;
+        $guardianContact = '09' . mt_rand(100000000, 999999999);
+        $guardianEmail = strtolower(str_replace(' ', '', $lastName)) . '.parent@example.com';
+
         // Return constructed data
         return [
             'is_simulation' => true,
             'is_valid' => true,
             'document_type' => 'PSA Birth Certificate',
-            'confidence' => '99.85',
+            'confidence' => rand(95, 99) . '.' . rand(10, 99),
             'first_name' => $firstName,
             'middle_name' => $middleName,
             'last_name' => $lastName,
             'birthdate' => $birthdate,
-            'gender' => 'Male',
-            'contact_number' => '09123456789',
+            'gender' => (rand(0, 1) ? 'Male' : 'Female'),
+            'contact_number' => '09' . mt_rand(100000000, 999999999),
             'address' => $address,
             'guardian_name' => $guardian,
             'guardian_contact' => $guardianContact,
