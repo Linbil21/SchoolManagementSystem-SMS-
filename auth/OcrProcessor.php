@@ -241,7 +241,7 @@ class OcrProcessor {
             }
 
             // DEMO SPECIFIC: If user uploads the specific "Lowell" document provided in chat
-            if (stripos($originalFilename, 'lowell') !== false) {
+            if (stripos($originalFilename, 'lowell') !== false || stripos($originalFilename, 'toribio') !== false || stripos($originalFilename, 'alejaga') !== false) {
                 return [
                     'is_simulation' => true,
                     'is_valid' => true,
