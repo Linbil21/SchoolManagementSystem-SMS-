@@ -121,7 +121,7 @@ nextBtns.forEach((btn) => {
             btn.disabled = true;
 
             try {
-                const response = await fetch('../integration/Documents.php', {
+                const response = await fetch('/integration/Documents.php', {
                     method: 'POST',
                     body: formData
                 });
