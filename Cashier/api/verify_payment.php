@@ -48,14 +48,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             $notif_stmt->execute([$target_user_id, $notif_title, $notif_message, $bg, $color]);
 
-            // 3. If Verified, Update Enrollment Status to Validation for final Admission check
+            // 3. If Verified: Deduct Balance & Update Status for Final Admission Check
             if ($status === 'Verified') {
-                $stmt = $pdo->prepare("SELECT enrollment_id FROM payments WHERE payment_id = ?");
+                $stmt = $pdo->prepare("SELECT enrollment_id, amount FROM payments WHERE payment_id = ?");
                 $stmt->execute([$payment_id]);
-                $enrollment_id = $stmt->fetch()->enrollment_id;
+                $payInfo = $stmt->fetch();
+                
+                if ($payInfo) {
+                    $enrollment_id = $payInfo->enrollment_id;
+                    $amount_paid = $payInfo->amount;
 
-                $pdo->prepare("UPDATE enrollments SET status = 'Validation' WHERE enrollmentId = ?")
-                    ->execute([$enrollment_id]);
+                    // Get current balance
+                    $balStmt = $pdo->prepare("SELECT balance FROM enrollments WHERE enrollmentId = ?");
+                    $balStmt->execute([$enrollment_id]);
+                    $currentBal = $balStmt->fetch()->balance;
+
+                    // Calculate new balance
+                    $newBalance = $currentBal - $amount_paid;
+
+                    // Update Enrollment: Set Balance and Status to 'Validation' for final step
+                    $pdo->prepare("UPDATE enrollments SET balance = ?, status = 'Validation' WHERE enrollmentId = ?")
+                        ->execute([$newBalance, $enrollment_id]);
+                }
             }
         }
 

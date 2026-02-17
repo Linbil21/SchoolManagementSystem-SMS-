@@ -45,12 +45,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $pdo->beginTransaction();
 
         // 1. Find enrollment record
-        $stmt = $pdo->prepare("SELECT enrollmentId, balance FROM enrollments WHERE email = ? AND status IN ('Enrolled', 'Validated', 'Pending Review') LIMIT 1");
+        // Allow 'Pending Payment' which is the status after Admission approves docs
+        $stmt = $pdo->prepare("SELECT enrollmentId, balance FROM enrollments WHERE email = ? AND status IN ('Enrolled', 'Validated', 'Pending Review', 'Pending Payment') LIMIT 1");
         $stmt->execute([$student_email]);
         $enrollment = $stmt->fetch();
 
         if (!$enrollment) {
-            // If no active enrollment found, try to find the latest one
+            // Additional fallback: If no active status found, try finding ANY recent record to allow payment for re-enrollment etc.
             $stmt = $pdo->prepare("SELECT enrollmentId, balance FROM enrollments WHERE email = ? ORDER BY created_at DESC LIMIT 1");
             $stmt->execute([$student_email]);
             $enrollment = $stmt->fetch();
@@ -79,10 +80,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $payment_date
         ]);
 
-        // 3. Deduct from balance (per user request: "mababawasan balance nila")
-        $new_balance = $current_balance - $amount;
-        $updateStmt = $pdo->prepare("UPDATE enrollments SET balance = ? WHERE enrollmentId = ?");
-        $updateStmt->execute([$new_balance, $enrollment_id]);
+        // NOTE: Balance is NOT deducted here. It will be deducted when Cashier verifies the payment.
+        // This ensures balance only reflects actual received valid payments.
 
         // 4. Create notification for admin/cashier
         $notif_title = "New Payment Submitted";
