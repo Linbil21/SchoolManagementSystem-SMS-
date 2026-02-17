@@ -81,7 +81,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 }
 
 // Fetch pending and processing applications
-$apps = $pdo->query("SELECT * FROM admission_applications WHERE status IN ('Pending', 'Processing') ORDER BY submission_date DESC")->fetchAll();
+$apps = $pdo->query("SELECT a.*, s.is_verified 
+                   FROM admission_applications a 
+                   LEFT JOIN students s ON a.email = s.email 
+                   WHERE a.status IN ('Pending', 'Processing') 
+                   ORDER BY a.submission_date DESC")->fetchAll();
 
 // Stats
 $pending_count = $pdo->query("SELECT COUNT(*) FROM admission_applications WHERE status = 'Pending'")->fetchColumn();
@@ -390,6 +394,7 @@ $approved_today = $pdo->query("SELECT COUNT(*) FROM admission_applications WHERE
                     <thead>
                         <tr>
                             <th>Student Name</th>
+                            <th>Verification</th>
                             <th>Target Course</th>
                             <th>Documents</th>
                             <th>Status</th>
@@ -399,18 +404,32 @@ $approved_today = $pdo->query("SELECT COUNT(*) FROM admission_applications WHERE
                     <tbody>
                         <?php foreach ($apps as $app): ?>
                             <tr>
-                                <td style="font-weight: 600;"><?php echo htmlspecialchars($app->first_name . ' ' . $app->last_name); ?></td>
+                                <td style="font-weight: 600;">
+                                    <?php echo htmlspecialchars($app->first_name . ' ' . $app->last_name); ?>
+                                    <div style="font-size: 0.75rem; font-weight: 400; color: #64748b;"><?php echo htmlspecialchars($app->email); ?></div>
+                                </td>
+                                <td>
+                                    <?php if ($app->is_verified): ?>
+                                        <span class="badge" style="background: #dcfce7; color: #166534; font-size: 0.7rem;">
+                                            <i class="fas fa-check-circle"></i> Verified
+                                        </span>
+                                    <?php else: ?>
+                                        <span class="badge" style="background: #fee2e2; color: #991b1b; font-size: 0.7rem;">
+                                            <i class="fas fa-times-circle"></i> Unverified
+                                        </span>
+                                    <?php endif; ?>
+                                </td>
                                 <td><?php echo htmlspecialchars($app->preferred_course_1); ?></td>
                                 <td>PSA, Report Card</td>
                                 <td><span class="badge <?php echo ($app->status == 'Pending') ? 'badge-pending' : 'badge-processing'; ?>">
                                     <?php echo htmlspecialchars($app->status); ?></span>
                                 </td>
                                 <td><button class="btn-evaluate"
-                                        onclick="openReviewModal(
-                                            '<?php echo $app->applicationId; ?>',
-                                            '<?php echo addslashes($app->first_name . ' ' . $app->last_name); ?>', 
-                                            '<?php echo addslashes($app->preferred_course_1); ?>'
-                                        )">Evaluate</button></td>
+                                         onclick="openReviewModal(
+                                             '<?php echo $app->applicationId; ?>',
+                                             '<?php echo addslashes($app->first_name . ' ' . $app->last_name); ?>', 
+                                             '<?php echo addslashes($app->preferred_course_1); ?>'
+                                         )">Evaluate</button></td>
                             </tr>
                         <?php endforeach; ?>
                         <?php if (empty($apps)): ?>

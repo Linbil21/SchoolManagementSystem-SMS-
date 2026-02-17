@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 // Search Logic
 if ($search) {
     try {
-        $stmt = $pdo->prepare("SELECT s.first_name, s.last_name, s.student_id, e.enrollmentId as enrollment_id, e.balance 
+        $stmt = $pdo->prepare("SELECT s.first_name, s.last_name, s.student_id, s.is_verified, e.enrollmentId as enrollment_id, e.balance 
                                FROM students s 
                                JOIN enrollments e ON s.email = e.email 
                                WHERE (s.student_id LIKE ? OR s.last_name LIKE ? OR s.first_name LIKE ?)
@@ -112,6 +112,7 @@ if ($search) {
                     <thead>
                         <tr style="text-align: left; color: #64748b; font-size: 0.85rem; text-transform: uppercase;">
                             <th style="padding: 15px; border-bottom: 2px solid #f1f5f9;">Student Info</th>
+                            <th style="padding: 15px; border-bottom: 2px solid #f1f5f9;">Verification</th>
                             <th style="padding: 15px; border-bottom: 2px solid #f1f5f9;">Remaining Balance</th>
                             <th style="padding: 15px; border-bottom: 2px solid #f1f5f9;">Action</th>
                         </tr>
@@ -122,6 +123,17 @@ if ($search) {
                             <td style="padding: 20px 15px; border-bottom: 1px solid #f1f5f9;">
                                 <p style="font-weight: 700;"><?php echo htmlspecialchars($s->first_name . ' ' . $s->last_name); ?></p>
                                 <p style="font-size: 0.8rem; color: #64748b;">ID: <?php echo htmlspecialchars($s->student_id); ?></p>
+                            </td>
+                            <td style="padding: 20px 15px; border-bottom: 1px solid #f1f5f9;">
+                                <?php if ($s->is_verified): ?>
+                                    <span style="background: #d1fae5; color: #065f46; font-size: 0.75rem; padding: 4px 12px; border-radius: 20px; font-weight: 700; display: inline-flex; align-items: center; gap: 5px;">
+                                        <i class="fas fa-check-circle"></i> Verified
+                                    </span>
+                                <?php else: ?>
+                                    <span style="background: #fee2e2; color: #991b1b; font-size: 0.75rem; padding: 4px 12px; border-radius: 20px; font-weight: 700; display: inline-flex; align-items: center; gap: 5px;">
+                                        <i class="fas fa-times-circle"></i> Unverified
+                                    </span>
+                                <?php endif; ?>
                             </td>
                             <td style="padding: 20px 15px; border-bottom: 1px solid #f1f5f9; font-weight: 800; color: #ef4444;">
                                 ₱<?php echo number_format($s->balance, 2); ?>

@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 }
 
 // Fetch students pending final validation (Status: Validation)
-$sql = "SELECT e.*, s.student_id as current_id, (SELECT amount FROM payments WHERE enrollment_id = e.enrollmentId ORDER BY created_at DESC LIMIT 1) as last_payment 
+$sql = "SELECT e.*, s.student_id as current_id, s.is_verified, (SELECT amount FROM payments WHERE enrollment_id = e.enrollmentId ORDER BY created_at DESC LIMIT 1) as last_payment 
         FROM enrollments e 
         LEFT JOIN students s ON e.email = s.email 
         WHERE e.status = 'Validation' 
@@ -111,6 +111,7 @@ $validation_list = $pdo->query($sql)->fetchAll();
                             <thead>
                                 <tr>
                                     <th>Student Name</th>
+                                    <th>Verification</th>
                                     <th>Course & Level</th>
                                     <th>Financial Status</th>
                                     <th>Action</th>
@@ -122,6 +123,17 @@ $validation_list = $pdo->query($sql)->fetchAll();
                                         <td>
                                             <div style="font-weight: 700; color: #1e293b;"><?php echo htmlspecialchars($row->first_name . ' ' . $row->last_name); ?></div>
                                             <div style="font-size: 0.8rem; color: #64748b;"><?php echo htmlspecialchars($row->email); ?></div>
+                                        </td>
+                                        <td>
+                                            <?php if ($row->is_verified): ?>
+                                                <span class="badge" style="background: #dcfce7; color: #166534; font-size: 0.7rem; padding: 4px 10px; border-radius: 20px; font-weight: 700;">
+                                                    <i class="fas fa-check-circle"></i> Verified
+                                                </span>
+                                            <?php else: ?>
+                                                <span class="badge" style="background: #fee2e2; color: #991b1b; font-size: 0.7rem; padding: 4px 10px; border-radius: 20px; font-weight: 700;">
+                                                    <i class="fas fa-times-circle"></i> Unverified
+                                                </span>
+                                            <?php endif; ?>
                                         </td>
                                         <td>
                                             <div style="font-weight: 600;"><?php echo htmlspecialchars($row->year_level); ?></div>
