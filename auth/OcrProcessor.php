@@ -85,7 +85,7 @@ class OcrProcessor {
                     'recommendation' => 'Valid ID Photo format detected.'
                 ];
             }
-            return $this->getSimulationData();
+            return $this->getSimulationData($originalFilename);
         }
 
         $imageData = base64_encode(file_get_contents($imagePath));
@@ -213,25 +213,52 @@ class OcrProcessor {
     /**
      * Simulation data for demonstration when API key is missing
      */
-    private function getSimulationData() {
+    private function getSimulationData($originalFilename = '') {
+        $firstName = 'JUAN';
+        $lastName = 'DELA CRUZ';
+        
+        // Try to parse name from filename if provided (e.g. "Pedro_Penduko.jpg")
+        if (!empty($originalFilename)) {
+            // Remove extension
+            $namePart = pathinfo($originalFilename, PATHINFO_FILENAME);
+            // Replace separators with spaces
+            $namePart = preg_replace('/[_-]/', ' ', $namePart);
+            $parts = array_filter(explode(' ', $namePart));
+            
+            if (count($parts) >= 2) {
+                // Last part as Last Name, rest as First Name
+                $lastName = strtoupper(array_pop($parts));
+                $firstName = strtoupper(implode(' ', $parts));
+            } elseif (count($parts) == 1) {
+                $firstName = strtoupper($parts[0]);
+            }
+            
+            // Avoid parsing generic names like "birth_cert" or "image"
+            $ignored = ['BIRTH', 'CERT', 'PSA', 'IMAGE', 'SCAN', 'DOC'];
+            if (in_array($firstName, $ignored) || in_array($lastName, $ignored)) {
+                $firstName = 'JUAN';
+                $lastName = 'DELA CRUZ';
+            }
+        }
+
         return [
             'is_simulation' => true,
             'is_valid' => true,
             'document_type' => 'PSA Birth Certificate',
             'confidence' => rand(95, 99) . '.' . rand(10, 99),
-            'first_name' => 'JUAN',
+            'first_name' => $firstName,
             'middle_name' => 'PROTOTYPE',
-            'last_name' => 'DELA CRUZ',
+            'last_name' => $lastName,
             'birthdate' => '2005-05-15',
             'gender' => 'Male',
             'contact_number' => '09123456789',
             'address' => '123 Street, City, Province',
-            'guardian_name' => 'MARIA DELA CRUZ',
+            'guardian_name' => 'MRS. ' . $lastName, // Dynamic Guardian Link
             'guardian_contact' => '09987654321',
-            'guardian_email' => 'maria.delacruz@example.com',
+            'guardian_email' => strtolower(str_replace(' ', '', $lastName)) . '.parent@example.com',
             'relationship' => 'Mother',
             'recommendation' => '',
-            'raw_text' => 'SIMULATED DATA: PHILIPPINE STATISTICS AUTHORITY Birth Certificate Juan Prototype Dela Cruz May 15, 2005 Male. Mother: Maria Dela Cruz. Address: 123 Street, City, Province. Contact: 09123456789. High honors in Computer Studies.'
+            'raw_text' => "SIMULATED DATA: PHILIPPINE STATISTICS AUTHORITY Birth Certificate $firstName Prototype $lastName May 15, 2005 Male."
         ];
     }
 
