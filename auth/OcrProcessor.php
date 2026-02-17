@@ -14,7 +14,14 @@ class OcrProcessor {
      * @param string $imagePath Local path to the image file
      * @return array Extracted data
      */
-    public function scanDocument($imagePath, $type = 'generic') {
+    /**
+     * Process an image using Google Cloud Vision API
+     * @param string $imagePath Local path to the image file
+     * @param string $type The document type (generic, id_picture)
+     * @param string $originalFilename The original name of the uploaded file (for simulation purposes)
+     * @return array Extracted data
+     */
+    public function scanDocument($imagePath, $type = 'generic', $originalFilename = '') {
         // 1. Basic Image Validation (Aspect Ratio check for ID photos)
         if ($type === 'id_picture') {
             $imgSize = getimagesize($imagePath);
@@ -47,6 +54,16 @@ class OcrProcessor {
         // SIMULATION MODE
         if (empty($this->apiKey) || $this->apiKey === 'YOUR_GOOGLE_CLOUD_API_KEY_HERE') {
             if ($type === 'id_picture') {
+                // SIMULATE ERROR: If filename contains 'anime' or 'cartoon', trigger the rejection logic
+                // This allows testing the error state even without a real API key.
+                if (stripos($originalFilename, 'anime') !== false || stripos($originalFilename, 'cartoon') !== false) {
+                    return [
+                        'error' => 'Invalid Photo (Simulated). Animated, cartoon, or generated images are not allowed. Please upload a actual formal ID photo.',
+                        'is_valid' => false,
+                        'is_simulation' => true
+                    ];
+                }
+
                 return [
                     'is_simulation' => true,
                     'is_valid' => true,

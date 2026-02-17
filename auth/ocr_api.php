@@ -24,6 +24,6 @@ if (!in_array($file['type'], $allowedTypes)) {
 
 $ocr = new OcrProcessor();
 $type = $_POST['type'] ?? 'generic';
-$result = $ocr->scanDocument($tempFile, $type);
+$result = $ocr->scanDocument($tempFile, $type, $_FILES['document']['name'] ?? '');
 
 echo json_encode($result);
