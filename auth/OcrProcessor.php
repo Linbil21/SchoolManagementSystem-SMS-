@@ -54,14 +54,17 @@ class OcrProcessor {
         // SIMULATION MODE
         if (empty($this->apiKey) || $this->apiKey === 'YOUR_GOOGLE_CLOUD_API_KEY_HERE') {
             if ($type === 'id_picture') {
-                // SIMULATE ERROR: If filename contains 'anime' or 'cartoon', trigger the rejection logic
+                // SIMULATE ERROR: If filename contains specific keywords, trigger the rejection logic
                 // This allows testing the error state even without a real API key.
-                if (stripos($originalFilename, 'anime') !== false || stripos($originalFilename, 'cartoon') !== false) {
-                    return [
-                        'error' => 'Invalid Photo (Simulated). Animated, cartoon, or generated images are not allowed. Please upload a actual formal ID photo.',
-                        'is_valid' => false,
-                        'is_simulation' => true
-                    ];
+                $forbiddenKeywords = ['anime', 'cartoon', 'drawing', 'sketch', 'art', 'fake', 'test', 'invalid', 'animation'];
+                foreach ($forbiddenKeywords as $keyword) {
+                    if (stripos($originalFilename, $keyword) !== false) {
+                        return [
+                            'error' => 'Invalid Photo (Simulated Check). Animated, cartoon, or generated images are not allowed. Please upload a actual formal ID photo.',
+                            'is_valid' => false,
+                            'is_simulation' => true
+                        ];
+                    }
                 }
 
                 return [

@@ -993,6 +993,9 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
             badge.classList.add('ocr-scanning');
             badge.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Scanning...';
             statusDiv.innerHTML = '<span class="loading">Reading document details...</span>';
+            
+            // Clear previous validation states
+            inputGroup.querySelector('input').classList.remove('input-success', 'input-error');
 
             try {
                 const response = await fetch('ocr_api.php', {
