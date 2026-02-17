@@ -115,6 +115,11 @@ if (isset($_SESSION['email'])) {
             </li>
         </ul>
 
+        <?php 
+        $enrollment_status = $_SESSION['enrollment_status'] ?? 'Pending';
+        $allowed_payment_statuses = ['Pending Payment', 'Validation', 'Enrolled'];
+        if (in_array($enrollment_status, $allowed_payment_statuses)): 
+        ?>
         <p class="menu-label">FINANCIAL</p>
         <ul class="main-menu">
             <!-- Payments -->
@@ -131,6 +136,7 @@ if (isset($_SESSION['email'])) {
                 </ul>
             </li>
         </ul>
+        <?php endif; ?>
 
         <p class="menu-label">SERVICES</p>
         <ul class="main-menu">

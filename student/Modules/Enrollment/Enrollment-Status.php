@@ -158,18 +158,19 @@ checkRole(['student']);
 <?php
 // Determine status
 $status_steps = [
-    'Pending Review' => 1,
+    'Pending Review' => 2,
     'Assessment' => 2,
     'Pending Payment' => 3,
+    'Pending Walk-in' => 3,
     'Validation' => 4,
     'Enrolled' => 5
 ];
 
-$current_status = 'Validation'; // Default / Fallback
+$current_status = 'Pending Review'; // Default to Pending Review for new students
 $status_message = '';
-$icon_class = 'fa-search-dollar status-icon pending';
-$title_text = 'Payment Under Validation';
-$desc_text = 'We have received your payment proof and it is currently being verified by the Cashier\'s Office. This process usually takes 24-48 hours.';
+$icon_class = 'fa-user-clock status-icon pending';
+$title_text = 'Admission Review in Progress';
+$desc_text = 'Your registration and documents are currently being reviewed by the Admission Office. Please wait for approval before proceeding to payment.';
 
 require_once '../../Database/config.php';
 if (isset($_SESSION['student_id'])) {
@@ -206,12 +207,20 @@ if ($current_status == 'Enrolled') {
     $desc_text = 'Congratulations! You are now officially enrolled for the upcoming semester. You can now view your schedule and grades.';
 } elseif ($current_status == 'Pending Payment') {
     $icon_class = 'fa-credit-card status-icon pending';
-    $title_text = 'Pending Payment';
-    $desc_text = 'Please settle your tuition fee balance or upload your proof of payment to proceed with enrollment.';
+    $title_text = 'Admission Approved: Pending Payment';
+    $desc_text = 'Your documents have been verified by Admission. Please proceed to the Cashier for payment or settle your balance online.';
 } elseif ($current_status == 'Assessment') {
     $icon_class = 'fa-file-invoice status-icon';
     $title_text = 'Under Assessment';
     $desc_text = 'Your subjects are currently being assessed by the registrar. Please wait for the assessment fee breakdown.';
+} elseif ($current_status == 'Validation') {
+    $icon_class = 'fa-search-dollar status-icon pending';
+    $title_text = 'Payment Under Validation';
+    $desc_text = 'We have received your payment proof and it is currently being verified by the Cashier\'s Office. This process usually takes 24-48 hours.';
+} elseif ($current_status == 'Pending Walk-in') {
+    $icon_class = 'fa-walking status-icon pending';
+    $title_text = 'Proceed to Cashier';
+    $desc_text = 'You have chosen Walk-in Payment. Please visit the school Cashier\'s Office and provide your reference code for processing.';
 }
 
 $current_step_index = $status_steps[$current_status] ?? 4;
@@ -227,8 +236,8 @@ $current_step_index = $status_steps[$current_status] ?? 4;
                 <div class="steps">
                     <?php 
                     $steps = [
-                        1 => 'Subjects', 
-                        2 => 'Assessment', 
+                        1 => 'Application', 
+                        2 => 'Evaluation', 
                         3 => 'Payment', 
                         4 => 'Validation', 
                         5 => 'Enrolled'

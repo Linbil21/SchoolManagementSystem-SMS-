@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                             status = 'Pending Payment'
                             WHERE enrollmentId = ?";
                     $pdo->prepare($sql)->execute([$tuition, $misc, $total, $total, $existing_enr->enrollmentId]);
-                    $message = "Application #{$app->application_no} approved. Assessment updated. Status set to Pending Payment.";
+                    $message = "Application #{$app->application_no} approved. Assessment updated. Status set to Pending Payment. Student can now proceed to Cashier.";
                 } else {
                     // Insert new
                     $ref_code = "ENR-" . date('Y') . "-" . strtoupper(substr(md5(uniqid()), 0, 6));
@@ -67,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                         $total,
                         $total
                     ]);
-                    $message = "Application #{$app->application_no} approved. Assessment assigned. Status set to Pending Payment.";
+                    $message = "Application #{$app->application_no} approved and student record created. Status set to Pending Payment (Direct to Cashier).";
                 }
             }
         } else {

@@ -43,7 +43,8 @@ if ($search) {
         $stmt = $pdo->prepare("SELECT s.first_name, s.last_name, s.student_id, e.enrollmentId as enrollment_id, e.balance 
                                FROM students s 
                                JOIN enrollments e ON s.email = e.email 
-                               WHERE s.student_id LIKE ? OR s.last_name LIKE ? OR s.first_name LIKE ?");
+                               WHERE (s.student_id LIKE ? OR s.last_name LIKE ? OR s.first_name LIKE ?)
+                               AND e.status IN ('Pending Payment', 'Pending Walk-in', 'Validation', 'Enrolled')");
         $term = "%$search%";
         $stmt->execute([$term, $term, $term]);
         $results = $stmt->fetchAll();
