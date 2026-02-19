@@ -221,89 +221,56 @@ class OcrProcessor {
         $cities = ['Quezon City', 'Manila', 'Davao City', 'Cebu City', 'Zamboanga City', 'Antipolo', 'Pasig', 'Taguig', 'Cagayan de Oro', 'Parañaque'];
         $provinces = ['Metro Manila', 'Cebu', 'Davao del Sur', 'Rizal', 'Misamis Oriental', 'Cavite', 'Laguna', 'Bulacan'];
 
-        $firstName = '';
-        $middleName = '';
-        $lastName = '';
-        $birthdate = '';
-        $address = '';
-        $gender = '';
-        $contactNumber = '';
-        $guardian = '';
-        $guardianContact = '';
-        $guardianEmail = '';
-        $relationship = '';
+        // Default to Demo Data (Lowell Jr.) for simulation transparency
+        $firstName = 'LOWELL JR.';
+        $middleName = 'ALEJAGA';
+        $lastName = 'TORIBIO';
+        $birthdate = '2001-12-01';
+        $address = 'Camalaniugan, Cagayan';
+        $gender = 'Male';
+        $contactNumber = '09123456789';
+        $guardian = 'SHEILAH ALEJAGA';
+        $guardianContact = '09987654321';
+        $guardianEmail = 'sheilah.alejaga@example.com';
+        $relationship = 'Mother';
 
-        
-        // 2. Try to parse name from filename if provided
+        // 2. Try to parse name from filename or specific demo keywords if provided
         if (!empty($originalFilename)) {
-            // DEMO SPECIFIC: If user uploads the specific "Lowell" document
+            // Already initialized to Lowell, but we can keep the explicit check for clarity
             if (stripos($originalFilename, 'lowell') !== false || stripos($originalFilename, 'toribio') !== false || stripos($originalFilename, 'alejaga') !== false) {
-                return [
-                    'is_simulation' => true,
-                    'is_valid' => true,
-                    'document_type' => 'PSA Birth Certificate',
-                    'confidence' => '99.85',
-                    'first_name' => 'LOWELL JR.',
-                    'middle_name' => 'ALEJAGA',
-                    'last_name' => 'TORIBIO',
-                    'birthdate' => '2001-12-01',
-                    'gender' => 'Male',
-                    'contact_number' => '09123456789',
-                    'address' => 'Camalaniugan, Cagayan',
-                    'guardian_name' => 'SHEILAH ALEJAGA',
-                    'guardian_contact' => '09987654321',
-                    'guardian_email' => 'sheilah.alejaga@example.com',
-                    'relationship' => 'Mother',
-                    'recommendation' => '',
-                    'raw_text' => "SIMULATED DATA: PSA Birth Certificate LOWELL JR. ALEJAGA TORIBIO Dec 01, 2001. Mother: SHEILAH ALEJAGA."
-                ];
-            }
-
-            // Remove extension and separators
-            $namePart = pathinfo($originalFilename, PATHINFO_FILENAME);
-            $namePart = preg_replace('/[_-]/', ' ', $namePart);
-            $parts = array_filter(explode(' ', $namePart));
-            
-            // Check for HASH / GARBAGE filenames
-            $isGarbage = false;
-            foreach ($parts as $part) {
-                if (preg_match('/[A-F0-9]{8,}/i', $part) && preg_match('/\d/', $part) && preg_match('/[a-zA-Z]/', $part)) {
-                   $isGarbage = true;
-                   break;
-                }
-            }
-
-            if (!$isGarbage) {
-                // If it looks like a real filename name (e.g. "Juan_Dela_Cruz")
-                if (count($parts) >= 2) {
-                    $possibleLast = strtoupper(array_pop($parts));
-                    $possibleFirst = strtoupper(implode(' ', $parts));
-                    
-                    // Filter out generic names
-                    $ignored = ['BIRTH', 'CERT', 'PSA', 'IMAGE', 'SCAN', 'DOC', 'PHOTO', 'IMG', 'PICTURE', 'FB_IMG', 'MESSENGER', 'UNKNOWN', 'FILE'];
-                    if (!in_array($possibleFirst, $ignored) && !in_array($possibleLast, $ignored)) {
-                        $firstName = $possibleFirst;
-                        $lastName = $possibleLast;
-                        $middleName = 'PROTOTYPE'; // Keep middle generic if inferred
+                // Values are already set to Lowell defaults
+            } else {
+                // If not Lowell, try parsing from filename (e.g. "Juan_Dela_Cruz")
+                $namePart = pathinfo($originalFilename, PATHINFO_FILENAME);
+                $namePart = preg_replace('/[_-]/', ' ', $namePart);
+                $parts = array_filter(explode(' ', $namePart));
+                
+                // Check for HASH / GARBAGE filenames
+                $isGarbage = false;
+                foreach ($parts as $part) {
+                    if (preg_match('/[A-F0-9]{8,}/i', $part) && preg_match('/\d/', $part) && preg_match('/[a-zA-Z]/', $part)) {
+                       $isGarbage = true;
+                       break;
                     }
-                } elseif (count($parts) == 1) {
-                    $val = strtoupper($parts[0]);
-                    $ignored = ['BIRTH', 'CERT', 'PSA', 'IMAGE', 'SCAN', 'DOC', 'PHOTO', 'IMG', 'PICTURE'];
-                     if (!in_array($val, $ignored)) {
-                        $firstName = $val;
-                     }
+                }
+
+                if (!$isGarbage && count($parts) >= 1) {
+                    if (count($parts) >= 2) {
+                        $lastName = strtoupper(array_pop($parts));
+                        $firstName = strtoupper(implode(' ', $parts));
+                        $middleName = 'PROTOTYPE';
+                    } else {
+                        $firstName = strtoupper($parts[0]);
+                    }
+                    
+                    // Construct Guardian Data based on new name
+                    $guardian = 'MRS. ' . $lastName;
+                    $guardianContact = '09' . mt_rand(100000000, 999999999);
+                    $guardianEmail = strtolower(str_replace(' ', '', $lastName)) . '.parent@example.com';
                 }
             }
         }
         
-        // Only construct Guardian Data if we actually have a last name (from filename or specific test case)
-        if (!empty($lastName)) {
-            $guardian = 'MRS. ' . $lastName;
-            $guardianContact = '09' . mt_rand(100000000, 999999999);
-            $guardianEmail = strtolower(str_replace(' ', '', $lastName)) . '.parent@example.com';
-        }
-
-
         // Return constructed data
         return [
             'is_simulation' => true,
