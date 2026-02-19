@@ -1112,15 +1112,17 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
             document.head.appendChild(swalScript);
         }
 
-        // AUTO-TRIGGER SCAN ON FILE SELECTION
+        // AUTO-TRIGGER SCAN ON FILE SELECTION (PSA ONLY)
         document.querySelectorAll('.ocr-input').forEach(input => {
             input.addEventListener('change', function() {
-                if (this.files && this.files.length > 0) {
+                // Only auto-scan if it's the Birth Certificate (PSA)
+                if (this.getAttribute('data-type') === 'birth_cert' && this.files && this.files.length > 0) {
                     const badge = this.closest('.input-group').querySelector('.ocr-badge');
                     if (badge) triggerScan(badge);
                 }
             });
         });
+
 
         // AUTO-SYNC ADDRESS TO GUARDIAN
         const studentAddressInput = document.querySelector('input[name="address"]');
