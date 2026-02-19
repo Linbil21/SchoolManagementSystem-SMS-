@@ -213,4 +213,17 @@ function sendPaymentInstructionEmail($recipientEmail, $details)
                 </p>
                 <hr style='border: 0; border-top: 1px solid #e2e8f0; margin: 20px 0;'>
                 <p style='text-align: center; font-size: 12px; color: #94a3b8;'>
-                    &copy; 2026 
+                    &copy; 2026 SMS Official Portal. Admission Department.
+                </p>
+            </div>
+        </div>
+        ";
+
+        $mail->send();
+        return true;
+    } catch (Exception $e) {
+        $last_mail_error = $e->getMessage();
+        return false;
+    }
+}
+?>
