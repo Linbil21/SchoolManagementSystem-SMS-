@@ -221,22 +221,18 @@ class OcrProcessor {
         $cities = ['Quezon City', 'Manila', 'Davao City', 'Cebu City', 'Zamboanga City', 'Antipolo', 'Pasig', 'Taguig', 'Cagayan de Oro', 'Parañaque'];
         $provinces = ['Metro Manila', 'Cebu', 'Davao del Sur', 'Rizal', 'Misamis Oriental', 'Cavite', 'Laguna', 'Bulacan'];
 
-        // Default to Random Data initially
-        $randFirst = $firstNames[array_rand($firstNames)];
-        $randLast = $lastNames[array_rand($lastNames)];
-        $randMiddle = $middleNames[array_rand($middleNames)];
-        
-        $firstName = $randFirst;
-        $middleName = $randMiddle;
-        $lastName = $randLast;
-        
-        // Random Date (between 2000 and 2005)
-        $timestamp = mt_rand(946684800, 1136073600);
-        $birthdate = date("Y-m-d", $timestamp);
-        
-        $city = $cities[array_rand($cities)];
-        $province = $provinces[array_rand($provinces)];
-        $address = "$city, $province";
+        $firstName = '';
+        $middleName = '';
+        $lastName = '';
+        $birthdate = '';
+        $address = '';
+        $gender = '';
+        $contactNumber = '';
+        $guardian = '';
+        $guardianContact = '';
+        $guardianEmail = '';
+        $relationship = '';
+
         
         // 2. Try to parse name from filename if provided
         if (!empty($originalFilename)) {
@@ -300,10 +296,13 @@ class OcrProcessor {
             }
         }
         
-        // Construct Guardian Data based on result name
-        $guardian = 'MRS. ' . $lastName;
-        $guardianContact = '09' . mt_rand(100000000, 999999999);
-        $guardianEmail = strtolower(str_replace(' ', '', $lastName)) . '.parent@example.com';
+        // Only construct Guardian Data if we actually have a last name (from filename or specific test case)
+        if (!empty($lastName)) {
+            $guardian = 'MRS. ' . $lastName;
+            $guardianContact = '09' . mt_rand(100000000, 999999999);
+            $guardianEmail = strtolower(str_replace(' ', '', $lastName)) . '.parent@example.com';
+        }
+
 
         // Return constructed data
         return [
@@ -315,13 +314,13 @@ class OcrProcessor {
             'middle_name' => $middleName,
             'last_name' => $lastName,
             'birthdate' => $birthdate,
-            'gender' => (rand(0, 1) ? 'Male' : 'Female'),
-            'contact_number' => '09' . mt_rand(100000000, 999999999),
+            'gender' => $gender,
+            'contact_number' => $contactNumber,
             'address' => $address,
             'guardian_name' => $guardian,
             'guardian_contact' => $guardianContact,
             'guardian_email' => $guardianEmail,
-            'relationship' => 'Mother',
+            'relationship' => $relationship,
             'recommendation' => '',
             'raw_text' => "SIMULATED DATA: PSA Birth Certificate $firstName $middleName $lastName $birthdate."
         ];
