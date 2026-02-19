@@ -573,8 +573,8 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                                     
                                     <div class="row">
                                         <div class="col col-full input-group">
-                                            <label>Year Level <span>*</span></label>
-                                            <select name="year_level" required>
+                                            <label>Year Level</label>
+                                            <select name="year_level">
                                                 <option value="First Year">First Year</option>
                                                 <option value="Second Year">Second Year</option>
                                                 <option value="Third Year">Third Year</option>
@@ -585,15 +585,15 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
 
                                     <div class="row">
                                         <div class="col col-2 input-group">
-                                            <label>Admission Type <span>*</span></label>
-                                            <select name="admission_type" required>
+                                            <label>Admission Type</label>
+                                            <select name="admission_type">
                                                 <option value="Freshman">Freshman</option>
                                                 <option value="Transferee">Transferee</option>
                                             </select>
                                         </div>
                                         <div class="col col-2 input-group">
-                                            <label>Course <span>*</span></label>
-                                            <select name="course" required>
+                                            <label>Course</label>
+                                            <select name="course">
                                                 <option value="">Select...</option>
                                                 <option value="BSIT">BS Information Technology</option>
                                                 <option value="BSCS">BS Computer Science</option>
@@ -611,8 +611,8 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                                     <h4 class="sub-step-title">Student Details</h4>
                                     <div class="row">
                                         <div class="col col-2 input-group">
-                                            <label>First Name <span>*</span></label>
-                                            <input type="text" name="first_name" placeholder="First Name" required>
+                                            <label>First Name</label>
+                                            <input type="text" name="first_name" placeholder="First Name">
                                         </div>
                                         <div class="col col-2 input-group">
                                             <label>Middle Name</label>
@@ -621,12 +621,12 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                                     </div>
                                     <div class="row">
                                         <div class="col col-2 input-group">
-                                            <label>Last Name <span>*</span></label>
-                                            <input type="text" name="last_name" placeholder="Last Name" required>
+                                            <label>Last Name</label>
+                                            <input type="text" name="last_name" placeholder="Last Name">
                                         </div>
                                         <div class="col col-2 input-group">
-                                            <label>Gender <span>*</span></label>
-                                            <select name="gender" required>
+                                            <label>Gender</label>
+                                            <select name="gender">
                                                 <option value="">Select...</option>
                                                 <option value="Male">Male</option>
                                                 <option value="Female">Female</option>
@@ -635,18 +635,18 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                                     </div>
                                     <div class="row">
                                         <div class="col col-2 input-group">
-                                            <label>Birthdate <span>*</span></label>
-                                            <input type="date" name="birthdate" required>
+                                            <label>Birthdate</label>
+                                            <input type="date" name="birthdate">
                                         </div>
                                         <div class="col col-2 input-group">
-                                            <label>Contact Num <span>*</span></label>
-                                            <input type="text" name="contact_number" placeholder="09123456789" required maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                                            <label>Contact Num</label>
+                                            <input type="text" name="contact_number" placeholder="09123456789" maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col col-full input-group">
-                                            <label>Complete Address <span>*</span></label>
-                                            <input type="text" name="address" placeholder="123 Street, City, Province" required>
+                                            <label>Complete Address</label>
+                                            <input type="text" name="address" placeholder="123 Street, City, Province">
                                         </div>
                                     </div>
 
