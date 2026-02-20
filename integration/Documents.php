@@ -62,6 +62,42 @@ try {
                 ]);
                 break;
                 
+            case 'secondary_docs':
+                $detected = [];
+                $errors = [];
+                
+                // 1. Check Form 137 (Optional but Detect if present)
+                if (isset($_FILES['form_137']) && $_FILES['form_137']['error'] === 0) {
+                    $detected[] = "Form 137 (TOR)";
+                }
+
+                // 2. Check Good Moral (Optional but Detect if present)
+                if (isset($_FILES['good_moral']) && $_FILES['good_moral']['error'] === 0) {
+                    $detected[] = "Good Moral Character Certificate";
+                }
+
+                // 3. Check Barangay Clearance (Optional but Detect if present)
+                if (isset($_FILES['barangay_clearance']) && $_FILES['barangay_clearance']['error'] === 0) {
+                    $detected[] = "Barangay Clearance";
+                }
+
+                if (!empty($errors)) {
+                    echo json_encode([
+                        'status' => 'error',
+                        'message' => implode("\n", $errors)
+                    ]);
+                    exit;
+                }
+                
+                $msg = empty($detected) ? 'No secondary documents uploaded. Moving forward.' : 'Documents Detected: ' . implode(", ", $detected);
+                
+                echo json_encode([
+                    'status' => 'success',
+                    'message' => $msg,
+                    'detected_files' => $detected
+                ]);
+                break;
+                
             default:
                 echo json_encode(['status' => 'success', 'message' => 'Validation bypassed.']);
         }

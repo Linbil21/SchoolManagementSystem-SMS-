@@ -87,25 +87,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Use Reference Code as temporary ID until officially enrolled
             $student_id = $reference_code; 
 
-            $course_map = [
-                'BSIT' => 1, 'BSCS' => 2, 'BSBA' => 3, 'BS Crim' => 4, 
-                'BSHM' => 5, 'BSA' => 6, 'BSCE' => 7, 'BEED' => 8, 'BSED' => 9
-            ];
-            $course_id = $course_map[$course] ?? 1;
+            $course_id = $_POST['course'] ?? 1;
 
-            $full_course_map = [
-                'BSIT' => 'BS Information Technology',
-                'BSCS' => 'BS Computer Science',
-                'BSBA' => 'BS Business Administration',
-                'BS Crim' => 'BS Criminology',
-                'BSHM' => 'BS Hospitality Management',
-                'BSA' => 'BS Accountancy',
-                'BSCE' => 'BS Civil Engineering',
-                'BEED' => 'Bachelor of Elementary Education',
-                'BSED' => 'Bachelor of Secondary Education'
-            ];
-            $full_course_name = $full_course_map[$course] ?? $course;
-
+            // Fetch the actual course name from the database based on the selected ID
+            $course_stmt = $pdo->prepare("SELECT course_name FROM courses WHERE course_id = ?");
+            $course_stmt->execute([$course_id]);
+            $course_row = $course_stmt->fetch(PDO::FETCH_ASSOC);
+            $full_course_name = $course_row ? $course_row['course_name'] : 'Unknown Course';
 
             // File Uploads Handling
             $upload_fields = [

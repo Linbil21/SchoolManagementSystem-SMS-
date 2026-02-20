@@ -163,6 +163,71 @@ nextBtns.forEach((btn) => {
             }
         }
 
+        // Server-Side Document Validation (Step 3: Secondary Docs)
+        if (formStepsNum === 2) {
+            const formData = new FormData();
+            const activeStep = formSteps[formStepsNum];
+            const fileInputs = activeStep.querySelectorAll('input[type="file"]');
+
+            let hasFiles = false;
+            fileInputs.forEach(input => {
+                if (input.files[0]) {
+                    formData.append(input.name, input.files[0]);
+                    hasFiles = true;
+                }
+            });
+
+            if (hasFiles) {
+                formData.append('action', 'validate_step');
+                formData.append('step', 'secondary_docs');
+
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Validating...';
+                btn.disabled = true;
+
+                try {
+                    const response = await fetch('/integration/Documents.php', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const result = await response.json();
+
+                    if (result.status === 'error') {
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                title: 'Validation Failed',
+                                text: result.message,
+                                icon: 'error',
+                                confirmButtonColor: '#ef4444'
+                            });
+                        } else {
+                            alert(result.message);
+                        }
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                        return;
+                    } else {
+                        if (typeof Swal !== 'undefined' && result.detected_files && result.detected_files.length > 0) {
+                            Swal.fire({
+                                title: 'Secondary Docs Verified!',
+                                text: result.message,
+                                icon: 'success',
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 3000
+                            });
+                        }
+                    }
+                } catch (err) {
+                    console.error("API Error:", err);
+                } finally {
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }
+            }
+        }
+
         // 3. Navigation Logic
         const hasSecondaryDocs = document.querySelector('input[name="has_secondary_docs"]:checked')?.value;
 

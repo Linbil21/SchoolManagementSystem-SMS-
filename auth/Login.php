@@ -593,17 +593,8 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                                         </div>
                                         <div class="col col-2 input-group">
                                             <label>Course</label>
-                                            <select name="course">
+                                            <select name="course" id="courseSelect" required>
                                                 <option value="">Select...</option>
-                                                <option value="BSIT">BS Information Technology</option>
-                                                <option value="BSCS">BS Computer Science</option>
-                                                <option value="BSBA">BS Business Administration</option>
-                                                <option value="BS Crim">BS Criminology</option>
-                                                <option value="BSHM">BS Hospitality Management</option>
-                                                <option value="BSA">BS Accountancy</option>
-                                                <option value="BSCE">BS Civil Engineering</option>
-                                                <option value="BEED">Bachelor of Elementary Education</option>
-                                                <option value="BSED">Bachelor of Secondary Education</option>
                                             </select>
                                         </div>
                                     </div>
@@ -1413,5 +1404,26 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
         });
     </script>
     <?php endif; ?>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const courseSelect = document.getElementById('courseSelect');
+            if (courseSelect) {
+                fetch('../api/get_courses.php')
+                    .then(response => response.json())
+                    .then(result => {
+                        if (result.status === 'success') {
+                            courseSelect.innerHTML = '<option value="">Select...</option>';
+                            result.data.forEach(course => {
+                                const option = document.createElement('option');
+                                option.value = course.course_id;
+                                option.textContent = course.course_name;
+                                courseSelect.appendChild(option);
+                            });
+                        }
+                    })
+                    .catch(err => console.error('Error fetching courses:', err));
+            }
+        });
+    </script>
 </body>
 </html>
