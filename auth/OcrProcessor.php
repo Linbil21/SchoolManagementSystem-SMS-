@@ -255,28 +255,34 @@ class OcrProcessor {
                 $namePart = preg_replace('/[_-]/', ' ', $namePart);
                 $parts = array_filter(explode(' ', $namePart));
                 
-                if (count($parts) >= 3) {
-                    $lastName = strtoupper(array_pop($parts));
-                    $middleName = strtoupper(array_pop($parts));
-                    $firstName = strtoupper(implode(' ', $parts));
-                } elseif (count($parts) >= 2) {
-                    $lastName = strtoupper(array_pop($parts));
-                    $firstName = strtoupper($parts[0]);
-                    $middleName = '';
-                } elseif (count($parts) == 1) {
-                    $firstName = strtoupper($parts[0]);
-                    $lastName = 'STUDENT';
-                    $middleName = '';
+                // Check for HASH / GARBAGE filenames (purely numeric or hex-like strings)
+                $isGibberish = false;
+                foreach ($parts as $part) {
+                    if (preg_match('/^\d+$/', $part) && strlen($part) > 5) {
+                        $isGibberish = true; // Likely a numeric ID filename
+                        break;
+                    }
+                }
+
+                if (!$isGibberish && count($parts) >= 1) {
+                    if (count($parts) >= 3) {
+                        $lastName = strtoupper(array_pop($parts));
+                        $middleName = strtoupper(array_pop($parts));
+                        $firstName = strtoupper(implode(' ', $parts));
+                    } elseif (count($parts) >= 2) {
+                        $lastName = strtoupper(array_pop($parts));
+                        $firstName = strtoupper($parts[0]);
+                        $middleName = '';
+                    } elseif (count($parts) == 1) {
+                        $firstName = strtoupper($parts[0]);
+                    }
+                } else {
+                    // Gibberish filename, use a nicer default for testing
+                    $firstName = 'MANUAL';
+                    $middleName = 'SCAN';
+                    $lastName = 'REQUIRED';
                 }
             }
-            
-            // Generate dynamic address based on randomized patterns if it was default
-            if ($address === 'Manila, Philippines') {
-                $randomCity = $cities[array_rand($cities)];
-                $randomProv = $provinces[array_rand($provinces)];
-                $address = "$randomCity, $randomProv";
-            }
-        }
         
         // Return constructed data
         return [
