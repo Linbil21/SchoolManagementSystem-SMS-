@@ -1047,8 +1047,17 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                     // Guardian Field Autofill
                     if (result.guardian_name) {
                         const guardianParts = result.guardian_name.split(' ');
-                        fillField('input[name="guardian_first"]', guardianParts[0] || '');
-                        fillField('input[name="guardian_last"]', guardianParts.length > 1 ? guardianParts[guardianParts.length - 1] : '');
+                        if (guardianParts.length >= 3) {
+                            fillField('input[name="guardian_last"]', guardianParts.pop());
+                            fillField('input[name="guardian_middle"]', guardianParts.pop());
+                            fillField('input[name="guardian_first"]', guardianParts.join(' '));
+                        } else if (guardianParts.length === 2) {
+                            fillField('input[name="guardian_last"]', guardianParts[1]);
+                            fillField('input[name="guardian_first"]', guardianParts[0]);
+                            fillField('input[name="guardian_middle"]', '');
+                        } else {
+                            fillField('input[name="guardian_first"]', result.guardian_name);
+                        }
                     }
 
                     if (result.guardian_contact) fillField('input[name="guardian_contact"]', result.guardian_contact);
@@ -1058,8 +1067,12 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                     // Sync address to guardian if not set
                     if (result.address) fillField('input[name="guardian_address"]', result.address);
 
-
-                    // Update Previews
+                    // Force update previews & trigger change for selects
+                    document.querySelectorAll('.sign-up-form input, .sign-up-form select').forEach(el => {
+                        el.dispatchEvent(new Event('input', { bubbles: true }));
+                        el.dispatchEvent(new Event('change', { bubbles: true }));
+                    });
+                    
                     updateOfficialPreview();
 
                     // If data was extracted, show a tooltip

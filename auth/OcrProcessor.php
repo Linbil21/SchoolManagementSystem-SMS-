@@ -221,7 +221,7 @@ class OcrProcessor {
         $cities = ['Quezon City', 'Manila', 'Davao City', 'Cebu City', 'Zamboanga City', 'Antipolo', 'Pasig', 'Taguig', 'Cagayan de Oro', 'Parañaque'];
         $provinces = ['Metro Manila', 'Cebu', 'Davao del Sur', 'Rizal', 'Misamis Oriental', 'Cavite', 'Laguna', 'Bulacan'];
 
-        // Default to Demo Data for simulation transparency
+        // Default to SAMPLE Data
         $firstName = 'JUAN';
         $middleName = 'DELA';
         $lastName = 'CRUZ';
@@ -234,42 +234,35 @@ class OcrProcessor {
         $guardianEmail = 'maria.cruz@example.com';
         $relationship = 'Mother';
 
-        // Add a simulation marker to the data if it's purely simulated
-        $recommendation = "SIMULATION MODE: Using sample data because GOOGLE_CLOUD_VISION_API_KEY is not configured in Database/config.php.";
+        // Add a simulation marker
+        $recommendation = "SIMULATION MODE: Config API Key for real OCR.";
 
         // 2. Try to parse name from filename or specific demo keywords if provided
         if (!empty($originalFilename)) {
-            // Already initialized to Lowell, but we can keep the explicit check for clarity
-            if (stripos($originalFilename, 'lowell') !== false || stripos($originalFilename, 'toribio') !== false || stripos($originalFilename, 'alejaga') !== false) {
-                // Values are already set to Lowell defaults
+            $fn = strtolower($originalFilename);
+            if (strpos($fn, 'lowell') !== false || strpos($fn, 'toribio') !== false || strpos($fn, 'alejaga') !== false) {
+                 $firstName = 'LOWELL JR.';
+                 $middleName = 'ALEJAGA';
+                 $lastName = 'TORIBIO';
+                 $birthdate = '2001-12-01';
+                 $address = 'Camalaniugan, Cagayan';
+                 $guardian = 'SHEILAH ALEJAGA';
+                 $guardianContact = '09987654321';
+                 $guardianEmail = 'sheilah.alejaga@example.com';
             } else {
-                // If not Lowell, try parsing from filename (e.g. "Juan_Dela_Cruz")
+                // Generic parsing from filename
                 $namePart = pathinfo($originalFilename, PATHINFO_FILENAME);
                 $namePart = preg_replace('/[_-]/', ' ', $namePart);
                 $parts = array_filter(explode(' ', $namePart));
                 
-                // Check for HASH / GARBAGE filenames
-                $isGarbage = false;
-                foreach ($parts as $part) {
-                    if (preg_match('/[A-F0-9]{8,}/i', $part) && preg_match('/\d/', $part) && preg_match('/[a-zA-Z]/', $part)) {
-                       $isGarbage = true;
-                       break;
-                    }
-                }
-
-                if (!$isGarbage && count($parts) >= 1) {
-                    if (count($parts) >= 2) {
-                        $lastName = strtoupper(array_pop($parts));
-                        $firstName = strtoupper(implode(' ', $parts));
-                        $middleName = 'PROTOTYPE';
-                    } else {
-                        $firstName = strtoupper($parts[0]);
-                    }
-                    
-                    // Construct Guardian Data based on new name
-                    $guardian = 'MRS. ' . $lastName;
-                    $guardianContact = '09' . mt_rand(100000000, 999999999);
-                    $guardianEmail = strtolower(str_replace(' ', '', $lastName)) . '.parent@example.com';
+                if (count($parts) >= 3) {
+                    $lastName = strtoupper(array_pop($parts));
+                    $middleName = strtoupper(array_pop($parts));
+                    $firstName = strtoupper(implode(' ', $parts));
+                } elseif (count($parts) >= 2) {
+                    $lastName = strtoupper(array_pop($parts));
+                    $firstName = strtoupper($parts[0]);
+                    $middleName = '';
                 }
             }
         }
