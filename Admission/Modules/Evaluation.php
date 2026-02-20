@@ -39,8 +39,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 $total = $tuition + $misc;
                 $ref_code = "";
 
-                $c_stmt = $pdo->prepare("SELECT courseId FROM courses WHERE course_name = ?");
-                $c_stmt->execute([$app->course_display_name]);
+                // Improved Course Resolution
+                $c_stmt = $pdo->prepare("SELECT courseId FROM courses WHERE course_name = ? OR CAST(courseId AS CHAR) = ?");
+                $c_stmt->execute([$app->course_display_name, $app->course_display_name]);
                 $course_res = $c_stmt->fetch();
                 $course_id = $course_res ? $course_res->courseId : NULL;
 
@@ -108,9 +109,9 @@ $apps = $pdo->query("SELECT a.*, s.is_verified,
                           COALESCE(c.course_name, a.preferred_course_1) as course_display_name,
                           e.birth_cert, e.form_138, e.form_137, e.good_moral, e.barangay_clearance, e.id_picture
                    FROM admission_applications a 
-                   LEFT JOIN students s ON LOWER(a.email) = LOWER(s.email) 
-                   LEFT JOIN enrollments e ON LOWER(a.email) = LOWER(e.email)
-                   LEFT JOIN courses c ON (a.preferred_course_1 = CAST(c.courseId AS CHAR) OR a.preferred_course_1 = c.course_name)
+                   LEFT JOIN student_verifications s ON a.applicationId = s.application_id
+                   LEFT JOIN enrollment_attachments e ON a.applicationId = e.application_id
+                   LEFT JOIN courses c ON (TRIM(a.preferred_course_1) = CAST(c.courseId AS CHAR) OR a.preferred_course_1 = c.course_name)
                    WHERE a.status IN ('Pending', 'Processing') 
                    ORDER BY a.submission_date DESC")->fetchAll();
 

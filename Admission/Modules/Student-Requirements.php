@@ -25,7 +25,7 @@ try {
             e.guardian_last,
             e.guardian_contact,
             DATE(e.created_at) as submission_date,
-            c.course_name as course_name
+            COALESCE(c.course_name, CAST(e.course_id AS CHAR), 'N/A') as course_name
         FROM enrollments e
         LEFT JOIN courses c ON e.course_id = c.courseId
         ORDER BY e.created_at DESC
@@ -35,7 +35,7 @@ try {
 } catch (PDOException $e) {
     // Fallback if there's no created_at or courses
     try {
-        $stmt = $pdo->prepare("SELECT reference_code as student_id, first_name, last_name, status, id_picture, birth_cert, form_138, form_137, good_moral, barangay_clearance, guardian_first, guardian_last, guardian_contact FROM enrollments ORDER BY reference_code DESC");
+        $stmt = $pdo->prepare("SELECT reference_code as student_id, first_name, last_name, status, course_id, id_picture, birth_cert, form_138, form_137, good_moral, barangay_clearance, guardian_first, guardian_last, guardian_contact FROM enrollments ORDER BY reference_code DESC");
         $stmt->execute();
         $students = $stmt->fetchAll(PDO::FETCH_OBJ);
     } catch (PDOException $ex) {

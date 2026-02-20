@@ -10,7 +10,7 @@ require_once '../../Database/config.php';
 try {
     $stmt = $pdo->prepare("SELECT a.*, COALESCE(c.course_name, a.preferred_course_1) as course_display_name 
                            FROM admission_applications a 
-                           LEFT JOIN courses c ON (a.preferred_course_1 = CAST(c.courseId AS CHAR) OR a.preferred_course_1 = c.course_name)
+                           LEFT JOIN courses c ON (TRIM(a.preferred_course_1) = CAST(c.courseId AS CHAR) OR a.preferred_course_1 = c.course_name)
                            WHERE a.status = 'Pending' 
                            ORDER BY a.submission_date DESC");
     $stmt->execute();
