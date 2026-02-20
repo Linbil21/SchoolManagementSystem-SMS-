@@ -15,9 +15,15 @@ try {
             e.first_name, 
             e.last_name, 
             e.status,
+            e.id_picture,
             e.birth_cert, 
             e.form_138, 
+            e.form_137,
             e.good_moral,
+            e.barangay_clearance,
+            e.guardian_first,
+            e.guardian_last,
+            e.guardian_contact,
             DATE(e.created_at) as submission_date,
             c.course_name as course_name
         FROM enrollments e
@@ -29,7 +35,7 @@ try {
 } catch (PDOException $e) {
     // Fallback if there's no created_at or courses
     try {
-        $stmt = $pdo->prepare("SELECT reference_code as student_id, first_name, last_name, status, birth_cert, form_138, good_moral FROM enrollments ORDER BY reference_code DESC");
+        $stmt = $pdo->prepare("SELECT reference_code as student_id, first_name, last_name, status, id_picture, birth_cert, form_138, form_137, good_moral, barangay_clearance, guardian_first, guardian_last, guardian_contact FROM enrollments ORDER BY reference_code DESC");
         $stmt->execute();
         $students = $stmt->fetchAll(PDO::FETCH_OBJ);
     } catch (PDOException $ex) {
@@ -140,9 +146,14 @@ try {
                                     <td>
                                         <button class="btn-view" onclick="openViewModal(
                                             '<?php echo addslashes($student->first_name . ' ' . $student->last_name); ?>', 
+                                            '<?php echo !empty($student->id_picture) ? 'yes' : 'no'; ?>', 
                                             '<?php echo !empty($student->birth_cert) ? 'yes' : 'no'; ?>', 
                                             '<?php echo !empty($student->form_138) ? 'yes' : 'no'; ?>', 
-                                            '<?php echo !empty($student->good_moral) ? 'yes' : 'no'; ?>'
+                                            '<?php echo !empty($student->form_137) ? 'yes' : 'no'; ?>', 
+                                            '<?php echo !empty($student->good_moral) ? 'yes' : 'no'; ?>',
+                                            '<?php echo !empty($student->barangay_clearance) ? 'yes' : 'no'; ?>',
+                                            '<?php echo addslashes(($student->guardian_first ?? '') . ' ' . ($student->guardian_last ?? '')); ?>',
+                                            '<?php echo addslashes($student->guardian_contact ?? ''); ?>'
                                         )"><i class="fas fa-eye"></i> View</button>
                                     </td>
                                 </tr>
@@ -162,6 +173,12 @@ try {
                 <button class="btn-close" onclick="closeViewModal()"><i class="fas fa-times"></i></button>
             </div>
             <div class="modal-body">
+                <p style="margin-bottom: 8px; color: #64748b; font-size: 0.85rem; font-weight: 500;">Guardian Information</p>
+                <div style="background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 20px;">
+                    <div style="font-weight: 600; color: #1e293b; font-size: 0.9rem;" id="modalGuardianName">Name</div>
+                    <div style="color: #64748b; font-size: 0.85rem;"><i class="fas fa-phone-alt" style="margin-right: 5px; font-size: 0.75rem;"></i> <span id="modalGuardianContact">Contact</span></div>
+                </div>
+
                 <p style="margin-bottom: 15px; color: #64748b; font-size: 0.85rem; font-weight: 500;">Submitted Requirements</p>
                 <div id="modalRequirementsList" style="display: flex; flex-direction: column; gap: 10px;">
                     <!-- Items injected via JS -->
@@ -194,13 +211,19 @@ try {
             }
         }
 
-        function openViewModal(name, psa, f138, moral) {
+        function openViewModal(name, idpic, psa, f138, f137, moral, brgy, gName, gContact) {
             document.getElementById('modalStudentName').textContent = name;
             
+            document.getElementById('modalGuardianName').textContent = gName.trim() ? gName : 'Not Provided';
+            document.getElementById('modalGuardianContact').textContent = gContact.trim() ? gContact : 'No Contact Number';
+            
             const docs = [
+                { title: 'Passport Size ID', status: idpic },
                 { title: 'PSA Birth Certificate', status: psa },
                 { title: 'Form 138 (Report Card)', status: f138 },
-                { title: 'Good Moral Certificate', status: moral }
+                { title: 'Form 137 (TOR)', status: f137 },
+                { title: 'Good Moral Certificate', status: moral },
+                { title: 'Barangay Clearance', status: brgy }
             ];
 
             const list = document.getElementById('modalRequirementsList');

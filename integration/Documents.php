@@ -9,7 +9,8 @@ require_once '../auth/OcrProcessor.php';
  */
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    echo json_encode(['status' => 'error', 'message' => 'Invalid request method.']);
+    // If someone tries to visit the API page directly from the browser, redirect them.
+    header('Location: ../auth/Login.php');
     exit;
 }
 
