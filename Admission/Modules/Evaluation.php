@@ -278,30 +278,64 @@ $approved_today = $pdo->query("SELECT COUNT(*) FROM admission_applications WHERE
             transform: translateY(-2px);
         }
 
-        /* Robust Modal Styles */
-        .eval-modal-overlay { 
-            position: fixed !important; top: 0 !important; left: 0 !important; 
-            width: 100vw !important; height: 100vh !important; 
-            background: rgba(15, 23, 42, 0.85) !important; 
-            display: none; align-items: center; justify-content: center; 
-            z-index: 999999 !important; backdrop-filter: blur(8px) !important; 
-            padding: 20px; opacity: 1 !important; visibility: visible !important;
-        }
-
+        /* Premium Modal Styles Improvements */
         .eval-modal-content { 
-            background: white !important; width: 100%; max-width: 600px; 
-            border-radius: 28px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); 
+            background: white !important; width: 100%; max-width: 950px; 
+            border-radius: 32px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); 
             overflow: hidden; position: relative; z-index: 1000000 !important;
+            display: flex; flex-direction: column;
         }
 
         .eval-modal-header { 
-            padding: 24px 32px; border-bottom: 1px solid #edf2f7; 
+            padding: 24px 35px; border-bottom: 1px solid #edf2f7; 
             display: flex; justify-content: space-between; align-items: center; 
-            background: #f8fafc; 
+            background: linear-gradient(135deg, #1648bc 0%, #1e3a8a 100%);
+            color: white;
         }
 
-        .eval-modal-body { 
-            padding: 32px; max-height: 70vh; overflow-y: auto;
+        .eval-modal-header h2 { color: white !important; font-size: 1.5rem !important; }
+        .eval-modal-header p { color: rgba(255, 255, 255, 0.8) !important; }
+
+        .eval-columns {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            min-height: 600px;
+        }
+
+        .eval-left-panel {
+            padding: 25px;
+            border-right: 1px solid #edf2f7;
+            background: #fcfdfe;
+            overflow-y: auto;
+            max-height: 75vh;
+        }
+
+        .eval-right-panel {
+            padding: 25px;
+            background: white;
+            overflow-y: auto;
+            max-height: 75vh;
+        }
+
+        .doc-item {
+            background: white;
+            padding: 14px;
+            border-radius: 16px;
+            border: 1px solid #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            transition: 0.2s;
+            cursor: pointer;
+        }
+        .doc-item:hover { border-color: var(--primary-blue); background: #f8faff; transform: translateX(5px); }
+        .doc-item.active { border-color: var(--primary-blue); background: #eef2ff; border-width: 2px; }
+
+        @media (max-width: 900px) {
+            .eval-columns { grid-template-columns: 1fr; }
+            .eval-right-panel { border-top: 1px solid #edf2f7; min-height: 400px; }
+            .eval-modal-content { max-width: 95%; margin: 20px auto; }
         }
 
         .eval-modal-footer { 
@@ -413,37 +447,50 @@ $approved_today = $pdo->query("SELECT COUNT(*) FROM admission_applications WHERE
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            <div class="eval-modal-body">
-                <div style="margin-bottom: 30px;">
-                    <h4
-                        style="color: #1e293b; font-size: 0.9rem; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
-                        <i class="fas fa-file-alt" style="color: var(--primary-blue);"></i> Submitted Documents
-                    </h4>
-                    <div id="modalDocList">
+            <div class="eval-columns">
+                <!-- Left Panel: Form & Docs List -->
+                <div class="eval-left-panel">
+                    <div style="margin-bottom: 25px;">
+                        <h4 style="color: #64748b; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 15px;">Documents Review</h4>
+                        <div id="modalDocList">
+                        </div>
                     </div>
+
+                    <form id="evaluationForm" method="POST">
+                        <input type="hidden" name="action" value="submit_evaluation">
+                        <input type="hidden" name="application_id" id="modalAppId">
+                        <div style="border-top: 1px solid #edf2f7; padding-top: 20px;">
+                            <h4 style="color: #64748b; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px;">Evaluation Status</h4>
+                            <select name="status" id="modalEvalStatus"
+                                style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 16px; outline: none; font-family: inherit; font-weight: 600; color: #1e293b;">
+                                <option value="Approved">Accept & Verify For Payment</option>
+                                <option value="Processing">Keep Processing</option>
+                                <option value="Rejected">Reject Application</option>
+                            </select>
+                            
+                            <h4 style="color: #64748b; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">Internal Notes</h4>
+                            <textarea name="notes" placeholder="Add evaluation notes..."
+                                style="width: 100%; height: 100px; padding: 16px; border-radius: 16px; border: 1px solid #e2e8f0; outline: none; resize: none; font-family: inherit; font-size: 0.9rem; color: #475569;"></textarea>
+                        </div>
+                    </form>
                 </div>
 
-                <form id="evaluationForm" method="POST">
-                    <input type="hidden" name="action" value="submit_evaluation">
-                    <input type="hidden" name="application_id" id="modalAppId">
-                    <div>
-                        <h4 style="color: #1e293b; font-size: 0.9rem; font-weight: 700; margin-bottom: 12px;">Evaluation Status & Notes</h4>
-                        <select name="status" id="modalEvalStatus"
-                            style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 16px; outline: none; font-family: inherit;">
-                            <option value="Approved">Accept Documents & Verify For Payment</option>
-                            <option value="Processing">Pre-verify & Keep Processing</option>
-                            <option value="Rejected">Reject Application (Incomplete/Invalid)</option>
-                        </select>
-                        <textarea name="notes" placeholder="Add internal notes for this evaluation..."
-                            style="width: 100%; height: 120px; padding: 16px; border-radius: 16px; border: 1px solid #e2e8f0; outline: none; resize: none; font-family: inherit; font-size: 0.9rem; color: #475569;"></textarea>
+                <!-- Right Panel: Built-in Preview -->
+                <div class="eval-right-panel">
+                    <div id="previewPlaceholder" style="height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #94a3b8; text-align: center;">
+                        <i class="fas fa-eye" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.3;"></i>
+                        <p style="font-weight: 500;">Click "View" on any document<br>to see a live preview here.</p>
                     </div>
-                </form>
+                    <div id="previewContent" style="display: none; height: 100%;">
+                        <!-- Content injected by JS -->
+                    </div>
+                </div>
             </div>
             <div class="eval-modal-footer">
                 <button onclick="closeReviewModal()"
-                    style="padding: 12px 24px; border-radius: 12px; border: 1px solid #e2e8f0; background: white; color: #475569; font-weight: 600; cursor: pointer;">Cancel</button>
+                    style="padding: 12px 24px; border-radius: 12px; border: 1px solid #e2e8f0; background: white; color: #475569; font-weight: 700; cursor: pointer;">Cancel</button>
                 <button onclick="saveEvaluation()"
-                    style="padding: 12px 28px; border-radius: 12px; background: var(--primary-blue); color: white; border: none; font-weight: 600; cursor: pointer; box-shadow: 0 4px 6px -1px rgba(22, 72, 188, 0.2);">Confirm & Save</button>
+                    style="padding: 12px 28px; border-radius: 12px; background: var(--primary-blue); color: white; border: none; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(22, 72, 188, 0.2);">Confirm & Save</button>
             </div>
         </div>
     </div>
@@ -620,20 +667,17 @@ $approved_today = $pdo->query("SELECT COUNT(*) FROM admission_applications WHERE
                     item.className = 'doc-item';
                     const fullPath = '../../' + doc.path;
                     item.innerHTML = `
-                        <div style="display: flex; align-items: center; gap: 16px;">
-                            <div style="width: 48px; height: 48px; background: ${doc.color}; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: ${doc.text};">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="width: 40px; height: 40px; background: ${doc.color}; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: ${doc.text};">
                                 <i class="fas ${doc.icon}"></i>
                             </div>
                             <div>
-                                <p style="font-weight: 600; font-size: 0.9rem; color: #1e293b;">${doc.name}</p>
-                                <p style="font-size: 0.75rem; color: #64748b;">Uploaded File</p>
+                                <p style="font-weight: 700; font-size: 0.85rem; color: #1e293b;">${doc.name}</p>
                             </div>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 12px;">
-                            <a href="${fullPath}" target="_blank" style="color: var(--primary-blue); background: #f1f5f9; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none;">
-                                <i class="fas fa-eye"></i>
-                            </a>
-                        </div>
+                        <button onclick="previewDoc('${fullPath}', this)" style="border: none; background: #eef2ff; color: #1648bc; padding: 6px 12px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 0.7rem;">
+                            View
+                        </button>
                     `;
                     list.appendChild(item);
                 }
@@ -653,6 +697,33 @@ $approved_today = $pdo->query("SELECT COUNT(*) FROM admission_applications WHERE
         function closeReviewModal() {
             document.getElementById('reviewModal').style.display = 'none';
             document.body.style.overflow = 'auto';
+            document.getElementById('previewContent').style.display = 'none';
+            document.getElementById('previewPlaceholder').style.display = 'flex';
+        }
+
+        function previewDoc(path, btn) {
+            // UI Update
+            document.querySelectorAll('.doc-item').forEach(i => i.classList.remove('active'));
+            btn.closest('.doc-item').classList.add('active');
+
+            const placeholder = document.getElementById('previewPlaceholder');
+            const container = document.getElementById('previewContent');
+            
+            placeholder.style.display = 'none';
+            container.style.display = 'block';
+            container.innerHTML = '<div style="height:100%; display:flex; align-items:center; justify-content:center;"><i class="fas fa-spinner fa-spin fa-2x"></i></div>';
+            
+            const ext = path.split('.').pop().toLowerCase();
+            
+            setTimeout(() => {
+                if(['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext)) {
+                    container.innerHTML = `<img src="${path}" style="width:100%; height:100%; object-fit:contain;">`;
+                } else if(ext === 'pdf') {
+                    container.innerHTML = `<iframe src="${path}" style="width:100%; height:600px; border:none;"></iframe>`;
+                } else {
+                    container.innerHTML = `<div style="padding:50px; text-align:center;">File preview not supported. <a href="${path}" target="_blank">Open file.</a></div>`;
+                }
+            }, 300);
         }
 
         function saveEvaluation() {

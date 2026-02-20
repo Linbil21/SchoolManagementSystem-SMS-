@@ -150,35 +150,62 @@ try {
             gap: 12px;
         }
 
+        /* Premium Modal Styles Improvements */
+        .modal-profile-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px;
+            background: linear-gradient(135deg, #1648bc 0%, #1e3a8a 100%);
+            border-radius: 24px;
+            margin-bottom: 28px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 10px 25px -5px rgba(22, 72, 188, 0.3);
+        }
+
+        .modal-avatar {
+            width: 90px;
+            height: 90px;
+            border-radius: 28px;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.2rem;
+            color: white;
+            margin-bottom: 15px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            font-weight: 800;
+        }
+
         .info-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 20px;
-            margin-bottom: 25px;
-        }
-
-        .info-item label {
-            display: block;
-            font-size: 0.8rem;
-            color: #718096;
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-
-        .info-item p {
-            font-weight: 700;
-            color: #2d3748;
+            margin-bottom: 30px;
+            background: #f8fafc;
+            padding: 24px;
+            border-radius: 20px;
+            border: 1px solid #eef2ff;
         }
 
         .document-preview {
-            background: #f8fafc;
-            padding: 15px;
-            border-radius: 10px;
-            border: 1px solid #edf2f7;
+            background: #ffffff;
+            padding: 16px;
+            border-radius: 18px;
+            border: 1px solid #f1f5f9;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
+        }
+        .document-preview:hover {
+            border-color: #1648bc;
+            transform: translateX(5px);
+            background: #fcfdfe;
         }
 
         /* Robust Modal Styles */
@@ -229,8 +256,8 @@ try {
             <div class="student-modal-body">
                 <div class="modal-profile-box">
                     <div class="modal-avatar" id="modalAvatar">JD</div>
-                    <h3 id="modalProfileName">John Doe</h3>
-                    <p id="modalProfileCourse">BS Information Technology</p>
+                    <h2 id="modalProfileName" style="font-weight: 800; font-size: 1.5rem; margin-bottom: 2px;">John Doe</h2>
+                    <p id="modalProfileCourse" style="opacity: 0.9; font-weight: 500; font-size: 0.9rem;">BS Information Technology</p>
                 </div>
 
                 <div class="info-grid">
@@ -260,26 +287,17 @@ try {
                     </div>
                 </div>
 
-                <div style="margin-top: 30px;">
-                    <h3 style="font-size: 1rem; font-weight: 700; color: #1e293b; margin-bottom: 15px;">Attached
-                        Documents</h3>
-                    <div class="document-preview">
-                        <div style="display: flex; align-items: center; gap: 15px;">
-                            <i class="fas fa-file-pdf" style="color: #ef4444; font-size: 1.5rem;"></i>
-                            <span style="font-size: 0.9rem; font-weight: 600;">Form 138 (Grade 12 Report Card)</span>
-                        </div>
-                        <button
-                            style="border: none; background: transparent; color: #1648bc; font-weight: 600; cursor: pointer;"><i
-                                class="fas fa-eye"></i> View</button>
+                <div style="margin-top: 30px; margin-bottom: 20px;">
+                    <h3 style="font-size: 0.9rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 15px;">Attached Documents</h3>
+                    <div id="modalDocumentContainer">
+                        <!-- Dynamic Docs -->
                     </div>
-                    <div class="document-preview">
-                        <div style="display: flex; align-items: center; gap: 15px;">
-                            <i class="fas fa-file-pdf" style="color: #ef4444; font-size: 1.5rem;"></i>
-                            <span style="font-size: 0.9rem; font-weight: 600;">Good Moral Certificate</span>
-                        </div>
-                        <button
-                            style="border: none; background: transparent; color: #1648bc; font-weight: 600; cursor: pointer;"><i
-                                class="fas fa-eye"></i> View</button>
+                </div>
+
+                <!-- Integrated Preview Area -->
+                <div id="modalPreviewArea" style="display: none; border-top: 2px dashed #e2e8f0; padding-top: 25px; margin-top: 25px;">
+                    <h3 style="font-size: 0.9rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 15px;">Document Preview</h3>
+                    <div id="previewContent" style="width: 100%; min-height: 250px; border-radius: 20px; overflow: hidden; background: #f8fafc; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center;">
                     </div>
                 </div>
             </div>
@@ -404,21 +422,57 @@ try {
                 if (document.getElementById('modalEmail')) document.getElementById('modalEmail').textContent = data.email;
                 if (document.getElementById('modalContact')) document.getElementById('modalContact').textContent = data.phone;
 
-                // Set initials for avatar
-                const nameStr = (data.name || '').trim();
-                const initials = nameStr ? nameStr.split(' ').filter(n => n.length > 0).map(n => n[0]).join('').toUpperCase() : '?';
-                const avatarEl = document.getElementById('modalAvatar');
-                if (avatarEl) avatarEl.textContent = initials;
+                // Populate Documents (Simulated or from data if available)
+                const docContainer = document.getElementById('modalDocumentContainer');
+                docContainer.innerHTML = '';
+                
+                const sampleDocs = [
+                    { title: 'Form 138 (Report Card)', icon: 'fa-file-pdf', color: '#ef4444' },
+                    { title: 'Good Moral Certificate', icon: 'fa-certificate', color: '#1648bc' }
+                ];
+
+                sampleDocs.forEach(doc => {
+                    docContainer.innerHTML += `
+                        <div class="document-preview">
+                            <div style="display: flex; align-items: center; gap: 15px;">
+                                <div style="width: 40px; height: 40px; background: #f8fafc; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: ${doc.color};">
+                                    <i class="fas ${doc.icon}"></i>
+                                </div>
+                                <span style="font-size: 0.9rem; font-weight: 700; color: #1e293b;">${doc.title}</span>
+                            </div>
+                            <button onclick="previewDocument('dummy_path_logic')" style="border: none; background: #eef2ff; color: #1648bc; padding: 6px 12px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 0.75rem;">
+                                <i class="fas fa-eye"></i> View
+                            </button>
+                        </div>
+                    `;
+                });
+
+                // Reset Preview
+                document.getElementById('modalPreviewArea').style.display = 'none';
+                document.getElementById('previewContent').innerHTML = '';
 
                 const modal = document.getElementById('viewModal');
                 if (modal) {
-                    modal.style.display = 'block';
+                    modal.style.display = 'flex';
                     document.body.style.overflow = 'hidden';
                 }
             } catch (err) {
                 console.error('Error opening detail modal:', err);
                 alert('Could not open details. Please check console.');
             }
+        }
+
+        function previewDocument(path) {
+            const previewArea = document.getElementById('modalPreviewArea');
+            const previewContent = document.getElementById('previewContent');
+            previewArea.style.display = 'block';
+            previewContent.innerHTML = `
+                <div style="padding: 40px; text-align: center; color: #64748b;">
+                    <i class="fas fa-info-circle" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                    <p>Selection of specific document files is handled in the <strong>Evaluation</strong> stage.</p>
+                </div>
+            `;
+            previewArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
         function closeViewModal() {

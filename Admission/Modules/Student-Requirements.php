@@ -128,6 +128,107 @@ try {
         .student-modal-footer { 
             padding: 20px 32px; border-top: 1px solid #edf2f7; display: flex; justify-content: flex-end; background: #f8fafc; 
         }
+
+        /* Premium Modal Components */
+        .modal-profile-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px;
+            background: linear-gradient(135deg, #1648bc 0%, #1e3a8a 100%);
+            border-radius: 24px;
+            margin-bottom: 28px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 10px 25px -5px rgba(22, 72, 188, 0.3);
+        }
+
+        .modal-avatar {
+            width: 110px;
+            height: 110px;
+            border-radius: 35px;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.5rem;
+            color: white;
+            margin-bottom: 18px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .modal-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .guardian-card {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 20px;
+            border: 1px solid #eef2ff;
+            margin-bottom: 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .req-item { 
+            display: flex; 
+            align-items: center; 
+            gap: 16px; 
+            padding: 16px; 
+            background: #ffffff;
+            border: 1px solid #f1f5f9; 
+            border-radius: 18px; 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-bottom: 10px;
+        }
+
+        .req-item:hover {
+            border-color: #1648bc;
+            background: #fcfdfe;
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .req-icon { 
+            width: 45px; 
+            height: 45px; 
+            border-radius: 14px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 1.1rem; 
+        }
+
+        .req-icon.yes { background: #dcfce7; color: #16a34a; }
+        .req-icon.no { background: #fee2e2; color: #ef4444; }
+
+        .btn-view-doc {
+            padding: 8px 16px;
+            border-radius: 12px;
+            background: #eef2ff;
+            color: #1648bc;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.2s;
+            border: 1px solid #dbeafe;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-view-doc:hover {
+            background: #1648bc;
+            color: white;
+            box-shadow: 0 4px 10px rgba(22, 72, 188, 0.2);
+        }
     </style>
 </head>
 
@@ -144,9 +245,9 @@ try {
                     <div class="modal-avatar" id="modalAvatar">
                         <i class="fas fa-user"></i>
                     </div>
-                    <h2 id="modalStudentName" style="font-weight: 800; color: #1e293b; font-size: 1.4rem; margin-bottom: 4px;">Student Name</h2>
-                    <div id="modalStudentID" style="color: #64748b; font-weight: 600; font-size: 0.9rem; margin-bottom: 8px;">ENR-2024-001</div>
-                    <div id="modalCourse" style="background: #eef2ff; color: #1648bc; padding: 4px 14px; border-radius: 99px; font-size: 0.75rem; font-weight: 700;">Course Name</div>
+                    <h2 id="modalStudentName" style="font-weight: 800; font-size: 1.6rem; margin-bottom: 2px;">Student Name</h2>
+                    <div id="modalStudentID" style="opacity: 0.8; font-weight: 600; font-size: 0.95rem; margin-bottom: 12px;">ENR-2024-001</div>
+                    <div id="modalCourse" style="background: rgba(255, 255, 255, 0.2); color: white; padding: 6px 18px; border-radius: 99px; font-size: 0.8rem; font-weight: 700; backdrop-filter: blur(5px); border: 1px solid rgba(255, 255, 255, 0.3);">Course Name</div>
                 </div>
 
                 <p style="margin-bottom: 12px; color: #64748b; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Guardian Details</p>
@@ -159,7 +260,15 @@ try {
                 </div>
 
                 <p style="margin-bottom: 12px; color: #64748b; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Submitted Documents</p>
-                <div id="modalRequirementsList" style="display: flex; flex-direction: column; gap: 12px;">
+                <div id="modalRequirementsList" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 28px;">
+                </div>
+
+                <!-- Preview Area -->
+                <div id="modalPreviewArea" style="display: none; border-top: 2px dashed #e2e8f0; padding-top: 20px;">
+                    <p style="margin-bottom: 12px; color: #64748b; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Document Preview</p>
+                    <div id="previewContent" style="width: 100%; min-height: 200px; border-radius: 16px; overflow: hidden; background: #f1f5f9; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center;">
+                        <!-- Preview injected here -->
+                    </div>
                 </div>
             </div>
             <div class="student-modal-footer">
@@ -311,11 +420,11 @@ try {
                 const iconClass = isSubmitted ? 'fa-check' : 'fa-times';
                 const colorClass = isSubmitted ? 'yes' : 'no';
                 const statusText = isSubmitted 
-                    ? '<span style="color: #16a34a; font-size: 0.8rem; font-weight: 700;">Submitted</span>' 
-                    : '<span style="color: #ef4444; font-size: 0.8rem; font-weight: 700;">Missing</span>';
+                    ? `<span style="color: #16a34a; font-size: 0.8rem; font-weight: 700;">Submitted</span>` 
+                    : `<span style="color: #ef4444; font-size: 0.8rem; font-weight: 700;">Missing</span>`;
                 
                 const viewBtn = isSubmitted 
-                    ? `<a href="../../${doc.path}" target="_blank" class="btn-view-doc"><i class="fas fa-external-link-alt"></i> View</a>`
+                    ? `<button onclick="previewDocument('../../${doc.path}')" class="btn-view-doc"><i class="fas fa-eye"></i> View</button>`
                     : '';
 
                 list.innerHTML += `
@@ -334,12 +443,43 @@ try {
                 `;
             });
 
+            // Reset preview
+            document.getElementById('modalPreviewArea').style.display = 'none';
+            document.getElementById('previewContent').innerHTML = '';
+
             document.getElementById('viewModal').style.display = 'flex';
             document.body.style.overflow = 'hidden';
         } catch (err) {
             console.error('Error opening student modal:', err);
             alert('Could not open modal. Please check console for details.');
         }
+    }
+
+    function previewDocument(path) {
+        const previewArea = document.getElementById('modalPreviewArea');
+        const previewContent = document.getElementById('previewContent');
+        
+        previewArea.style.display = 'block';
+        previewContent.innerHTML = '<div style="padding: 20px; color: #64748b;"><i class="fas fa-spinner fa-spin"></i> Loading...</div>';
+        
+        const ext = path.split('.').pop().toLowerCase();
+        
+        if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext)) {
+            previewContent.innerHTML = `<img src="${path}" style="max-width: 100%; max-height: 500px; object-fit: contain; border-radius: 8px;">`;
+        } else if (ext === 'pdf') {
+            previewContent.innerHTML = `<iframe src="${path}" style="width: 100%; height: 500px; border: none; border-radius: 8px;"></iframe>`;
+        } else {
+            previewContent.innerHTML = `
+                <div style="text-align: center; padding: 40px;">
+                    <i class="fas fa-file-alt" style="font-size: 3rem; color: #cbd5e1; margin-bottom: 15px;"></i>
+                    <p style="color: #64748b; font-weight: 500;">Preview not available for this file type.</p>
+                    <a href="${path}" target="_blank" style="color: #1648bc; text-decoration: underline; font-weight: 700; display: inline-block; margin-top: 10px;">Open in New Tab</a>
+                </div>
+            `;
+        }
+        
+        // Scroll to preview
+        previewArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
         function closeViewModal() {
