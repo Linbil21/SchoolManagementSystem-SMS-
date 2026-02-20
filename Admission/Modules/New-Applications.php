@@ -283,7 +283,7 @@ try {
                                             ];
                                         ?>
                                         <button
-                                            onclick='openViewModal(<?php echo htmlspecialchars(json_encode($appData), ENT_QUOTES, "UTF-8"); ?>)'
+                                            onclick="openViewModal(<?php echo htmlspecialchars(json_encode($appData), ENT_QUOTES, 'UTF-8'); ?>)"
                                             style="border: none; background: #1648bc; color: white; padding: 6px 14px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-weight: 500;">
                                             <i class="fas fa-eye" style="font-size: 0.85rem;"></i> View
                                         </button>

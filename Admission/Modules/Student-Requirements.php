@@ -321,7 +321,7 @@ try {
                                                 ]
                                             ];
                                         ?>
-                                        <button class="btn-view" onclick='openViewModal(<?php echo htmlspecialchars(json_encode($studentData), ENT_QUOTES, "UTF-8"); ?>)'>
+                                        <button class="btn-view" onclick="openViewModal(<?php echo htmlspecialchars(json_encode($studentData), ENT_QUOTES, 'UTF-8'); ?>)">
                                             <i class="fas fa-eye"></i> View
                                         </button>
                                     </td>
@@ -408,8 +408,8 @@ try {
                 avatarBox.innerHTML = `<i class="fas fa-user"></i>`;
             }
 
-            document.getElementById('modalGuardianName').textContent = data.guardian.name.trim() ? data.guardian.name : 'Not Provided';
-            document.getElementById('modalGuardianContact').textContent = data.guardian.contact.trim() ? data.guardian.contact : 'No Contact Number';
+            document.getElementById('modalGuardianName').textContent = (data.guardian.name || '').trim() ? data.guardian.name : 'Not Provided';
+            document.getElementById('modalGuardianContact').textContent = (data.guardian.contact || '').trim() ? data.guardian.contact : 'No Contact Number';
             
             const docs = [
                 { title: 'Passport Size ID', path: data.docs.id_pic },
@@ -424,7 +424,7 @@ try {
             list.innerHTML = '';
 
             docs.forEach(doc => {
-                const isSubmitted = doc.path && doc.path.trim();
+                const isSubmitted = doc.path && String(doc.path).trim();
                 const iconClass = isSubmitted ? 'fa-check' : 'fa-times';
                 const colorClass = isSubmitted ? 'yes' : 'no';
                 const statusText = isSubmitted 

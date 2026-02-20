@@ -33,6 +33,9 @@ try {
                                         e.form_137,
                                         e.good_moral,
                                         e.barangay_clearance,
+                                        e.guardian_first,
+                                        e.guardian_last,
+                                        e.guardian_contact,
                                         e.created_at
                                      FROM enrollments e 
                                      LEFT JOIN courses c ON e.course_id = c.courseId 
