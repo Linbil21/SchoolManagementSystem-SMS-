@@ -78,22 +78,179 @@ try {
         .btn-view { background: #1648bc; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; transition: 0.2s; }
         .btn-view:hover { background: #1e3a8a; }
 
-        /* Modal Styles */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.7); display: none; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px); }
-        .modal-content { background: white; width: 400px; border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); overflow: hidden; animation: popIn 0.3s ease-out forwards; }
-        .modal-header { padding: 20px 24px; border-bottom: 1px solid #edf2f7; display: flex; justify-content: space-between; align-items: center; background: #f8fafc; }
-        .modal-header h3 { margin: 0; font-size: 1.1rem; color: #1e293b; font-weight: 700; }
-        .btn-close { background: none; border: none; font-size: 1.2rem; color: #94a3b8; cursor: pointer; }
-        .btn-close:hover { color: #ef4444; }
-        .modal-body { padding: 24px; }
-        .modal-footer { padding: 16px 24px; border-top: 1px solid #edf2f7; display: flex; justify-content: flex-end; background: #f8fafc; }
+        /* Premium Modal Styles */
+        .modal-overlay { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: rgba(15, 23, 42, 0.82) !important; 
+            display: none; 
+            align-items: center; 
+            justify-content: center; 
+            z-index: 9999; 
+            backdrop-filter: blur(12px) !important; 
+            padding: 20px;
+        }
+
+        .modal-content { 
+            background: white; 
+            width: 100%;
+            max-width: 550px; 
+            border-radius: 28px; 
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); 
+            overflow: hidden; 
+            animation: modalPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        @keyframes modalPop {
+            from { transform: scale(0.9) translateY(20px); opacity: 0; }
+            to { transform: scale(1) translateY(0); opacity: 1; }
+        }
+
+        .modal-header { 
+            padding: 24px 32px; 
+            border-bottom: 1px solid #edf2f7; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            background: #f8fafc; 
+        }
+
+        .modal-header h3 { 
+            margin: 0; 
+            font-size: 1.25rem; 
+            color: #1e293b; 
+            font-weight: 800; 
+            letter-spacing: -0.025em;
+        }
+
+        .btn-close { 
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f1f5f9; 
+            border: none; 
+            border-radius: 12px;
+            color: #64748b; 
+            cursor: pointer; 
+            transition: all 0.2s;
+        }
+
+        .btn-close:hover { 
+            background: #fee2e2;
+            color: #ef4444; 
+            transform: rotate(90deg);
+        }
+
+        .modal-body { 
+            padding: 32px; 
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-profile-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 24px;
+            background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+            border-radius: 24px;
+            margin-bottom: 28px;
+            border: 1px solid #f1f5f9;
+            text-align: center;
+        }
+
+        .modal-avatar {
+            width: 90px;
+            height: 90px;
+            border-radius: 30px;
+            background: #eef2ff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.25rem;
+            color: #1648bc;
+            margin-bottom: 16px;
+            border: 4px solid white;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 26px;
+        }
+
+        .guardian-card {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 20px;
+            border: 1px solid #eef2ff;
+            margin-bottom: 28px;
+        }
         
-        .req-item { display: flex; align-items: center; gap: 12px; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; }
-        .req-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; }
+        .req-item { 
+            display: flex; 
+            align-items: center; 
+            gap: 16px; 
+            padding: 16px; 
+            background: #ffffff;
+            border: 1px solid #f1f5f9; 
+            border-radius: 18px; 
+            transition: all 0.2s;
+            margin-bottom: 10px;
+        }
+
+        .req-item:hover {
+            border-color: #e2e8f0;
+            background: #fafafa;
+        }
+
+        .req-icon { 
+            width: 40px; 
+            height: 40px; 
+            border-radius: 14px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 1rem; 
+        }
+
         .req-icon.yes { background: #dcfce7; color: #16a34a; }
         .req-icon.no { background: #fee2e2; color: #ef4444; }
-        
-        @keyframes popIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        .btn-view-doc {
+            padding: 6px 14px;
+            border-radius: 10px;
+            background: #eef2ff;
+            color: #1648bc;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.2s;
+            border: 1px solid #dbeafe;
+        }
+
+        .btn-view-doc:hover {
+            background: #1648bc;
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .modal-footer { 
+            padding: 20px 32px; 
+            border-top: 1px solid #edf2f7; 
+            display: flex; 
+            justify-content: flex-end; 
+            background: #f8fafc; 
+        }
     </style>
 </head>
 
@@ -144,17 +301,24 @@ try {
                                         </span>
                                     </td>
                                     <td>
-                                        <button class="btn-view" onclick="openViewModal(
-                                            '<?php echo addslashes($student->first_name . ' ' . $student->last_name); ?>', 
-                                            '<?php echo !empty($student->id_picture) ? 'yes' : 'no'; ?>', 
-                                            '<?php echo !empty($student->birth_cert) ? 'yes' : 'no'; ?>', 
-                                            '<?php echo !empty($student->form_138) ? 'yes' : 'no'; ?>', 
-                                            '<?php echo !empty($student->form_137) ? 'yes' : 'no'; ?>', 
-                                            '<?php echo !empty($student->good_moral) ? 'yes' : 'no'; ?>',
-                                            '<?php echo !empty($student->barangay_clearance) ? 'yes' : 'no'; ?>',
-                                            '<?php echo addslashes(($student->guardian_first ?? '') . ' ' . ($student->guardian_last ?? '')); ?>',
-                                            '<?php echo addslashes($student->guardian_contact ?? ''); ?>'
-                                        )"><i class="fas fa-eye"></i> View</button>
+                                        <button class="btn-view" onclick="openViewModal({
+                                            name: '<?php echo addslashes($student->first_name . ' ' . $student->last_name); ?>',
+                                            id: '<?php echo $student->student_id; ?>',
+                                            course: '<?php echo addslashes($student->course_name ?? 'N/A'); ?>',
+                                            avatar: '<?php echo $student->id_picture; ?>',
+                                            docs: {
+                                                id_pic: '<?php echo $student->id_picture; ?>',
+                                                psa: '<?php echo $student->birth_cert; ?>',
+                                                f138: '<?php echo $student->form_138; ?>',
+                                                f137: '<?php echo $student->form_137; ?>',
+                                                moral: '<?php echo $student->good_moral; ?>',
+                                                brgy: '<?php echo $student->barangay_clearance; ?>'
+                                            },
+                                            guardian: {
+                                                name: '<?php echo addslashes(($student->guardian_first ?? '') . ' ' . ($student->guardian_last ?? '')); ?>',
+                                                contact: '<?php echo addslashes($student->guardian_contact ?? ''); ?>'
+                                            }
+                                        })"><i class="fas fa-eye"></i> View</button>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
@@ -169,18 +333,33 @@ try {
     <div id="viewModal" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 id="modalStudentName">Student Name</h3>
+                <h3>Requirement Details</h3>
                 <button class="btn-close" onclick="closeViewModal()"><i class="fas fa-times"></i></button>
             </div>
             <div class="modal-body">
-                <p style="margin-bottom: 8px; color: #64748b; font-size: 0.85rem; font-weight: 500;">Guardian Information</p>
-                <div style="background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 20px;">
-                    <div style="font-weight: 600; color: #1e293b; font-size: 0.9rem;" id="modalGuardianName">Name</div>
-                    <div style="color: #64748b; font-size: 0.85rem;"><i class="fas fa-phone-alt" style="margin-right: 5px; font-size: 0.75rem;"></i> <span id="modalGuardianContact">Contact</span></div>
+                <!-- Profile Section -->
+                <div class="modal-profile-box">
+                    <div class="modal-avatar" id="modalAvatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <h2 id="modalStudentName" style="font-weight: 800; color: #1e293b; font-size: 1.4rem; margin-bottom: 4px;">Student Name</h2>
+                    <div id="modalStudentID" style="color: #64748b; font-weight: 600; font-size: 0.9rem; margin-bottom: 8px;">ENR-2024-001</div>
+                    <div id="modalCourse" style="background: #eef2ff; color: #1648bc; padding: 4px 14px; border-radius: 99px; font-size: 0.75rem; font-weight: 700;">Course Name</div>
                 </div>
 
-                <p style="margin-bottom: 15px; color: #64748b; font-size: 0.85rem; font-weight: 500;">Submitted Requirements</p>
-                <div id="modalRequirementsList" style="display: flex; flex-direction: column; gap: 10px;">
+                <!-- Guardian Information -->
+                <p style="margin-bottom: 12px; color: #64748b; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Guardian Details</p>
+                <div class="guardian-card">
+                    <div style="font-weight: 700; color: #1e293b; font-size: 1rem; margin-bottom: 4px;" id="modalGuardianName">Name</div>
+                    <div style="color: #64748b; font-size: 0.9rem; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-phone-alt" style="color: #1648bc;"></i> 
+                        <span id="modalGuardianContact" style="font-weight: 500;">Contact</span>
+                    </div>
+                </div>
+
+                <!-- Requirements List -->
+                <p style="margin-bottom: 12px; color: #64748b; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Submitted Documents</p>
+                <div id="modalRequirementsList" style="display: flex; flex-direction: column; gap: 12px;">
                     <!-- Items injected via JS -->
                 </div>
             </div>
@@ -211,39 +390,57 @@ try {
             }
         }
 
-        function openViewModal(name, idpic, psa, f138, f137, moral, brgy, gName, gContact) {
-            document.getElementById('modalStudentName').textContent = name;
+        function openViewModal(data) {
+            document.getElementById('modalStudentName').textContent = data.name;
+            document.getElementById('modalStudentID').textContent = data.id;
+            document.getElementById('modalCourse').textContent = data.course;
             
-            document.getElementById('modalGuardianName').textContent = gName.trim() ? gName : 'Not Provided';
-            document.getElementById('modalGuardianContact').textContent = gContact.trim() ? gContact : 'No Contact Number';
+            // Avatar handling
+            const avatarBox = document.getElementById('modalAvatar');
+            if (data.avatar && data.avatar.trim()) {
+                avatarBox.innerHTML = `<img src="../../${data.avatar}" alt="Avatar">`;
+            } else {
+                avatarBox.innerHTML = `<i class="fas fa-user"></i>`;
+            }
+
+            document.getElementById('modalGuardianName').textContent = data.guardian.name.trim() ? data.guardian.name : 'Not Provided';
+            document.getElementById('modalGuardianContact').textContent = data.guardian.contact.trim() ? data.guardian.contact : 'No Contact Number';
             
             const docs = [
-                { title: 'Passport Size ID', status: idpic },
-                { title: 'PSA Birth Certificate', status: psa },
-                { title: 'Form 138 (Report Card)', status: f138 },
-                { title: 'Form 137 (TOR)', status: f137 },
-                { title: 'Good Moral Certificate', status: moral },
-                { title: 'Barangay Clearance', status: brgy }
+                { title: 'Passport Size ID', path: data.docs.id_pic },
+                { title: 'PSA Birth Certificate', path: data.docs.psa },
+                { title: 'Form 138 (Report Card)', path: data.docs.f138 },
+                { title: 'Form 137 (TOR)', path: data.docs.f137 },
+                { title: 'Good Moral Certificate', path: data.docs.moral },
+                { title: 'Barangay Clearance', path: data.docs.brgy }
             ];
 
             const list = document.getElementById('modalRequirementsList');
             list.innerHTML = '';
 
             docs.forEach(doc => {
-                const iconClass = doc.status === 'yes' ? 'fa-check' : 'fa-times';
-                const colorClass = doc.status === 'yes' ? 'yes' : 'no';
-                const statusText = doc.status === 'yes' ? '<span style="color: #16a34a; font-size: 0.8rem; font-weight: 600;">Submitted</span>' : '<span style="color: #ef4444; font-size: 0.8rem; font-weight: 600;">Missing</span>';
+                const isSubmitted = doc.path && doc.path.trim();
+                const iconClass = isSubmitted ? 'fa-check' : 'fa-times';
+                const colorClass = isSubmitted ? 'yes' : 'no';
+                const statusText = isSubmitted 
+                    ? '<span style="color: #16a34a; font-size: 0.8rem; font-weight: 700;">Submitted</span>' 
+                    : '<span style="color: #ef4444; font-size: 0.8rem; font-weight: 700;">Missing</span>';
                 
+                const viewBtn = isSubmitted 
+                    ? `<a href="javascript:void(0)" class="btn-view-doc" onclick="window.open('../../${doc.path}', '_blank')"><i class="fas fa-external-link-alt"></i> View</a>`
+                    : '';
+
                 list.innerHTML += `
                     <div class="req-item">
                         <div class="req-icon ${colorClass}">
                             <i class="fas ${iconClass}"></i>
                         </div>
                         <div style="flex: 1;">
-                            <div style="font-weight: 600; font-size: 0.9rem; color: #1e293b;">${doc.title}</div>
+                            <div style="font-weight: 700; font-size: 0.95rem; color: #1e293b;">${doc.title}</div>
+                            ${statusText}
                         </div>
                         <div>
-                            ${statusText}
+                            ${viewBtn}
                         </div>
                     </div>
                 `;
