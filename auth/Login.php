@@ -328,9 +328,9 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
             font-weight: 500;
         }
 
-        .ocr-status.success { color: #059669; }
-        .ocr-status.error { color: #ef4444; }
-        .ocr-status.loading { color: #3b82f6; }
+        .ocr-status.loading, .ocr-status .loading { color: #3b82f6; }
+        .ocr-status.success, .ocr-status .success { color: #059669; }
+        .ocr-status.error, .ocr-status .error { color: #ef4444; }
         
         .input-error {
             border-color: #ef4444 !important;
@@ -962,7 +962,10 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
             isSimulation: false
         };
 
+        let isScanning = false;
         async function triggerScan(badge) {
+            if (isScanning) return;
+            
             const inputGroup = badge.closest('.input-group');
             const fileInput = inputGroup.querySelector('input[type="file"]');
             const statusDiv = inputGroup.querySelector('.ocr-status');
@@ -971,6 +974,8 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                 statusDiv.innerHTML = '<span class="error"><i class="fas fa-exclamation-circle"></i> Please select a file first.</span>';
                 return;
             }
+
+            isScanning = true;
 
             const file = fileInput.files[0];
             const formData = new FormData();
@@ -1098,6 +1103,7 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
             } finally {
                 badge.classList.remove('ocr-scanning');
                 badge.innerHTML = '<i class="fas fa-magic"></i> Smart Scan';
+                isScanning = false;
             }
         }
 

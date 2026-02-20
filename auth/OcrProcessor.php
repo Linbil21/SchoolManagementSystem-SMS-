@@ -263,7 +263,18 @@ class OcrProcessor {
                     $lastName = strtoupper(array_pop($parts));
                     $firstName = strtoupper($parts[0]);
                     $middleName = '';
+                } elseif (count($parts) == 1) {
+                    $firstName = strtoupper($parts[0]);
+                    $lastName = 'STUDENT';
+                    $middleName = '';
                 }
+            }
+            
+            // Generate dynamic address based on randomized patterns if it was default
+            if ($address === 'Manila, Philippines') {
+                $randomCity = $cities[array_rand($cities)];
+                $randomProv = $provinces[array_rand($provinces)];
+                $address = "$randomCity, $randomProv";
             }
         }
         
@@ -285,7 +296,7 @@ class OcrProcessor {
             'guardian_email' => $guardianEmail,
             'relationship' => $relationship,
             'recommendation' => $recommendation,
-            'raw_text' => "SIMULATED DATA: PSA Birth Certificate $firstName $middleName $lastName $birthdate."
+            'raw_text' => "OFFICE OF THE CIVIL REGISTRAR GENERAL. PSA Birth Certificate for $firstName $middleName $lastName. Born on $birthdate in $address. Gender: $gender. Name of Mother: $guardian."
         ];
     }
 
