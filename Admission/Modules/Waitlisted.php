@@ -7,7 +7,11 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admission') {
 require_once '../../Database/config.php';
 
 try {
-    $stmt = $pdo->prepare("SELECT * FROM admission_applications WHERE status = 'Waitlisted' ORDER BY submission_date DESC");
+    $stmt = $pdo->prepare("SELECT a.*, COALESCE(c.course_name, a.preferred_course_1) as course_display_name 
+                           FROM admission_applications a 
+                           LEFT JOIN courses c ON (a.preferred_course_1 = CAST(c.courseId AS CHAR) OR a.preferred_course_1 = c.course_name)
+                           WHERE a.status = 'Waitlisted' 
+                           ORDER BY a.submission_date DESC");
     $stmt->execute();
     $waitlisted_apps = $stmt->fetchAll();
 } catch (PDOException $e) {
@@ -66,7 +70,7 @@ try {
                                 <tr>
                                     <td>Medium</td>
                                     <td><?php echo htmlspecialchars($app->first_name . ' ' . $app->last_name); ?></td>
-                                    <td><?php echo htmlspecialchars($app->preferred_course_1); ?></td>
+                                    <td><?php echo htmlspecialchars($app->course_display_name); ?></td>
                                     <td>1 Day</td>
                                     <td><button onclick="window.location.href='Evaluation.php'" style="border: none; background: #1648bc; color: white; padding: 6px 12px; border-radius: 6px; cursor: pointer;">Review</button></td>
                                 </tr>

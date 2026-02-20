@@ -16,8 +16,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         $notes = $_POST['notes'];
 
         if ($status === 'Approved') {
-            // Get application details
-            $stmt = $pdo->prepare("SELECT * FROM admission_applications WHERE applicationId = ?");
+            $stmt = $pdo->prepare("SELECT a.*, COALESCE(c.course_name, a.preferred_course_1) as course_display_name 
+                                   FROM admission_applications a 
+                                   LEFT JOIN courses c ON (a.preferred_course_1 = CAST(c.courseId AS CHAR) OR a.preferred_course_1 = c.course_name)
+                                   WHERE a.applicationId = ?");
             $stmt->execute([$app_id]);
             $app = $stmt->fetch();
 
@@ -37,9 +39,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 $total = $tuition + $misc;
                 $ref_code = "";
 
-                // Map course name to ID
                 $c_stmt = $pdo->prepare("SELECT courseId FROM courses WHERE course_name = ?");
-                $c_stmt->execute([$app->preferred_course_1]);
+                $c_stmt->execute([$app->course_display_name]);
                 $course_res = $c_stmt->fetch();
                 $course_id = $course_res ? $course_res->courseId : NULL;
 
@@ -104,10 +105,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 
 // Fetch pending and processing applications with their documents from enrollments
 $apps = $pdo->query("SELECT a.*, s.is_verified, 
+                          COALESCE(c.course_name, a.preferred_course_1) as course_display_name,
                           e.birth_cert, e.form_138, e.form_137, e.good_moral, e.barangay_clearance, e.id_picture
                    FROM admission_applications a 
                    LEFT JOIN students s ON LOWER(a.email) = LOWER(s.email) 
                    LEFT JOIN enrollments e ON LOWER(a.email) = LOWER(e.email)
+                   LEFT JOIN courses c ON (a.preferred_course_1 = CAST(c.courseId AS CHAR) OR a.preferred_course_1 = c.course_name)
                    WHERE a.status IN ('Pending', 'Processing') 
                    ORDER BY a.submission_date DESC")->fetchAll();
 
@@ -440,7 +443,7 @@ $approved_today = $pdo->query("SELECT COUNT(*) FROM admission_applications WHERE
                                 onclick="openReviewModal(
                                     '<?php echo $app->applicationId; ?>',
                                     '<?php echo addslashes($app->first_name . ' ' . $app->last_name); ?>', 
-                                    '<?php echo addslashes($app->preferred_course_1); ?>',
+                                    '<?php echo addslashes($app->course_display_name); ?>',
                                     '<?php echo $app->birth_cert; ?>',
                                     '<?php echo $app->form_138; ?>',
                                     '<?php echo $app->form_137; ?>',
@@ -463,7 +466,7 @@ $approved_today = $pdo->query("SELECT COUNT(*) FROM admission_applications WHERE
                                         </span>
                                     <?php endif; ?>
                                 </td>
-                                <td><?php echo htmlspecialchars($app->preferred_course_1); ?></td>
+                                <td><?php echo htmlspecialchars($app->course_display_name); ?></td>
                                 <td>
                                     <div style="font-size: 0.75rem; color: #64748b;">
                                         <?php 

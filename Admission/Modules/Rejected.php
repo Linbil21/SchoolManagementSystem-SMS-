@@ -7,7 +7,11 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admission') {
 require_once '../../Database/config.php';
 
 try {
-    $stmt = $pdo->prepare("SELECT * FROM admission_applications WHERE status = 'Rejected' ORDER BY submission_date DESC");
+    $stmt = $pdo->prepare("SELECT a.*, COALESCE(c.course_name, a.preferred_course_1) as course_display_name 
+                           FROM admission_applications a 
+                           LEFT JOIN courses c ON (a.preferred_course_1 = CAST(c.courseId AS CHAR) OR a.preferred_course_1 = c.course_name)
+                           WHERE a.status = 'Rejected' 
+                           ORDER BY a.submission_date DESC");
     $stmt->execute();
     $rejected_apps = $stmt->fetchAll();
 } catch (PDOException $e) {
@@ -117,7 +121,7 @@ try {
                                 <tr>
                                     <td><?php echo htmlspecialchars($app->application_no); ?></td>
                                     <td><?php echo htmlspecialchars($app->first_name . ' ' . $app->last_name); ?></td>
-                                    <td><?php echo htmlspecialchars($app->preferred_course_1); ?></td>
+                                    <td><?php echo htmlspecialchars($app->course_display_name); ?></td>
                                     <td><?php echo date('Y-m-d', strtotime($app->submission_date)); ?></td>
                                     <td>Incomplete Documents</td>
                                 </tr>
