@@ -193,19 +193,31 @@ try {
 
         .document-preview {
             background: #ffffff;
-            padding: 16px;
+            padding: 12px;
             border-radius: 18px;
             border: 1px solid #f1f5f9;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 12px;
             transition: all 0.3s ease;
         }
         .document-preview:hover {
             border-color: #1648bc;
-            transform: translateX(5px);
+            transform: translateY(-3px);
             background: #fcfdfe;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+        }
+
+        #modalDocumentContainer {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        @media (max-width: 600px) {
+            #modalDocumentContainer {
+                grid-template-columns: 1fr;
+            }
         }
 
         /* Robust Modal Styles */
@@ -438,7 +450,7 @@ try {
                                 <div style="width: 40px; height: 40px; background: #f8fafc; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: ${doc.color};">
                                     <i class="fas ${doc.icon}"></i>
                                 </div>
-                                <span style="font-size: 0.9rem; font-weight: 700; color: #1e293b;">${doc.title}</span>
+                                <span style="font-size: 0.85rem; font-weight: 700; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 130px;">${doc.title}</span>
                             </div>
                             <button onclick="previewDocument('dummy_path_logic')" style="border: none; background: #eef2ff; color: #1648bc; padding: 6px 12px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 0.75rem;">
                                 <i class="fas fa-eye"></i> View

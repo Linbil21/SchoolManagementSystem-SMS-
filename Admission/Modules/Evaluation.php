@@ -298,7 +298,7 @@ $approved_today = $pdo->query("SELECT COUNT(*) FROM admission_applications WHERE
 
         .eval-columns {
             display: grid;
-            grid-template-columns: 350px 1fr;
+            grid-template-columns: 450px 1fr;
             min-height: 600px;
         }
 
@@ -343,15 +343,21 @@ $approved_today = $pdo->query("SELECT COUNT(*) FROM admission_applications WHERE
         }
 
         .doc-item {
-            background: #f8fafc;
-            padding: 16px;
+            background: white;
+            padding: 12px;
             border-radius: 16px;
-            border: 1px solid #e2e8f0;
+            border: 1px solid #f1f5f9;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 12px;
             transition: 0.2s;
+            cursor: pointer;
+        }
+
+        #modalDocList {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
         }
         .doc-item:hover { border-color: var(--primary-blue); background: #ffffff; }
 
@@ -672,7 +678,7 @@ $approved_today = $pdo->query("SELECT COUNT(*) FROM admission_applications WHERE
                                 <i class="fas ${doc.icon}"></i>
                             </div>
                             <div>
-                                <p style="font-weight: 700; font-size: 0.85rem; color: #1e293b;">${doc.name}</p>
+                                <p style="font-weight: 700; font-size: 0.8rem; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px;">${doc.name}</p>
                             </div>
                         </div>
                         <button onclick="previewDoc('${fullPath}', this)" style="border: none; background: #eef2ff; color: #1648bc; padding: 6px 12px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 0.7rem;">

@@ -180,20 +180,34 @@ try {
         .req-item { 
             display: flex; 
             align-items: center; 
-            gap: 16px; 
-            padding: 16px; 
+            gap: 12px; 
+            padding: 14px; 
             background: #ffffff;
             border: 1px solid #f1f5f9; 
             border-radius: 18px; 
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            margin-bottom: 10px;
+            position: relative;
         }
 
         .req-item:hover {
             border-color: #1648bc;
             background: #fcfdfe;
-            transform: translateX(5px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Grid specific styles */
+        #modalRequirementsList {
+            display: grid !important;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 28px;
+        }
+
+        @media (max-width: 640px) {
+            #modalRequirementsList {
+                grid-template-columns: 1fr;
+            }
         }
 
         .req-icon { 
@@ -210,18 +224,19 @@ try {
         .req-icon.no { background: #fee2e2; color: #ef4444; }
 
         .btn-view-doc {
-            padding: 8px 16px;
-            border-radius: 12px;
+            padding: 6px 12px;
+            border-radius: 10px;
             background: #eef2ff;
             color: #1648bc;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-weight: 700;
             text-decoration: none;
             transition: all 0.2s;
             border: 1px solid #dbeafe;
             display: inline-flex;
             align-items: center;
-            gap: 6px;
+            gap: 4px;
+            cursor: pointer;
         }
 
         .btn-view-doc:hover {
@@ -260,7 +275,7 @@ try {
                 </div>
 
                 <p style="margin-bottom: 12px; color: #64748b; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Submitted Documents</p>
-                <div id="modalRequirementsList" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 28px;">
+                <div id="modalRequirementsList">
                 </div>
 
                 <!-- Preview Area -->
@@ -432,8 +447,8 @@ try {
                         <div class="req-icon ${colorClass}">
                             <i class="fas ${iconClass}"></i>
                         </div>
-                        <div style="flex: 1;">
-                            <div style="font-weight: 700; font-size: 0.95rem; color: #1e293b;">${doc.title}</div>
+                        <div style="flex: 1; min-width: 0;">
+                            <div style="font-weight: 700; font-size: 0.85rem; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${doc.title}</div>
                             ${statusText}
                         </div>
                         <div>
