@@ -84,7 +84,7 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admission@sms.com';
                     <i class="fas fa-chevron-down arrow-icon"></i>
                 </a>
                 <ul class="sub-menu">
-                    <li class="<?php echo ($current_page == 'Student-Requirements.php') ? 'active' : ''; ?>"><a href="<?php echo $root; ?>Admission/Modules/Student-Requirements.php">Student Requirements List</a></li>
+                    <li class="<?php echo ($current_page == 'Student-Requirements.php') ? 'active' : ''; ?>"><a href="<?php echo $root; ?>Admission/Modules/Student-Requirements.php">Requirements List</a></li>
                     <li class="<?php echo ($current_page == 'Generate-ID.php') ? 'active' : ''; ?>"><a href="<?php echo $root; ?>Admission/Modules/Generate-ID.php">Generate Student ID</a></li>
                     <li class="<?php echo ($current_page == 'ID-Verification.php') ? 'active' : ''; ?>"><a href="<?php echo $root; ?>Admission/Modules/ID-Verification.php">ID Verification</a></li>
                     <li class="<?php echo ($current_page == 'Print-Export-ID.php') ? 'active' : ''; ?>"><a href="<?php echo $root; ?>Admission/Modules/Print-Export-ID.php">Print / Export ID</a></li>
