@@ -321,7 +321,7 @@ try {
                                                 ]
                                             ];
                                         ?>
-                                        <button class="btn-view" onclick="openViewModal(<?php echo htmlspecialchars(json_encode($studentData), ENT_QUOTES, 'UTF-8'); ?>)">
+                                        <button class="btn-view" onclick="openStudentModal(<?php echo htmlspecialchars(json_encode($studentData), ENT_QUOTES, 'UTF-8'); ?>)">
                                             <i class="fas fa-eye"></i> View
                                         </button>
                                     </td>
@@ -374,7 +374,15 @@ try {
         </div>
     </div>
     
+    <?php include '../Components/GlobalScripts.php'; ?>
     <script>
+        window.onclick = function (event) {
+            const modal = document.getElementById('viewModal');
+            if (event.target == modal) {
+                closeViewModal();
+            }
+        }
+
         function filterTable() {
             var input = document.getElementById("searchInput");
             var filter = input.value.toLowerCase();
@@ -395,7 +403,9 @@ try {
             }
         }
 
-        function openViewModal(data) {
+    function openStudentModal(data) {
+        try {
+            console.log('Opening student modal...', data);
             document.getElementById('modalStudentName').textContent = data.name;
             document.getElementById('modalStudentID').textContent = data.id;
             document.getElementById('modalCourse').textContent = data.course;
@@ -424,7 +434,7 @@ try {
             list.innerHTML = '';
 
             docs.forEach(doc => {
-                const isSubmitted = doc.path && String(doc.path).trim();
+                const isSubmitted = doc.path && String(doc.path).trim() !== '' && String(doc.path).toLowerCase() !== 'null';
                 const iconClass = isSubmitted ? 'fa-check' : 'fa-times';
                 const colorClass = isSubmitted ? 'yes' : 'no';
                 const statusText = isSubmitted 
@@ -432,7 +442,7 @@ try {
                     : '<span style="color: #ef4444; font-size: 0.8rem; font-weight: 700;">Missing</span>';
                 
                 const viewBtn = isSubmitted 
-                    ? `<a href="javascript:void(0)" class="btn-view-doc" onclick="window.open('../../${doc.path}', '_blank')"><i class="fas fa-external-link-alt"></i> View</a>`
+                    ? `<a href="../../${doc.path}" target="_blank" class="btn-view-doc"><i class="fas fa-external-link-alt"></i> View</a>`
                     : '';
 
                 list.innerHTML += `
@@ -452,10 +462,16 @@ try {
             });
 
             document.getElementById('viewModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        } catch (err) {
+            console.error('Error opening student modal:', err);
+            alert('Could not open modal. Please check console for details.');
         }
+    }
 
         function closeViewModal() {
             document.getElementById('viewModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
         }
     </script>
 </body>

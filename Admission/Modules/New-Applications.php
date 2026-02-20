@@ -283,7 +283,7 @@ try {
                                             ];
                                         ?>
                                         <button
-                                            onclick="openViewModal(<?php echo htmlspecialchars(json_encode($appData), ENT_QUOTES, 'UTF-8'); ?>)"
+                                            onclick="openDetailModal(<?php echo htmlspecialchars(json_encode($appData), ENT_QUOTES, 'UTF-8'); ?>)"
                                             style="border: none; background: #1648bc; color: white; padding: 6px 14px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-weight: 500;">
                                             <i class="fas fa-eye" style="font-size: 0.85rem;"></i> View
                                         </button>
@@ -372,6 +372,7 @@ try {
         </div>
     </div>
 
+    <?php include '../Components/GlobalScripts.php'; ?>
     <script>
         function filterTable(inputId, tableId) {
             const input = document.getElementById(inputId);
@@ -395,22 +396,33 @@ try {
             }
         }
 
-        function openViewModal(data) {
-            document.getElementById('modalFullName').textContent = data.name;
-            document.getElementById('modalProfileName').textContent = data.name;
-            document.getElementById('modalAppId').textContent = data.no;
-            document.getElementById('modalCourse').textContent = data.course;
-            document.getElementById('modalProfileCourse').textContent = data.course;
-            document.getElementById('modalDate').textContent = data.date;
-            document.getElementById('modalEmail').textContent = data.email;
-            document.getElementById('modalContact').textContent = data.phone;
+        function openDetailModal(data) {
+            try {
+                console.log('Opening detail modal...', data);
+                if (document.getElementById('modalFullName')) document.getElementById('modalFullName').textContent = data.name;
+                if (document.getElementById('modalProfileName')) document.getElementById('modalProfileName').textContent = data.name;
+                if (document.getElementById('modalAppId')) document.getElementById('modalAppId').textContent = data.no;
+                if (document.getElementById('modalCourse')) document.getElementById('modalCourse').textContent = data.course;
+                if (document.getElementById('modalProfileCourse')) document.getElementById('modalProfileCourse').textContent = data.course;
+                if (document.getElementById('modalDate')) document.getElementById('modalDate').textContent = data.date;
+                if (document.getElementById('modalEmail')) document.getElementById('modalEmail').textContent = data.email;
+                if (document.getElementById('modalContact')) document.getElementById('modalContact').textContent = data.phone;
 
-            // Set initials for avatar
-            const initials = data.name.split(' ').map(n => n[0]).join('').toUpperCase();
-            document.getElementById('modalAvatar').textContent = initials;
+                // Set initials for avatar
+                const nameStr = (data.name || '').trim();
+                const initials = nameStr ? nameStr.split(' ').filter(n => n.length > 0).map(n => n[0]).join('').toUpperCase() : '?';
+                const avatarEl = document.getElementById('modalAvatar');
+                if (avatarEl) avatarEl.textContent = initials;
 
-            document.getElementById('viewModal').style.display = 'block';
-            document.body.style.overflow = 'hidden';
+                const modal = document.getElementById('viewModal');
+                if (modal) {
+                    modal.style.display = 'block';
+                    document.body.style.overflow = 'hidden';
+                }
+            } catch (err) {
+                console.error('Error opening detail modal:', err);
+                alert('Could not open details. Please check console.');
+            }
         }
 
         function closeViewModal() {
