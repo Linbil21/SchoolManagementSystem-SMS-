@@ -27,7 +27,7 @@ try {
             DATE(e.created_at) as submission_date,
             c.course_name as course_name
         FROM enrollments e
-        LEFT JOIN courses c ON e.course_id = c.course_id
+        LEFT JOIN courses c ON e.course_id = c.courseId
         ORDER BY e.created_at DESC
     ");
     $stmt->execute();

@@ -90,7 +90,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $course_id = $_POST['course'] ?? 1;
 
             // Fetch the actual course name from the database based on the selected ID
-            $course_stmt = $pdo->prepare("SELECT course_name FROM courses WHERE course_id = ?");
+            $course_stmt = $pdo->prepare("SELECT course_name FROM courses WHERE courseId = ?");
             $course_stmt->execute([$course_id]);
             $course_row = $course_stmt->fetch(PDO::FETCH_ASSOC);
             $full_course_name = $course_row ? $course_row['course_name'] : 'Unknown Course';
