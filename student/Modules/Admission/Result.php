@@ -6,14 +6,19 @@ $email = $_SESSION['email'] ?? '';
 $app = null;
 
 if ($email) {
-    $stmt = $pdo->prepare("SELECT * FROM admission_applications WHERE email = ? ORDER BY submission_date DESC LIMIT 1");
+    $stmt = $pdo->prepare("SELECT a.*, COALESCE(c.course_name, a.preferred_course_1) as course_display_name 
+                           FROM admission_applications a 
+                           LEFT JOIN courses c ON (a.preferred_course_1 = CAST(c.courseId AS CHAR) OR a.preferred_course_1 = c.course_name)
+                           WHERE a.email = ? 
+                           ORDER BY a.submission_date DESC 
+                           LIMIT 1");
     $stmt->execute([$email]);
     $app = $stmt->fetch();
 }
 
 $status = $app ? $app->status : 'Pending';
 $app_no = $app ? $app->application_no : 'N/A';
-$course = $app ? $app->preferred_course_1 : 'N/A';
+$course = $app ? $app->course_display_name : 'N/A';
 ?>
 <!DOCTYPE html>
 <html lang="en">

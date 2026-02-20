@@ -1122,7 +1122,8 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
             const firstName = document.querySelector('input[name="first_name"]')?.value || '';
             const midName = document.querySelector('input[name="middle_name"]')?.value || '';
             const lastName = document.querySelector('input[name="last_name"]')?.value || '';
-            const course = document.querySelector('select[name="course"]')?.value || '---';
+            const courseSelectEl = document.getElementById('courseSelect');
+            const course = (courseSelectEl && courseSelectEl.selectedIndex > 0) ? courseSelectEl.options[courseSelectEl.selectedIndex].text : '---';
             const year = document.querySelector('select[name="year_level"]')?.value || '---';
             const contact = document.querySelector('input[name="contact_number"]')?.value || '---';
             const address = document.querySelector('input[name="address"]')?.value || '---';
@@ -1161,11 +1162,21 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
             }
         }
 
-        // Listen for next button clicks to update preview
+        // Listen for next button clicks & input changes to update preview
         document.querySelectorAll('.btn-next').forEach(btn => {
-            btn.addEventListener('click', () => {
-                setTimeout(updateOfficialPreview, 100);
-            });
+            btn.addEventListener('click', () => setTimeout(updateOfficialPreview, 100));
+        });
+        
+        // Add listeners to specific inputs for real-time sync
+        document.addEventListener('change', (e) => {
+            if (['course', 'year_level'].includes(e.target.name)) {
+                updateOfficialPreview();
+            }
+        });
+        document.addEventListener('input', (e) => {
+            if (['first_name', 'last_name', 'middle_name', 'contact_number', 'address'].includes(e.target.name)) {
+                updateOfficialPreview();
+            }
         });
 
         document.querySelectorAll('.toggle-password').forEach(icon => {
