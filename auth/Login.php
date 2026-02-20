@@ -1029,35 +1029,34 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                     if (result.is_simulation) scanResults.isSimulation = true;
 
                     // Auto-fill fields if data found
-                    // Auto-fill fields if data found (Only if currently empty to avoid overwriting fetched data)
-                    const fillIfEmpty = (selector, value) => {
+                    const fillField = (selector, value) => {
                         const el = document.querySelector(selector);
-                        if (el && (!el.value || el.value === '---')) {
+                        if (el && value) {
                             el.value = value;
                         }
                     };
 
-                    if (result.first_name) fillIfEmpty('input[name="first_name"]', result.first_name);
-                    if (result.middle_name) fillIfEmpty('input[name="middle_name"]', result.middle_name);
-                    if (result.last_name) fillIfEmpty('input[name="last_name"]', result.last_name);
-                    if (result.birthdate) fillIfEmpty('input[name="birthdate"]', result.birthdate);
-                    if (result.gender) fillIfEmpty('select[name="gender"]', result.gender);
-                    if (result.contact_number) fillIfEmpty('input[name="contact_number"]', result.contact_number);
-                    if (result.address) fillIfEmpty('input[name="address"]', result.address);
+                    if (result.first_name) fillField('input[name="first_name"]', result.first_name);
+                    if (result.middle_name) fillField('input[name="middle_name"]', result.middle_name);
+                    if (result.last_name) fillField('input[name="last_name"]', result.last_name);
+                    if (result.birthdate) fillField('input[name="birthdate"]', result.birthdate);
+                    if (result.gender) fillField('select[name="gender"]', result.gender);
+                    if (result.contact_number) fillField('input[name="contact_number"]', result.contact_number);
+                    if (result.address) fillField('input[name="address"]', result.address);
 
                     // Guardian Field Autofill
                     if (result.guardian_name) {
                         const guardianParts = result.guardian_name.split(' ');
-                        fillIfEmpty('input[name="guardian_first"]', guardianParts[0] || '');
-                        fillIfEmpty('input[name="guardian_last"]', guardianParts.length > 1 ? guardianParts[guardianParts.length - 1] : '');
+                        fillField('input[name="guardian_first"]', guardianParts[0] || '');
+                        fillField('input[name="guardian_last"]', guardianParts.length > 1 ? guardianParts[guardianParts.length - 1] : '');
                     }
 
-                    if (result.guardian_contact) fillIfEmpty('input[name="guardian_contact"]', result.guardian_contact);
-                    if (result.guardian_email) fillIfEmpty('input[name="guardian_email"]', result.guardian_email);
-                    if (result.relationship) fillIfEmpty('input[name="relationship"]', result.relationship);
+                    if (result.guardian_contact) fillField('input[name="guardian_contact"]', result.guardian_contact);
+                    if (result.guardian_email) fillField('input[name="guardian_email"]', result.guardian_email);
+                    if (result.relationship) fillField('input[name="relationship"]', result.relationship);
 
                     // Sync address to guardian if not set
-                    if (result.address) fillIfEmpty('input[name="guardian_address"]', result.address);
+                    if (result.address) fillField('input[name="guardian_address"]', result.address);
 
 
                     // Update Previews

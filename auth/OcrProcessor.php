@@ -221,18 +221,21 @@ class OcrProcessor {
         $cities = ['Quezon City', 'Manila', 'Davao City', 'Cebu City', 'Zamboanga City', 'Antipolo', 'Pasig', 'Taguig', 'Cagayan de Oro', 'Parañaque'];
         $provinces = ['Metro Manila', 'Cebu', 'Davao del Sur', 'Rizal', 'Misamis Oriental', 'Cavite', 'Laguna', 'Bulacan'];
 
-        // Default to Demo Data (Lowell Jr.) for simulation transparency
-        $firstName = 'LOWELL JR.';
-        $middleName = 'ALEJAGA';
-        $lastName = 'TORIBIO';
-        $birthdate = '2001-12-01';
-        $address = 'Camalaniugan, Cagayan';
+        // Default to Demo Data for simulation transparency
+        $firstName = 'JUAN';
+        $middleName = 'DELA';
+        $lastName = 'CRUZ';
+        $birthdate = '2000-01-01';
+        $address = 'Manila, Philippines';
         $gender = 'Male';
-        $contactNumber = '09123456789';
-        $guardian = 'SHEILAH ALEJAGA';
-        $guardianContact = '09987654321';
-        $guardianEmail = 'sheilah.alejaga@example.com';
+        $contactNumber = '09' . mt_rand(100000000, 999999999);
+        $guardian = 'MARIA CRUZ';
+        $guardianContact = '09' . mt_rand(100000000, 999999999);
+        $guardianEmail = 'maria.cruz@example.com';
         $relationship = 'Mother';
+
+        // Add a simulation marker to the data if it's purely simulated
+        $recommendation = "SIMULATION MODE: Using sample data because GOOGLE_CLOUD_VISION_API_KEY is not configured in Database/config.php.";
 
         // 2. Try to parse name from filename or specific demo keywords if provided
         if (!empty($originalFilename)) {
@@ -288,7 +291,7 @@ class OcrProcessor {
             'guardian_contact' => $guardianContact,
             'guardian_email' => $guardianEmail,
             'relationship' => $relationship,
-            'recommendation' => '',
+            'recommendation' => $recommendation,
             'raw_text' => "SIMULATED DATA: PSA Birth Certificate $firstName $middleName $lastName $birthdate."
         ];
     }
@@ -309,62 +312,78 @@ class OcrProcessor {
             'is_valid' => false
         ];
 
+        // Normalize text: replace multiple spaces and newlines
+        $normalizedText = preg_replace('/\s+/', ' ', $text);
+
         // Check for Document Type
-        if (preg_match('/(PHILIPPINE STATISTICS AUTHORITY|BIRTH CERTIFICATE|CERTIFICATE OF LIVE BIRTH)/i', $text)) {
+        if (preg_match('/(PHILIPPINE STATISTICS AUTHORITY|BIRTH CERTIFICATE|CERTIFICATE OF LIVE BIRTH|OFFICE OF THE CIVIL REGISTRAR GENERAL)/i', $text)) {
             $data['document_type'] = 'PSA Birth Certificate';
             $data['is_valid'] = true;
-        } elseif (preg_match('/(FORM 137|PERMANENT RECORD|STUDENT CUMULATIVE RECORD)/i', $text)) {
-            $data['document_type'] = 'Form 137';
+        } elseif (preg_match('/(FORM 137|FORM 138|REPORT CARD|PERMANENT RECORD|STUDENT CUMULATIVE RECORD)/i', $text)) {
+            $data['document_type'] = 'School Transcript/Card';
             $data['is_valid'] = true;
         }
 
-        // If not a recognized document, lower the confidence or mark as invalid
-        if (!$data['is_valid']) {
-            $data['confidence_mod'] = 0.5; // Reduce confidence for unknown documents
-        }
-
-        // Try to find Birthdate (Format: Month Day, Year or similar)
-        if (preg_match('/(?:Date of Birth|DATE OF BIRTH|Born on)[:\s]*([A-Za-z]+ \d{1,2}, \d{4})/i', $text, $matches)) {
-            $timestamp = strtotime($matches[1]);
-            if ($timestamp) {
-                $data['birthdate'] = date('Y-m-d', $timestamp);
+        // 1. IMPROVED NAME PARSING (PSA Specific)
+        // PSA Format: 1. NAME (First) (Middle) (Last)
+        // Often OCRed as: 1. NAME (First) (Middle) (Last) JUAN LUNA DELA CRUZ
+        if (preg_match('/(?:NAME|Name)\s*\(?First\)?\s*\(?Middle\)?\s*\(?Last\)?\s*([A-Z\s,.-]{5,})/i', $normalizedText, $matches)) {
+            $fullName = trim($matches[1]);
+            $nameParts = explode(' ', $fullName);
+            if (count($nameParts) >= 3) {
+                $data['last_name'] = array_pop($nameParts);
+                $data['middle_name'] = array_pop($nameParts);
+                $data['first_name'] = implode(' ', $nameParts);
             }
         }
 
-        // Try to find Gender
-        if (preg_match('/(?:Sex|SEX)[:\s]*(Male|Female|M|F)/i', $text, $matches)) {
+        // Fallback for names if specific PSA labels are found separately
+        if (empty($data['first_name'])) {
+            if (preg_match('/(?:First Name|FIRST NAME)[:\s]*([A-Z\s.-]+)/i', $text, $matches)) {
+                $data['first_name'] = trim(explode("\n", $matches[1])[0]);
+            }
+            if (preg_match('/(?:Middle Name|MIDDLE NAME)[:\s]*([A-Z\s.-]+)/i', $text, $matches)) {
+                $data['middle_name'] = trim(explode("\n", $matches[1])[0]);
+            }
+            if (preg_match('/(?:Last Name|LAST NAME)[:\s]*([A-Z\s.-]+)/i', $text, $matches)) {
+                $data['last_name'] = trim(explode("\n", $matches[1])[0]);
+            }
+        }
+
+        // Special PSA grid fallback: capturing Name after "1. NAME"
+        if (empty($data['first_name']) && preg_match('/1\.\s+NAME\s+(?:(?:\()?First(?:\))?)?\s*(?:(?:\()?Middle(?:\))?)?\s*(?:(?:\()?Last(?:\))?)?[\s\n]+([A-Z\s]+)/i', $text, $matches)) {
+             $lines = explode("\n", trim($matches[1]));
+             if (count($lines) >= 3) {
+                 $data['first_name'] = trim($lines[0]);
+                 $data['middle_name'] = trim($lines[1]);
+                 $data['last_name'] = trim($lines[2]);
+             }
+        }
+
+        // 2. IMPROVED BIRTHDATE PARSING
+        // PSA Format usually: 3. DATE OF BIRTH Day Month Year
+        if (preg_match('/(?:Date of Birth|DATE OF BIRTH|Born on)[:\s]*([A-Za-z]+ \d{1,2}, \d{4})/i', $normalizedText, $matches)) {
+            $timestamp = strtotime($matches[1]);
+            if ($timestamp) $data['birthdate'] = date('Y-m-d', $timestamp);
+        } elseif (preg_match('/(?:Date of Birth|DATE OF BIRTH)[:\s]*(\d{1,2})\s*([A-Za-z]+)\s*(\d{4})/i', $normalizedText, $matches)) {
+            // Format: 01 December 2001
+            $dobStr = $matches[1] . ' ' . $matches[2] . ' ' . $matches[3];
+            $timestamp = strtotime($dobStr);
+            if ($timestamp) $data['birthdate'] = date('Y-m-d', $timestamp);
+        }
+
+        // 3. GENDER PARSING
+        if (preg_match('/(?:Sex|SEX)[:\s]*\s*(Female|Male|F|M)/i', $normalizedText, $matches)) {
             $val = strtoupper(trim($matches[1]));
             $data['gender'] = ($val === 'M' || $val === 'MALE') ? 'Male' : 'Female';
         }
 
-        // Try to find Names (More robust parsing)
-        if (preg_match('/(?:First Name|FIRST NAME)[:\s]*([A-Z\s.-]+)/i', $text, $matches)) {
-            $data['first_name'] = trim(explode("\n", $matches[1])[0]);
-        }
-        if (preg_match('/(?:Middle Name|MIDDLE NAME)[:\s]*([A-Z\s.-]+)/i', $text, $matches)) {
-            $data['middle_name'] = trim(explode("\n", $matches[1])[0]);
-        }
-        if (preg_match('/(?:Last Name|LAST NAME)[:\s]*([A-Z\s.-]+)/i', $text, $matches)) {
-            $data['last_name'] = trim(explode("\n", $matches[1])[0]);
+        // If not a recognized document, lower the confidence
+        if (!$data['is_valid']) {
+            $data['confidence_mod'] = 0.5;
         }
 
-        // Fallback name detection if specific labels aren't found
-        if (empty($data['first_name']) && preg_match('/NAME OF CHILD[:\s]*([A-Z\s,]+)/i', $text, $matches)) {
-             $nameParts = explode(',', $matches[1]);
-             if (count($nameParts) >= 2) {
-                 $data['last_name'] = trim($nameParts[0]);
-                 $data['first_name'] = trim($nameParts[1]);
-             }
-        }
-
-        // Try to find Guardian (Father/Mother on Birth Cert)
-        if (preg_match('/(?:Father|FATHER|Mother|MOTHER)[:\s]*([A-Z\s,]+)/i', $text, $matches)) {
-            $data['guardian_name'] = trim(explode("\n", $matches[1])[0]);
-        }
-
-        // SIMPLE RECOMMENDATION REMOVED AS REQUESTED BY USER
         $data['recommendation'] = ""; 
-
         return $data;
     }
 }
