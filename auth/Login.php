@@ -1470,10 +1470,11 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                 confirmButtonText: 'Got it',
                 confirmButtonColor: '#1e40af',
                 width: '420px',
+                padding: '2em'
+            });
+        });
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        // ... rest of the code ...
     <?php endif; ?>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
