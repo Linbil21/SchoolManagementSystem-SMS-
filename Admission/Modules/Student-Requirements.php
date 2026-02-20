@@ -195,9 +195,13 @@ try {
             position: relative;
         }
 
-        .req-item:hover {
+        .req-item.clickable {
+            cursor: pointer;
+        }
+
+        .req-item.clickable:hover {
             border-color: #1648bc;
-            background: #fcfdfe;
+            background: #f8faff;
             transform: translateY(-3px);
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
         }
@@ -245,10 +249,10 @@ try {
             cursor: pointer;
         }
 
-        .btn-view-doc:hover {
-            background: #1648bc;
-            color: white;
-            box-shadow: 0 4px 10px rgba(22, 72, 188, 0.2);
+        .req-item.active {
+            border-color: #1648bc;
+            background: #eef2ff;
+            border-width: 2px;
         }
     </style>
 </head>
@@ -444,21 +448,17 @@ try {
                     ? `<span style="color: #16a34a; font-size: 0.8rem; font-weight: 700;">Submitted</span>` 
                     : `<span style="color: #ef4444; font-size: 0.8rem; font-weight: 700;">Missing</span>`;
                 
-                const viewBtn = isSubmitted 
-                    ? `<button onclick="previewDocument('../../${doc.path}')" class="btn-view-doc"><i class="fas fa-eye"></i> View</button>`
-                    : '';
+                const clickAttr = isSubmitted ? `onclick="previewDocument('../../${doc.path}', this)"` : '';
+                const clickableClass = isSubmitted ? 'clickable' : '';
 
                 list.innerHTML += `
-                    <div class="req-item">
+                    <div class="req-item ${clickableClass}" ${clickAttr}>
                         <div class="req-icon ${colorClass}">
                             <i class="fas ${iconClass}"></i>
                         </div>
                         <div style="flex: 1; min-width: 0;">
                             <div style="font-weight: 700; font-size: 0.85rem; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${doc.title}</div>
                             ${statusText}
-                        </div>
-                        <div>
-                            ${viewBtn}
                         </div>
                     </div>
                 `;
@@ -476,7 +476,11 @@ try {
         }
     }
 
-    function previewDocument(path) {
+    function previewDocument(path, el) {
+        // Visual Feedback
+        document.querySelectorAll('.req-item').forEach(i => i.classList.remove('active'));
+        if(el) el.classList.add('active');
+
         const previewArea = document.getElementById('modalPreviewArea');
         const previewContent = document.getElementById('previewContent');
         

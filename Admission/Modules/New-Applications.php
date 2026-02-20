@@ -204,8 +204,14 @@ try {
         .document-preview:hover {
             border-color: #1648bc;
             transform: translateY(-3px);
-            background: #fcfdfe;
+            background: #f8faff;
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+        }
+
+        .document-preview.active {
+            border-color: #1648bc;
+            background: #eef2ff;
+            border-width: 2px;
         }
 
         #modalDocumentContainer {
@@ -447,16 +453,13 @@ try {
 
                 sampleDocs.forEach(doc => {
                     docContainer.innerHTML += `
-                        <div class="document-preview">
-                            <div style="display: flex; align-items: center; gap: 15px;">
+                        <div class="document-preview" onclick="previewDocument('dummy_path_logic', this)" style="cursor: pointer;">
+                            <div style="display: flex; align-items: center; gap: 15px; pointer-events: none;">
                                 <div style="width: 40px; height: 40px; background: #f8fafc; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: ${doc.color};">
                                     <i class="fas ${doc.icon}"></i>
                                 </div>
                                 <span style="font-size: 0.85rem; font-weight: 700; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 130px;">${doc.title}</span>
                             </div>
-                            <button onclick="previewDocument('dummy_path_logic')" style="border: none; background: #eef2ff; color: #1648bc; padding: 6px 12px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 0.75rem;">
-                                <i class="fas fa-eye"></i> View
-                            </button>
                         </div>
                     `;
                 });
@@ -476,7 +479,11 @@ try {
             }
         }
 
-        function previewDocument(path) {
+        function previewDocument(path, el) {
+            // Visual Feedback
+            document.querySelectorAll('.document-preview').forEach(i => i.classList.remove('active'));
+            if(el) el.classList.add('active');
+
             const previewArea = document.getElementById('modalPreviewArea');
             const previewContent = document.getElementById('previewContent');
             previewArea.style.display = 'block';

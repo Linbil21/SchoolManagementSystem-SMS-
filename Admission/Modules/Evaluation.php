@@ -685,7 +685,7 @@ $approved_today = $pdo->query("SELECT COUNT(*) FROM admission_applications WHERE
                     item.className = 'doc-item';
                     const fullPath = '../../' + doc.path;
                     item.innerHTML = `
-                        <div style="display: flex; align-items: center; gap: 12px;">
+                        <div style="display: flex; align-items: center; gap: 12px; pointer-events: none;">
                             <div style="width: 40px; height: 40px; background: ${doc.color}; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: ${doc.text};">
                                 <i class="fas ${doc.icon}"></i>
                             </div>
@@ -693,10 +693,8 @@ $approved_today = $pdo->query("SELECT COUNT(*) FROM admission_applications WHERE
                                 <p style="font-weight: 700; font-size: 0.8rem; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px;">${doc.name}</p>
                             </div>
                         </div>
-                        <button onclick="previewDoc('${fullPath}', this)" style="border: none; background: #eef2ff; color: #1648bc; padding: 6px 12px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 0.7rem;">
-                            View
-                        </button>
                     `;
+                    item.onclick = function() { previewDoc(fullPath, this); };
                     list.appendChild(item);
                 }
             });
