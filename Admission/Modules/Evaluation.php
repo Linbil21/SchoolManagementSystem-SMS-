@@ -37,6 +37,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 $total = $tuition + $misc;
                 $ref_code = "";
 
+                // Map course name to ID
+                $c_stmt = $pdo->prepare("SELECT courseId FROM courses WHERE course_name = ?");
+                $c_stmt->execute([$app->preferred_course_1]);
+                $course_res = $c_stmt->fetch();
+                $course_id = $course_res ? $course_res->courseId : NULL;
+
                 // Check if already enrolled to avoid duplicate email error
                 $stmt = $pdo->prepare("SELECT enrollmentId, reference_code FROM enrollments WHERE email = ?");
                 $stmt->execute([$app->email]);
@@ -46,24 +52,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     // Update existing
                     $ref_code = $existing_enr->reference_code;
                     $sql = "UPDATE enrollments SET 
+                            course_id = ?,
                             tuition_fee = ?, 
                             misc_fee = ?, 
                             total_fee = ?, 
                             balance = ?,
                             status = 'Pending Payment'
                             WHERE enrollmentId = ?";
-                    $pdo->prepare($sql)->execute([$tuition, $misc, $total, $total, $existing_enr->enrollmentId]);
+                    $pdo->prepare($sql)->execute([$course_id, $tuition, $misc, $total, $total, $existing_enr->enrollmentId]);
                     $message = "Application #{$app->application_no} approved. Assessment updated. Status set to Pending Payment. Student can now proceed to Cashier.";
                 } else {
                     // Insert new
                     $ref_code = "ENR-" . date('Y') . "-" . strtoupper(substr(md5(uniqid()), 0, 6));
-                    $sql = "INSERT INTO enrollments (reference_code, admission_type, first_name, last_name, email, year_level, status, tuition_fee, misc_fee, total_fee, balance) 
-                            VALUES (?, ?, ?, ?, ?, 'First Year', 'Pending Payment', ?, ?, ?, ?)";
+                    $sql = "INSERT INTO enrollments (reference_code, admission_type, course_id, first_name, last_name, gender, birthdate, contact_number, email, year_level, status, tuition_fee, misc_fee, total_fee, balance) 
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'First Year', 'Pending Payment', ?, ?, ?, ?)";
                     $pdo->prepare($sql)->execute([
                         $ref_code, 
                         $app->student_type, 
+                        $course_id,
                         $app->first_name, 
                         $app->last_name, 
+                        $app->gender,
+                        $app->date_of_birth,
+                        $app->phone_number,
                         $app->email,
                         $tuition,
                         $misc,

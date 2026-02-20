@@ -1,8 +1,6 @@
 <?php
 session_start();
-header("Location: Result.php");
-exit();
-?>
+require_once '../../../Database/config.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     try {
@@ -40,6 +38,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $message = "Error: " . $e->getMessage();
         $status = "error";
     }
+}
+
+// Fetch available courses
+$courses = [];
+try {
+    $stmt = $pdo->query("SELECT course_name FROM courses ORDER BY course_name ASC");
+    $courses = $stmt->fetchAll(PDO::FETCH_COLUMN);
+} catch (PDOException $e) {
+    // Silently fail or use hardcoded if DB fails
+    $courses = ['BS Information Technology', 'BS Computer Science', 'BS Accountancy', 'BS Civil Engineering'];
 }
 ?>
 <!DOCTYPE html>
@@ -258,20 +266,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             <label class="form-label">Preferred Course (1st Choice)</label>
                             <select name="course1" class="form-select" required>
                                 <option value="">Select Course</option>
-                                <option>BS Information Technology</option>
-                                <option>BS Computer Science</option>
-                                <option>BS Accountancy</option>
-                                <option>BS Civil Engineering</option>
+                                <?php foreach ($courses as $course): ?>
+                                    <option><?php echo htmlspecialchars($course); ?></option>
+                                <?php endforeach; ?>
                             </select>
                         </div>
                         <div class="form-group">
                             <label class="form-label">Preferred Course (2nd Choice)</label>
                             <select name="course2" class="form-select">
                                 <option value="">Select Course</option>
-                                <option>BS Information Technology</option>
-                                <option>BS Computer Science</option>
-                                <option>BS Accountancy</option>
-                                <option>BS Civil Engineering</option>
+                                <?php foreach ($courses as $course): ?>
+                                    <option><?php echo htmlspecialchars($course); ?></option>
+                                <?php endforeach; ?>
                             </select>
                         </div>
                         <div class="form-group">
