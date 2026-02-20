@@ -248,8 +248,10 @@ try {
         }
 
         .student-modal-body { 
-            padding: 32px; max-height: 70vh; overflow-y: auto;
+            padding: 32px; max-height: 70vh; overflow-y: auto; overflow-x: hidden;
+            scrollbar-width: none;
         }
+        .student-modal-body::-webkit-scrollbar { display: none; }
 
         .student-modal-footer { 
             padding: 20px 32px; border-top: 1px solid #edf2f7; display: flex; justify-content: flex-end; background: #f8fafc; 

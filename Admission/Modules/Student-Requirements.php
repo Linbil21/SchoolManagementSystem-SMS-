@@ -122,7 +122,13 @@ try {
         }
 
         .student-modal-body { 
-            padding: 32px; max-height: 70vh; overflow-y: auto;
+            padding: 32px; max-height: 70vh; overflow-y: auto; overflow-x: hidden;
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE and Edge */
+        }
+
+        .student-modal-body::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Opera */
         }
 
         .student-modal-footer { 

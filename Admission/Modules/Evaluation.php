@@ -307,15 +307,21 @@ $approved_today = $pdo->query("SELECT COUNT(*) FROM admission_applications WHERE
             border-right: 1px solid #edf2f7;
             background: #fcfdfe;
             overflow-y: auto;
+            overflow-x: hidden;
             max-height: 75vh;
+            scrollbar-width: none;
         }
+        .eval-left-panel::-webkit-scrollbar { display: none; }
 
         .eval-right-panel {
             padding: 25px;
             background: white;
             overflow-y: auto;
+            overflow-x: hidden;
             max-height: 75vh;
+            scrollbar-width: none;
         }
+        .eval-right-panel::-webkit-scrollbar { display: none; }
 
         .doc-item {
             background: white;
@@ -411,6 +417,12 @@ $approved_today = $pdo->query("SELECT COUNT(*) FROM admission_applications WHERE
         .modal-body {
             padding: 32px;
         }
+
+        .student-modal-body { 
+            padding: 32px; max-height: 70vh; overflow-y: auto; overflow-x: hidden;
+            scrollbar-width: none;
+        }
+        .student-modal-body::-webkit-scrollbar { display: none; }
 
         .modal-footer {
             padding: 24px 32px;
