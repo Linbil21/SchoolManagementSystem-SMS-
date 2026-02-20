@@ -301,24 +301,29 @@ try {
                                         </span>
                                     </td>
                                     <td>
-                                        <button class="btn-view" onclick="openViewModal({
-                                            name: '<?php echo addslashes($student->first_name . ' ' . $student->last_name); ?>',
-                                            id: '<?php echo $student->student_id; ?>',
-                                            course: '<?php echo addslashes($student->course_name ?? 'N/A'); ?>',
-                                            avatar: '<?php echo $student->id_picture; ?>',
-                                            docs: {
-                                                id_pic: '<?php echo $student->id_picture; ?>',
-                                                psa: '<?php echo $student->birth_cert; ?>',
-                                                f138: '<?php echo $student->form_138; ?>',
-                                                f137: '<?php echo $student->form_137; ?>',
-                                                moral: '<?php echo $student->good_moral; ?>',
-                                                brgy: '<?php echo $student->barangay_clearance; ?>'
-                                            },
-                                            guardian: {
-                                                name: '<?php echo addslashes(($student->guardian_first ?? '') . ' ' . ($student->guardian_last ?? '')); ?>',
-                                                contact: '<?php echo addslashes($student->guardian_contact ?? ''); ?>'
-                                            }
-                                        })"><i class="fas fa-eye"></i> View</button>
+                                        <?php 
+                                            $studentData = [
+                                                'name' => $student->first_name . ' ' . $student->last_name,
+                                                'id' => $student->student_id,
+                                                'course' => $student->course_name ?? 'N/A',
+                                                'avatar' => $student->id_picture,
+                                                'docs' => [
+                                                    'id_pic' => $student->id_picture,
+                                                    'psa' => $student->birth_cert,
+                                                    'f138' => $student->form_138,
+                                                    'f137' => $student->form_137,
+                                                    'moral' => $student->good_moral,
+                                                    'brgy' => $student->barangay_clearance
+                                                ],
+                                                'guardian' => [
+                                                    'name' => ($student->guardian_first ?? '') . ' ' . ($student->guardian_last ?? ''),
+                                                    'contact' => $student->guardian_contact ?? ''
+                                                ]
+                                            ];
+                                        ?>
+                                        <button class="btn-view" onclick='openViewModal(<?php echo htmlspecialchars(json_encode($studentData), ENT_QUOTES, "UTF-8"); ?>)'>
+                                            <i class="fas fa-eye"></i> View
+                                        </button>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>

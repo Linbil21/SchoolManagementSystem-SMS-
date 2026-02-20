@@ -272,17 +272,20 @@ try {
                                         </span>
                                     </td>
                                     <td>
+                                        <?php 
+                                            $appData = [
+                                                'name' => $app->first_name . ' ' . $app->last_name,
+                                                'no' => $app->application_no,
+                                                'course' => $app->course_display_name,
+                                                'date' => date('Y-m-d', strtotime($app->submission_date)),
+                                                'email' => $app->email,
+                                                'phone' => $app->phone_number
+                                            ];
+                                        ?>
                                         <button
-                                            onclick="openViewModal(
-                                                '<?php echo addslashes($app->first_name . ' ' . $app->last_name); ?>', 
-                                                '<?php echo addslashes($app->application_no); ?>', 
-                                                '<?php echo addslashes($app->course_display_name); ?>', 
-                                                '<?php echo date('Y-m-d', strtotime($app->submission_date)); ?>',
-                                                '<?php echo addslashes($app->email); ?>',
-                                                '<?php echo addslashes($app->phone_number); ?>'
-                                            )"
-                                            style="border: none; background: #1648bc; color: white; padding: 6px 12px; border-radius: 6px; cursor: pointer;">
-                                            View
+                                            onclick='openViewModal(<?php echo htmlspecialchars(json_encode($appData), ENT_QUOTES, "UTF-8"); ?>)'
+                                            style="border: none; background: #1648bc; color: white; padding: 6px 14px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-weight: 500;">
+                                            <i class="fas fa-eye" style="font-size: 0.85rem;"></i> View
                                         </button>
                                     </td>
                                 </tr>
@@ -392,18 +395,18 @@ try {
             }
         }
 
-        function openViewModal(name, id, course, date, email, contact) {
-            document.getElementById('modalFullName').textContent = name;
-            document.getElementById('modalProfileName').textContent = name;
-            document.getElementById('modalAppId').textContent = id;
-            document.getElementById('modalCourse').textContent = course;
-            document.getElementById('modalProfileCourse').textContent = course;
-            document.getElementById('modalDate').textContent = date;
-            document.getElementById('modalEmail').textContent = email;
-            document.getElementById('modalContact').textContent = contact;
+        function openViewModal(data) {
+            document.getElementById('modalFullName').textContent = data.name;
+            document.getElementById('modalProfileName').textContent = data.name;
+            document.getElementById('modalAppId').textContent = data.no;
+            document.getElementById('modalCourse').textContent = data.course;
+            document.getElementById('modalProfileCourse').textContent = data.course;
+            document.getElementById('modalDate').textContent = data.date;
+            document.getElementById('modalEmail').textContent = data.email;
+            document.getElementById('modalContact').textContent = data.phone;
 
             // Set initials for avatar
-            const initials = name.split(' ').map(n => n[0]).join('').toUpperCase();
+            const initials = data.name.split(' ').map(n => n[0]).join('').toUpperCase();
             document.getElementById('modalAvatar').textContent = initials;
 
             document.getElementById('viewModal').style.display = 'block';
