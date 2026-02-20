@@ -278,6 +278,49 @@ $approved_today = $pdo->query("SELECT COUNT(*) FROM admission_applications WHERE
             transform: translateY(-2px);
         }
 
+        /* Robust Modal Styles */
+        .eval-modal-overlay { 
+            position: fixed !important; top: 0 !important; left: 0 !important; 
+            width: 100vw !important; height: 100vh !important; 
+            background: rgba(15, 23, 42, 0.85) !important; 
+            display: none; align-items: center; justify-content: center; 
+            z-index: 999999 !important; backdrop-filter: blur(8px) !important; 
+            padding: 20px; opacity: 1 !important; visibility: visible !important;
+        }
+
+        .eval-modal-content { 
+            background: white !important; width: 100%; max-width: 600px; 
+            border-radius: 28px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); 
+            overflow: hidden; position: relative; z-index: 1000000 !important;
+        }
+
+        .eval-modal-header { 
+            padding: 24px 32px; border-bottom: 1px solid #edf2f7; 
+            display: flex; justify-content: space-between; align-items: center; 
+            background: #f8fafc; 
+        }
+
+        .eval-modal-body { 
+            padding: 32px; max-height: 70vh; overflow-y: auto;
+        }
+
+        .eval-modal-footer { 
+            padding: 20px 32px; border-top: 1px solid #edf2f7; display: flex; justify-content: flex-end; background: #f8fafc; gap: 12px;
+        }
+
+        .doc-item {
+            background: #f8fafc;
+            padding: 16px;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            transition: 0.2s;
+        }
+        .doc-item:hover { border-color: var(--primary-blue); background: #ffffff; }
+
         /* Premium Modal Styles */
         .modal {
             display: none;
@@ -338,23 +381,6 @@ $approved_today = $pdo->query("SELECT COUNT(*) FROM admission_applications WHERE
             gap: 16px;
         }
 
-        .doc-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 16px;
-            background: #f8fafc;
-            border: 1px solid #f1f5f9;
-            border-radius: 16px;
-            margin-bottom: 12px;
-            transition: 0.2s;
-        }
-
-        .doc-item:hover {
-            border-color: var(--primary-blue);
-            background: #fff;
-        }
-
         .status-pill {
             padding: 4px 12px;
             border-radius: 20px;
@@ -374,6 +400,53 @@ $approved_today = $pdo->query("SELECT COUNT(*) FROM admission_applications WHERE
 </head>
 
 <body>
+    <!-- Review Modal -->
+    <div id="reviewModal" class="eval-modal-overlay">
+        <div class="eval-modal-content">
+            <div class="eval-modal-header">
+                <div>
+                    <h2 id="modalStudentName" style="font-weight: 800; color: #1e293b; font-size: 1.4rem;">Student Name</h2>
+                    <p id="modalStudentCourse" style="color: #64748b; font-size: 0.85rem;">Course Title</p>
+                </div>
+                <button onclick="closeReviewModal()"
+                    style="background: #f1f5f9; border: none; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; color: #64748b;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="eval-modal-body">
+                <div style="margin-bottom: 30px;">
+                    <h4
+                        style="color: #1e293b; font-size: 0.9rem; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-file-alt" style="color: var(--primary-blue);"></i> Submitted Documents
+                    </h4>
+                    <div id="modalDocList">
+                    </div>
+                </div>
+
+                <form id="evaluationForm" method="POST">
+                    <input type="hidden" name="action" value="submit_evaluation">
+                    <input type="hidden" name="application_id" id="modalAppId">
+                    <div>
+                        <h4 style="color: #1e293b; font-size: 0.9rem; font-weight: 700; margin-bottom: 12px;">Evaluation Status & Notes</h4>
+                        <select name="status" id="modalEvalStatus"
+                            style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 16px; outline: none; font-family: inherit;">
+                            <option value="Approved">Accept Documents & Verify For Payment</option>
+                            <option value="Processing">Pre-verify & Keep Processing</option>
+                            <option value="Rejected">Reject Application (Incomplete/Invalid)</option>
+                        </select>
+                        <textarea name="notes" placeholder="Add internal notes for this evaluation..."
+                            style="width: 100%; height: 120px; padding: 16px; border-radius: 16px; border: 1px solid #e2e8f0; outline: none; resize: none; font-family: inherit; font-size: 0.9rem; color: #475569;"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="eval-modal-footer">
+                <button onclick="closeReviewModal()"
+                    style="padding: 12px 24px; border-radius: 12px; border: 1px solid #e2e8f0; background: white; color: #475569; font-weight: 600; cursor: pointer;">Cancel</button>
+                <button onclick="saveEvaluation()"
+                    style="padding: 12px 28px; border-radius: 12px; background: var(--primary-blue); color: white; border: none; font-weight: 600; cursor: pointer; box-shadow: 0 4px 6px -1px rgba(22, 72, 188, 0.2);">Confirm & Save</button>
+            </div>
+        </div>
+    </div>
     <?php include '../Components/Sidebar.php'; ?>
     <div class="main-wrapper">
         <?php include '../Components/header.php'; ?>
@@ -497,57 +570,6 @@ $approved_today = $pdo->query("SELECT COUNT(*) FROM admission_applications WHERE
             </div>
         </div>
     </div>
-    <!-- Review Modal -->
-    <div id="reviewModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <div>
-                    <h2 id="modalStudentName" style="font-weight: 800; color: #1e293b; font-size: 1.4rem;">Alice Johnson
-                    </h2>
-                    <p id="modalStudentCourse" style="color: #64748b; font-size: 0.85rem;">Bachelor of Science in
-                        Engineering</p>
-                </div>
-                <button onclick="closeReviewModal()"
-                    style="background: #f1f5f9; border: none; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; color: #64748b;">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div style="margin-bottom: 30px;">
-                    <h4
-                        style="color: #1e293b; font-size: 0.9rem; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
-                        <i class="fas fa-file-alt" style="color: var(--primary-blue);"></i> Submitted Documents
-                    </h4>
-
-                    <div id="modalDocList">
-                        <!-- Dynamic Docs Go Here -->
-                    </div>
-                </div>
-
-                <form id="evaluationForm" method="POST">
-                    <input type="hidden" name="action" value="submit_evaluation">
-                    <input type="hidden" name="application_id" id="modalAppId">
-                    <div>
-                        <h4 style="color: #1e293b; font-size: 0.9rem; font-weight: 700; margin-bottom: 12px;">Evaluation Status & Notes</h4>
-                        <select name="status" id="modalEvalStatus"
-                            style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 16px; outline: none; font-family: inherit;">
-                            <option value="Approved">Accept Documents & Verify For Payment</option>
-                            <option value="Processing">Pre-verify & Keep Processing</option>
-                            <option value="Rejected">Reject Application (Incomplete/Invalid)</option>
-                        </select>
-                        <textarea name="notes" placeholder="Add internal notes for this evaluation..."
-                            style="width: 100%; height: 120px; padding: 16px; border-radius: 16px; border: 1px solid #e2e8f0; outline: none; resize: none; font-family: inherit; font-size: 0.9rem; color: #475569;"></textarea>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button onclick="closeReviewModal()"
-                    style="padding: 12px 24px; border-radius: 12px; border: 1px solid #e2e8f0; background: white; color: #475569; font-weight: 600; cursor: pointer; transition: 0.2s;">Cancel</button>
-                <button onclick="saveEvaluation()"
-                    style="padding: 12px 28px; border-radius: 12px; background: var(--primary-blue); color: white; border: none; font-weight: 600; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 6px -1px rgba(22, 72, 188, 0.2);">Confirm & Save</button>
-            </div>
-        </div>
-    </div>
 
     <script>
         function filterTable(inputId, tableId) {
@@ -621,8 +643,11 @@ $approved_today = $pdo->query("SELECT COUNT(*) FROM admission_applications WHERE
                 list.innerHTML = '<div style="text-align: center; padding: 20px; color: #94a3b8; font-size: 0.9rem;">No documents uploaded.</div>';
             }
 
-            document.getElementById('reviewModal').style.display = 'block';
-            document.body.style.overflow = 'hidden';
+            const modal = document.getElementById('reviewModal');
+            if (modal) {
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }
         }
 
         function closeReviewModal() {

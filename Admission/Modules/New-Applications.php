@@ -181,47 +181,117 @@ try {
             margin-bottom: 10px;
         }
 
-        /* Profile Box Styles */
-        .modal-profile-box {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-            background: linear-gradient(to bottom, #f8fafc, #ffffff);
-            border-radius: 20px;
-            margin-bottom: 30px;
-            border: 1px solid #edf2f7;
+        /* Robust Modal Styles */
+        .student-modal-overlay { 
+            position: fixed !important; top: 0 !important; left: 0 !important; 
+            width: 100vw !important; height: 100vh !important; 
+            background: rgba(15, 23, 42, 0.85) !important; 
+            display: none; align-items: center; justify-content: center; 
+            z-index: 999999 !important; backdrop-filter: blur(8px) !important; 
+            padding: 20px; opacity: 1 !important; visibility: visible !important;
         }
 
-        .modal-avatar {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            background: #eef2ff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 2.5rem;
-            color: var(--primary-blue);
-            margin-bottom: 15px;
-            border: 4px solid white;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        .student-modal-content { 
+            background: white !important; width: 100%; max-width: 550px; 
+            border-radius: 28px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); 
+            overflow: hidden; position: relative; z-index: 1000000 !important;
         }
 
-        .modal-profile-box h3 {
-            font-size: 1.4rem;
-            font-weight: 800;
-            color: #1e293b;
+        .student-modal-header { 
+            padding: 24px 32px; border-bottom: 1px solid #edf2f7; 
+            display: flex; justify-content: space-between; align-items: center; 
+            background: #f8fafc; 
         }
 
-        .modal-profile-box p {
-            color: #64748b;
-            font-size: 0.9rem;
+        .student-btn-close { 
+            width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
+            background: #f1f5f9; border: none; border-radius: 12px; color: #64748b; cursor: pointer;
+        }
+
+        .student-modal-body { 
+            padding: 32px; max-height: 70vh; overflow-y: auto;
+        }
+
+        .student-modal-footer { 
+            padding: 20px 32px; border-top: 1px solid #edf2f7; display: flex; justify-content: flex-end; background: #f8fafc; 
         }
     </style>
 </head>
 
 <body>
+    <!-- View Modal -->
+    <div id="viewModal" class="student-modal-overlay">
+        <div class="student-modal-content">
+            <div class="student-modal-header">
+                <h2 style="font-weight: 800; color: #1e293b;">Application Details</h2>
+                <button class="student-btn-close" onclick="closeViewModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="student-modal-body">
+                <div class="modal-profile-box">
+                    <div class="modal-avatar" id="modalAvatar">JD</div>
+                    <h3 id="modalProfileName">John Doe</h3>
+                    <p id="modalProfileCourse">BS Information Technology</p>
+                </div>
+
+                <div class="info-grid">
+                    <div class="info-item">
+                        <label>Application ID</label>
+                        <p id="modalAppId">#APP-2024-001</p>
+                    </div>
+                    <div class="info-item">
+                        <label>Full Name</label>
+                        <p id="modalFullName">John Doe</p>
+                    </div>
+                    <div class="info-item">
+                        <label>Applied Course</label>
+                        <p id="modalCourse">BS Information Technology</p>
+                    </div>
+                    <div class="info-item">
+                        <label>Submission Date</label>
+                        <p id="modalDate">2024-01-10</p>
+                    </div>
+                    <div class="info-item">
+                        <label>Email Address</label>
+                        <p id="modalEmail">john.doe@example.com</p>
+                    </div>
+                    <div class="info-item">
+                        <label>Contact Number</label>
+                        <p id="modalContact">+63 912 345 6789</p>
+                    </div>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <h3 style="font-size: 1rem; font-weight: 700; color: #1e293b; margin-bottom: 15px;">Attached
+                        Documents</h3>
+                    <div class="document-preview">
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <i class="fas fa-file-pdf" style="color: #ef4444; font-size: 1.5rem;"></i>
+                            <span style="font-size: 0.9rem; font-weight: 600;">Form 138 (Grade 12 Report Card)</span>
+                        </div>
+                        <button
+                            style="border: none; background: transparent; color: #1648bc; font-weight: 600; cursor: pointer;"><i
+                                class="fas fa-eye"></i> View</button>
+                    </div>
+                    <div class="document-preview">
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <i class="fas fa-file-pdf" style="color: #ef4444; font-size: 1.5rem;"></i>
+                            <span style="font-size: 0.9rem; font-weight: 600;">Good Moral Certificate</span>
+                        </div>
+                        <button
+                            style="border: none; background: transparent; color: #1648bc; font-weight: 600; cursor: pointer;"><i
+                                class="fas fa-eye"></i> View</button>
+                    </div>
+                </div>
+            </div>
+            <div class="student-modal-footer">
+                <button onclick="closeViewModal()"
+                    style="padding: 10px 20px; border-radius: 10px; border: 1px solid #e2e8f0; background: white; font-weight: 600; cursor: pointer;">Close</button>
+                <button onclick="proceedToEval()"
+                    style="padding: 10px 25px; border-radius: 10px; background: #1648bc; color: white; border: none; font-weight: 600; cursor: pointer;">Proceed
+                    to Evaluation</button>
+            </div>
+        </div>
+    </div>
     <?php include '../Components/Sidebar.php'; ?>
     <div class="main-wrapper">
         <?php include '../Components/header.php'; ?>
@@ -297,80 +367,6 @@ try {
         </div>
     </div>
     <!-- View Application Modal -->
-    <div id="viewModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 style="font-weight: 800; color: #1e293b;">Application Details</h2>
-                <button onclick="closeViewModal()"
-                    style="background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #64748b;"><i
-                        class="fas fa-times"></i></button>
-            </div>
-            <div class="modal-body">
-                <div class="modal-profile-box">
-                    <div class="modal-avatar" id="modalAvatar">JD</div>
-                    <h3 id="modalProfileName">John Doe</h3>
-                    <p id="modalProfileCourse">BS Information Technology</p>
-                </div>
-
-                <div class="info-grid">
-                    <div class="info-item">
-                        <label>Application ID</label>
-                        <p id="modalAppId">#APP-2024-001</p>
-                    </div>
-                    <div class="info-item">
-                        <label>Full Name</label>
-                        <p id="modalFullName">John Doe</p>
-                    </div>
-                    <div class="info-item">
-                        <label>Applied Course</label>
-                        <p id="modalCourse">BS Information Technology</p>
-                    </div>
-                    <div class="info-item">
-                        <label>Submission Date</label>
-                        <p id="modalDate">2024-01-10</p>
-                    </div>
-                    <div class="info-item">
-                        <label>Email Address</label>
-                        <p id="modalEmail">john.doe@example.com</p>
-                    </div>
-                    <div class="info-item">
-                        <label>Contact Number</label>
-                        <p id="modalContact">+63 912 345 6789</p>
-                    </div>
-                </div>
-
-                <div style="margin-top: 30px;">
-                    <h3 style="font-size: 1rem; font-weight: 700; color: #1e293b; margin-bottom: 15px;">Attached
-                        Documents</h3>
-                    <div class="document-preview">
-                        <div style="display: flex; align-items: center; gap: 15px;">
-                            <i class="fas fa-file-pdf" style="color: #ef4444; font-size: 1.5rem;"></i>
-                            <span style="font-size: 0.9rem; font-weight: 600;">Form 138 (Grade 12 Report Card)</span>
-                        </div>
-                        <button
-                            style="border: none; background: transparent; color: #1648bc; font-weight: 600; cursor: pointer;"><i
-                                class="fas fa-eye"></i> View</button>
-                    </div>
-                    <div class="document-preview">
-                        <div style="display: flex; align-items: center; gap: 15px;">
-                            <i class="fas fa-file-pdf" style="color: #ef4444; font-size: 1.5rem;"></i>
-                            <span style="font-size: 0.9rem; font-weight: 600;">Good Moral Certificate</span>
-                        </div>
-                        <button
-                            style="border: none; background: transparent; color: #1648bc; font-weight: 600; cursor: pointer;"><i
-                                class="fas fa-eye"></i> View</button>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button onclick="closeViewModal()"
-                    style="padding: 10px 20px; border-radius: 10px; border: 1px solid #e2e8f0; background: white; font-weight: 600; cursor: pointer;">Close</button>
-                <button onclick="proceedToEval()"
-                    style="padding: 10px 25px; border-radius: 10px; background: #1648bc; color: white; border: none; font-weight: 600; cursor: pointer;">Proceed
-                    to Evaluation</button>
-            </div>
-        </div>
-    </div>
 
     <?php include '../Components/GlobalScripts.php'; ?>
     <script>

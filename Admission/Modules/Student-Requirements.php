@@ -78,40 +78,36 @@ try {
         .btn-view { background: #1648bc; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; transition: 0.2s; }
         .btn-view:hover { background: #1e3a8a; }
 
-        /* Premium Modal Styles */
-        .modal-overlay { 
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%; 
-            background: rgba(15, 23, 42, 0.82) !important; 
+        /* Robust Modal Styles */
+        .student-modal-overlay { 
+            position: fixed !important; 
+            top: 0 !important; 
+            left: 0 !important; 
+            width: 100vw !important; 
+            height: 100vh !important; 
+            background: rgba(15, 23, 42, 0.85) !important; 
             display: none; 
             align-items: center; 
             justify-content: center; 
-            z-index: 9999; 
-            backdrop-filter: blur(12px) !important; 
+            z-index: 999999 !important; 
+            backdrop-filter: blur(8px) !important; 
             padding: 20px;
+            opacity: 1 !important;
+            visibility: visible !important;
         }
 
-        .modal-content { 
-            background: white; 
+        .student-modal-content { 
+            background: white !important; 
             width: 100%;
             max-width: 550px; 
             border-radius: 28px; 
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); 
             overflow: hidden; 
-            animation: modalPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
             position: relative;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            z-index: 1000000 !important;
         }
 
-        @keyframes modalPop {
-            from { transform: scale(0.9) translateY(20px); opacity: 0; }
-            to { transform: scale(1) translateY(0); opacity: 1; }
-        }
-
-        .modal-header { 
+        .student-modal-header { 
             padding: 24px 32px; 
             border-bottom: 1px solid #edf2f7; 
             display: flex; 
@@ -120,141 +116,57 @@ try {
             background: #f8fafc; 
         }
 
-        .modal-header h3 { 
-            margin: 0; 
-            font-size: 1.25rem; 
-            color: #1e293b; 
-            font-weight: 800; 
-            letter-spacing: -0.025em;
+        .student-btn-close { 
+            width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
+            background: #f1f5f9; border: none; border-radius: 12px; color: #64748b; cursor: pointer;
         }
 
-        .btn-close { 
-            width: 36px;
-            height: 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #f1f5f9; 
-            border: none; 
-            border-radius: 12px;
-            color: #64748b; 
-            cursor: pointer; 
-            transition: all 0.2s;
+        .student-modal-body { 
+            padding: 32px; max-height: 70vh; overflow-y: auto;
         }
 
-        .btn-close:hover { 
-            background: #fee2e2;
-            color: #ef4444; 
-            transform: rotate(90deg);
-        }
-
-        .modal-body { 
-            padding: 32px; 
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-
-        .modal-profile-box {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 24px;
-            background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
-            border-radius: 24px;
-            margin-bottom: 28px;
-            border: 1px solid #f1f5f9;
-            text-align: center;
-        }
-
-        .modal-avatar {
-            width: 90px;
-            height: 90px;
-            border-radius: 30px;
-            background: #eef2ff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 2.25rem;
-            color: #1648bc;
-            margin-bottom: 16px;
-            border: 4px solid white;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-        }
-
-        .modal-avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 26px;
-        }
-
-        .guardian-card {
-            background: #f8fafc;
-            padding: 20px;
-            border-radius: 20px;
-            border: 1px solid #eef2ff;
-            margin-bottom: 28px;
-        }
-        
-        .req-item { 
-            display: flex; 
-            align-items: center; 
-            gap: 16px; 
-            padding: 16px; 
-            background: #ffffff;
-            border: 1px solid #f1f5f9; 
-            border-radius: 18px; 
-            transition: all 0.2s;
-            margin-bottom: 10px;
-        }
-
-        .req-item:hover {
-            border-color: #e2e8f0;
-            background: #fafafa;
-        }
-
-        .req-icon { 
-            width: 40px; 
-            height: 40px; 
-            border-radius: 14px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            font-size: 1rem; 
-        }
-
-        .req-icon.yes { background: #dcfce7; color: #16a34a; }
-        .req-icon.no { background: #fee2e2; color: #ef4444; }
-
-        .btn-view-doc {
-            padding: 6px 14px;
-            border-radius: 10px;
-            background: #eef2ff;
-            color: #1648bc;
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-decoration: none;
-            transition: all 0.2s;
-            border: 1px solid #dbeafe;
-        }
-
-        .btn-view-doc:hover {
-            background: #1648bc;
-            color: white;
-            transform: translateY(-1px);
-        }
-
-        .modal-footer { 
-            padding: 20px 32px; 
-            border-top: 1px solid #edf2f7; 
-            display: flex; 
-            justify-content: flex-end; 
-            background: #f8fafc; 
+        .student-modal-footer { 
+            padding: 20px 32px; border-top: 1px solid #edf2f7; display: flex; justify-content: flex-end; background: #f8fafc; 
         }
     </style>
 </head>
 
 <body>
+    <!-- View Modal -->
+    <div id="viewModal" class="student-modal-overlay">
+        <div class="student-modal-content">
+            <div class="student-modal-header">
+                <h3>Requirement Details</h3>
+                <button class="student-btn-close" onclick="closeViewModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="student-modal-body">
+                <div class="modal-profile-box">
+                    <div class="modal-avatar" id="modalAvatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <h2 id="modalStudentName" style="font-weight: 800; color: #1e293b; font-size: 1.4rem; margin-bottom: 4px;">Student Name</h2>
+                    <div id="modalStudentID" style="color: #64748b; font-weight: 600; font-size: 0.9rem; margin-bottom: 8px;">ENR-2024-001</div>
+                    <div id="modalCourse" style="background: #eef2ff; color: #1648bc; padding: 4px 14px; border-radius: 99px; font-size: 0.75rem; font-weight: 700;">Course Name</div>
+                </div>
+
+                <p style="margin-bottom: 12px; color: #64748b; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Guardian Details</p>
+                <div class="guardian-card">
+                    <div style="font-weight: 700; color: #1e293b; font-size: 1rem; margin-bottom: 4px;" id="modalGuardianName">Name</div>
+                    <div style="color: #64748b; font-size: 0.9rem; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-phone-alt" style="color: #1648bc;"></i> 
+                        <span id="modalGuardianContact" style="font-weight: 500;">Contact</span>
+                    </div>
+                </div>
+
+                <p style="margin-bottom: 12px; color: #64748b; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Submitted Documents</p>
+                <div id="modalRequirementsList" style="display: flex; flex-direction: column; gap: 12px;">
+                </div>
+            </div>
+            <div class="student-modal-footer">
+                <button class="btn-view" style="background: #f1f5f9; color: #475569;" onclick="closeViewModal()">Close</button>
+            </div>
+        </div>
+    </div>
     <?php include '../Components/Sidebar.php'; ?>
     <div class="main-wrapper">
         <?php include '../Components/header.php'; ?>
@@ -334,45 +246,6 @@ try {
         </div>
     </div>
     
-    <!-- View Modal -->
-    <div id="viewModal" class="modal-overlay">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Requirement Details</h3>
-                <button class="btn-close" onclick="closeViewModal()"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="modal-body">
-                <!-- Profile Section -->
-                <div class="modal-profile-box">
-                    <div class="modal-avatar" id="modalAvatar">
-                        <i class="fas fa-user"></i>
-                    </div>
-                    <h2 id="modalStudentName" style="font-weight: 800; color: #1e293b; font-size: 1.4rem; margin-bottom: 4px;">Student Name</h2>
-                    <div id="modalStudentID" style="color: #64748b; font-weight: 600; font-size: 0.9rem; margin-bottom: 8px;">ENR-2024-001</div>
-                    <div id="modalCourse" style="background: #eef2ff; color: #1648bc; padding: 4px 14px; border-radius: 99px; font-size: 0.75rem; font-weight: 700;">Course Name</div>
-                </div>
-
-                <!-- Guardian Information -->
-                <p style="margin-bottom: 12px; color: #64748b; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Guardian Details</p>
-                <div class="guardian-card">
-                    <div style="font-weight: 700; color: #1e293b; font-size: 1rem; margin-bottom: 4px;" id="modalGuardianName">Name</div>
-                    <div style="color: #64748b; font-size: 0.9rem; display: flex; align-items: center; gap: 8px;">
-                        <i class="fas fa-phone-alt" style="color: #1648bc;"></i> 
-                        <span id="modalGuardianContact" style="font-weight: 500;">Contact</span>
-                    </div>
-                </div>
-
-                <!-- Requirements List -->
-                <p style="margin-bottom: 12px; color: #64748b; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Submitted Documents</p>
-                <div id="modalRequirementsList" style="display: flex; flex-direction: column; gap: 12px;">
-                    <!-- Items injected via JS -->
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn-view" style="background: #f1f5f9; color: #475569;" onclick="closeViewModal()">Close</button>
-            </div>
-        </div>
-    </div>
     
     <?php include '../Components/GlobalScripts.php'; ?>
     <script>
