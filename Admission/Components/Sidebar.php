@@ -74,22 +74,8 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admission@sms.com';
                 </ul>
             </li>
 
-            <!-- Application Evaluation Dropdown -->
-            <li class="has-dropdown <?php echo (in_array($current_page, ['Student-Requirements.php', 'Exam-Results.php', 'Interview-Assessment.php'])) ? 'active open' : ''; ?>">
-                <a href="javascript:void(0)" class="dropdown-toggle">
-                    <div class="icon-box">
-                        <i class="fas fa-tasks"></i>
-                    </div>
-                    <span>Application Evaluation</span>
-                    <i class="fas fa-chevron-down arrow-icon"></i>
-                </a>
-                <ul class="sub-menu">
-                    <li class="<?php echo ($current_page == 'Student-Requirements.php') ? 'active' : ''; ?>"><a href="<?php echo $root; ?>Admission/Modules/Student-Requirements.php">Student Requirements</a></li>
-                </ul>
-            </li>
-
             <!-- Student Management -->
-            <li class="has-dropdown <?php echo (in_array($current_page, ['Generate-ID.php', 'ID-Verification.php', 'Print-Export-ID.php', 'Lost-Replacement-IDs.php', 'Student-Grades.php', 'Student-Attendance.php'])) ? 'active open' : ''; ?>">
+            <li class="has-dropdown <?php echo (in_array($current_page, ['Generate-ID.php', 'ID-Verification.php', 'Print-Export-ID.php', 'Lost-Replacement-IDs.php', 'Student-Grades.php', 'Student-Attendance.php', 'Student-Requirements.php'])) ? 'active open' : ''; ?>">
                 <a href="javascript:void(0)" class="dropdown-toggle">
                     <div class="icon-box">
                         <i class="fas fa-id-card"></i>
@@ -98,6 +84,7 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admission@sms.com';
                     <i class="fas fa-chevron-down arrow-icon"></i>
                 </a>
                 <ul class="sub-menu">
+                    <li class="<?php echo ($current_page == 'Student-Requirements.php') ? 'active' : ''; ?>"><a href="<?php echo $root; ?>Admission/Modules/Student-Requirements.php">Student Requirements List</a></li>
                     <li class="<?php echo ($current_page == 'Generate-ID.php') ? 'active' : ''; ?>"><a href="<?php echo $root; ?>Admission/Modules/Generate-ID.php">Generate Student ID</a></li>
                     <li class="<?php echo ($current_page == 'ID-Verification.php') ? 'active' : ''; ?>"><a href="<?php echo $root; ?>Admission/Modules/ID-Verification.php">ID Verification</a></li>
                     <li class="<?php echo ($current_page == 'Print-Export-ID.php') ? 'active' : ''; ?>"><a href="<?php echo $root; ?>Admission/Modules/Print-Export-ID.php">Print / Export ID</a></li>
