@@ -1000,6 +1000,10 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                     body: formData
                 });
 
+                if (!response.ok) {
+                    throw new Error('Server error (' + response.status + '). Please try again.');
+                }
+
                 let result = await response.json();
 
                 // IF SIMULATION OR NO API KEY, USE TESSERACT.JS TO "REALLY" READ THE IMAGE
@@ -1026,26 +1030,31 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                                 result.document_type = "PSA Birth Certificate";
                             }
 
-                            // 2. Extract Name (More robust patterns)
-                            // Pattern: "NAME (First) (Middle) (Last) JUAN ..."
-                            const psaNameMatch = upperText.match(/NAME\s*\(?FIRST\)?\s*\(?MIDDLE\)?\s*\(?LAST\)?\s*([A-Z\s,.-]{5,})/);
-                            if (psaNameMatch) {
-                                const nameParts = psaNameMatch[1].trim().split(/\s+/).filter(p => !['FIRST', 'MIDDLE', 'LAST'].includes(p));
+                            // 2. Extract Name (More robust patterns for PSA)
+                            // Look for James Ryan Carabuena after "Last)" or "NAME"
+                            const nameBlockMatch = upperText.match(/(?:LAST\)?|NAME)\s*[\n\s]+([A-Z\s]{3,}[\n\s]+[A-Z\s]{3,})/);
+                            if (nameBlockMatch) {
+                                const rawName = nameBlockMatch[1].trim().replace(/\n/g, ' ');
+                                const nameParts = rawName.split(/\s+/).filter(p => !['FIRST', 'MIDDLE', 'LAST', 'NAME'].includes(p));
                                 if (nameParts.length >= 3) {
                                     result.last_name = nameParts.pop();
                                     result.middle_name = nameParts.pop();
                                     result.first_name = nameParts.join(' ');
+                                } else if (nameParts.length === 2) {
+                                    result.last_name = nameParts[1];
+                                    result.first_name = nameParts[0];
                                 }
                             }
 
                             // Fallback if generic name is found
                             if (!result.first_name) {
-                                const genericNameMatch = upperText.match(/(?:NAME|CHILD|PATIENT|STUDENT)[:\s]*([A-Z\s,.-]{5,})/);
-                                if (genericNameMatch) {
-                                    const parts = genericNameMatch[1].trim().split(/\s+/).filter(p => p.length > 1);
-                                    if (parts.length >= 2) {
-                                        result.last_name = parts.pop();
-                                        result.first_name = parts.join(' ');
+                                const psaNameMatch = upperText.match(/NAME\s*\(?FIRST\)?\s*\(?MIDDLE\)?\s*\(?LAST\)?\s*([A-Z\s,.-]{5,})/);
+                                if (psaNameMatch) {
+                                    const nameParts = psaNameMatch[1].trim().split(/\s+/).filter(p => !['FIRST', 'MIDDLE', 'LAST'].includes(p));
+                                    if (nameParts.length >= 3) {
+                                        result.last_name = nameParts.pop();
+                                        result.middle_name = nameParts.pop();
+                                        result.first_name = nameParts.join(' ');
                                     }
                                 }
                             }

@@ -283,7 +283,8 @@ class OcrProcessor {
                     $lastName = 'REQUIRED';
                 }
             }
-        
+        }
+
         // Return constructed data
         return [
             'is_simulation' => true,
