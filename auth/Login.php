@@ -1034,44 +1034,59 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                             result.is_valid = true;
                             result.confidence = 90; 
 
-                            // 1. Blacklist for PSA Labels (Noise)
+                            // 1. EXPANDED BLACKLIST (Administrative & Grid Noise)
                             const psaBlacklist = [
                                 "REMARKS", "ANNOTATION", "CERTIFICATION", "OFFICE", "REGISTRAR", "GENERAL", "REPUBLIC", 
                                 "PHILIPPINES", "MUNICIPAL", "PROVINCE", "CITY", "PNC", "NONE", "N/A", "BIRTH", "CERTIFICATE",
-                                "LIVE", "NAME", "FIRST", "MIDDLE", "LAST", "SEX", "DATE", "INFORMATION", "SIGNED", "SEAL"
+                                "LIVE", "NAME", "FIRST", "MIDDLE", "LAST", "SEX", "DATE", "INFORMATION", "SIGNED", "SEAL",
+                                "PAGE", "COPY", "FORM", "REVISED", "JANUARY", "REGISTRY", "TRIAS", "CAVITE", "TRIAS", "CARL",
+                                "STATISTICS", "AUTHORITY", "NATIONAL", "SECURITY", "PRINTING", "DOCUMENT", "COPIES", "LCR"
                             ];
 
-                            // 2. Extract Names (Top-Down Search)
-                            let potentialNames = [];
+                            // 2. Extract Names (Advanced Scoring Logic)
+                            let bestCandidate = null;
+                            let highestScore = 0;
                             
-                            for(let i=0; i < Math.min(rawLines.length, 15); i++) {
+                            for(let i=0; i < Math.min(rawLines.length, 25); i++) {
                                 let line = rawLines[i];
-                                let isLabel = psaBlacklist.some(word => line.includes(word));
                                 
-                                if (!isLabel) {
-                                    // Remove all numbers and weird symbols
-                                    let clean = line.replace(/[^A-Z\s]/g, ' ').trim();
-                                    // Filter out noise words like "FEY", "HAL", "PNC" (3 characters or less that are likely grid noise)
-                                    let parts = clean.split(/\s+/).filter(p => p.length > 2 && !psaBlacklist.includes(p));
-                                    
-                                    if (parts.length >= 2) {
-                                        potentialNames.push(parts);
+                                // Score based on line position and keywords
+                                let score = 0;
+                                if (line.includes("NAME")) score += 50;
+                                if (line.includes("CERTIFICATE")) score -= 20; // Likely a header
+                                
+                                // CLEANING: Erase COP, FEY, HAL, PNC and other 1-3 letter garbage
+                                let clean = line.replace(/[^A-Z\s]/g, ' ').trim();
+                                let parts = clean.split(/\s+/).filter(p => {
+                                    // STRICT VALIDATION: Real names are usually 4+ letters
+                                    // Filters out HWO, THO, COP, FEY, HAL, etc.
+                                    return p.length >= 4 && !psaBlacklist.includes(p);
+                                });
+                                
+                                // A good name line has 2-4 solid words
+                                if (parts.length >= 2 && parts.length <= 4) {
+                                    score += (parts.length * 10);
+                                    if (score > highestScore) {
+                                        highestScore = score;
+                                        bestCandidate = parts;
                                     }
                                 }
                             }
 
-                            if (potentialNames.length > 0) {
-                                let target = potentialNames[0]; 
-                                
-                                // SMART SPLIT FOR FILIPINO NAMES
-                                // Example: ["JAMES", "RYAN", "CARABUENA"]
-                                if (target.length >= 3) {
-                                    result.last_name = target.pop(); // "CARABUENA"
-                                    result.middle_name = target.pop(); // "RYAN" (If it's actually part of FN, user can adjust, but standard is F-M-L)
-                                    result.first_name = target.join(' '); // "JAMES"
-                                } else if (target.length === 2) {
-                                    result.last_name = target[1];
-                                    result.first_name = target[0];
+                            if (bestCandidate) {
+                                // Clear previous noise if any
+                                result.first_name = '';
+                                result.middle_name = '';
+                                result.last_name = '';
+
+                                // Distribution Logic for JAMES RYAN CARABUENA
+                                if (bestCandidate.length >= 3) {
+                                    result.last_name = bestCandidate.pop(); 
+                                    result.middle_name = bestCandidate.pop(); 
+                                    result.first_name = bestCandidate.join(' '); 
+                                } else if (bestCandidate.length === 2) {
+                                    result.last_name = bestCandidate[1];
+                                    result.first_name = bestCandidate[0];
                                 }
                             }
 
