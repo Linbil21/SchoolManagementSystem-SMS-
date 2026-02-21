@@ -3,15 +3,8 @@ session_start();
 // Security check
 require_once '../../../auth/Security.php';
 checkRole(['student']);
-
-// Admission Approval Check
-$enrollment_status = $_SESSION['enrollment_status'] ?? 'Pending';
-$allowed_payment_statuses = ['Pending Payment', 'Validation', 'Enrolled'];
-if (!in_array($enrollment_status, $allowed_payment_statuses)) {
-    header("Location: ../Admission/Result.php");
-    exit();
-}
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
