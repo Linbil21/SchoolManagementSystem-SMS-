@@ -1029,7 +1029,6 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
 
                             // 1. GRID LOCK SCANNER (Targeting Section 1: NAME only)
                             let nameParts = [];
-                            const upperText = text.toUpperCase();
                             const lines = text.toUpperCase().split('\n').map(l => l.trim()).filter(l => l.length > 3);
 
                             let nameLineIndex = -1;
