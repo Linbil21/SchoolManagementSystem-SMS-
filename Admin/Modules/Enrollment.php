@@ -66,6 +66,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         exit;
     }
 
+    // ACTION: DELETE ENROLLMENT
+    if ($_POST['action'] === 'delete_enrollment') {
+        if ($_SESSION['role'] !== 'superadmin') {
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'message' => 'Unauthorized: Only Super Admin can delete records.']);
+            exit;
+        }
+
+        header('Content-Type: application/json');
+        $enrollmentId = $_POST['enrollmentId'] ?? null;
+        if (!$enrollmentId) {
+            echo json_encode(['success' => false, 'message' => 'Enrollment ID missing.']);
+            exit;
+        }
+
+        try {
+            $stmt = $pdo->prepare("DELETE FROM enrollments WHERE enrollmentId = ?");
+            $stmt->execute([$enrollmentId]);
+            echo json_encode(['success' => true, 'message' => 'Enrollment record deleted successfully.']);
+        } catch (PDOException $e) {
+            echo json_encode(['success' => false, 'message' => 'Delete failed: ' . $e->getMessage()]);
+        }
+        exit;
+    }
+
     // ACTION: LOG REVEAL
     if ($_POST['action'] === 'log_reveal') {
         // Here we would effectively log to a database table `audit_logs`
@@ -90,7 +115,8 @@ try {
     $stmt = $pdo->query("SELECT e.*, c.course_name FROM enrollments e LEFT JOIN courses c ON e.course_id = c.courseId ORDER BY e.created_at DESC");
     $enrollments = $stmt->fetchAll();
 
-    // DUMMY DATA INJECTION IF EMPTY
+    // DUMMY DATA INJECTION REMOVED AS PER USER REQUEST
+    /*
     if (empty($enrollments)) {
         $dummy1 = new stdClass();
         $dummy1->enrollmentId = 9991;
@@ -154,6 +180,7 @@ try {
 
         $enrollments = [$dummy1, $dummy2];
     }
+    */
 } catch (PDOException $e) {
     die("Database error: " . $e->getMessage());
 }
@@ -227,8 +254,17 @@ try {
                                             </span>
                                         </td>
                                         <td>
-                                            <a href="javascript:void(0)" class="btn-view"
-                                                onclick='viewEnrollment(<?php echo json_encode($enroll); ?>)'>View</a>
+                                            <div style="display: flex; gap: 8px;">
+                                                <a href="javascript:void(0)" class="btn-view"
+                                                    onclick='viewEnrollment(<?php echo json_encode($enroll); ?>)'>View</a>
+                                                <?php if ($_SESSION['role'] === 'superadmin'): ?>
+                                                    <a href="javascript:void(0)" class="btn-delete-row"
+                                                        onclick="deleteEnrollment(<?php echo $enroll->enrollmentId; ?>, '<?php echo addslashes($enroll->first_name . ' ' . $enroll->last_name); ?>')"
+                                                        title="Delete Enrollment">
+                                                        <i class="fas fa-trash-alt"></i>
+                                                    </a>
+                                                <?php endif; ?>
+                                            </div>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
@@ -452,6 +488,43 @@ try {
                 confirmButtonColor: '#1648bc'
             });
         }
+
+        async function deleteEnrollment(id, name) {
+            const result = await Swal.fire({
+                title: 'Are you sure?',
+                text: `You are about to delete the enrollment record of ${name}. This action cannot be undone!`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#718096',
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'Cancel'
+            });
+
+            if (result.isConfirmed) {
+                const formData = new FormData();
+                formData.append('action', 'delete_enrollment');
+                formData.append('enrollmentId', id);
+
+                try {
+                    const response = await fetch('Enrollment.php', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const data = await response.json();
+
+                    if (data.success) {
+                        Swal.fire('Deleted!', data.message, 'success').then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire('Error!', data.message, 'error');
+                    }
+                } catch (error) {
+                    Swal.fire('Error!', 'Something went wrong while deleting.', 'error');
+                }
+            }
+        }
         // ... existing functions ...
         function revealData(elementId, realData, btn) {
             const element = document.getElementById(elementId);
@@ -486,6 +559,28 @@ try {
         }
         .reveal-btn:hover {
             color: #1648bc;
+        }
+
+        .btn-delete-row {
+            background: #fee2e2;
+            color: #ef4444;
+            border: 1px solid #fecaca;
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-delete-row:hover {
+            background: #ef4444;
+            color: white;
+            border-color: #ef4444;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.2);
         }
     </style>
 </body>
