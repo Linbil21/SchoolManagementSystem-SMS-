@@ -124,28 +124,23 @@ if (isset($_SESSION['email'])) {
             </li>
         </ul>
 
-        <?php 
-        $enrollment_status = $_SESSION['enrollment_status'] ?? 'Pending';
-        $allowed_payment_statuses = ['Pending Payment', 'Validation', 'Enrolled'];
-        if (in_array($enrollment_status, $allowed_payment_statuses)): 
-        ?>
         <p class="menu-label">FINANCIAL</p>
         <ul class="main-menu">
-            <!-- Payments -->
-            <li class="has-dropdown <?php echo isDropdownOpen(['Balance', 'Payment-History', 'Upload-Receipt']); ?>">
+            <!-- Cashier Payment - always visible -->
+            <li class="has-dropdown <?php echo isDropdownOpen(['Walk-in-Payments', 'Balance', 'History', 'Upload-Receipt', 'Upload-Payment']); ?>">
                 <a href="javascript:void(0)" class="dropdown-toggle">
-                    <i class="fas fa-wallet"></i>
-                    <span>Payments</span>
+                    <i class="fas fa-cash-register"></i>
+                    <span>Cashier / Payment</span>
                     <i class="fas fa-chevron-right arrow-icon"></i>
                 </a>
                 <ul class="sub-menu">
+                    <li><a href="/Cashier/Dashboard.php">Go to Cashier</a></li>
                     <li><a href="/student/Modules/Payments/Balance.php">View Balance</a></li>
                     <li><a href="/student/Modules/Payments/History.php">Payment History</a></li>
                     <li><a href="/student/Modules/Payments/Upload-Receipt.php">Upload Receipt</a></li>
                 </ul>
             </li>
         </ul>
-        <?php endif; ?>
 
         <p class="menu-label">SERVICES</p>
         <ul class="main-menu">
