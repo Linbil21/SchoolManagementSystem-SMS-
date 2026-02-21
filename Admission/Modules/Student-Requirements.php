@@ -7,6 +7,26 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admission') {
 
 require_once '../../Database/config.php';
 
+// Handle AJAX Delete
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'delete_requirement') {
+    header('Content-Type: application/json');
+    $id = $_POST['id'] ?? null;
+
+    if (!$id) {
+        echo json_encode(['success' => false, 'message' => 'Student ID missing.']);
+        exit;
+    }
+
+    try {
+        $stmt = $pdo->prepare("DELETE FROM enrollments WHERE reference_code = ?");
+        $stmt->execute([$id]);
+        echo json_encode(['success' => true, 'message' => 'Requirement record deleted successfully.']);
+    } catch (PDOException $e) {
+        echo json_encode(['success' => false, 'message' => 'Delete failed: ' . $e->getMessage()]);
+    }
+    exit;
+}
+
 try {
     // Fetch students who have submitted enrollment applications
     $stmt = $pdo->prepare("
@@ -367,9 +387,16 @@ try {
                                                 ]
                                             ];
                                         ?>
-                                        <button class="btn-view" onclick="openStudentModal(<?php echo htmlspecialchars(json_encode($studentData), ENT_QUOTES, 'UTF-8'); ?>)">
-                                            <i class="fas fa-eye"></i> View
-                                        </button>
+                                        <div style="display: flex; gap: 5px;">
+                                            <button class="btn-view" onclick="openStudentModal(<?php echo htmlspecialchars(json_encode($studentData), ENT_QUOTES, 'UTF-8'); ?>)">
+                                                <i class="fas fa-eye"></i> View
+                                            </button>
+                                            <button onclick="deleteRequirement('<?php echo $student->student_id; ?>', '<?php echo addslashes($student->first_name . ' ' . $student->last_name); ?>')" 
+                                                style="border: none; background: #fee2e2; color: #ef4444; padding: 8px 12px; border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: 0.2s;"
+                                                title="Delete Requirement Record">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
@@ -510,6 +537,43 @@ try {
         function closeViewModal() {
             document.getElementById('viewModal').style.display = 'none';
             document.body.style.overflow = 'auto';
+        }
+
+        async function deleteRequirement(id, name) {
+            const result = await Swal.fire({
+                title: 'Are you sure?',
+                text: `You are about to delete the requirement record for ${name}. This action cannot be undone!`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#718096',
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'Cancel'
+            });
+
+            if (result.isConfirmed) {
+                const formData = new FormData();
+                formData.append('action', 'delete_requirement');
+                formData.append('id', id);
+
+                try {
+                    const response = await fetch('Student-Requirements.php', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const data = await response.json();
+
+                    if (data.success) {
+                        Swal.fire('Deleted!', data.message, 'success').then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire('Error!', data.message, 'error');
+                    }
+                } catch (error) {
+                    Swal.fire('Error!', 'Something went wrong while deleting.', 'error');
+                }
+            }
         }
     </script>
 </body>
