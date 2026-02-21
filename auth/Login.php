@@ -1044,17 +1044,15 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                             // 2. Extract Names (Top-Down Search)
                             let potentialNames = [];
                             
-                            // Iterate through the first 15 lines (where the name usually is)
                             for(let i=0; i < Math.min(rawLines.length, 15); i++) {
                                 let line = rawLines[i];
-                                
-                                // Check if line contains any blacklist words
                                 let isLabel = psaBlacklist.some(word => line.includes(word));
                                 
                                 if (!isLabel) {
-                                    // Clean line from symbols and numbers
+                                    // Remove all numbers and weird symbols
                                     let clean = line.replace(/[^A-Z\s]/g, ' ').trim();
-                                    let parts = clean.split(/\s+/).filter(p => p.length > 2);
+                                    // Filter out noise words like "FEY", "HAL", "PNC" (3 characters or less that are likely grid noise)
+                                    let parts = clean.split(/\s+/).filter(p => p.length > 2 && !psaBlacklist.includes(p));
                                     
                                     if (parts.length >= 2) {
                                         potentialNames.push(parts);
@@ -1062,16 +1060,15 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                                 }
                             }
 
-                            // If we found potential names, pick the most likely one (usually the first clean block)
                             if (potentialNames.length > 0) {
-                                let target = potentialNames[0]; // First clean block
+                                let target = potentialNames[0]; 
                                 
-                                // Handling for James Ryan Carabuena
+                                // SMART SPLIT FOR FILIPINO NAMES
+                                // Example: ["JAMES", "RYAN", "CARABUENA"]
                                 if (target.length >= 3) {
-                                    result.last_name = target.pop();
-                                    // The rest is First Name
-                                    result.first_name = target.join(' ');
-                                    result.middle_name = ''; 
+                                    result.last_name = target.pop(); // "CARABUENA"
+                                    result.middle_name = target.pop(); // "RYAN" (If it's actually part of FN, user can adjust, but standard is F-M-L)
+                                    result.first_name = target.join(' '); // "JAMES"
                                 } else if (target.length === 2) {
                                     result.last_name = target[1];
                                     result.first_name = target[0];
