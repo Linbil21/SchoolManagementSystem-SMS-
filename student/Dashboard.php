@@ -399,32 +399,32 @@ if ($current_day !== 'Sunday') {
                         <i class="fas fa-credit-card"></i> Make Payment
                     </a>
                 </div>
-                <!-- Step 2: Upload Requirements -->
+                <!-- Step 2: Admission Approval -->
                 <div style="background: rgba(255,255,255,0.15); padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(5px); display:flex; flex-direction:column; gap:8px;">
                     <div style="font-size: 1.4rem; font-weight: 800; opacity: 0.6;">02</div>
-                    <h4 style="font-size: 1rem; margin: 0;">Upload Requirements</h4>
-                    <p style="font-size: 0.82rem; opacity: 0.9; line-height: 1.5; flex:1;">Once paid, submit your documents (PSA, Form 138, ID Picture, etc.) in the Admission module for validation.</p>
-                    <a href="/student/Modules/Admission/Requirements.php" style="padding: 8px 16px; background: white; color: #2563eb; border-radius: 10px; font-size: 0.8rem; font-weight: 700; text-decoration: none; display:inline-block; text-align:center;">
-                        <i class="fas fa-file-upload"></i> Upload Now
-                    </a>
-                </div>
-                <!-- Step 3: Evaluation -->
-                <div style="background: rgba(255,255,255,0.15); padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(5px); display:flex; flex-direction:column; gap:8px;">
-                    <div style="font-size: 1.4rem; font-weight: 800; opacity: 0.6;">03</div>
-                    <h4 style="font-size: 1rem; margin: 0;">Evaluation</h4>
-                    <p style="font-size: 0.82rem; opacity: 0.9; line-height: 1.5; flex:1;">Our admission team will review your payment and submitted documents. You will be notified once approved.</p>
+                    <h4 style="font-size: 1rem; margin: 0;">Admission Approval</h4>
+                    <p style="font-size: 0.82rem; opacity: 0.9; line-height: 1.5; flex:1;">Wait for the Admission team to verify your payment and approve your application to enter subjects.</p>
                     <button disabled style="padding: 8px 16px; background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); border: 1px solid rgba(255,255,255,0.3); border-radius: 10px; font-size: 0.8rem; font-weight: 600; cursor: not-allowed;">
                         <i class="fas fa-hourglass-half"></i> Pending
                     </button>
                 </div>
-                <!-- Step 4: Enrollment -->
+                <!-- Step 3: Subject Enrollment -->
                 <div style="background: rgba(255,255,255,0.15); padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(5px); display:flex; flex-direction:column; gap:8px;">
-                    <div style="font-size: 1.4rem; font-weight: 800; opacity: 0.6;">04</div>
-                    <h4 style="font-size: 1rem; margin: 0;">Official Enrollment</h4>
-                    <p style="font-size: 0.82rem; opacity: 0.9; line-height: 1.5; flex:1;">Upon approval of payment and requirements, the Enrollment module will be unlocked to finalize your enrollment.</p>
+                    <div style="font-size: 1.4rem; font-weight: 800; opacity: 0.6;">03</div>
+                    <h4 style="font-size: 1rem; margin: 0;">Subject Enrollment</h4>
+                    <p style="font-size: 0.82rem; opacity: 0.9; line-height: 1.5; flex:1;">Once approved, the Enrollment module will be unlocked. Select your subjects to officially enroll in the semester.</p>
                     <button disabled style="padding: 8px 16px; background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); border: 1px solid rgba(255,255,255,0.3); border-radius: 10px; font-size: 0.8rem; font-weight: 600; cursor: not-allowed;">
                         <i class="fas fa-lock"></i> Locked
                     </button>
+                </div>
+                <!-- Step 4: Upload Requirements -->
+                <div style="background: rgba(255,255,255,0.15); padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(5px); display:flex; flex-direction:column; gap:8px;">
+                    <div style="font-size: 1.4rem; font-weight: 800; opacity: 0.6;">04</div>
+                    <h4 style="font-size: 1rem; margin: 0;">Upload Requirements</h4>
+                    <p style="font-size: 0.82rem; opacity: 0.9; line-height: 1.5; flex:1;">Submit your pending documentary requirements (PSA, Form 138, ID Picture) to complete your student profile.</p>
+                    <a href="/student/Modules/Admission/Requirements.php" style="padding: 8px 16px; background: white; color: #2563eb; border-radius: 10px; font-size: 0.8rem; font-weight: 700; text-decoration: none; display:inline-block; text-align:center;">
+                        <i class="fas fa-file-upload"></i> Upload Now
+                    </a>
                 </div>
             </div>
         </div>
