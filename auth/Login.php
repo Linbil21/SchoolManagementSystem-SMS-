@@ -944,6 +944,7 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
     </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     <script src="../Assets/javascript/log-reg.js"></script>
     <script>
         // Auto-toggle to Registration mode if action=register is present
@@ -1019,24 +1020,44 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                             result.raw_text = text;
                             result.is_valid = true;
                             result.confidence = 85; 
-                            result.document_type = "Scanned " + (docType === 'birth_cert' ? 'PSA' : 'Document');
-                            
-                            // Extract Name (Very basic regex for Tesseract)
                             const upperText = text.toUpperCase();
-                            
-                            // Try to find Name pattern "NAME... JUAN LUNA"
-                            const nameMatch = upperText.match(/(?:NAME|CHILD|PATIENT)[:\s]*([A-Z\s]{3,})/);
-                            if (nameMatch && !result.first_name) {
-                                const parts = nameMatch[1].trim().split(/\s+/);
-                                if (parts.length >= 2) {
-                                    result.last_name = parts.pop();
-                                    result.first_name = parts.join(' ');
+                            // 1. Detect Document Type
+                            if (upperText.includes("BIRTH") || upperText.includes("PSA") || upperText.includes("PHILIPPINE STATISTICS")) {
+                                result.document_type = "PSA Birth Certificate";
+                            }
+
+                            // 2. Extract Name (More robust patterns)
+                            // Pattern: "NAME (First) (Middle) (Last) JUAN ..."
+                            const psaNameMatch = upperText.match(/NAME\s*\(?FIRST\)?\s*\(?MIDDLE\)?\s*\(?LAST\)?\s*([A-Z\s,.-]{5,})/);
+                            if (psaNameMatch) {
+                                const nameParts = psaNameMatch[1].trim().split(/\s+/).filter(p => !['FIRST', 'MIDDLE', 'LAST'].includes(p));
+                                if (nameParts.length >= 3) {
+                                    result.last_name = nameParts.pop();
+                                    result.middle_name = nameParts.pop();
+                                    result.first_name = nameParts.join(' ');
+                                }
+                            }
+
+                            // Fallback if generic name is found
+                            if (!result.first_name) {
+                                const genericNameMatch = upperText.match(/(?:NAME|CHILD|PATIENT|STUDENT)[:\s]*([A-Z\s,.-]{5,})/);
+                                if (genericNameMatch) {
+                                    const parts = genericNameMatch[1].trim().split(/\s+/).filter(p => p.length > 1);
+                                    if (parts.length >= 2) {
+                                        result.last_name = parts.pop();
+                                        result.first_name = parts.join(' ');
+                                    }
                                 }
                             }
                             
-                            // Try to find Birthdate
-                            const dateMatch = upperText.match(/(\d{1,2}\s*[A-Z]+\s*\d{4})/);
-                            if (dateMatch) result.birthdate = dateMatch[1];
+                            // 3. Try to find Birthdate (e.g. "SEPTEMBER 18, 2000" or "18 SEPTEMBER 2000")
+                            const dateMatch = upperText.match(/(\d{1,2}\s*[A-Z]{3,}\s*\d{4})/);
+                            if (dateMatch) {
+                                const timestamp = Date.parse(dateMatch[1]);
+                                if (!isNaN(timestamp)) {
+                                    result.birthdate = new Date(timestamp).toISOString().split('T')[0];
+                                }
+                            }
                         }
                     } catch (tessErr) {
                         console.error("Tesseract Error:", tessErr);
@@ -1474,7 +1495,6 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
             });
         });
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     <?php endif; ?>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
