@@ -1008,6 +1008,13 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
 
                 // IF SIMULATION OR NO API KEY, USE TESSERACT.JS TO "REALLY" READ THE IMAGE
                 if (result.is_simulation || !result.is_valid) {
+                    // Reset names if it's simulation data to avoid showing hex filenames
+                    if (result.is_simulation) {
+                        result.first_name = '';
+                        result.middle_name = '';
+                        result.last_name = '';
+                    }
+
                     statusDiv.innerHTML = '<span class="loading"><i class="fas fa-microchip"></i> AI Scanning content inside image...</span>';
                     
                     try {
@@ -1021,48 +1028,45 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
 
                         // Simple Parser for Tesseract output
                         if (text && text.length > 10) {
+                            const upperText = text.toUpperCase().replace(/\s+/g, ' ');
                             result.raw_text = text;
                             result.is_valid = true;
                             result.confidence = 85; 
-                            const upperText = text.toUpperCase();
+
                             // 1. Detect Document Type
-                            if (upperText.includes("BIRTH") || upperText.includes("PSA") || upperText.includes("PHILIPPINE STATISTICS")) {
+                            if (upperText.includes("BIRTH") || upperText.includes("PSA") || upperText.includes("LIVE BIRTH")) {
                                 result.document_type = "PSA Birth Certificate";
                             }
 
-                            // 2. Extract Name (More robust patterns for PSA)
-                            // Look for James Ryan Carabuena after "Last)" or "NAME"
-                            const nameBlockMatch = upperText.match(/(?:LAST\)?|NAME)\s*[\n\s]+([A-Z\s]{3,}[\n\s]+[A-Z\s]{3,})/);
+                            // 2. Robust PSA Name Extraction
+                            // PSA layout: 1. NAME (First) (Middle) (Last) [NAME DATA]
+                            const nameBlockMatch = upperText.match(/1?\s*NAME\s*\(?FIRST\)?\s*\(?MIDDLE\)?\s*\(?LAST\)?\s*([A-Z\s,.-]{5,})/);
                             if (nameBlockMatch) {
-                                const rawName = nameBlockMatch[1].trim().replace(/\n/g, ' ');
-                                const nameParts = rawName.split(/\s+/).filter(p => !['FIRST', 'MIDDLE', 'LAST', 'NAME'].includes(p));
+                                const nameParts = nameBlockMatch[1].trim().split(/\s+/).filter(p => !['FIRST', 'MIDDLE', 'LAST', 'NAME'].includes(p));
                                 if (nameParts.length >= 3) {
                                     result.last_name = nameParts.pop();
                                     result.middle_name = nameParts.pop();
                                     result.first_name = nameParts.join(' ');
                                 } else if (nameParts.length === 2) {
-                                    result.last_name = nameParts[1];
-                                    result.first_name = nameParts[0];
+                                    result.last_name = nameParts.pop();
+                                    result.first_name = nameParts.join(' ');
                                 }
                             }
 
-                            // Fallback if generic name is found
-                            if (!result.first_name) {
-                                const psaNameMatch = upperText.match(/NAME\s*\(?FIRST\)?\s*\(?MIDDLE\)?\s*\(?LAST\)?\s*([A-Z\s,.-]{5,})/);
-                                if (psaNameMatch) {
-                                    const nameParts = psaNameMatch[1].trim().split(/\s+/).filter(p => !['FIRST', 'MIDDLE', 'LAST'].includes(p));
-                                    if (nameParts.length >= 3) {
-                                        result.last_name = nameParts.pop();
-                                        result.middle_name = nameParts.pop();
-                                        result.first_name = nameParts.join(' ');
-                                    }
+                            // Fallback for names (Common PSA format with commas)
+                            if (!result.first_name && upperText.includes(',')) {
+                                const commaName = upperText.match(/([A-Z]{3,}),\s*([A-Z\s]{3,})/);
+                                if (commaName) {
+                                    result.last_name = commaName[1];
+                                    result.first_name = commaName[2];
                                 }
                             }
                             
-                            // 3. Try to find Birthdate (e.g. "SEPTEMBER 18, 2000" or "18 SEPTEMBER 2000")
-                            const dateMatch = upperText.match(/(\d{1,2}\s*[A-Z]{3,}\s*\d{4})/);
+                            // 3. Try to find Birthdate (e.g. "18TH SEPTEMBER 2000")
+                            const dateMatch = upperText.match(/(\d{1,2}(?:ST|ND|RD|TH)?\s*[A-Z]{3,}\s*\d{4})/);
                             if (dateMatch) {
-                                const timestamp = Date.parse(dateMatch[1]);
+                                const cleanDate = dateMatch[1].replace(/(?:ST|ND|RD|TH)/g, '');
+                                const timestamp = Date.parse(cleanDate);
                                 if (!isNaN(timestamp)) {
                                     result.birthdate = new Date(timestamp).toISOString().split('T')[0];
                                 }

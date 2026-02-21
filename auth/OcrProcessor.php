@@ -255,11 +255,18 @@ class OcrProcessor {
                 $namePart = preg_replace('/[_-]/', ' ', $namePart);
                 $parts = array_filter(explode(' ', $namePart));
                 
-                // Check for HASH / GARBAGE filenames (purely numeric or hex-like strings)
+                // Check for HASH / GARBAGE filenames (purely numeric, UUIDs, or hex-like strings)
                 $isGibberish = false;
+                $allText = implode('', $parts);
+                
+                // If the whole filename looks like a UUID or Hex string (mix of numbers and A-F)
+                if (preg_match('/^[0-9A-Fw-]+$/i', $allText) && (strlen($allText) > 10 || count($parts) > 3)) {
+                    $isGibberish = true;
+                }
+                
                 foreach ($parts as $part) {
                     if (preg_match('/^\d+$/', $part) && strlen($part) > 5) {
-                        $isGibberish = true; // Likely a numeric ID filename
+                        $isGibberish = true; 
                         break;
                     }
                 }
