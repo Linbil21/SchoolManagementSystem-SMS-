@@ -186,7 +186,7 @@ session_start();
                 if ($email) {
                     $stmt = $pdo->prepare("SELECT * FROM enrollments WHERE email = ?");
                     $stmt->execute([$email]);
-                    $enrollment = $stmt->fetch();
+                    $enrollment = $stmt->fetch(PDO::FETCH_OBJ);
                 }
 
                 $docs = [
