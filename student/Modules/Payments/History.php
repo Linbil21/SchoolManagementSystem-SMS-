@@ -240,16 +240,14 @@ checkRole(['student']);
         <?php include '../../Components/Header.php'; ?>
         <div class="content-area">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-                <h1 class="page-title">Payment History</h1>
-                <div style="display: flex; gap: 15px; align-items: center;">
-                    <button onclick="openGatewayModal()" style="background: linear-gradient(135deg, #1648bc 0%, #2563eb 100%); color: white; border: none; padding: 10px 20px; border-radius: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(22, 72, 188, 0.25);">
-                        <i class="fas fa-credit-card"></i> Pay via Gateway
-                    </button>
-                    <div class="search-box" style="position: relative;">
-                        <i class="fas fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #94a3b8;"></i>
-                        <input type="text" id="paymentSearch" onkeyup="filterTable('paymentSearch', 'paymentTable')" placeholder="Search payments..." 
-                            style="padding: 10px 15px 10px 40px; border-radius: 12px; border: 1px solid #e2e8f0; outline: none; width: 280px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
-                    </div>
+                <div>
+                    <h1 class="page-title">My Receipts</h1>
+                    <p style="font-size: 0.88rem; color: #64748b; margin-top: 4px;">Your official payment receipts from the cashier.</p>
+                </div>
+                <div class="search-box" style="position: relative;">
+                    <i class="fas fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #94a3b8;"></i>
+                    <input type="text" id="paymentSearch" onkeyup="filterTable('paymentSearch', 'paymentTable')" placeholder="Search payments..." 
+                        style="padding: 10px 15px 10px 40px; border-radius: 12px; border: 1px solid #e2e8f0; outline: none; width: 280px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
                 </div>
             </div>
 
