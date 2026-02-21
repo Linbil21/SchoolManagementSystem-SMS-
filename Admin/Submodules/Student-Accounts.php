@@ -45,6 +45,21 @@ try {
 } catch (PDOException $e) { 
     $students = []; 
 }
+
+// Fetch Payment Submissions
+try {
+    $stmt = $pdo->query("
+        SELECT p.*, e.first_name, e.last_name, 
+               IFNULL(s.student_id, e.reference_code) as display_id 
+        FROM payments p 
+        JOIN enrollments e ON p.enrollment_id = e.enrollmentId 
+        LEFT JOIN students s ON e.email = s.email
+        ORDER BY p.created_at DESC LIMIT 50
+    ");
+    $payments = $stmt->fetchAll();
+} catch (PDOException $e) {
+    $payments = [];
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -106,6 +121,58 @@ try {
                             <?php endforeach; ?>
                             <?php if (empty($students)): ?>
                                 <tr><td colspan="6" style="text-align:center; padding:50px; color:var(--text-gray);">No active student accounts found.</td></tr>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="table-container" style="margin-top: 40px;">
+                <div class="table-header" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); padding: 25px; border-radius: 20px 20px 0 0;">
+                    <div>
+                        <h2 style="color: white; font-size: 1.4rem; margin: 0; font-weight: 800;"><i class="fas fa-file-invoice-dollar" style="color: #60a5fa; margin-right: 10px;"></i> Recent Payment Submissions</h2>
+                        <p style="color: #94a3b8; font-size: 0.85rem; margin: 5px 0 0 0;">Students who recently submitted online payments/e-receipts.</p>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead style="background: #f8fafc;">
+                            <tr>
+                                <th>Student ID</th>
+                                <th>Student Name</th>
+                                <th>Gateway / Method</th>
+                                <th>Amount</th>
+                                <th>Ref No.</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($payments as $p): ?>
+                                <tr>
+                                    <td style="font-weight: 700; color: #475569;"><?php echo htmlspecialchars($p->display_id); ?></td>
+                                    <td style="font-weight: 700; color: #1e293b;"><?php echo htmlspecialchars($p->last_name . ", " . $p->first_name); ?></td>
+                                    <td>
+                                        <span style="background: #eff6ff; color: #2563eb; padding: 4px 10px; border-radius: 8px; font-size: 0.8rem; font-weight: 600;">
+                                            <?php echo htmlspecialchars($p->payment_method); ?>
+                                        </span>
+                                    </td>
+                                    <td style="color: #059669; font-weight: 800;">₱<?php echo number_format($p->amount, 2); ?></td>
+                                    <td style="font-family: monospace; font-size: 0.85rem; color: #64748b;"><?php echo htmlspecialchars($p->transaction_id); ?></td>
+                                    <td>
+                                        <?php if(strtolower($p->status) === 'pending'): ?>
+                                            <span style="background: #fef08a; color: #854d0e; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700;">Pending</span>
+                                        <?php elseif(strtolower($p->status) === 'verified' || strtolower($p->status) === 'completed'): ?>
+                                            <span style="background: #dcfce7; color: #166534; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700;">Completed</span>
+                                        <?php else: ?>
+                                            <span style="background: #fee2e2; color: #991b1b; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700;"><?php echo htmlspecialchars($p->status); ?></span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td style="color: #64748b; font-size: 0.85rem;"><?php echo date('M d, Y h:iA', strtotime($p->created_at)); ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                            <?php if (empty($payments)): ?>
+                                <tr><td colspan="7" style="text-align:center; padding:50px; color:var(--text-gray);">No recent payment submissions yet.</td></tr>
                             <?php endif; ?>
                         </tbody>
                     </table>

@@ -14,7 +14,7 @@ try {
         FROM payments p 
         JOIN enrollments e ON p.enrollment_id = e.enrollmentId 
         LEFT JOIN students s ON e.email = s.email
-        WHERE p.payment_method IN ('Online Banking', 'E-Wallet (GCash/Maya)')
+        WHERE p.payment_method IN ('Online Banking', 'E-Wallet (GCash/Maya)', 'GCash', 'Maya', 'Credit/Debit Card')
         ORDER BY p.created_at DESC
     ");
     $stmt->execute();
