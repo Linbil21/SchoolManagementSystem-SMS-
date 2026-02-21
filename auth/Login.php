@@ -1034,63 +1034,54 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                             result.is_valid = true;
                             result.confidence = 90; 
 
-                            // 1. ADVANCED BLACKLIST (Expanded with Gender and Months)
-                            const months = ["JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"];
-                            const psaBlacklist = [
-                                "REMARKS", "ANNOTATION", "CERTIFICATION", "OFFICE", "REGISTRAR", "GENERAL", "REPUBLIC", 
-                                "PHILIPPINES", "MUNICIPAL", "PROVINCE", "CITY", "PNC", "NONE", "N/A", "BIRTH", "CERTIFICATE",
-                                "LIVE", "NAME", "FIRST", "MIDDLE", "LAST", "SEX", "DATE", "INFORMATION", "SIGNED", "SEAL",
-                                "PAGE", "COPY", "FORM", "REVISED", "REGISTRY", "TRIAS", "CAVITE", "TRIAS", "CARL",
-                                "STATISTICS", "AUTHORITY", "NATIONAL", "SECURITY", "PRINTING", "DOCUMENT", "COPIES", "LCR",
-                                "TION", "NOSIS", "ANIOTATION", "SCSSMTUTN", "SISON", "REMARKS", "ADJUST", "PURSUANT",
-                                "MALE", "FEMALE", "SEX", ...months
-                            ];
+                            // 1. GRID LOCK SCANNER (Targeting Section 1: NAME only)
+                            let nameParts = [];
+                            const upperText = text.toUpperCase();
+                            const lines = text.toUpperCase().split('\n').map(l => l.trim()).filter(l => l.length > 3);
 
-                            // 2. Extract Names (Precision Top-Down Search)
-                            let bestCandidate = null;
-                            let highestScore = 0;
-                            
-                            // Scan only the top 35% of the document where the name is located
-                            const scanLimit = Math.min(rawLines.length, 12); 
-                            
-                            for(let i=0; i < scanLimit; i++) {
-                                let line = rawLines[i];
-                                let score = 0;
+                            let nameLineIndex = -1;
+                            // Find the exact line or the line containing the "1. NAME" anchor
+                            for (let i = 0; i < Math.min(lines.length, 10); i++) {
+                                if (lines[i].includes("NAME") || lines[i].match(/^1\s*\./)) {
+                                    nameLineIndex = i;
+                                    break;
+                                }
+                            }
 
-                                // PRIORITY: Look for "1." or "NAME"
-                                if (line.match(/^1\s*\./) || line.includes("NAME") || line.includes("CHILD")) score += 70;
+                            if (nameLineIndex !== -1) {
+                                // The name data is usually on the same line after "NAME" OR on the next line
+                                let candidateLines = [lines[nameLineIndex], lines[nameLineIndex + 1] || ""];
                                 
-                                // CLEANING: Remove noise
-                                let clean = line.replace(/[^A-Z\s]/g, ' ').trim();
-                                let parts = clean.split(/\s+/).filter(p => {
-                                    const hasVowels = /[AEIOUY]/.test(p);
-                                    // Stricter filter: 3+ chars, not in blacklist, must have vowels
-                                    return p.length >= 3 && !psaBlacklist.includes(p) && hasVowels;
-                                });
-                                
-                                if (parts.length >= 2 && parts.length <= 4) {
-                                    score += (parts.length * 20);
-                                    if (score > highestScore) {
-                                        highestScore = score;
-                                        bestCandidate = parts;
+                                for (let rawLine of candidateLines) {
+                                    // Clean the line from labels and noise
+                                    let clean = rawLine.replace(/1\.|NAME|\(|FIRST|\)|MIDDLE|LAST|CHILD|[^A-Z\s]/g, ' ').trim();
+                                    let parts = clean.split(/\s+/).filter(p => p.length >= 3);
+                                    
+                                    // If we found 2 or more words, it's highly likely our name
+                                    if (parts.length >= 2) {
+                                        nameParts = parts;
+                                        break; // STOP searching immediately once name is found
                                     }
                                 }
                             }
 
-                            if (bestCandidate) {
-                                // Double check against birthdate fields
-                                if (!bestCandidate.some(p => months.includes(p))) {
-                                    result.first_name = ''; result.middle_name = ''; result.last_name = '';
+                            // 2. POPULATE FIELDS (Direct mapping from Grid Lock)
+                            if (nameParts.length > 0) {
+                                // Clear previously read noise
+                                result.first_name = ''; result.middle_name = ''; result.last_name = '';
 
-                                    if (bestCandidate.length >= 3) {
-                                        result.last_name = bestCandidate.pop(); 
-                                        result.middle_name = bestCandidate.pop(); 
-                                        result.first_name = bestCandidate.join(' '); 
-                                    } else {
-                                        result.last_name = bestCandidate[1];
-                                        result.first_name = bestCandidate[0];
-                                    }
+                                if (nameParts.length >= 3) {
+                                    result.last_name = nameParts.pop();
+                                    result.middle_name = nameParts.pop();
+                                    result.first_name = nameParts.join(' ');
+                                } else if (nameParts.length === 2) {
+                                    result.last_name = nameParts[1];
+                                    result.first_name = nameParts[0];
                                 }
+                                
+                                // FORCE STOP: Prevent further scanning to avoid "MALE FEMALE" overwrite
+                                result.is_valid = true;
+                                result.confidence = 95;
                             }
 
                             // 3. Birthdate Extraction (James Ryan Case: 18th September 2000)
