@@ -1027,42 +1027,41 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                             result.is_valid = true;
                             result.confidence = 90; 
 
-                            // 1. FUZZY GRID LOCK (Better at handling messy OCR)
+                            // 1. PRECISION NAME SCANNER (Filtering out Administrative Noise)
                             let nameParts = [];
                             const lines = text.toUpperCase().split('\n').map(l => l.trim());
+                            const adminBlacklist = ["NCR", "MUNICIPAL", "PROVINCE", "CITY", "REPUBLIC", "OFFICE", "REGISTRAR", "GENERAL", "PHILIPPINES", "CERTIFICATE", "LIVE", "BIRTH", "REMARKS", "FORM", "REVISED", "STATISTICS", "AUTHORITY"];
 
-                            let anchorIndex = -1;
-                            // Search for ANY label that indicates the name section
-                            for (let i = 0; i < Math.min(lines.length, 15); i++) {
-                                if (lines[i].includes("NAME") || lines[i].includes("CHILD") || 
-                                    lines[i].includes("FIRST") || lines[i].match(/^[1IL]\s*\./)) {
-                                    anchorIndex = i;
-                                    break;
+                            let topCandidates = [];
+
+                            // Scan only the top area (where names usually live)
+                            for (let i = 0; i < Math.min(lines.length, 12); i++) {
+                                let line = lines[i];
+                                let score = 0;
+
+                                // Anchor Bonus: High score if it looks like the name label
+                                if (line.match(/^[1IL]\s*\./) || line.includes("NAME") || line.includes("CHILD")) score += 50;
+
+                                // Clean the line
+                                let clean = line.replace(/1\.|NAME|\(|FIRST|\)|MIDDLE|LAST|CHILD|BIRTH|[^A-Z\s]/g, ' ').trim();
+                                let parts = clean.split(/\s+/).filter(p => {
+                                    return p.length >= 3 && !adminBlacklist.some(b => p.includes(b)) && /[AEIOUY]/.test(p);
+                                });
+
+                                // Quality Check: Real names usually have 2-4 clean words
+                                if (parts.length >= 2 && parts.length <= 4) {
+                                    score += (parts.length * 10);
+                                    topCandidates.push({ parts, score });
                                 }
                             }
 
-                            if (anchorIndex !== -1) {
-                                // Search a wider window (2 lines up, 3 lines down)
-                                let start = Math.max(0, anchorIndex - 1);
-                                let end = Math.min(lines.length, anchorIndex + 3);
-                                
-                                for (let j = start; j <= end; j++) {
-                                    let rawLine = lines[j] || "";
-                                    // Clean: ignore common labels, keep only A-Z
-                                    let clean = rawLine.replace(/1\.|NAME|\(|FIRST|\)|MIDDLE|LAST|CHILD|SEX|MALE|FEMALE|BIRTH|[^A-Z\s]/g, ' ').trim();
-                                    
-                                    // Filter parts: 2+ chars (to catch R.), must have a vowel
-                                    let parts = clean.split(/\s+/).filter(p => p.length >= 2 && /[AEIOUY]/.test(p));
-                                    
-                                    // If we find 2-4 clean uppercase words, it's our candidate
-                                    if (parts.length >= 2 && parts.length <= 5) {
-                                        nameParts = parts;
-                                        break; 
-                                    }
-                                }
+                            // Pick the highest scoring candidate (The real name)
+                            if (topCandidates.length > 0) {
+                                topCandidates.sort((a, b) => b.score - a.score);
+                                nameParts = topCandidates[0].parts;
                             }
 
-                            // 2. POPULATE FIELDS (Direct mapping from Fuzzy Lock)
+                            // 2. POPULATE FIELDS (Direct mapping from Precision Scan)
                             if (nameParts.length > 0) {
                                 result.first_name = ''; result.middle_name = ''; result.last_name = '';
 
@@ -1076,7 +1075,7 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                                 }
                                 
                                 result.is_valid = true;
-                                result.confidence = 98;
+                                result.confidence = 99;
                             }
 
                             // 3. Birthdate Extraction (James Ryan Case: 18th September 2000)
