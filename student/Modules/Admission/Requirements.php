@@ -1,5 +1,29 @@
 <?php
 session_start();
+
+// Handle AJAX Delete
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'delete_requirement') {
+    require_once dirname(__DIR__, 3) . '/Database/config.php';
+    header('Content-Type: application/json');
+    $email = $_SESSION['email'] ?? null;
+    $field = $_POST['field'] ?? null;
+
+    $valid_fields = ['birth_cert', 'form_138', 'good_moral', 'id_picture', 'form_137', 'barangay_clearance'];
+
+    if (!$email || !in_array($field, $valid_fields)) {
+        echo json_encode(['success' => false, 'message' => 'Invalid request.']);
+        exit;
+    }
+
+    try {
+        $stmt = $pdo->prepare("UPDATE enrollments SET {$field} = NULL WHERE email = ?");
+        $stmt->execute([$email]);
+        echo json_encode(['success' => true, 'message' => 'Requirement deleted successfully.']);
+    } catch (PDOException $e) {
+        echo json_encode(['success' => false, 'message' => 'Delete failed: ' . $e->getMessage()]);
+    }
+    exit;
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -11,6 +35,7 @@ session_start();
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         :root {
             --primary: #2563eb;
@@ -216,7 +241,16 @@ session_start();
                         <div class="upload-area" style="border-color: #22c55e; background: #f0fdf4;">
                             <i class="fas fa-check-circle" style="color: #22c55e; font-size: 1.5rem;"></i>
                             <span class="upload-label" style="color: #16a34a;">File Submitted</span>
-                            <a href="/<?php echo $enrollment->{$doc['field']}; ?>" target="_blank" style="font-size: 0.75rem; color: var(--primary); font-weight: 600; text-decoration: none; margin-top: 5px; display: block;">View File</a>
+                            <div style="display: flex; gap: 10px; justify-content: center; margin-top: 15px;">
+                                <a href="/<?php echo $enrollment->{$doc['field']}; ?>" target="_blank" 
+                                   style="padding: 6px 12px; background: #22c55e; color: white; border-radius: 8px; font-size: 0.8rem; font-weight: 600; text-decoration: none; transition: 0.2s;">
+                                    <i class="fas fa-eye"></i> View
+                                </a>
+                                <button onclick="deleteDocument('<?php echo $doc['field']; ?>', '<?php echo $doc['title']; ?>')" 
+                                        style="padding: 6px 12px; background: #fee2e2; color: #ef4444; border: none; border-radius: 8px; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: 0.2s;">
+                                    <i class="fas fa-trash-alt"></i> Delete
+                                </button>
+                            </div>
                         </div>
                     <?php else: ?>
                         <div class="upload-area">
@@ -231,6 +265,49 @@ session_start();
 
         </div>
     </div>
+
+    <script>
+        async function deleteDocument(field, title) {
+            const result = await Swal.fire({
+                title: 'Are you sure?',
+                text: `You want to delete your ${title}? You will need to upload it again.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: 'Yes, delete it!'
+            });
+
+            if (result.isConfirmed) {
+                const formData = new FormData();
+                formData.append('action', 'delete_requirement');
+                formData.append('field', field);
+
+                try {
+                    const response = await fetch('', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const data = await response.json();
+
+                    if (data.success) {
+                        Swal.fire({
+                            title: 'Deleted!',
+                            text: data.message,
+                            icon: 'success',
+                            confirmButtonColor: '#2563eb'
+                        }).then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire('Error!', data.message, 'error');
+                    }
+                } catch (error) {
+                    Swal.fire('Error!', 'Something went wrong.', 'error');
+                }
+            }
+        }
+    </script>
 </body>
 
 </html>

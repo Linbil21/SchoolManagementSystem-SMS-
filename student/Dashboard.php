@@ -381,8 +381,33 @@ if ($current_day !== 'Sunday') {
         <?php include 'Components/Header.php'; ?>
         <div class="content-area">
 
-
-
+        <?php 
+        $admission_status = $_SESSION['admission_status'] ?? 'Pending';
+        if ($admission_status !== 'Approved'): 
+        ?>
+        <div class="welcome-banner" style="margin-bottom: 30px;">
+            <h1 style="font-weight: 800;">Welcome to SMS! 🎓</h1>
+            <p>Thank you for registering. You are currently in the admission phase. Please complete the following steps to officially enroll.</p>
+            
+            <div style="margin-top: 25px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+                <div style="background: rgba(255,255,255,0.15); padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(5px);">
+                    <div style="font-size: 1.5rem; font-weight: 800; opacity: 0.7; margin-bottom: 10px;">01</div>
+                    <h4 style="font-size: 1.1rem; margin-bottom: 5px;">Upload Requirements</h4>
+                    <p style="font-size: 0.85rem; opacity: 0.9; line-height: 1.5;">Submit all necessary documents like your PSA, Form 138, and ID Picture in the Admission module.</p>
+                </div>
+                <div style="background: rgba(255,255,255,0.15); padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(5px);">
+                    <div style="font-size: 1.5rem; font-weight: 800; opacity: 0.7; margin-bottom: 10px;">02</div>
+                    <h4 style="font-size: 1.1rem; margin-bottom: 5px;">Wait for Approval</h4>
+                    <p style="font-size: 0.85rem; opacity: 0.9; line-height: 1.5;">Our admission team will review your submitted documents. You will be notified once approved.</p>
+                </div>
+                <div style="background: rgba(255,255,255,0.15); padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(5px);">
+                    <div style="font-size: 1.5rem; font-weight: 800; opacity: 0.7; margin-bottom: 10px;">03</div>
+                    <h4 style="font-size: 1.1rem; margin-bottom: 5px;">Enrollment</h4>
+                    <p style="font-size: 0.85rem; opacity: 0.9; line-height: 1.5;">Once approved, the Enrollment module will be unlocked for your subject selection and payment.</p>
+                </div>
+            </div>
+        </div>
+        <?php endif; ?>
 
         <div class="dashboard-grid">
             <!-- Schedule -->

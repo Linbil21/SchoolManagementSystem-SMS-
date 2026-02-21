@@ -35,12 +35,19 @@ $root = $project_base . '/';
 if (isset($_SESSION['email'])) {
     try {
         require_once $_SERVER['DOCUMENT_ROOT'] . $root . 'Database/config.php';
-        $stmt = $pdo->prepare("SELECT s.student_id, e.status as enrollment_status FROM students s LEFT JOIN enrollments e ON s.email = e.email WHERE s.email = ?");
+        $stmt = $pdo->prepare("
+            SELECT s.student_id, e.status as enrollment_status, a.status as admission_status 
+            FROM students s 
+            LEFT JOIN enrollments e ON s.email = e.email 
+            LEFT JOIN admission_applications a ON s.email = a.email 
+            WHERE s.email = ?
+        ");
         $stmt->execute([$_SESSION['email']]);
-        $fresh = $stmt->fetch();
+        $fresh = $stmt->fetch(PDO::FETCH_OBJ);
         if ($fresh) {
             $_SESSION['student_id'] = $fresh->student_id;
             $_SESSION['enrollment_status'] = $fresh->enrollment_status;
+            $_SESSION['admission_status'] = $fresh->admission_status ?? 'Pending';
         }
     } catch (Exception $e) {}
 }
@@ -68,6 +75,10 @@ if (isset($_SESSION['email'])) {
         <p class="menu-label">ACADEMIC</p>
         <ul class="main-menu">
             <!-- Enrollment -->
+            <?php 
+            $admission_status = $_SESSION['admission_status'] ?? 'Pending';
+            if ($admission_status === 'Approved'): 
+            ?>
             <li
                 class="has-dropdown <?php echo isDropdownOpen(['Subject-Selection', 'Assessment', 'Enrollment-Status', 'Upload-Payment', 'Enrollment-History']); ?>">
                 <a href="javascript:void(0)" class="dropdown-toggle">
@@ -83,6 +94,7 @@ if (isset($_SESSION['email'])) {
                     <li><a href="/student/Modules/Enrollment/History.php">Enrollment History</a></li>
                 </ul>
             </li>
+            <?php endif; ?>
             <!-- My Studies -->
             <li class="has-dropdown <?php echo isDropdownOpen(['Schedule.php', 'Grades.php', 'Attendance.php']); ?>">
                 <a href="javascript:void(0)" class="dropdown-toggle">
