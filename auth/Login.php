@@ -1034,51 +1034,58 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                             result.is_valid = true;
                             result.confidence = 90; 
 
-                            // 1. ZERO-NOISE PSA PARSER (Hardcore filtering for "James Ryan Carabuena")
+                            // 1. DUAL-SCAN NAME EXTRACTION (Anchor-Based + Safety Net)
                             let nameParts = [];
                             const lines = text.toUpperCase().split('\n').map(l => l.trim()).filter(l => l.length > 1);
                             
-                            // Expanded blacklist based on OCR artifacts
                             const hardcoreBlacklist = [
                                 "NCR", "MUNICIPAL", "PROVINCE", "CITY", "REPUBLIC", "OFFICE", "REGISTRAR", "GENERAL", 
                                 "PHILIPPINES", "CERTIFICATE", "LIVE", "BIRTH", "REMARKS", "FORM", "REVISED", "STATISTICS", 
                                 "AUTHORITY", "NATIONAL", "TION", "NOSIS", "ANIOTATION", "SCSSMTUTN", "FEY", "HAL", "AY", 
-                                "MOATH", "DEE", "PNC", "NONE", "COPY", "CERTIFIED", "TRUE", "SEAL"
+                                "MOATH", "DEE", "PNC", "NONE", "COPY", "CERTIFIED", "TRUE", "SEAL", "DATE", "SEX", "MALE", "FEMALE"
                             ];
 
+                            // Strategy A: Find the Name Anchor (Lenient Search)
                             let anchorIdx = -1;
-                            for (let i = 0; i < Math.min(lines.length, 12); i++) {
-                                if (lines[i].includes("NAME") || lines[i].match(/^[1IL]\s*\./)) {
+                            for (let i = 0; i < Math.min(lines.length, 15); i++) {
+                                // Match "1. NAME", "NAME:", "CHILD'S NAME", or just "1" at start
+                                if (lines[i].includes("NAME") || lines[i].includes("CHILD") || lines[i].match(/^[1IL7]\b/)) {
                                     anchorIdx = i;
                                     break;
                                 }
                             }
 
                             if (anchorIdx !== -1) {
-                                // Scan a focused block (the name area)
-                                let fullBlock = lines.slice(anchorIdx, anchorIdx + 3).join(" ");
-                                let clean = fullBlock.replace(/1\.|NAME|\(|FIRST|\)|MIDDLE|LAST|CHILD|BIRTH|[^A-Z\s]/g, ' ').trim();
-                                
-                                let rawParts = clean.split(/\s+/).filter(p => {
-                                    const isSuffix = ["JR", "SR", "III", "IVV"].includes(p);
-                                    const hasVowel = /[AEIOUY]/.test(p);
-                                    // STRICTOR: Minimum 3 chars, not in blacklist, must have vowel (unless suffix)
-                                    return (p.length >= 3 && !hardcoreBlacklist.includes(p) && (hasVowel || isSuffix));
+                                // Capture a block of 3 lines around the anchor
+                                let blockLines = lines.slice(Math.max(0, anchorIdx), anchorIdx + 4);
+                                let cleanText = blockLines.join(" ").replace(/1\.|NAME|\(|FIRST|\)|MIDDLE|LAST|CHILD|BIRTH|[^A-Z\s]/g, ' ').trim();
+                                let fragments = cleanText.split(/\s+/).filter(p => {
+                                    return (p.length >= 2 && !hardcoreBlacklist.includes(p) && /[AEIOUY]/.test(p));
                                 });
-
-                                // Remove gender and date noise remnants
-                                nameParts = rawParts.filter(p => !["MALE", "FEMALE", "SEX", "DATE", "JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"].includes(p));
+                                if (fragments.length >= 2) nameParts = fragments;
                             }
 
-                            // 2. PRECISION POPULATE (Handles "James Ryan Carabuena")
+                            // Strategy B: Safety Net (If no anchor found, look for 2-4 clean words in the top section)
+                            if (nameParts.length < 2) {
+                                for (let i = 0; i < Math.min(lines.length, 10); i++) {
+                                    let clean = lines[i].replace(/[^A-Z\s]/g, ' ').trim();
+                                    let parts = clean.split(/\s+/).filter(p => p.length >= 3 && !hardcoreBlacklist.includes(p) && /[AEIOUY]/.test(p));
+                                    if (parts.length >= 2 && parts.length <= 5) {
+                                        nameParts = parts;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            // 2. PRECISION POPULATE (Handles James Ryan Carabuena)
                             if (nameParts.length >= 2) {
                                 result.first_name = ''; result.middle_name = ''; result.last_name = '';
 
                                 if (nameParts.length >= 3) {
-                                    // Case: James Ryan Carabuena
-                                    result.last_name = nameParts.pop();      // Carabuena
-                                    result.middle_name = nameParts.pop();    // Ryan
-                                    result.first_name = nameParts.join(' '); // James
+                                    // Map to James | Ryan | Carabuena
+                                    result.last_name = nameParts.pop();      // Last word
+                                    result.middle_name = nameParts.pop();    // Second to last
+                                    result.first_name = nameParts.join(' '); // All others
                                 } else {
                                     result.last_name = nameParts[1];
                                     result.first_name = nameParts[0];
