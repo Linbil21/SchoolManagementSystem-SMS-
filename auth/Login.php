@@ -1026,67 +1026,80 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                             }
                         });
 
-                        // ADVANCED PSA PARSER
-                        if (text && text.length > 10) {
-                            const rawLines = text.toUpperCase().split('\n').map(l => l.trim()).filter(l => l.length > 2);
+                        // ULTIMATE PSA PARSER
+                        if (text && text.length > 20) {
+                            const rawLines = text.toUpperCase().split('\n').map(l => l.trim()).filter(l => l.length > 1);
                             result.raw_text = text;
                             result.is_valid = true;
                             result.confidence = 85; 
 
                             // 1. Better Document Detection
-                            if (text.toUpperCase().includes("CERTIFICATE OF LIVE BIRTH") || text.toUpperCase().includes("PHILIPPINE STATISTICS")) {
+                            if (text.toUpperCase().includes("LIVE BIRTH") || text.toUpperCase().includes("STATISTICS") || text.toUpperCase().includes("REGISTRAR")) {
                                 result.document_type = "PSA Birth Certificate";
                             }
 
-                            // 2. TARGETED NAME EXTRACTION
-                            // We look for the line that contains the actual name
-                            // Usually follow the line "1. NAME" or "(FIRST) (MIDDLE) (LAST)"
-                            let nameData = "";
+                            // 2. TARGETED NAME EXTRACTION (James Ryan Carabuena Case)
+                            let nameFound = false;
+                            
+                            // Find the line that looks like the actual Name Data
+                            // Search for words that are purely Alpha and long enough, usually after "NAME" or "(FIRST)"
                             for(let i=0; i < rawLines.length; i++) {
-                                // If line contains name labels, the name is likely in the next 1-2 lines
-                                if (rawLines[i].includes("NAME") || (rawLines[i].includes("FIRST") && rawLines[i].includes("LAST"))) {
-                                    // Combine next two lines as potential name block
-                                    nameData = (rawLines[i+1] || "") + " " + (rawLines[i+2] || "");
-                                    break;
-                                }
-                            }
-
-                            if (nameData) {
-                                // Remove common noisy labels that Tesseract might pick up from the grid
-                                const cleanName = nameData.replace(/\(|\)|FIRST|MIDDLE|LAST|NAME|CHILD|1\.|-|_/g, ' ').trim();
-                                const parts = cleanName.split(/\s+/).filter(p => p.length > 2); // Filter out small noise
+                                let line = rawLines[i];
                                 
-                                if (parts.length >= 3) {
-                                    // Check if last part is likely the Last Name
-                                    result.last_name = parts.pop();
-                                    // The remaining could be First + Middle
-                                    result.middle_name = parts.pop();
-                                    result.first_name = parts.join(' ');
-                                } else if (parts.length === 2) {
-                                    result.last_name = parts[1];
-                                    result.first_name = parts[0];
-                                }
-                            }
+                                // Skip lines that are just labels or noise
+                                if (line.includes("MUNICIPAL") || line.includes("REPUBLIC") || line.includes("OFFICE") || line.includes("CIVIL")) continue;
 
-                            // Fallback: If still no name, look for the longest sequence of words in the top half
-                            if (!result.first_name) {
-                                const longestLine = rawLines.slice(0, 10).sort((a, b) => b.length - a.length)[0];
-                                if (longestLine && longestLine.length > 10) {
-                                    const parts = longestLine.split(/\s+/).filter(p => p.length > 3);
+                                // If we find "NAME" or "FIRST", the actual data is likely in this line or the next
+                                if (line.includes("NAME") || (line.includes("FIRST") && line.includes("LAST"))) {
+                                    // Look at this line and the next 2 lines
+                                    let candidateRaw = (rawLines[i] + " " + (rawLines[i+1] || "") + " " + (rawLines[i+2] || ""));
+                                    
+                                    // CLEANING: Remove all labels and grid noise
+                                    let clean = candidateRaw.replace(/1\.|NAME|\(|FIRST|\)|MIDDLE|LAST|CHILD|MALE|FEMALE|SEX|DATE|BIRTH|[^A-Z\s]/g, ' ').trim();
+                                    let parts = clean.split(/\s+/).filter(p => p.length > 2 && p !== 'PNC' && p !== 'NONE');
+                                    
                                     if (parts.length >= 2) {
+                                        // For PSA: The last word is almost always the Surname
                                         result.last_name = parts.pop();
-                                        result.first_name = parts.join(' ');
+                                        // The rest is First Name (and potentially Middle)
+                                        // If only 2 words remain (e.g., JAMES RYAN), we keep them in First Name unless one of them is clearly a middle initial
+                                        if (parts.length >= 2) {
+                                            result.first_name = parts.join(' ');
+                                            result.middle_name = ''; // Default blank for middle unless sure
+                                        } else {
+                                            result.first_name = parts[0];
+                                        }
+                                        nameFound = true;
+                                        break;
                                     }
                                 }
                             }
+
+                            // FALLBACK: If "HWO" or "THO" noise was still picked up, find the longest consistent Alpha string
+                            if (result.first_name && (result.first_name.length < 3 || /^[HWOTL]{3}$/.test(result.first_name))) {
+                                result.first_name = ''; // Clear noise
+                                result.last_name = '';
+                            }
                             
-                            // 3. Birthdate Extraction (Look for Month Day Year pattern)
+                            if (!nameFound) {
+                                // Search top half for any two long uppercase words
+                                for (let line of rawLines.slice(0, 15)) {
+                                    let parts = line.replace(/[^A-Z\s]/g, '').split(/\s+/).filter(p => p.length > 3);
+                                    if (parts.length >= 2 && !line.includes("OFFICE") && !line.includes("REPUBLIC")) {
+                                        result.last_name = parts.pop();
+                                        result.first_name = parts.join(' ');
+                                        break;
+                                    }
+                                }
+                            }
+
+                            // 3. Birthdate Extraction
                             const months = ["JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"];
                             for (const line of rawLines) {
                                 for (const month of months) {
                                     if (line.includes(month)) {
                                         const yearMatch = line.match(/\d{4}/);
-                                        const dayMatch = line.match(/\d{1,2}/);
+                                        const dayMatch = line.match(/\b\d{1,2}\b/);
                                         if (yearMatch && dayMatch) {
                                             const monthIdx = months.indexOf(month) + 1;
                                             result.birthdate = `${yearMatch[0]}-${monthIdx.toString().padStart(2, '0')}-${dayMatch[0].padStart(2, '0')}`;
