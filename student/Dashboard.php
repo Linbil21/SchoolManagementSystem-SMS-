@@ -387,26 +387,90 @@ if ($current_day !== 'Sunday') {
         ?>
         <div class="welcome-banner" style="margin-bottom: 30px;">
             <h1 style="font-weight: 800;">Welcome to SMS! 🎓</h1>
-            <p>Thank you for registering. You are currently in the admission phase. Please complete the following steps to officially enroll.</p>
+            <p>Thank you for registering. Please follow these steps to officially enroll in this institution.</p>
             
-            <div style="margin-top: 25px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
-                <div style="background: rgba(255,255,255,0.15); padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(5px);">
-                    <div style="font-size: 1.5rem; font-weight: 800; opacity: 0.7; margin-bottom: 10px;">01</div>
-                    <h4 style="font-size: 1.1rem; margin-bottom: 5px;">Upload Requirements</h4>
-                    <p style="font-size: 0.85rem; opacity: 0.9; line-height: 1.5;">Submit all necessary documents like your PSA, Form 138, and ID Picture in the Admission module.</p>
+            <div style="margin-top: 25px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+                <!-- Step 1 -->
+                <div style="background: rgba(255,255,255,0.15); padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(5px); display:flex; flex-direction:column; gap:8px;">
+                    <div style="font-size: 1.4rem; font-weight: 800; opacity: 0.6;">01</div>
+                    <h4 style="font-size: 1rem; margin: 0;">Official Registration</h4>
+                    <p style="font-size: 0.82rem; opacity: 0.9; line-height: 1.5; flex:1;">You have completed this step by signing up on our system. ✅</p>
+                    <button disabled style="padding: 8px 16px; background: rgba(255,255,255,0.25); color: white; border: 1px solid rgba(255,255,255,0.4); border-radius: 10px; font-size: 0.8rem; font-weight: 600; cursor: not-allowed; opacity:0.7;">
+                        <i class="fas fa-check-circle"></i> Completed
+                    </button>
                 </div>
-                <div style="background: rgba(255,255,255,0.15); padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(5px);">
-                    <div style="font-size: 1.5rem; font-weight: 800; opacity: 0.7; margin-bottom: 10px;">02</div>
-                    <h4 style="font-size: 1.1rem; margin-bottom: 5px;">Wait for Approval</h4>
-                    <p style="font-size: 0.85rem; opacity: 0.9; line-height: 1.5;">Our admission team will review your submitted documents. You will be notified once approved.</p>
+                <!-- Step 2 -->
+                <div style="background: rgba(255,255,255,0.15); padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(5px); display:flex; flex-direction:column; gap:8px;">
+                    <div style="font-size: 1.4rem; font-weight: 800; opacity: 0.6;">02</div>
+                    <h4 style="font-size: 1rem; margin: 0;">Go to Cashier</h4>
+                    <p style="font-size: 0.82rem; opacity: 0.9; line-height: 1.5; flex:1;">Visit the school cashier to pay your <strong>Downpayment</strong>, <strong>Half Payment</strong>, or <strong>Full Payment</strong> to secure your slot.</p>
+                    <button onclick="document.getElementById('cashierModal').style.display='flex'" style="padding: 8px 16px; background: white; color: #2563eb; border: none; border-radius: 10px; font-size: 0.8rem; font-weight: 700; cursor: pointer;">
+                        <i class="fas fa-money-bill-wave"></i> View Payment Info
+                    </button>
                 </div>
-                <div style="background: rgba(255,255,255,0.15); padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(5px);">
-                    <div style="font-size: 1.5rem; font-weight: 800; opacity: 0.7; margin-bottom: 10px;">03</div>
-                    <h4 style="font-size: 1.1rem; margin-bottom: 5px;">Enrollment</h4>
-                    <p style="font-size: 0.85rem; opacity: 0.9; line-height: 1.5;">Once approved, the Enrollment module will be unlocked for your subject selection and payment.</p>
+                <!-- Step 3 -->
+                <div style="background: rgba(255,255,255,0.15); padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(5px); display:flex; flex-direction:column; gap:8px;">
+                    <div style="font-size: 1.4rem; font-weight: 800; opacity: 0.6;">03</div>
+                    <h4 style="font-size: 1rem; margin: 0;">Upload Requirements</h4>
+                    <p style="font-size: 0.82rem; opacity: 0.9; line-height: 1.5; flex:1;">Submit your documents (PSA, Form 138, ID Picture, etc.) in the Admission module for review and approval.</p>
+                    <a href="/student/Modules/Admission/Requirements.php" style="padding: 8px 16px; background: white; color: #2563eb; border-radius: 10px; font-size: 0.8rem; font-weight: 700; text-decoration: none; display:inline-block; text-align:center;">
+                        <i class="fas fa-file-upload"></i> Upload Now
+                    </a>
+                </div>
+                <!-- Step 4 -->
+                <div style="background: rgba(255,255,255,0.15); padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(5px); display:flex; flex-direction:column; gap:8px;">
+                    <div style="font-size: 1.4rem; font-weight: 800; opacity: 0.6;">04</div>
+                    <h4 style="font-size: 1rem; margin: 0;">Enrollment</h4>
+                    <p style="font-size: 0.82rem; opacity: 0.9; line-height: 1.5; flex:1;">Once your admission is approved, the Enrollment module will be unlocked to select subjects and finalize enrolment.</p>
+                    <button disabled style="padding: 8px 16px; background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); border: 1px solid rgba(255,255,255,0.3); border-radius: 10px; font-size: 0.8rem; font-weight: 600; cursor: not-allowed;">
+                        <i class="fas fa-lock"></i> Locked
+                    </button>
                 </div>
             </div>
         </div>
+
+        <!-- Cashier Info Modal -->
+        <div id="cashierModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.75); backdrop-filter:blur(8px); z-index:99999; align-items:center; justify-content:center; padding:20px;">
+            <div style="background:white; border-radius:24px; padding:40px; max-width:480px; width:100%; box-shadow:0 25px 50px rgba(0,0,0,0.3);">
+                <div style="width:60px; height:60px; background:#eff6ff; color:#2563eb; border-radius:16px; display:flex; align-items:center; justify-content:center; font-size:1.7rem; margin-bottom:20px;">
+                    <i class="fas fa-cash-register"></i>
+                </div>
+                <h2 style="font-size:1.4rem; font-weight:800; color:#1e293b; margin-bottom:10px;">Cashier Payment Info</h2>
+                <p style="color:#64748b; font-size:0.9rem; line-height:1.6; margin-bottom:20px;">Visit the school cashier's office to select your preferred payment scheme:</p>
+                <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:25px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; padding:14px; background:#fffbeb; border-radius:12px; border:1px solid #fde68a;">
+                        <div>
+                            <div style="font-weight:700; color:#1e293b; font-size:0.9rem;"><i class="fas fa-hand-holding-usd" style="color:#f59e0b; margin-right:6px;"></i> Downpayment</div>
+                            <div style="font-size:0.78rem; color:#64748b;">Minimum initial payment</div>
+                        </div>
+                        <span style="font-weight:700; color:#f59e0b; font-size:0.85rem;">Partial</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; padding:14px; background:#eff6ff; border-radius:12px; border:1px solid #bfdbfe;">
+                        <div>
+                            <div style="font-weight:700; color:#1e293b; font-size:0.9rem;"><i class="fas fa-percentage" style="color:#2563eb; margin-right:6px;"></i> Half Payment</div>
+                            <div style="font-size:0.78rem; color:#64748b;">50% of total tuition fee</div>
+                        </div>
+                        <span style="font-weight:700; color:#2563eb; font-size:0.85rem;">50%</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; padding:14px; background:#f0fdf4; border-radius:12px; border:1px solid #bbf7d0;">
+                        <div>
+                            <div style="font-weight:700; color:#1e293b; font-size:0.9rem;"><i class="fas fa-check-double" style="color:#22c55e; margin-right:6px;"></i> Full Payment</div>
+                            <div style="font-size:0.78rem; color:#64748b;">100% of total tuition fee</div>
+                        </div>
+                        <span style="font-weight:700; color:#22c55e; font-size:0.85rem;">Full</span>
+                    </div>
+                </div>
+                <button onclick="document.getElementById('cashierModal').style.display='none'" style="width:100%; padding:14px; background:#2563eb; color:white; border:none; border-radius:14px; font-weight:700; font-size:0.95rem; cursor:pointer;">
+                    Got it, thanks!
+                </button>
+            </div>
+        </div>
+        <script>
+            window.addEventListener('click', function(e) {
+                const modal = document.getElementById('cashierModal');
+                if (e.target === modal) modal.style.display = 'none';
+            });
+        </script>
         <?php endif; ?>
 
         <div class="dashboard-grid">
