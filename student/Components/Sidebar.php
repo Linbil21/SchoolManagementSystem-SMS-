@@ -134,10 +134,10 @@ if (isset($_SESSION['email'])) {
                     <i class="fas fa-chevron-right arrow-icon"></i>
                 </a>
                 <ul class="sub-menu">
-                    <li><a href="/Cashier/Dashboard.php">Go to Cashier</a></li>
-                    <li><a href="/student/Modules/Payments/Balance.php">View Balance</a></li>
-                    <li><a href="/student/Modules/Payments/History.php">Payment History</a></li>
-                    <li><a href="/student/Modules/Payments/Upload-Receipt.php">Upload Receipt</a></li>
+                    <li><a href="/Cashier/Dashboard.php"><i class="fas fa-cash-register" style="margin-right:6px; width:14px;"></i> Go to Cashier</a></li>
+                    <li><a href="/student/Modules/Payments/Balance.php"><i class="fas fa-coins" style="margin-right:6px; width:14px;"></i> View Balance</a></li>
+                    <li><a href="/student/Modules/Payments/History.php"><i class="fas fa-receipt" style="margin-right:6px; width:14px;"></i> My Receipts</a></li>
+                    <li><a href="/student/Modules/Payments/Upload-Receipt.php"><i class="fas fa-upload" style="margin-right:6px; width:14px;"></i> Upload Receipt</a></li>
                 </ul>
             </li>
         </ul>

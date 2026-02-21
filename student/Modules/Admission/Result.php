@@ -140,22 +140,52 @@ $course = $app ? $app->course_display_name : 'N/A';
         .action-btn {
             background: #2563eb;
             color: white;
-            padding: 15px 40px;
-            border-radius: 12px;
+            padding: 16px 36px;
+            border-radius: 50px;
             border: none;
-            font-size: 1rem;
-            font-weight: 600;
+            font-size: 0.95rem;
+            font-weight: 700;
             cursor: pointer;
             text-decoration: none;
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            transition: transform 0.2s;
-            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2);
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+            min-width: 220px;
+            letter-spacing: 0.3px;
+            box-shadow: 0 8px 24px rgba(37, 99, 235, 0.35);
+            transition: all 0.25s ease;
+            position: relative;
+            overflow: hidden;
         }
-        
+
+        .action-btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: rgba(255,255,255,0.15);
+            transition: left 0.3s ease;
+        }
+
+        .action-btn:hover::before {
+            left: 0;
+        }
+
         .action-btn:hover {
-            transform: translateY(-2px);
+            transform: translateY(-3px);
+            box-shadow: 0 14px 30px rgba(37, 99, 235, 0.4);
+        }
+
+        .action-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-area {
+            margin-top: 10px;
+            display: flex;
+            justify-content: center;
         }
 
     </style>
@@ -186,9 +216,11 @@ $course = $app ? $app->course_display_name : 'N/A';
                         </div>
                     </div>
 
-                    <a href="/student/Dashboard.php" class="action-btn" style="background: #0284c7; display: inline-flex; align-items: center; gap: 8px;">
-                        <i class="fas fa-home"></i> Back to Dashboard
-                    </a>
+                    <div class="btn-area">
+                        <a href="/student/Dashboard.php" class="action-btn" style="background: linear-gradient(135deg, #0369a1, #0284c7);">
+                            <i class="fas fa-home"></i> Back to Dashboard
+                        </a>
+                    </div>
                 </div>
             <?php elseif ($enrollment_status === 'Pending Payment'): ?>
                 <div class="result-card">
@@ -207,9 +239,11 @@ $course = $app ? $app->course_display_name : 'N/A';
                         </div>
                     </div>
 
-                    <a href="../Enrollment/Enrollment-Status.php" class="action-btn" style="background: #d97706;">
-                        Select Payment Method <i class="fas fa-wallet" style="margin-left: 8px;"></i>
-                    </a>
+                    <div class="btn-area">
+                        <a href="/student/Modules/Enrollment/Enrollment-Status.php" class="action-btn" style="background: linear-gradient(135deg, #b45309, #d97706);">
+                            <i class="fas fa-wallet"></i> Select Payment Method
+                        </a>
+                    </div>
                 </div>
             <?php elseif ($enrollment_status === 'Enrolled'): ?>
                 <div class="result-card">
@@ -233,9 +267,11 @@ $course = $app ? $app->course_display_name : 'N/A';
                         </div>
                     </div>
 
-                    <a href="../Academic/Schedule.php" class="action-btn" style="background: #16a34a;">
-                        View Class Schedule <i class="fas fa-calendar-alt" style="margin-left: 8px;"></i>
-                    </a>
+                    <div class="btn-area">
+                        <a href="/student/Modules/Academic/Schedule.php" class="action-btn" style="background: linear-gradient(135deg, #15803d, #16a34a);">
+                            <i class="fas fa-calendar-alt"></i> View Class Schedule
+                        </a>
+                    </div>
                 </div>
             <?php else: ?>
                 <!-- Default or Rejected -->
@@ -247,9 +283,11 @@ $course = $app ? $app->course_display_name : 'N/A';
                     <p class="result-message">
                         Your application status is currently: <strong><?php echo htmlspecialchars($enrollment_status); ?></strong>.
                     </p>
-                    <a href="/student/Dashboard.php" class="action-btn" style="background: #ef4444; display: inline-flex; align-items: center; gap: 8px;">
-                        <i class="fas fa-home"></i> Back to Dashboard
-                    </a>
+                    <div class="btn-area">
+                        <a href="/student/Dashboard.php" class="action-btn" style="background: linear-gradient(135deg, #dc2626, #ef4444);">
+                            <i class="fas fa-home"></i> Back to Dashboard
+                        </a>
+                    </div>
                 </div>
             <?php endif; ?>
         </div>
