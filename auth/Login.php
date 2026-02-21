@@ -1091,7 +1091,6 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                                     result.is_valid = true;
                                 }
                             }
-                        }
 
                             // 3. Birthdate Extraction (James Ryan Case: 18th September 2000)
                             const months = ["JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"];
