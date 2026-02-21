@@ -1092,7 +1092,36 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                                 }
                             }
 
-                            // 3. Birthdate Extraction (James Ryan Case: 18th September 2000)
+                            // 2. GUARDIAN EXTRACTION (Mother's Name in PSA)
+                            for (let i = 0; i < allLines.length; i++) {
+                                // PSA Item 6 is Mother's Maiden Name
+                                if (allLines[i].includes("MAIDEN") || allLines[i].includes("MOTHER") || allLines[i].match(/^[6]\b/)) {
+                                    for (let j = i + 1; j < i + 4; j++) {
+                                        if (allLines[j] && allLines[j].length > 5 && !allLines[j].includes("DATE") && !allLines[j].includes("BIRTH") && !allLines[j].includes("NONE")) {
+                                            // Simple mother name found
+                                            let words = allLines[j].split(/\s+/).filter(w => !blacklist.includes(w) && w.length > 2);
+                                            if (words.length >= 2) {
+                                                result.guardian_name = words.join(' ');
+                                                result.relationship = "Mother";
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    if (result.guardian_name) break;
+                                }
+                            }
+
+                            // 3. ADDRESS EXTRACTION (Usually after names/dates)
+                            for (let i = allLines.length - 1; i > 10; i--) {
+                                if (allLines[i].includes("CITY") || allLines[i].includes("PROVINCE") || allLines[i].includes("BARANGAY")) {
+                                    if (allLines[i].length > 10) {
+                                        result.address = allLines[i];
+                                        break;
+                                    }
+                                }
+                            }
+
+                            // 4. Birthdate Extraction (James Ryan Case: 18th September 2000)
                             const months = ["JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"];
                             for (const line of rawLines) {
                                 // Ignore lines with "OFFICE" or "REMARKS" for birthdate

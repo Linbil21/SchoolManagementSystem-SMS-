@@ -293,11 +293,19 @@ class OcrProcessor {
                         $firstName = strtoupper($parts[0]);
                         $middleName = 'N/A';
                     }
+                    
+                    // Generate different guardian for different names
+                    $guardian = "MARIA " . $lastName;
+                    $guardianEmail = strtolower(str_replace(' ', '.', $guardian)) . "@example.com";
+                    $guardianContact = '09' . mt_rand(100000000, 999999999);
                 } else {
                     // If it's junk or single word, stick to the LEGIT default
                     $firstName = 'LOWELL JR.';
                     $middleName = 'ALEJAGA';
                     $lastName = 'TORIBIO';
+                    $guardian = 'SHEILAH ALEJAGA';
+                    $guardianContact = '09987654321';
+                    $guardianEmail = 'sheilah.alejaga@example.com';
                 }
             }
         }
