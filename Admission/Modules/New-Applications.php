@@ -7,6 +7,26 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admission') {
 
 require_once '../../Database/config.php';
 
+// Handle AJAX Delete
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'delete_application') {
+    header('Content-Type: application/json');
+    $appId = $_POST['application_no'] ?? null;
+
+    if (!$appId) {
+        echo json_encode(['success' => false, 'message' => 'Application ID missing.']);
+        exit;
+    }
+
+    try {
+        $stmt = $pdo->prepare("DELETE FROM admission_applications WHERE application_no = ?");
+        $stmt->execute([$appId]);
+        echo json_encode(['success' => true, 'message' => 'Application deleted successfully.']);
+    } catch (PDOException $e) {
+        echo json_encode(['success' => false, 'message' => 'Delete failed: ' . $e->getMessage()]);
+    }
+    exit;
+}
+
 try {
     $stmt = $pdo->prepare("SELECT a.*, COALESCE(c.course_name, a.preferred_course_1) as course_display_name 
                            FROM admission_applications a 
@@ -390,11 +410,19 @@ try {
                                                 'phone' => $app->phone_number
                                             ];
                                         ?>
-                                        <button
-                                            onclick="openDetailModal(<?php echo htmlspecialchars(json_encode($appData), ENT_QUOTES, 'UTF-8'); ?>)"
-                                            style="border: none; background: #1648bc; color: white; padding: 6px 14px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-weight: 500;">
-                                            <i class="fas fa-eye" style="font-size: 0.85rem;"></i> View
-                                        </button>
+                                        <div style="display: flex; gap: 5px;">
+                                            <button
+                                                onclick="openDetailModal(<?php echo htmlspecialchars(json_encode($appData), ENT_QUOTES, 'UTF-8'); ?>)"
+                                                style="border: none; background: #1648bc; color: white; padding: 6px 14px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-weight: 500;">
+                                                <i class="fas fa-eye" style="font-size: 0.85rem;"></i> View
+                                            </button>
+                                            <button
+                                                onclick="deleteApplication('<?php echo $app->application_no; ?>', '<?php echo addslashes($app->first_name . ' ' . $app->last_name); ?>')"
+                                                style="border: none; background: #fee2e2; color: #ef4444; padding: 6px 14px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-weight: 500;"
+                                                title="Delete Application">
+                                                <i class="fas fa-trash-alt" style="font-size: 0.85rem;"></i>
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
@@ -503,6 +531,43 @@ try {
 
         function proceedToEval() {
             window.location.href = 'Evaluation.php';
+        }
+
+        async function deleteApplication(id, name) {
+            const result = await Swal.fire({
+                title: 'Are you sure?',
+                text: `You are about to delete the application of ${name}. This action cannot be undone!`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#718096',
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'Cancel'
+            });
+
+            if (result.isConfirmed) {
+                const formData = new FormData();
+                formData.append('action', 'delete_application');
+                formData.append('application_no', id);
+
+                try {
+                    const response = await fetch('New-Applications.php', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const data = await response.json();
+
+                    if (data.success) {
+                        Swal.fire('Deleted!', data.message, 'success').then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire('Error!', data.message, 'error');
+                    }
+                } catch (error) {
+                    Swal.fire('Error!', 'Something went wrong while deleting.', 'error');
+                }
+            }
         }
 
         window.onclick = function (event) {
