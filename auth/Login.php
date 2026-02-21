@@ -1034,41 +1034,42 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                             result.is_valid = true;
                             result.confidence = 90; 
 
-                            // 1. ADVANCED BLACKLIST (Including common misreads)
+                            // 1. ADVANCED BLACKLIST (Expanded with Gender and Months)
+                            const months = ["JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"];
                             const psaBlacklist = [
                                 "REMARKS", "ANNOTATION", "CERTIFICATION", "OFFICE", "REGISTRAR", "GENERAL", "REPUBLIC", 
                                 "PHILIPPINES", "MUNICIPAL", "PROVINCE", "CITY", "PNC", "NONE", "N/A", "BIRTH", "CERTIFICATE",
                                 "LIVE", "NAME", "FIRST", "MIDDLE", "LAST", "SEX", "DATE", "INFORMATION", "SIGNED", "SEAL",
-                                "PAGE", "COPY", "FORM", "REVISED", "JANUARY", "REGISTRY", "TRIAS", "CAVITE", "TRIAS", "CARL",
+                                "PAGE", "COPY", "FORM", "REVISED", "REGISTRY", "TRIAS", "CAVITE", "TRIAS", "CARL",
                                 "STATISTICS", "AUTHORITY", "NATIONAL", "SECURITY", "PRINTING", "DOCUMENT", "COPIES", "LCR",
-                                "TION", "NOSIS", "ANIOTATION", "SCSSMTUTN", "SISON", "REMARKS", "ADJUST", "PURSUANT"
+                                "TION", "NOSIS", "ANIOTATION", "SCSSMTUTN", "SISON", "REMARKS", "ADJUST", "PURSUANT",
+                                "MALE", "FEMALE", "SEX", ...months
                             ];
 
-                            // 2. Extract Names (High-Precision Proximity Search)
+                            // 2. Extract Names (Precision Top-Down Search)
                             let bestCandidate = null;
                             let highestScore = 0;
                             
-                            for(let i=0; i < Math.min(rawLines.length, 30); i++) {
+                            // Scan only the top 35% of the document where the name is located
+                            const scanLimit = Math.min(rawLines.length, 12); 
+                            
+                            for(let i=0; i < scanLimit; i++) {
                                 let line = rawLines[i];
                                 let score = 0;
 
-                                // PRIORITY: Look for the line that starts with "1." or follows "NAME"
-                                if (line.match(/^1\s*\./) || line.includes("NAME")) score += 60;
+                                // PRIORITY: Look for "1." or "NAME"
+                                if (line.match(/^1\s*\./) || line.includes("NAME") || line.includes("CHILD")) score += 70;
                                 
-                                // CLEANING: Remove noise tags
+                                // CLEANING: Remove noise
                                 let clean = line.replace(/[^A-Z\s]/g, ' ').trim();
                                 let parts = clean.split(/\s+/).filter(p => {
-                                    // REJECT constraints:
-                                    // - Word must be 3+ chars
-                                    // - Must NOT be in blacklist
-                                    // - Must NOT be purely consonants (Grid noise detector)
                                     const hasVowels = /[AEIOUY]/.test(p);
+                                    // Stricter filter: 3+ chars, not in blacklist, must have vowels
                                     return p.length >= 3 && !psaBlacklist.includes(p) && hasVowels;
                                 });
                                 
-                                // A valid name line for James Ryan Carabuena should have 2-4 solid words
                                 if (parts.length >= 2 && parts.length <= 4) {
-                                    score += (parts.length * 15);
+                                    score += (parts.length * 20);
                                     if (score > highestScore) {
                                         highestScore = score;
                                         bestCandidate = parts;
@@ -1077,17 +1078,18 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                             }
 
                             if (bestCandidate) {
-                                // Clear Fields before populating
-                                result.first_name = ''; result.middle_name = ''; result.last_name = '';
+                                // Double check against birthdate fields
+                                if (!bestCandidate.some(p => months.includes(p))) {
+                                    result.first_name = ''; result.middle_name = ''; result.last_name = '';
 
-                                // Distribution Logic (James Ryan Carabuena)
-                                if (bestCandidate.length >= 3) {
-                                    result.last_name = bestCandidate.pop(); 
-                                    result.middle_name = bestCandidate.pop(); 
-                                    result.first_name = bestCandidate.join(' '); 
-                                } else if (bestCandidate.length === 2) {
-                                    result.last_name = bestCandidate[1];
-                                    result.first_name = bestCandidate[0];
+                                    if (bestCandidate.length >= 3) {
+                                        result.last_name = bestCandidate.pop(); 
+                                        result.middle_name = bestCandidate.pop(); 
+                                        result.first_name = bestCandidate.join(' '); 
+                                    } else {
+                                        result.last_name = bestCandidate[1];
+                                        result.first_name = bestCandidate[0];
+                                    }
                                 }
                             }
 
