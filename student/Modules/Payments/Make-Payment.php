@@ -301,6 +301,47 @@ if ($email) {
             font-size: 0.8rem;
             font-weight: 600;
         }
+
+        /* Blur Overlay */
+        .blur-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            z-index: 10;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.3s ease;
+        }
+
+        .btn-reveal {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-size: 0.95rem;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-reveal:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(37, 99, 235, 0.3);
+        }
         
         /* Modal */
         .processing-modal {
@@ -403,11 +444,20 @@ if ($email) {
                 <!-- Live Preview -->
                 <div>
                     <div class="receipt-preview" id="receiptCard">
-                        <div class="receipt-header">
-                            <img src="/Assets/image/logo.png" alt="Logo">
-                            <h2>SMS School Management</h2>
-                            <p style="font-size: 0.75rem; color: var(--text-muted); letter-spacing: 0.5px;">Live E-Receipt Preview</p>
+                        <!-- Blur Overlay Layer -->
+                        <div class="blur-overlay" id="blurOverlay">
+                            <button onclick="revealReceipt()" class="btn-reveal">
+                                <i class="fas fa-eye"></i> View Live Preview
+                            </button>
                         </div>
+                        
+                        <!-- Actual Content inside a container to be blurred -->
+                        <div id="receiptContent" style="filter: blur(6px); user-select: none; pointer-events: none; transition: filter 0.4s ease;">
+                            <div class="receipt-header">
+                                <img src="/Assets/image/logo.png" alt="Logo">
+                                <h2>SMS School Management</h2>
+                                <p style="font-size: 0.75rem; color: var(--text-muted); letter-spacing: 0.5px;">Live E-Receipt Preview</p>
+                            </div>
 
                         <div class="receipt-info">
                             <div>
@@ -455,6 +505,7 @@ if ($email) {
                         <div style="margin-top: 40px; text-align: center; font-size: 0.8rem; color: var(--text-muted);">
                             <p style="margin-top: 10px;">This e-receipt will be finalized upon successful transaction.</p>
                         </div>
+                        </div> <!-- End receiptContent -->
                     </div>
                 </div>
             </div>
@@ -544,6 +595,18 @@ if ($email) {
             }
         }
         
+        function revealReceipt() {
+            const overlay = document.getElementById('blurOverlay');
+            const content = document.getElementById('receiptContent');
+            overlay.style.opacity = '0';
+            setTimeout(() => {
+                overlay.style.display = 'none';
+            }, 300);
+            content.style.filter = 'blur(0)';
+            content.style.userSelect = 'auto';
+            content.style.pointerEvents = 'auto';
+        }
+
         // Init preview on load
         window.onload = updatePreview;
     </script>
