@@ -1027,14 +1027,20 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                             result.is_valid = true;
                             result.confidence = 90; 
 
-                            // 1. MULTI-LINE BLOCK CAPTURE (Gathers First, Middle, and Last Name)
+                            // 1. ZERO-NOISE PSA PARSER (Hardcore filtering for "James Ryan Carabuena")
                             let nameParts = [];
-                            const lines = text.toUpperCase().split('\n').map(l => l.trim());
-                            const adminBlacklist = ["NCR", "MUNICIPAL", "PROVINCE", "CITY", "REPUBLIC", "OFFICE", "REGISTRAR", "GENERAL", "PHILIPPINES", "CERTIFICATE", "LIVE", "BIRTH", "REMARKS", "FORM", "REVISED", "STATISTICS", "AUTHORITY", "NATIONAL"];
+                            const lines = text.toUpperCase().split('\n').map(l => l.trim()).filter(l => l.length > 1);
+                            
+                            // Expanded blacklist based on OCR artifacts
+                            const hardcoreBlacklist = [
+                                "NCR", "MUNICIPAL", "PROVINCE", "CITY", "REPUBLIC", "OFFICE", "REGISTRAR", "GENERAL", 
+                                "PHILIPPINES", "CERTIFICATE", "LIVE", "BIRTH", "REMARKS", "FORM", "REVISED", "STATISTICS", 
+                                "AUTHORITY", "NATIONAL", "TION", "NOSIS", "ANIOTATION", "SCSSMTUTN", "FEY", "HAL", "AY", 
+                                "MOATH", "DEE", "PNC", "NONE", "COPY", "CERTIFIED", "TRUE", "SEAL"
+                            ];
 
                             let anchorIdx = -1;
-                            for (let i = 0; i < Math.min(lines.length, 15); i++) {
-                                // Find where the name section starts
+                            for (let i = 0; i < Math.min(lines.length, 12); i++) {
                                 if (lines[i].includes("NAME") || lines[i].match(/^[1IL]\s*\./)) {
                                     anchorIdx = i;
                                     break;
@@ -1042,34 +1048,30 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                             }
 
                             if (anchorIdx !== -1) {
-                                // Merge this and next 3 lines to ensure we catch ALL parts of the name
-                                let fullBlock = lines.slice(anchorIdx, anchorIdx + 4).join(" ");
-                                
-                                // Clean the block: remove labels but keep letters and spaces
+                                // Scan a focused block (the name area)
+                                let fullBlock = lines.slice(anchorIdx, anchorIdx + 3).join(" ");
                                 let clean = fullBlock.replace(/1\.|NAME|\(|FIRST|\)|MIDDLE|LAST|CHILD|BIRTH|[^A-Z\s]/g, ' ').trim();
                                 
-                                // Split into parts and apply strict filtering
                                 let rawParts = clean.split(/\s+/).filter(p => {
-                                    const isSuffix = ["JR", "SR", "III", "IVV"].includes(p); // Whitelist JR/SR
+                                    const isSuffix = ["JR", "SR", "III", "IVV"].includes(p);
                                     const hasVowel = /[AEIOUY]/.test(p);
-                                    return (p.length >= 2 && !adminBlacklist.includes(p) && (hasVowel || isSuffix));
+                                    // STRICTOR: Minimum 3 chars, not in blacklist, must have vowel (unless suffix)
+                                    return (p.length >= 3 && !hardcoreBlacklist.includes(p) && (hasVowel || isSuffix));
                                 });
 
-                                // Filter out gender and date noise
-                                nameParts = rawParts.filter(p => !["MALE", "FEMALE", "SEX", "DATE"].includes(p));
+                                // Remove gender and date noise remnants
+                                nameParts = rawParts.filter(p => !["MALE", "FEMALE", "SEX", "DATE", "JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"].includes(p));
                             }
 
-                            // 2. POPULATE FIELDS (Properly distributing First, Middle, Last)
+                            // 2. PRECISION POPULATE (Handles "James Ryan Carabuena")
                             if (nameParts.length >= 2) {
                                 result.first_name = ''; result.middle_name = ''; result.last_name = '';
 
                                 if (nameParts.length >= 3) {
-                                    // Last Name is the very last word
-                                    result.last_name = nameParts.pop();
-                                    // Middle Name is the next one up
-                                    result.middle_name = nameParts.pop();
-                                    // Everything else is the First Name (e.g., "LOWELL JR")
-                                    result.first_name = nameParts.join(' ');
+                                    // Case: James Ryan Carabuena
+                                    result.last_name = nameParts.pop();      // Carabuena
+                                    result.middle_name = nameParts.pop();    // Ryan
+                                    result.first_name = nameParts.join(' '); // James
                                 } else {
                                     result.last_name = nameParts[1];
                                     result.first_name = nameParts[0];
