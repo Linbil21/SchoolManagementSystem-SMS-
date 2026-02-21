@@ -165,18 +165,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $notif_stmt = $pdo->prepare("INSERT INTO notifications (user_id, type, title, message, profile_image, icon, icon_bg, icon_color, link) VALUES (NULL, 'student_registration', 'New Student Registration', ?, ?, 'fa-user-plus', '#d1fae5', '#059669', '/Admission/Modules/Evaluation.php')");
                 $notif_stmt->execute([$first_name . " " . $last_name . " has registered and applied.", $profile_image_path]);
 
-                // Send Enrollment Notification Email
-                sendEnrollmentEmail($email, [
+                // Prepare detail for Unified Email
+                $details = [
                     'first_name' => $first_name,
+                    'middle_name' => $middle_name,
                     'last_name' => $last_name,
                     'student_id' => 'PENDING',
                     'course' => $full_course_name,
                     'year_level' => $year_level,
+                    'contact_number' => $contact_number,
+                    'address' => $address,
                     'reference_code' => $reference_code
-                ]);
+                ];
 
-                // Send OTP
-                if (sendOTP($email, $otp, 'Registration Verification')) {
+                // Send Unified Email (Summary + OTP) 
+                if (sendOTP($email, $otp, 'Registration Verification', $details)) {
                     if ($isAjax) {
                         header('Content-Type: application/json');
                         echo json_encode(['status' => 'otp_required', 'email' => $email, 'type' => 'register', 'masked_email' => maskEmail($email)]);

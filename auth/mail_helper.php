@@ -13,7 +13,7 @@ function get_last_mail_error() {
     return $last_mail_error;
 }
 
-function sendOTP($recipientEmail, $otp, $type = 'Verification')
+function sendOTP($recipientEmail, $otp, $type = 'Verification', $details = null)
 {
     global $last_mail_error;
     // Skip sending for dummy/test emails to avoid "Address not found" bounces
@@ -48,18 +48,72 @@ function sendOTP($recipientEmail, $otp, $type = 'Verification')
         $mail->isHTML(true);
         $mail->Subject = "$type Code - SMS Official";
 
+        $summaryHtml = "";
+        if ($details) {
+            $fullName = strtoupper($details['first_name'] . ' ' . ($details['middle_name'] ?? '') . ' ' . $details['last_name']);
+            $course = $details['course'] ?? '---';
+            $year = $details['year_level'] ?? '---';
+            $contact = $details['contact_number'] ?? '---';
+            $address = $details['address'] ?? '---';
+
+            $summaryHtml = "
+            <div style='background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 25px; margin-bottom: 25px;'>
+                <h3 style='color: #1e3a8a; margin-top: 0; margin-bottom: 20px; font-size: 1.1rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;'>Enrollment Summary</h3>
+                <table style='width: 100%; border-collapse: collapse;'>
+                    <tr>
+                        <td style='width: 50%; padding-bottom: 15px; vertical-align: top;'>
+                            <p style='color: #64748b; font-size: 0.8rem; margin: 0; text-transform: uppercase;'>Full Name</p>
+                            <p style='color: #0f172a; font-weight: 700; margin: 3px 0; font-size: 0.95rem;'>$fullName</p>
+                        </td>
+                        <td style='width: 50%; padding-bottom: 15px; vertical-align: top;'>
+                            <p style='color: #64748b; font-size: 0.8rem; margin: 0; text-transform: uppercase;'>Course</p>
+                            <p style='color: #0f172a; font-weight: 700; margin: 3px 0; font-size: 0.95rem;'>$course</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style='padding-bottom: 15px; vertical-align: top;'>
+                            <p style='color: #64748b; font-size: 0.8rem; margin: 0; text-transform: uppercase;'>Year Level</p>
+                            <p style='color: #0f172a; font-weight: 700; margin: 3px 0; font-size: 0.95rem;'>$year</p>
+                        </td>
+                        <td style='padding-bottom: 15px; vertical-align: top;'>
+                            <p style='color: #64748b; font-size: 0.8rem; margin: 0; text-transform: uppercase;'>Contact</p>
+                            <p style='color: #0f172a; font-weight: 700; margin: 3px 0; font-size: 0.95rem;'>$contact</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan='2' style='vertical-align: top;'>
+                            <p style='color: #64748b; font-size: 0.8rem; margin: 0; text-transform: uppercase;'>Address</p>
+                            <p style='color: #0f172a; font-weight: 700; margin: 3px 0; font-size: 0.95rem;'>$address</p>
+                        </td>
+                    </tr>
+                </table>
+            </div>";
+        }
+
         $mail->Body = "
-        <div style='font-family: Poppins, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 12px;'>
-            <h2 style='color: #2563eb; text-align: center;'>$type Code</h2>
-            <p style='text-align: center; font-size: 1.1rem;'>Your verification code is:</p>
-            <div style='text-align: center; margin: 30px 0;'>
-                <span style='background-color: #f1f5f9; color: #1e293b; padding: 15px 30px; border-radius: 8px; font-weight: 700; font-size: 2rem; letter-spacing: 5px; border: 2px dashed #cbd5e1;'>
-                    $otp
-                </span>
+        <div style='font-family: \"Poppins\", Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 30px; border: 1px solid #f1f5f9; border-radius: 20px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);'>
+            <div style='text-align: center; margin-bottom: 25px;'>
+                <img src='https://ems.jampzdev.com/Assets/image/logo.png' alt='SMS Logo' style='width: 70px;'>
             </div>
-            <p style='font-size: 0.9rem; color: #64748b; text-align: center;'>This code will expire in 10 minutes. If you did not request this, please ignore this email.</p>
-            <hr style='border: 0; border-top: 1px solid #e2e8f0; margin: 20px 0;'>
-            <p style='font-size: 0.8rem; color: #94a3b8; text-align: center;'>&copy; " . date('Y') . " SMS Official. All rights reserved.</p>
+            
+            $summaryHtml
+
+            <div style='background: linear-gradient(135deg, #2563eb, #1d4ed8); padding: 30px; border-radius: 12px; text-align: center; color: white;'>
+                <h2 style='margin-top: 0; font-weight: 800; font-size: 1.5rem;'>Verification Code</h2>
+                <p style='opacity: 0.9; margin-bottom: 25px;'>Hello! Please use the code below to verify your $type.</p>
+                <div style='background: white; color: #1e40af; padding: 15px 30px; border-radius: 10px; font-weight: 800; font-size: 2.5rem; letter-spacing: 12px; display: inline-block; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);'>
+                    $otp
+                </div>
+            </div>
+
+            <p style='font-size: 0.85rem; color: #64748b; text-align: center; margin-top: 30px;'>
+                This code will expire in <b>10 minutes</b>. If you did not request this, please ignore this email.
+            </p>
+            <hr style='border: 0; border-top: 1px solid #f1f5f9; margin: 30px 0;'>
+            <p style='font-size: 0.75rem; color: #94a3b8; text-align: center;'>
+                &copy; " . date('Y') . " SMS Official Portal. Empowering Education.<br>
+                Administered by Jampz Dev
+            </p>
         </div>
         ";
 
