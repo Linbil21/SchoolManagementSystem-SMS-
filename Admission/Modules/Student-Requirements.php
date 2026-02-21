@@ -18,10 +18,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     }
 
     try {
-        $stmt = $pdo->prepare("DELETE FROM enrollments WHERE reference_code = ?");
-        $stmt->execute([$id]);
-        echo json_encode(['success' => true, 'message' => 'Requirement record deleted successfully.']);
+        $pdo->beginTransaction();
+        
+        // 1. Get the enrollmentId from the reference_code
+        $getStmt = $pdo->prepare("SELECT enrollmentId FROM enrollments WHERE reference_code = ?");
+        $getStmt->execute([$id]);
+        $enrollment = $getStmt->fetch(PDO::FETCH_ASSOC);
+        
+        if ($enrollment) {
+            $eId = $enrollment['enrollmentId'];
+            
+            // 2. Delete from payments first
+            $delPay = $pdo->prepare("DELETE FROM payments WHERE enrollment_id = ?");
+            $delPay->execute([$eId]);
+            
+            // 3. Delete the enrollment record
+            $stmt = $pdo->prepare("DELETE FROM enrollments WHERE enrollmentId = ?");
+            $stmt->execute([$eId]);
+            
+            $pdo->commit();
+            echo json_encode(['success' => true, 'message' => 'Requirement record and associated payments deleted.']);
+        } else {
+            $pdo->rollBack();
+            echo json_encode(['success' => false, 'message' => 'Record not found.']);
+        }
     } catch (PDOException $e) {
+        $pdo->rollBack();
         echo json_encode(['success' => false, 'message' => 'Delete failed: ' . $e->getMessage()]);
     }
     exit;

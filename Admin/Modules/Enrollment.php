@@ -82,10 +82,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         }
 
         try {
-            $stmt = $pdo->prepare("DELETE FROM enrollments WHERE enrollmentId = ?");
-            $stmt->execute([$enrollmentId]);
-            echo json_encode(['success' => true, 'message' => 'Enrollment record deleted successfully.']);
+            $pdo->beginTransaction();
+            
+            // 1. Delete associated payments first to avoid foreign key violation
+            $stmt1 = $pdo->prepare("DELETE FROM payments WHERE enrollment_id = ?");
+            $stmt1->execute([$enrollmentId]);
+            
+            // 2. Delete the enrollment record
+            $stmt2 = $pdo->prepare("DELETE FROM enrollments WHERE enrollmentId = ?");
+            $stmt2->execute([$enrollmentId]);
+            
+            $pdo->commit();
+            echo json_encode(['success' => true, 'message' => 'Enrollment and associated payments deleted successfully.']);
         } catch (PDOException $e) {
+            $pdo->rollBack();
             echo json_encode(['success' => false, 'message' => 'Delete failed: ' . $e->getMessage()]);
         }
         exit;
