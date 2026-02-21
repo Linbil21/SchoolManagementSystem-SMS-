@@ -1027,39 +1027,43 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                             result.is_valid = true;
                             result.confidence = 90; 
 
-                            // 1. GRID LOCK SCANNER (Targeting Section 1: NAME only)
+                            // 1. FUZZY GRID LOCK (Better at handling messy OCR)
                             let nameParts = [];
-                            const lines = text.toUpperCase().split('\n').map(l => l.trim()).filter(l => l.length > 3);
+                            const lines = text.toUpperCase().split('\n').map(l => l.trim());
 
-                            let nameLineIndex = -1;
-                            // Find the exact line or the line containing the "1. NAME" anchor
-                            for (let i = 0; i < Math.min(lines.length, 10); i++) {
-                                if (lines[i].includes("NAME") || lines[i].match(/^1\s*\./)) {
-                                    nameLineIndex = i;
+                            let anchorIndex = -1;
+                            // Search for ANY label that indicates the name section
+                            for (let i = 0; i < Math.min(lines.length, 15); i++) {
+                                if (lines[i].includes("NAME") || lines[i].includes("CHILD") || 
+                                    lines[i].includes("FIRST") || lines[i].match(/^[1IL]\s*\./)) {
+                                    anchorIndex = i;
                                     break;
                                 }
                             }
 
-                            if (nameLineIndex !== -1) {
-                                // The name data is usually on the same line after "NAME" OR on the next line
-                                let candidateLines = [lines[nameLineIndex], lines[nameLineIndex + 1] || ""];
+                            if (anchorIndex !== -1) {
+                                // Search a wider window (2 lines up, 3 lines down)
+                                let start = Math.max(0, anchorIndex - 1);
+                                let end = Math.min(lines.length, anchorIndex + 3);
                                 
-                                for (let rawLine of candidateLines) {
-                                    // Clean the line from labels and noise
-                                    let clean = rawLine.replace(/1\.|NAME|\(|FIRST|\)|MIDDLE|LAST|CHILD|[^A-Z\s]/g, ' ').trim();
-                                    let parts = clean.split(/\s+/).filter(p => p.length >= 3);
+                                for (let j = start; j <= end; j++) {
+                                    let rawLine = lines[j] || "";
+                                    // Clean: ignore common labels, keep only A-Z
+                                    let clean = rawLine.replace(/1\.|NAME|\(|FIRST|\)|MIDDLE|LAST|CHILD|SEX|MALE|FEMALE|BIRTH|[^A-Z\s]/g, ' ').trim();
                                     
-                                    // If we found 2 or more words, it's highly likely our name
-                                    if (parts.length >= 2) {
+                                    // Filter parts: 2+ chars (to catch R.), must have a vowel
+                                    let parts = clean.split(/\s+/).filter(p => p.length >= 2 && /[AEIOUY]/.test(p));
+                                    
+                                    // If we find 2-4 clean uppercase words, it's our candidate
+                                    if (parts.length >= 2 && parts.length <= 5) {
                                         nameParts = parts;
-                                        break; // STOP searching immediately once name is found
+                                        break; 
                                     }
                                 }
                             }
 
-                            // 2. POPULATE FIELDS (Direct mapping from Grid Lock)
+                            // 2. POPULATE FIELDS (Direct mapping from Fuzzy Lock)
                             if (nameParts.length > 0) {
-                                // Clear previously read noise
                                 result.first_name = ''; result.middle_name = ''; result.last_name = '';
 
                                 if (nameParts.length >= 3) {
@@ -1071,9 +1075,8 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                                     result.first_name = nameParts[0];
                                 }
                                 
-                                // FORCE STOP: Prevent further scanning to avoid "MALE FEMALE" overwrite
                                 result.is_valid = true;
-                                result.confidence = 95;
+                                result.confidence = 98;
                             }
 
                             // 3. Birthdate Extraction (James Ryan Case: 18th September 2000)
