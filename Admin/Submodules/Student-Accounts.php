@@ -7,10 +7,37 @@ if (!isset($_SESSION['role']) || ($_SESSION['role'] !== 'admin' && $_SESSION['ro
     exit();
 }
 
+// Handle Delete Student (SuperAdmin only)
+if (isset($_GET['delete']) && $_SESSION['role'] === 'superadmin') {
+    try {
+        $student_id = $_GET['delete'];
+        
+        // Transaction to delete from both students and enrollments for consistency
+        $pdo->beginTransaction();
+        
+        // 1. Delete from students
+        $del_s = $pdo->prepare("DELETE FROM students WHERE student_id = ?");
+        $del_s->execute([$student_id]);
+        
+        // 2. Also delete from enrollments if exists (optional but cleaner)
+        $del_e = $pdo->prepare("DELETE FROM enrollments WHERE reference_code = ?");
+        $del_e->execute([$student_id]);
+        
+        $pdo->commit();
+        header("Location: Student-Accounts.php?deleted=1");
+        exit();
+    } catch (PDOException $e) {
+        $pdo->rollBack();
+        header("Location: Student-Accounts.php?error=delete_failed");
+        exit();
+    }
+}
+
 // Fetch Registered Students from 'students' table
 try {
     $stmt = $pdo->query("
         SELECT 
+            s.id,
             s.student_id, 
             s.first_name, 
             s.last_name, 
@@ -20,50 +47,16 @@ try {
             s.profile_image,
             s.year_level,
             s.created_at,
-            COALESCE(c.course_code, s.course) as course_code, 
-            COALESCE(c.course_name, s.course) as course_name,
+            s.course as course_name, 
             'Active' as account_status
         FROM students s 
-        LEFT JOIN courses c ON s.course = c.course_name 
         ORDER BY s.created_at DESC
     ");
     $students = $stmt->fetchAll();
 } catch (PDOException $e) { 
     $students = []; 
 }
-
-// DUMMY DATA FOR STUDENTS (Runs if DB is empty OR if DB Error occurred)
-if (empty($students)) {
-    $s1 = new stdClass();
-    $s1->student_id = '2024-0001';
-    $s1->first_name = 'Juan';
-    $s1->last_name = 'Dela Cruz';
-    $s1->email = 'juan.delacruz@example.com';
-    $s1->contact_number = '09123456789';
-    $s1->address = '123 Rizal St, Manila';
-    $s1->profile_image = '';
-    $s1->year_level = '1st Year';
-    $s1->created_at = date('Y-m-d H:i:s');
-    $s1->course_code = 'BSIT';
-    $s1->course_name = 'Bachelor of Science in Information Technology';
-    $s1->account_status = 'Active';
-
-    $s2 = new stdClass();
-    $s2->student_id = '2024-0002';
-    $s2->first_name = 'Maria';
-    $s2->last_name = 'Santos';
-    $s2->email = 'maria.santos@example.com';
-    $s2->contact_number = '09223334444';
-    $s2->address = '456 Mabini St, Quezon City';
-    $s2->profile_image = '';
-    $s2->year_level = '2nd Year';
-    $s2->created_at = date('Y-m-d H:i:s', strtotime('-1 day'));
-    $s2->course_code = 'BSBA';
-    $s2->course_name = 'Bachelor of Science in Business Administration';
-    $s2->account_status = 'Active';
-
-    $students = [$s1, $s2];
-}
+?>
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -75,12 +68,17 @@ if (empty($students)) {
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="../Assets/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
     <?php include '../Components/Side-bar.php'; ?>
     <div class="main-wrapper">
         <?php include '../Components/Head-bar.php'; ?>
         <div class="content-area">
+            <?php if (isset($_GET['deleted'])): ?>
+                <script>Swal.fire('Deleted!', 'Student account has been removed.', 'success');</script>
+            <?php endif; ?>
+            
             <div class="table-container">
                 <div class="table-header">
                     <h2>Active Student Accounts</h2>
@@ -102,11 +100,14 @@ if (empty($students)) {
                                 <tr>
                                     <td class="ref-code"><?php echo htmlspecialchars($s->student_id); ?></td>
                                     <td class="student-name"><?php echo htmlspecialchars($s->last_name . ", " . $s->first_name); ?></td>
-                                    <td><?php echo htmlspecialchars($s->course_code ?? 'N/A'); ?></td>
+                                    <td><?php echo htmlspecialchars($s->course_name ?? 'N/A'); ?></td>
                                     <td><?php echo htmlspecialchars($s->year_level); ?></td>
                                     <td><span class="status-badge status-enrolled">Active</span></td>
                                     <td>
                                         <button class="btn-view" style="padding: 6px 12px; font-size: 0.8rem;" onclick='viewProfile(<?php echo json_encode($s); ?>)'>Profile</button>
+                                        <?php if ($_SESSION['role'] === 'superadmin'): ?>
+                                            <button class="btn-reject" style="padding: 6px 12px; font-size: 0.8rem; margin-left: 5px;" onclick="confirmDelete('<?php echo $s->student_id; ?>')">Delete</button>
+                                        <?php endif; ?>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
@@ -138,6 +139,22 @@ if (empty($students)) {
     </div>
 
     <script>
+        function confirmDelete(id) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "This will permanently delete the student account.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = 'Student-Accounts.php?delete=' + id;
+                }
+            });
+        }
+
         function viewProfile(data) {
             const modal = document.getElementById('profileModal');
             const container = document.getElementById('profileData');
