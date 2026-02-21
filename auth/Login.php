@@ -1027,49 +1027,50 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                             result.is_valid = true;
                             result.confidence = 90; 
 
-                            // 1. PRECISION NAME SCANNER (Filtering out Administrative Noise)
+                            // 1. MULTI-LINE BLOCK CAPTURE (Gathers First, Middle, and Last Name)
                             let nameParts = [];
                             const lines = text.toUpperCase().split('\n').map(l => l.trim());
-                            const adminBlacklist = ["NCR", "MUNICIPAL", "PROVINCE", "CITY", "REPUBLIC", "OFFICE", "REGISTRAR", "GENERAL", "PHILIPPINES", "CERTIFICATE", "LIVE", "BIRTH", "REMARKS", "FORM", "REVISED", "STATISTICS", "AUTHORITY"];
+                            const adminBlacklist = ["NCR", "MUNICIPAL", "PROVINCE", "CITY", "REPUBLIC", "OFFICE", "REGISTRAR", "GENERAL", "PHILIPPINES", "CERTIFICATE", "LIVE", "BIRTH", "REMARKS", "FORM", "REVISED", "STATISTICS", "AUTHORITY", "NATIONAL"];
 
-                            let topCandidates = [];
-
-                            // Scan only the top area (where names usually live)
-                            for (let i = 0; i < Math.min(lines.length, 12); i++) {
-                                let line = lines[i];
-                                let score = 0;
-
-                                // Anchor Bonus: High score if it looks like the name label
-                                if (line.match(/^[1IL]\s*\./) || line.includes("NAME") || line.includes("CHILD")) score += 50;
-
-                                // Clean the line
-                                let clean = line.replace(/1\.|NAME|\(|FIRST|\)|MIDDLE|LAST|CHILD|BIRTH|[^A-Z\s]/g, ' ').trim();
-                                let parts = clean.split(/\s+/).filter(p => {
-                                    return p.length >= 3 && !adminBlacklist.some(b => p.includes(b)) && /[AEIOUY]/.test(p);
-                                });
-
-                                // Quality Check: Real names usually have 2-4 clean words
-                                if (parts.length >= 2 && parts.length <= 4) {
-                                    score += (parts.length * 10);
-                                    topCandidates.push({ parts, score });
+                            let anchorIdx = -1;
+                            for (let i = 0; i < Math.min(lines.length, 15); i++) {
+                                // Find where the name section starts
+                                if (lines[i].includes("NAME") || lines[i].match(/^[1IL]\s*\./)) {
+                                    anchorIdx = i;
+                                    break;
                                 }
                             }
 
-                            // Pick the highest scoring candidate (The real name)
-                            if (topCandidates.length > 0) {
-                                topCandidates.sort((a, b) => b.score - a.score);
-                                nameParts = topCandidates[0].parts;
+                            if (anchorIdx !== -1) {
+                                // Merge this and next 3 lines to ensure we catch ALL parts of the name
+                                let fullBlock = lines.slice(anchorIdx, anchorIdx + 4).join(" ");
+                                
+                                // Clean the block: remove labels but keep letters and spaces
+                                let clean = fullBlock.replace(/1\.|NAME|\(|FIRST|\)|MIDDLE|LAST|CHILD|BIRTH|[^A-Z\s]/g, ' ').trim();
+                                
+                                // Split into parts and apply strict filtering
+                                let rawParts = clean.split(/\s+/).filter(p => {
+                                    const isSuffix = ["JR", "SR", "III", "IVV"].includes(p); // Whitelist JR/SR
+                                    const hasVowel = /[AEIOUY]/.test(p);
+                                    return (p.length >= 2 && !adminBlacklist.includes(p) && (hasVowel || isSuffix));
+                                });
+
+                                // Filter out gender and date noise
+                                nameParts = rawParts.filter(p => !["MALE", "FEMALE", "SEX", "DATE"].includes(p));
                             }
 
-                            // 2. POPULATE FIELDS (Direct mapping from Precision Scan)
-                            if (nameParts.length > 0) {
+                            // 2. POPULATE FIELDS (Properly distributing First, Middle, Last)
+                            if (nameParts.length >= 2) {
                                 result.first_name = ''; result.middle_name = ''; result.last_name = '';
 
                                 if (nameParts.length >= 3) {
+                                    // Last Name is the very last word
                                     result.last_name = nameParts.pop();
+                                    // Middle Name is the next one up
                                     result.middle_name = nameParts.pop();
+                                    // Everything else is the First Name (e.g., "LOWELL JR")
                                     result.first_name = nameParts.join(' ');
-                                } else if (nameParts.length === 2) {
+                                } else {
                                     result.last_name = nameParts[1];
                                     result.first_name = nameParts[0];
                                 }
