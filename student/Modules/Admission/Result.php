@@ -147,7 +147,9 @@ $course = $app ? $app->course_display_name : 'N/A';
             font-weight: 600;
             cursor: pointer;
             text-decoration: none;
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
             transition: transform 0.2s;
             box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2);
         }
@@ -184,8 +186,8 @@ $course = $app ? $app->course_display_name : 'N/A';
                         </div>
                     </div>
 
-                    <a href="../../Dashboard.php" class="action-btn" style="background: #0284c7;">
-                        Back to Dashboard <i class="fas fa-home" style="margin-left: 8px;"></i>
+                    <a href="/student/Dashboard.php" class="action-btn" style="background: #0284c7; display: inline-flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-home"></i> Back to Dashboard
                     </a>
                 </div>
             <?php elseif ($enrollment_status === 'Pending Payment'): ?>
@@ -245,8 +247,8 @@ $course = $app ? $app->course_display_name : 'N/A';
                     <p class="result-message">
                         Your application status is currently: <strong><?php echo htmlspecialchars($enrollment_status); ?></strong>.
                     </p>
-                    <a href="../../Dashboard.php" class="action-btn" style="background: #ef4444;">
-                        Back to Dashboard <i class="fas fa-home" style="margin-left: 8px;"></i>
+                    <a href="/student/Dashboard.php" class="action-btn" style="background: #ef4444; display: inline-flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-home"></i> Back to Dashboard
                     </a>
                 </div>
             <?php endif; ?>
