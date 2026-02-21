@@ -175,7 +175,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     'year_level' => $year_level,
                     'contact_number' => $contact_number,
                     'address' => $address,
-                    'reference_code' => $reference_code
+                    'reference_code' => $reference_code,
+                    'profile_image' => $profile_image_path
                 ];
 
                 // Send Unified Email (Summary + OTP) 

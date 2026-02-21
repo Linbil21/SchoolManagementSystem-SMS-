@@ -55,10 +55,24 @@ function sendOTP($recipientEmail, $otp, $type = 'Verification', $details = null)
             $year = $details['year_level'] ?? '---';
             $contact = $details['contact_number'] ?? '---';
             $address = $details['address'] ?? '---';
+            $profileImg = $details['profile_image'] ?? '';
+            $domain = "https://ems.jampzdev.com/";
+            
+            $imgHtml = "";
+            if ($profileImg) {
+                $fullImgPath = $domain . str_replace('../', '', $profileImg);
+                $imgHtml = "
+                <div style='text-align: center; margin-bottom: 20px;'>
+                    <img src='$fullImgPath' alt='Student Photo' style='width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 4px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.1);'>
+                </div>";
+            }
 
             $summaryHtml = "
             <div style='background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 25px; margin-bottom: 25px;'>
-                <h3 style='color: #1e3a8a; margin-top: 0; margin-bottom: 20px; font-size: 1.1rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;'>Enrollment Summary</h3>
+                <h3 style='color: #1e3a8a; margin-top: 0; margin-bottom: 20px; font-size: 1.1rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; text-align: center;'>Enrollment Summary</h3>
+                
+                $imgHtml
+                
                 <table style='width: 100%; border-collapse: collapse;'>
                     <tr>
                         <td style='width: 50%; padding-bottom: 15px; vertical-align: top;'>
