@@ -1026,50 +1026,75 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                             }
                         });
 
-                        // Simple Parser for Tesseract output
+                        // ADVANCED PSA PARSER
                         if (text && text.length > 10) {
-                            const upperText = text.toUpperCase().replace(/\s+/g, ' ');
+                            const rawLines = text.toUpperCase().split('\n').map(l => l.trim()).filter(l => l.length > 2);
                             result.raw_text = text;
                             result.is_valid = true;
                             result.confidence = 85; 
 
-                            // 1. Detect Document Type
-                            if (upperText.includes("BIRTH") || upperText.includes("PSA") || upperText.includes("LIVE BIRTH")) {
+                            // 1. Better Document Detection
+                            if (text.toUpperCase().includes("CERTIFICATE OF LIVE BIRTH") || text.toUpperCase().includes("PHILIPPINE STATISTICS")) {
                                 result.document_type = "PSA Birth Certificate";
                             }
 
-                            // 2. Robust PSA Name Extraction
-                            // PSA layout: 1. NAME (First) (Middle) (Last) [NAME DATA]
-                            const nameBlockMatch = upperText.match(/1?\s*NAME\s*\(?FIRST\)?\s*\(?MIDDLE\)?\s*\(?LAST\)?\s*([A-Z\s,.-]{5,})/);
-                            if (nameBlockMatch) {
-                                const nameParts = nameBlockMatch[1].trim().split(/\s+/).filter(p => !['FIRST', 'MIDDLE', 'LAST', 'NAME'].includes(p));
-                                if (nameParts.length >= 3) {
-                                    result.last_name = nameParts.pop();
-                                    result.middle_name = nameParts.pop();
-                                    result.first_name = nameParts.join(' ');
-                                } else if (nameParts.length === 2) {
-                                    result.last_name = nameParts.pop();
-                                    result.first_name = nameParts.join(' ');
+                            // 2. TARGETED NAME EXTRACTION
+                            // We look for the line that contains the actual name
+                            // Usually follow the line "1. NAME" or "(FIRST) (MIDDLE) (LAST)"
+                            let nameData = "";
+                            for(let i=0; i < rawLines.length; i++) {
+                                // If line contains name labels, the name is likely in the next 1-2 lines
+                                if (rawLines[i].includes("NAME") || (rawLines[i].includes("FIRST") && rawLines[i].includes("LAST"))) {
+                                    // Combine next two lines as potential name block
+                                    nameData = (rawLines[i+1] || "") + " " + (rawLines[i+2] || "");
+                                    break;
                                 }
                             }
 
-                            // Fallback for names (Common PSA format with commas)
-                            if (!result.first_name && upperText.includes(',')) {
-                                const commaName = upperText.match(/([A-Z]{3,}),\s*([A-Z\s]{3,})/);
-                                if (commaName) {
-                                    result.last_name = commaName[1];
-                                    result.first_name = commaName[2];
+                            if (nameData) {
+                                // Remove common noisy labels that Tesseract might pick up from the grid
+                                const cleanName = nameData.replace(/\(|\)|FIRST|MIDDLE|LAST|NAME|CHILD|1\.|-|_/g, ' ').trim();
+                                const parts = cleanName.split(/\s+/).filter(p => p.length > 2); // Filter out small noise
+                                
+                                if (parts.length >= 3) {
+                                    // Check if last part is likely the Last Name
+                                    result.last_name = parts.pop();
+                                    // The remaining could be First + Middle
+                                    result.middle_name = parts.pop();
+                                    result.first_name = parts.join(' ');
+                                } else if (parts.length === 2) {
+                                    result.last_name = parts[1];
+                                    result.first_name = parts[0];
+                                }
+                            }
+
+                            // Fallback: If still no name, look for the longest sequence of words in the top half
+                            if (!result.first_name) {
+                                const longestLine = rawLines.slice(0, 10).sort((a, b) => b.length - a.length)[0];
+                                if (longestLine && longestLine.length > 10) {
+                                    const parts = longestLine.split(/\s+/).filter(p => p.length > 3);
+                                    if (parts.length >= 2) {
+                                        result.last_name = parts.pop();
+                                        result.first_name = parts.join(' ');
+                                    }
                                 }
                             }
                             
-                            // 3. Try to find Birthdate (e.g. "18TH SEPTEMBER 2000")
-                            const dateMatch = upperText.match(/(\d{1,2}(?:ST|ND|RD|TH)?\s*[A-Z]{3,}\s*\d{4})/);
-                            if (dateMatch) {
-                                const cleanDate = dateMatch[1].replace(/(?:ST|ND|RD|TH)/g, '');
-                                const timestamp = Date.parse(cleanDate);
-                                if (!isNaN(timestamp)) {
-                                    result.birthdate = new Date(timestamp).toISOString().split('T')[0];
+                            // 3. Birthdate Extraction (Look for Month Day Year pattern)
+                            const months = ["JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"];
+                            for (const line of rawLines) {
+                                for (const month of months) {
+                                    if (line.includes(month)) {
+                                        const yearMatch = line.match(/\d{4}/);
+                                        const dayMatch = line.match(/\d{1,2}/);
+                                        if (yearMatch && dayMatch) {
+                                            const monthIdx = months.indexOf(month) + 1;
+                                            result.birthdate = `${yearMatch[0]}-${monthIdx.toString().padStart(2, '0')}-${dayMatch[0].padStart(2, '0')}`;
+                                            break;
+                                        }
+                                    }
                                 }
+                                if (result.birthdate) break;
                             }
                         }
                     } catch (tessErr) {
