@@ -180,7 +180,7 @@ session_start();
             <div class="requirements-grid">
                 <?php
                 // Fetch enrollment status for the current student
-                require_once '../../Database/config.php';
+                require_once dirname(__DIR__, 3) . '/Database/config.php';
                 $email = $_SESSION['email'] ?? '';
                 $enrollment = null;
                 if ($email) {
