@@ -173,77 +173,60 @@ session_start();
         <?php include '../../Components/Header.php'; ?>
         <div class="content-area">
             <div class="page-header">
-                <h1 class="page-title">Upload Requirements</h1>
-                <p class="page-subtitle">Please submit clear scanned copies of the following documents.</p>
+                <h1 class="page-title">Student Requirements List</h1>
+                <p class="page-subtitle">View and manage your submitted enrollment requirements.</p>
             </div>
 
             <div class="requirements-grid">
-                <!-- PSA Birth Certificate -->
-                <div class="req-card">
-                    <div class="req-header">
-                        <div class="req-icon">
-                            <i class="fas fa-file-invoice"></i>
-                        </div>
-                        <span class="status-badge">Pending</span>
-                    </div>
-                    <h3 class="req-title">PSA Birth Certificate</h3>
-                    <p class="req-desc">Original copy of Philippine Statistics Authority (PSA) Birth Certificate.</p>
-                    <div class="upload-area">
-                        <input type="file" accept="image/*,application/pdf">
-                        <i class="fas fa-cloud-upload-alt upload-icon"></i>
-                        <span class="upload-label">Click to Upload</span>
-                    </div>
-                </div>
+                <?php
+                // Fetch enrollment status for the current student
+                require_once '../../Database/config.php';
+                $email = $_SESSION['email'] ?? '';
+                $enrollment = null;
+                if ($email) {
+                    $stmt = $pdo->prepare("SELECT * FROM enrollments WHERE email = ?");
+                    $stmt->execute([$email]);
+                    $enrollment = $stmt->fetch();
+                }
 
-                <!-- Form 138 -->
-                <div class="req-card">
-                    <div class="req-header">
-                        <div class="req-icon">
-                            <i class="fas fa-scroll"></i>
-                        </div>
-                        <span class="status-badge uploaded">Uploaded</span>
-                    </div>
-                    <h3 class="req-title">Form 138 (Report Card)</h3>
-                    <p class="req-desc">Senior High School Report Card / Grade 12 Report Card.</p>
-                    <div class="upload-area" style="border-color: #22c55e; background: #f0fdf4;">
-                        <i class="fas fa-check-circle" style="color: #22c55e; font-size: 1.5rem;"></i>
-                        <span class="upload-label" style="color: #16a34a;">File Submitted</span>
-                    </div>
-                </div>
+                $docs = [
+                    ['title' => 'PSA Birth Certificate', 'field' => 'birth_cert', 'desc' => 'Original copy of Philippine Statistics Authority (PSA) Birth Certificate.', 'icon' => 'fa-file-invoice'],
+                    ['title' => 'Form 138 (Report Card)', 'field' => 'form_138', 'desc' => 'Senior High School Report Card / Grade 12 Report Card.', 'icon' => 'fa-scroll'],
+                    ['title' => 'Good Moral Character', 'field' => 'good_moral', 'desc' => 'Certificate of Good Moral Character from the last school attended.', 'icon' => 'fa-certificate'],
+                    ['title' => '2x2 ID Picture', 'field' => 'id_picture', 'desc' => 'Recent 2x2 colored picture with white background and name tag.', 'icon' => 'fa-id-badge'],
+                    ['title' => 'Form 137 (TOR)', 'field' => 'form_137', 'desc' => 'Permanent record from the previous school.', 'icon' => 'fa-file-alt'],
+                    ['title' => 'Barangay Clearance', 'field' => 'barangay_clearance', 'desc' => 'Clearance from your local barangay.', 'icon' => 'fa-shuttle-van']
+                ];
 
-                <!-- Good Moral -->
+                foreach ($docs as $doc):
+                    $isSubmitted = $enrollment && !empty($enrollment->{$doc['field']});
+                ?>
                 <div class="req-card">
                     <div class="req-header">
                         <div class="req-icon">
-                            <i class="fas fa-certificate"></i>
+                            <i class="fas <?php echo $doc['icon']; ?>"></i>
                         </div>
-                        <span class="status-badge">Pending</span>
+                        <span class="status-badge <?php echo $isSubmitted ? 'uploaded' : ''; ?>">
+                            <?php echo $isSubmitted ? 'Submitted' : 'Pending'; ?>
+                        </span>
                     </div>
-                    <h3 class="req-title">Good Moral Character</h3>
-                    <p class="req-desc">Certificate of Good Moral Character from the last school attended.</p>
-                    <div class="upload-area">
-                        <input type="file" accept="image/*,application/pdf">
-                        <i class="fas fa-cloud-upload-alt upload-icon"></i>
-                        <span class="upload-label">Click to Upload</span>
-                    </div>
-                </div>
-
-                <!-- 2x2 ID Picture -->
-                <div class="req-card">
-                    <div class="req-header">
-                        <div class="req-icon">
-                            <i class="fas fa-id-badge"></i>
+                    <h3 class="req-title"><?php echo $doc['title']; ?></h3>
+                    <p class="req-desc"><?php echo $doc['desc']; ?></p>
+                    <?php if ($isSubmitted): ?>
+                        <div class="upload-area" style="border-color: #22c55e; background: #f0fdf4;">
+                            <i class="fas fa-check-circle" style="color: #22c55e; font-size: 1.5rem;"></i>
+                            <span class="upload-label" style="color: #16a34a;">File Submitted</span>
+                            <a href="/<?php echo $enrollment->{$doc['field']}; ?>" target="_blank" style="font-size: 0.75rem; color: var(--primary); font-weight: 600; text-decoration: none; margin-top: 5px; display: block;">View File</a>
                         </div>
-                        <span class="status-badge">Pending</span>
-                    </div>
-                    <h3 class="req-title">2x2 ID Picture</h3>
-                    <p class="req-desc">Recent 2x2 colored picture with white background and name tag.</p>
-                    <div class="upload-area">
-                        <input type="file" accept="image/*,application/pdf">
-                        <i class="fas fa-cloud-upload-alt upload-icon"></i>
-                        <span class="upload-label">Click to Upload</span>
-                    </div>
+                    <?php else: ?>
+                        <div class="upload-area">
+                            <input type="file" accept="image/*,application/pdf">
+                            <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                            <span class="upload-label">Click to Upload</span>
+                        </div>
+                    <?php endif; ?>
                 </div>
+                <?php endforeach; ?>
             </div>
 
         </div>

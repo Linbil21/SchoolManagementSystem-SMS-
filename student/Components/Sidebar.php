@@ -67,20 +67,6 @@ if (isset($_SESSION['email'])) {
 
         <p class="menu-label">ACADEMIC</p>
         <ul class="main-menu">
-            <!-- Admission -->
-            <li class="has-dropdown <?php echo isDropdownOpen(['Requirements', 'Admission-Result', 'Admission-History']); ?>">
-                <a href="javascript:void(0)" class="dropdown-toggle">
-                    <i class="fas fa-university"></i>
-                    <span>Admission</span>
-                    <i class="fas fa-chevron-right arrow-icon"></i>
-                </a>
-                <ul class="sub-menu">
-                    <li><a href="/student/Modules/Admission/Requirements.php">Upload Requirements</a></li>
-                    <li><a href="/student/Modules/Admission/Result.php">View Admission Result</a></li>
-                    <li><a href="/student/Modules/Admission/History.php">Admission History</a></li>
-                </ul>
-            </li>
-
             <!-- Enrollment -->
             <li
                 class="has-dropdown <?php echo isDropdownOpen(['Subject-Selection', 'Assessment', 'Enrollment-Status', 'Upload-Payment', 'Enrollment-History']); ?>">
@@ -97,7 +83,6 @@ if (isset($_SESSION['email'])) {
                     <li><a href="/student/Modules/Enrollment/History.php">Enrollment History</a></li>
                 </ul>
             </li>
-
             <!-- My Studies -->
             <li class="has-dropdown <?php echo isDropdownOpen(['Schedule.php', 'Grades.php', 'Attendance.php']); ?>">
                 <a href="javascript:void(0)" class="dropdown-toggle">
@@ -111,6 +96,18 @@ if (isset($_SESSION['email'])) {
                     </li>
                     <li><a href="javascript:void(0)" style="opacity: 0.5;">My Grades (Soon)</a></li>
                     <li><a href="javascript:void(0)" style="opacity: 0.5;">Attendance (Soon)</a></li>
+                </ul>
+            </li>
+
+            <!-- Admission -->
+            <li class="has-dropdown <?php echo isDropdownOpen(['Requirements']); ?>">
+                <a href="javascript:void(0)" class="dropdown-toggle">
+                    <i class="fas fa-university"></i>
+                    <span>Admission</span>
+                    <i class="fas fa-chevron-right arrow-icon"></i>
+                </a>
+                <ul class="sub-menu">
+                    <li><a href="/student/Modules/Admission/Requirements.php">Student Requirements List</a></li>
                 </ul>
             </li>
         </ul>
