@@ -987,6 +987,13 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
             // Clear previous validation states
             inputGroup.querySelector('input').classList.remove('input-success', 'input-error');
 
+            // CLEAR PREVIOUS DATA (Force change on new upload)
+            const clearInputs = ['first_name', 'middle_name', 'last_name', 'birthdate'];
+            clearInputs.forEach(name => {
+                const el = document.querySelector(`input[name="${name}"], select[name="${name}"]`);
+                if (el) el.value = '';
+            });
+
             try {
                 const response = await fetch('ocr_api.php', {
                     method: 'POST',
@@ -1141,15 +1148,15 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                     // Auto-fill fields if data found
                     const fillField = (selector, value) => {
                         const el = document.querySelector(selector);
-                        if (el && value) {
-                            el.value = value;
+                        if (el) {
+                            el.value = value || ''; // Fill with new value OR clear if empty
                         }
                     };
 
-                    if (result.first_name) fillField('input[name="first_name"]', result.first_name);
-                    if (result.middle_name) fillField('input[name="middle_name"]', result.middle_name);
-                    if (result.last_name) fillField('input[name="last_name"]', result.last_name);
-                    if (result.birthdate) fillField('input[name="birthdate"]', result.birthdate);
+                    fillField('input[name="first_name"]', result.first_name);
+                    fillField('input[name="middle_name"]', result.middle_name);
+                    fillField('input[name="last_name"]', result.last_name);
+                    fillField('input[name="birthdate"]', result.birthdate);
                     if (result.gender) fillField('select[name="gender"]', result.gender);
                     if (result.contact_number) fillField('input[name="contact_number"]', result.contact_number);
                     if (result.address) fillField('input[name="address"]', result.address);
