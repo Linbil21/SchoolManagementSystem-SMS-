@@ -35,28 +35,16 @@ if (isset($_GET['delete']) && $_SESSION['role'] === 'superadmin') {
 
 // Fetch Registered Students from 'students' table
 try {
-    $stmt = $pdo->query("
-        SELECT 
-            s.id,
-            s.student_id, 
-            s.first_name, 
-            s.last_name, 
-            s.email, 
-            s.contact_number, 
-            s.address, 
-            s.profile_image,
-            s.year_level,
-            s.created_at,
-            s.course as course_name, 
-            'Active' as account_status
-        FROM students s 
-        ORDER BY s.created_at DESC
-    ");
+    $stmt = $pdo->query("SELECT * FROM students ORDER BY created_at DESC");
     $students = $stmt->fetchAll();
+    
+    // Ensure course_name property exists for the UI
+    foreach ($students as $s) {
+        $s->course_name = $s->course ?? 'N/A';
+    }
 } catch (PDOException $e) { 
     $students = []; 
 }
-?>
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -65,7 +53,7 @@ try {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Accounts - SMS</title>
     <link rel="icon" type="image/x-icon" href="../../Assets/image/logo.png">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="../Assets/style.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -91,7 +79,7 @@ try {
                                 <th>Name</th>
                                 <th>Course</th>
                                 <th>Year Level</th>
-                                <th>Account status</th>
+                                <th>Account Status</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -102,7 +90,12 @@ try {
                                     <td class="student-name"><?php echo htmlspecialchars($s->last_name . ", " . $s->first_name); ?></td>
                                     <td><?php echo htmlspecialchars($s->course_name ?? 'N/A'); ?></td>
                                     <td><?php echo htmlspecialchars($s->year_level); ?></td>
-                                    <td><span class="status-badge status-enrolled">Active</span></td>
+                                    <td>
+                                        <span class="status-badge <?php echo ($s->status == 'online') ? 'status-enrolled' : 'status-pending-payment'; ?>">
+                                            <i class="fas fa-circle" style="font-size: 8px; margin-right: 5px; color: <?php echo ($s->status == 'online') ? '#10b981' : '#94a3b8'; ?>"></i>
+                                            <?php echo ($s->status == 'online') ? 'Online' : 'Offline'; ?>
+                                        </span>
+                                    </td>
                                     <td>
                                         <button class="btn-view" style="padding: 6px 12px; font-size: 0.8rem;" onclick='viewProfile(<?php echo json_encode($s); ?>)'>Profile</button>
                                         <?php if ($_SESSION['role'] === 'superadmin'): ?>

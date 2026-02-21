@@ -20,7 +20,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         if ($student) {
             // Verify and clear code
-            $updateStmt = $pdo->prepare("UPDATE students SET is_verified = 1, verification_code = NULL WHERE id = ?");
+            $updateStmt = $pdo->prepare("UPDATE students SET is_verified = 1, verification_code = NULL, status = 'online' WHERE id = ?");
             $updateStmt->execute([$student->id]);
 
             // Set Session
