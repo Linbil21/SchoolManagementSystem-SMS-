@@ -461,7 +461,7 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
     <!-- CENTER WRAPPER FOR LOGIN -->
     <div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px;">
     <!-- ORIGINAL LOGIN/REGISTER FORM -->
-    <div class="container" id="main-container">
+    <div class="container <?php echo (isset($_GET['action']) && $_GET['action'] == 'register') ? 'sign-up-mode' : ''; ?>" id="main-container">
         <div class="forms-container">
             <div class="signin-signup">
                 <!-- LOGIN FORM -->
@@ -947,14 +947,7 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     <script src="../Assets/javascript/log-reg.js"></script>
     <script>
-        // Auto-toggle to Registration mode if action=register is present
-        document.addEventListener("DOMContentLoaded", () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('action') === 'register') {
-                const container = document.querySelector(".container");
-                if (container) container.classList.add("sign-up-mode");
-            }
-        });
+
 
         let scanResults = {
             count: 0,
