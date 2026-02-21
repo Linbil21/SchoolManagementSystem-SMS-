@@ -1034,38 +1034,41 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                             result.is_valid = true;
                             result.confidence = 90; 
 
-                            // 1. EXPANDED BLACKLIST (Administrative & Grid Noise)
+                            // 1. ADVANCED BLACKLIST (Including common misreads)
                             const psaBlacklist = [
                                 "REMARKS", "ANNOTATION", "CERTIFICATION", "OFFICE", "REGISTRAR", "GENERAL", "REPUBLIC", 
                                 "PHILIPPINES", "MUNICIPAL", "PROVINCE", "CITY", "PNC", "NONE", "N/A", "BIRTH", "CERTIFICATE",
                                 "LIVE", "NAME", "FIRST", "MIDDLE", "LAST", "SEX", "DATE", "INFORMATION", "SIGNED", "SEAL",
                                 "PAGE", "COPY", "FORM", "REVISED", "JANUARY", "REGISTRY", "TRIAS", "CAVITE", "TRIAS", "CARL",
-                                "STATISTICS", "AUTHORITY", "NATIONAL", "SECURITY", "PRINTING", "DOCUMENT", "COPIES", "LCR"
+                                "STATISTICS", "AUTHORITY", "NATIONAL", "SECURITY", "PRINTING", "DOCUMENT", "COPIES", "LCR",
+                                "TION", "NOSIS", "ANIOTATION", "SCSSMTUTN", "SISON", "REMARKS", "ADJUST", "PURSUANT"
                             ];
 
-                            // 2. Extract Names (Advanced Scoring Logic)
+                            // 2. Extract Names (High-Precision Proximity Search)
                             let bestCandidate = null;
                             let highestScore = 0;
                             
-                            for(let i=0; i < Math.min(rawLines.length, 25); i++) {
+                            for(let i=0; i < Math.min(rawLines.length, 30); i++) {
                                 let line = rawLines[i];
-                                
-                                // Score based on line position and keywords
                                 let score = 0;
-                                if (line.includes("NAME")) score += 50;
-                                if (line.includes("CERTIFICATE")) score -= 20; // Likely a header
+
+                                // PRIORITY: Look for the line that starts with "1." or follows "NAME"
+                                if (line.match(/^1\s*\./) || line.includes("NAME")) score += 60;
                                 
-                                // CLEANING: Erase COP, FEY, HAL, PNC and other 1-3 letter garbage
+                                // CLEANING: Remove noise tags
                                 let clean = line.replace(/[^A-Z\s]/g, ' ').trim();
                                 let parts = clean.split(/\s+/).filter(p => {
-                                    // STRICT VALIDATION: Real names are usually 4+ letters
-                                    // Filters out HWO, THO, COP, FEY, HAL, etc.
-                                    return p.length >= 4 && !psaBlacklist.includes(p);
+                                    // REJECT constraints:
+                                    // - Word must be 3+ chars
+                                    // - Must NOT be in blacklist
+                                    // - Must NOT be purely consonants (Grid noise detector)
+                                    const hasVowels = /[AEIOUY]/.test(p);
+                                    return p.length >= 3 && !psaBlacklist.includes(p) && hasVowels;
                                 });
                                 
-                                // A good name line has 2-4 solid words
+                                // A valid name line for James Ryan Carabuena should have 2-4 solid words
                                 if (parts.length >= 2 && parts.length <= 4) {
-                                    score += (parts.length * 10);
+                                    score += (parts.length * 15);
                                     if (score > highestScore) {
                                         highestScore = score;
                                         bestCandidate = parts;
@@ -1074,12 +1077,10 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                             }
 
                             if (bestCandidate) {
-                                // Clear previous noise if any
-                                result.first_name = '';
-                                result.middle_name = '';
-                                result.last_name = '';
+                                // Clear Fields before populating
+                                result.first_name = ''; result.middle_name = ''; result.last_name = '';
 
-                                // Distribution Logic for JAMES RYAN CARABUENA
+                                // Distribution Logic (James Ryan Carabuena)
                                 if (bestCandidate.length >= 3) {
                                     result.last_name = bestCandidate.pop(); 
                                     result.middle_name = bestCandidate.pop(); 
