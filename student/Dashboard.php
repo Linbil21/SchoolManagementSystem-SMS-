@@ -390,38 +390,38 @@ if ($current_day !== 'Sunday') {
             <p>Thank you for registering. Please follow these steps to officially enroll in this institution.</p>
             
             <div style="margin-top: 25px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
-                <!-- Step 1 -->
+                <!-- Step 1: Payment -->
                 <div style="background: rgba(255,255,255,0.15); padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(5px); display:flex; flex-direction:column; gap:8px;">
                     <div style="font-size: 1.4rem; font-weight: 800; opacity: 0.6;">01</div>
-                    <h4 style="font-size: 1rem; margin: 0;">Official Registration</h4>
-                    <p style="font-size: 0.82rem; opacity: 0.9; line-height: 1.5; flex:1;">You have completed this step by signing up on our system. ✅</p>
-                    <button disabled style="padding: 8px 16px; background: rgba(255,255,255,0.25); color: white; border: 1px solid rgba(255,255,255,0.4); border-radius: 10px; font-size: 0.8rem; font-weight: 600; cursor: not-allowed; opacity:0.7;">
-                        <i class="fas fa-check-circle"></i> Completed
-                    </button>
+                    <h4 style="font-size: 1rem; margin: 0;">Payment First</h4>
+                    <p style="font-size: 0.82rem; opacity: 0.9; line-height: 1.5; flex:1;">Proceed to the school cashier or pay online to process your <strong>Downpayment</strong>, <strong>Half Payment</strong>, or <strong>Full Payment</strong> and secure an Official Receipt.</p>
+                    <a href="/student/Modules/Payments/History.php" style="padding: 8px 16px; background: white; color: #2563eb; border-radius: 10px; font-size: 0.8rem; font-weight: 700; text-decoration: none; display:inline-block; text-align:center;">
+                        <i class="fas fa-credit-card"></i> Make Payment
+                    </a>
                 </div>
-                <!-- Step 2 -->
+                <!-- Step 2: Upload Requirements -->
                 <div style="background: rgba(255,255,255,0.15); padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(5px); display:flex; flex-direction:column; gap:8px;">
                     <div style="font-size: 1.4rem; font-weight: 800; opacity: 0.6;">02</div>
-                    <h4 style="font-size: 1rem; margin: 0;">Go to Cashier</h4>
-                    <p style="font-size: 0.82rem; opacity: 0.9; line-height: 1.5; flex:1;">Visit the school cashier to pay your <strong>Downpayment</strong>, <strong>Half Payment</strong>, or <strong>Full Payment</strong> to secure your slot.</p>
-                    <button onclick="document.getElementById('cashierModal').style.display='flex'" style="padding: 8px 16px; background: white; color: #2563eb; border: none; border-radius: 10px; font-size: 0.8rem; font-weight: 700; cursor: pointer;">
-                        <i class="fas fa-money-bill-wave"></i> View Payment Info
-                    </button>
-                </div>
-                <!-- Step 3 -->
-                <div style="background: rgba(255,255,255,0.15); padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(5px); display:flex; flex-direction:column; gap:8px;">
-                    <div style="font-size: 1.4rem; font-weight: 800; opacity: 0.6;">03</div>
                     <h4 style="font-size: 1rem; margin: 0;">Upload Requirements</h4>
-                    <p style="font-size: 0.82rem; opacity: 0.9; line-height: 1.5; flex:1;">Submit your documents (PSA, Form 138, ID Picture, etc.) in the Admission module for review and approval.</p>
+                    <p style="font-size: 0.82rem; opacity: 0.9; line-height: 1.5; flex:1;">Once paid, submit your documents (PSA, Form 138, ID Picture, etc.) in the Admission module for validation.</p>
                     <a href="/student/Modules/Admission/Requirements.php" style="padding: 8px 16px; background: white; color: #2563eb; border-radius: 10px; font-size: 0.8rem; font-weight: 700; text-decoration: none; display:inline-block; text-align:center;">
                         <i class="fas fa-file-upload"></i> Upload Now
                     </a>
                 </div>
-                <!-- Step 4 -->
+                <!-- Step 3: Evaluation -->
+                <div style="background: rgba(255,255,255,0.15); padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(5px); display:flex; flex-direction:column; gap:8px;">
+                    <div style="font-size: 1.4rem; font-weight: 800; opacity: 0.6;">03</div>
+                    <h4 style="font-size: 1rem; margin: 0;">Evaluation</h4>
+                    <p style="font-size: 0.82rem; opacity: 0.9; line-height: 1.5; flex:1;">Our admission team will review your payment and submitted documents. You will be notified once approved.</p>
+                    <button disabled style="padding: 8px 16px; background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); border: 1px solid rgba(255,255,255,0.3); border-radius: 10px; font-size: 0.8rem; font-weight: 600; cursor: not-allowed;">
+                        <i class="fas fa-hourglass-half"></i> Pending
+                    </button>
+                </div>
+                <!-- Step 4: Enrollment -->
                 <div style="background: rgba(255,255,255,0.15); padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(5px); display:flex; flex-direction:column; gap:8px;">
                     <div style="font-size: 1.4rem; font-weight: 800; opacity: 0.6;">04</div>
-                    <h4 style="font-size: 1rem; margin: 0;">Enrollment</h4>
-                    <p style="font-size: 0.82rem; opacity: 0.9; line-height: 1.5; flex:1;">Once your admission is approved, the Enrollment module will be unlocked to select subjects and finalize enrolment.</p>
+                    <h4 style="font-size: 1rem; margin: 0;">Official Enrollment</h4>
+                    <p style="font-size: 0.82rem; opacity: 0.9; line-height: 1.5; flex:1;">Upon approval of payment and requirements, the Enrollment module will be unlocked to finalize your enrollment.</p>
                     <button disabled style="padding: 8px 16px; background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); border: 1px solid rgba(255,255,255,0.3); border-radius: 10px; font-size: 0.8rem; font-weight: 600; cursor: not-allowed;">
                         <i class="fas fa-lock"></i> Locked
                     </button>

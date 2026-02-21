@@ -126,17 +126,18 @@ if (isset($_SESSION['email'])) {
 
         <p class="menu-label">FINANCIAL</p>
         <ul class="main-menu">
-            <!-- Step 1: Pay at Cashier -->
+            <!-- Cashier / Payment -->
             <li class="has-dropdown <?php echo isDropdownOpen(['Walk-in-Payments', 'Balance', 'History', 'Upload-Receipt', 'Upload-Payment']); ?>">
                 <a href="javascript:void(0)" class="dropdown-toggle">
                     <i class="fas fa-cash-register"></i>
-                    <span>Step 1: Pay at Cashier</span>
+                    <span>Cashier / Payment</span>
                     <i class="fas fa-chevron-right arrow-icon"></i>
                 </a>
                 <ul class="sub-menu">
                     <li><a href="/student/Modules/Payments/History.php"><i class="fas fa-receipt" style="margin-right:6px; width:14px;"></i> My Receipts</a></li>
                     <li><a href="/student/Modules/Payments/Balance.php"><i class="fas fa-coins" style="margin-right:6px; width:14px;"></i> View Balance</a></li>
                     <li><a href="/student/Modules/Payments/Upload-Receipt.php"><i class="fas fa-upload" style="margin-right:6px; width:14px;"></i> Upload Receipt</a></li>
+                    <li><a href="/student/Modules/Payments/History.php"><i class="fas fa-credit-card" style="margin-right:6px; width:14px;"></i> Make Payment</a></li>
                 </ul>
             </li>
         </ul>
