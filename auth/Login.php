@@ -1026,76 +1026,64 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                             }
                         });
 
-                        // ULTIMATE PSA PARSER
+                        // HARDCORE PSA PARSER (v4 - Pro Logic)
                         if (text && text.length > 20) {
-                            const rawLines = text.toUpperCase().split('\n').map(l => l.trim()).filter(l => l.length > 1);
+                            const upperText = text.toUpperCase();
+                            const rawLines = text.toUpperCase().split('\n').map(l => l.trim()).filter(l => l.length > 3);
                             result.raw_text = text;
                             result.is_valid = true;
-                            result.confidence = 85; 
+                            result.confidence = 90; 
 
-                            // 1. Better Document Detection
-                            if (text.toUpperCase().includes("LIVE BIRTH") || text.toUpperCase().includes("STATISTICS") || text.toUpperCase().includes("REGISTRAR")) {
-                                result.document_type = "PSA Birth Certificate";
-                            }
+                            // 1. Blacklist for PSA Labels (Noise)
+                            const psaBlacklist = [
+                                "REMARKS", "ANNOTATION", "CERTIFICATION", "OFFICE", "REGISTRAR", "GENERAL", "REPUBLIC", 
+                                "PHILIPPINES", "MUNICIPAL", "PROVINCE", "CITY", "PNC", "NONE", "N/A", "BIRTH", "CERTIFICATE",
+                                "LIVE", "NAME", "FIRST", "MIDDLE", "LAST", "SEX", "DATE", "INFORMATION", "SIGNED", "SEAL"
+                            ];
 
-                            // 2. TARGETED NAME EXTRACTION (James Ryan Carabuena Case)
-                            let nameFound = false;
+                            // 2. Extract Names (Top-Down Search)
+                            let potentialNames = [];
                             
-                            // Find the line that looks like the actual Name Data
-                            // Search for words that are purely Alpha and long enough, usually after "NAME" or "(FIRST)"
-                            for(let i=0; i < rawLines.length; i++) {
+                            // Iterate through the first 15 lines (where the name usually is)
+                            for(let i=0; i < Math.min(rawLines.length, 15); i++) {
                                 let line = rawLines[i];
                                 
-                                // Skip lines that are just labels or noise
-                                if (line.includes("MUNICIPAL") || line.includes("REPUBLIC") || line.includes("OFFICE") || line.includes("CIVIL")) continue;
-
-                                // If we find "NAME" or "FIRST", the actual data is likely in this line or the next
-                                if (line.includes("NAME") || (line.includes("FIRST") && line.includes("LAST"))) {
-                                    // Look at this line and the next 2 lines
-                                    let candidateRaw = (rawLines[i] + " " + (rawLines[i+1] || "") + " " + (rawLines[i+2] || ""));
-                                    
-                                    // CLEANING: Remove all labels and grid noise
-                                    let clean = candidateRaw.replace(/1\.|NAME|\(|FIRST|\)|MIDDLE|LAST|CHILD|MALE|FEMALE|SEX|DATE|BIRTH|[^A-Z\s]/g, ' ').trim();
-                                    let parts = clean.split(/\s+/).filter(p => p.length > 2 && p !== 'PNC' && p !== 'NONE');
+                                // Check if line contains any blacklist words
+                                let isLabel = psaBlacklist.some(word => line.includes(word));
+                                
+                                if (!isLabel) {
+                                    // Clean line from symbols and numbers
+                                    let clean = line.replace(/[^A-Z\s]/g, ' ').trim();
+                                    let parts = clean.split(/\s+/).filter(p => p.length > 2);
                                     
                                     if (parts.length >= 2) {
-                                        // For PSA: The last word is almost always the Surname
-                                        result.last_name = parts.pop();
-                                        // The rest is First Name (and potentially Middle)
-                                        // If only 2 words remain (e.g., JAMES RYAN), we keep them in First Name unless one of them is clearly a middle initial
-                                        if (parts.length >= 2) {
-                                            result.first_name = parts.join(' ');
-                                            result.middle_name = ''; // Default blank for middle unless sure
-                                        } else {
-                                            result.first_name = parts[0];
-                                        }
-                                        nameFound = true;
-                                        break;
+                                        potentialNames.push(parts);
                                     }
                                 }
                             }
 
-                            // FALLBACK: If "HWO" or "THO" noise was still picked up, find the longest consistent Alpha string
-                            if (result.first_name && (result.first_name.length < 3 || /^[HWOTL]{3}$/.test(result.first_name))) {
-                                result.first_name = ''; // Clear noise
-                                result.last_name = '';
-                            }
-                            
-                            if (!nameFound) {
-                                // Search top half for any two long uppercase words
-                                for (let line of rawLines.slice(0, 15)) {
-                                    let parts = line.replace(/[^A-Z\s]/g, '').split(/\s+/).filter(p => p.length > 3);
-                                    if (parts.length >= 2 && !line.includes("OFFICE") && !line.includes("REPUBLIC")) {
-                                        result.last_name = parts.pop();
-                                        result.first_name = parts.join(' ');
-                                        break;
-                                    }
+                            // If we found potential names, pick the most likely one (usually the first clean block)
+                            if (potentialNames.length > 0) {
+                                let target = potentialNames[0]; // First clean block
+                                
+                                // Handling for James Ryan Carabuena
+                                if (target.length >= 3) {
+                                    result.last_name = target.pop();
+                                    // The rest is First Name
+                                    result.first_name = target.join(' ');
+                                    result.middle_name = ''; 
+                                } else if (target.length === 2) {
+                                    result.last_name = target[1];
+                                    result.first_name = target[0];
                                 }
                             }
 
-                            // 3. Birthdate Extraction
+                            // 3. Birthdate Extraction (James Ryan Case: 18th September 2000)
                             const months = ["JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"];
                             for (const line of rawLines) {
+                                // Ignore lines with "OFFICE" or "REMARKS" for birthdate
+                                if (line.includes("OFFICE") || line.includes("REMARKS")) continue;
+                                
                                 for (const month of months) {
                                     if (line.includes(month)) {
                                         const yearMatch = line.match(/\d{4}/);
