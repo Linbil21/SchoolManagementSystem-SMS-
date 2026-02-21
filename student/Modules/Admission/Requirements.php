@@ -202,6 +202,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                 <p class="page-subtitle">View and manage your submitted enrollment requirements.</p>
             </div>
 
+            <!-- Payment Reminder Notice -->
+            <div style="background: linear-gradient(135deg, #fef3c7, #fffbeb); border: 1.5px solid #fcd34d; border-radius: 16px; padding: 18px 24px; margin-bottom: 28px; display: flex; align-items: center; gap: 16px;">
+                <div style="min-width: 44px; height: 44px; background: #fef08a; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0;">
+                    ⚠️
+                </div>
+                <div style="flex: 1;">
+                    <div style="font-weight: 700; color: #92400e; font-size: 0.95rem; margin-bottom: 3px;">Payment Required Before Submission</div>
+                    <div style="font-size: 0.85rem; color: #78350f; line-height: 1.5;">Please visit the <strong>school cashier</strong> first to pay your <strong>Downpayment, Half Payment, or Full Payment</strong> and secure an <strong>Official Receipt</strong> before submitting your requirements.</div>
+                </div>
+                <a href="/student/Modules/Payments/History.php" style="flex-shrink: 0; padding: 9px 18px; background: #d97706; color: white; border-radius: 10px; font-size: 0.82rem; font-weight: 700; text-decoration: none; display: flex; align-items: center; gap: 7px; white-space: nowrap;">
+                    <i class="fas fa-file-invoice"></i> Issue Receipt
+                </a>
+            </div>
+
             <div class="requirements-grid">
                 <?php
                 // Fetch enrollment status for the current student
