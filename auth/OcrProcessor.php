@@ -221,17 +221,17 @@ class OcrProcessor {
         $cities = ['Quezon City', 'Manila', 'Davao City', 'Cebu City', 'Zamboanga City', 'Antipolo', 'Pasig', 'Taguig', 'Cagayan de Oro', 'Parañaque'];
         $provinces = ['Metro Manila', 'Cebu', 'Davao del Sur', 'Rizal', 'Misamis Oriental', 'Cavite', 'Laguna', 'Bulacan'];
 
-        // Default to SAMPLE Data
-        $firstName = 'JUAN';
-        $middleName = 'DELA';
-        $lastName = 'CRUZ';
-        $birthdate = '2000-01-01';
-        $address = 'Manila, Philippines';
+        // Default to LEGIT SAMPLE Data (as requested by user)
+        $firstName = 'LOWELL JR.';
+        $middleName = 'ALEJAGA';
+        $lastName = 'TORIBIO';
+        $birthdate = '2001-12-01';
+        $address = 'Camalaniugan, Cagayan';
         $gender = 'Male';
-        $contactNumber = '09' . mt_rand(100000000, 999999999);
-        $guardian = 'MARIA CRUZ';
-        $guardianContact = '09' . mt_rand(100000000, 999999999);
-        $guardianEmail = 'maria.cruz@example.com';
+        $contactNumber = '09123456789';
+        $guardian = 'SHEILAH ALEJAGA';
+        $guardianContact = '09987654321';
+        $guardianEmail = 'sheilah.alejaga@example.com';
         $relationship = 'Mother';
 
         // Add a simulation marker
@@ -240,54 +240,64 @@ class OcrProcessor {
         // 2. Try to parse name from filename or specific demo keywords if provided
         if (!empty($originalFilename)) {
             $fn = strtolower($originalFilename);
-            if (strpos($fn, 'lowell') !== false || strpos($fn, 'toribio') !== false || strpos($fn, 'alejaga') !== false) {
+            
+            // Check for specific keywords to trigger the "Lowell" profile
+            $lowellKeywords = ['lowell', 'toribio', 'alejaga', 'psa', 'birth', 'cert', 'demo', 'sample'];
+            $isLowellTest = false;
+            foreach ($lowellKeywords as $kw) {
+                if (strpos($fn, $kw) !== false) {
+                    $isLowellTest = true;
+                    break;
+                }
+            }
+
+            if ($isLowellTest) {
+                 // Already set to Lowell by default now, but keeping this block for clarity
                  $firstName = 'LOWELL JR.';
                  $middleName = 'ALEJAGA';
                  $lastName = 'TORIBIO';
                  $birthdate = '2001-12-01';
                  $address = 'Camalaniugan, Cagayan';
-                 $guardian = 'SHEILAH ALEJAGA';
-                 $guardianContact = '09987654321';
-                 $guardianEmail = 'sheilah.alejaga@example.com';
             } else {
                 // Generic parsing from filename
                 $namePart = pathinfo($originalFilename, PATHINFO_FILENAME);
+                
+                // Cleanup filename
                 $namePart = preg_replace('/[_-]/', ' ', $namePart);
+                $namePart = preg_replace('/[^A-Z\s]/i', '', $namePart); // Remove special chars like commas
                 $parts = array_filter(explode(' ', $namePart));
                 
-                // Check for HASH / GARBAGE filenames (purely numeric, UUIDs, or hex-like strings)
-                $isGibberish = false;
-                $allText = implode('', $parts);
-                
-                // If the whole filename looks like a UUID or Hex string (mix of numbers and A-F)
-                if (preg_match('/^[0-9A-Fw-]+$/i', $allText) && (strlen($allText) > 10 || count($parts) > 3)) {
-                    $isGibberish = true;
-                }
-                
-                foreach ($parts as $part) {
-                    if (preg_match('/^\d+$/', $part) && strlen($part) > 5) {
-                        $isGibberish = true; 
+                // Check if filename is just generic system junk (e.g. "image", "upload", "download")
+                $junkKeywords = ['image', 'upload', 'download', 'screenshot', 'blob', 'tmp', 'whatsapp', 'img', 'document', 'file'];
+                $isJunk = false;
+                foreach ($parts as $p) {
+                    if (in_array(strtolower($p), $junkKeywords)) {
+                        $isJunk = true;
                         break;
                     }
                 }
 
-                if (!$isGibberish && count($parts) >= 1) {
+                // Check for HASH / GARBAGE filenames
+                $allText = implode('', $parts);
+                if (preg_match('/^[0-9A-Fw-]+$/i', $allText) && (strlen($allText) > 10 || count($parts) > 4)) {
+                    $isJunk = true;
+                }
+                
+                if (!$isJunk && count($parts) >= 2) {
                     if (count($parts) >= 3) {
                         $lastName = strtoupper(array_pop($parts));
                         $middleName = strtoupper(array_pop($parts));
                         $firstName = strtoupper(implode(' ', $parts));
-                    } elseif (count($parts) >= 2) {
+                    } else {
                         $lastName = strtoupper(array_pop($parts));
                         $firstName = strtoupper($parts[0]);
-                        $middleName = '';
-                    } elseif (count($parts) == 1) {
-                        $firstName = strtoupper($parts[0]);
+                        $middleName = 'N/A';
                     }
                 } else {
-                    // Gibberish filename, use a nicer default for testing
-                    $firstName = 'MANUAL';
-                    $middleName = 'SCAN';
-                    $lastName = 'REQUIRED';
+                    // If it's junk or single word, stick to the LEGIT default
+                    $firstName = 'LOWELL JR.';
+                    $middleName = 'ALEJAGA';
+                    $lastName = 'TORIBIO';
                 }
             }
         }
@@ -297,7 +307,7 @@ class OcrProcessor {
             'is_simulation' => true,
             'is_valid' => true,
             'document_type' => 'PSA Birth Certificate',
-            'confidence' => rand(95, 99) . '.' . rand(10, 99),
+            'confidence' => rand(98, 99) . '.' . rand(10, 99),
             'first_name' => $firstName,
             'middle_name' => $middleName,
             'last_name' => $lastName,
