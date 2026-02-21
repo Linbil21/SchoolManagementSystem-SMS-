@@ -460,9 +460,14 @@ if ($current_day !== 'Sunday') {
                         <span style="font-weight:700; color:#22c55e; font-size:0.85rem;">Full</span>
                     </div>
                 </div>
-                <button onclick="document.getElementById('cashierModal').style.display='none'" style="width:100%; padding:14px; background:#2563eb; color:white; border:none; border-radius:14px; font-weight:700; font-size:0.95rem; cursor:pointer;">
-                    Got it, thanks!
-                </button>
+                <div style="display:flex; gap:10px; margin-top:5px;">
+                    <button onclick="document.getElementById('cashierModal').style.display='none'" style="flex:1; padding:14px; background:#f1f5f9; color:#1e293b; border:none; border-radius:14px; font-weight:700; font-size:0.9rem; cursor:pointer;">
+                        Close
+                    </button>
+                    <a href="/Cashier/Dashboard.php" style="flex:1; padding:14px; background:#2563eb; color:white; border:none; border-radius:14px; font-weight:700; font-size:0.9rem; cursor:pointer; text-decoration:none; display:flex; align-items:center; justify-content:center; gap:8px; text-align:center;">
+                        <i class="fas fa-arrow-right"></i> Go to Cashier Site
+                    </a>
+                </div>
             </div>
         </div>
         <script>
