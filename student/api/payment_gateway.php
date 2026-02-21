@@ -53,14 +53,21 @@ if ($amount <= 0) {
 try {
     $pdo->beginTransaction();
 
-    // 4. Fetch Active Enrollment
-    $stmt = $pdo->prepare("SELECT enrollmentId, balance, first_name, last_name FROM enrollments WHERE email = ? ORDER BY created_at DESC LIMIT 1");
+    // 4. Fetch Active/Pending Enrollment
+    $stmt = $pdo->prepare("SELECT enrollmentId, balance, first_name, last_name, status FROM enrollments WHERE email = ? AND status IN ('Enrolled', 'Validated', 'Pending Review', 'Pending Payment') LIMIT 1");
     $stmt->execute([$student_email]);
-    $student = $stmt->fetch();
+    $student = $stmt->fetch(PDO::FETCH_OBJ);
+
+    if (!$student) {
+        $stmt = $pdo->prepare("SELECT enrollmentId, balance, first_name, last_name, status FROM enrollments WHERE email = ? ORDER BY created_at DESC LIMIT 1");
+        $stmt->execute([$student_email]);
+        $student = $stmt->fetch(PDO::FETCH_OBJ);
+    }
 
     if (!$student) {
         throw new Exception("Active enrollment record not found.");
     }
+
 
     // 5. Simulate External Gateway Processing (Mock 500ms delay)
     // usleep(500000); 
