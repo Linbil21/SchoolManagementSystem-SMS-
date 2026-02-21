@@ -137,7 +137,7 @@ if (isset($_SESSION['email'])) {
                     <li><a href="/student/Modules/Payments/History.php"><i class="fas fa-receipt" style="margin-right:6px; width:14px;"></i> My Receipts</a></li>
                     <li><a href="/student/Modules/Payments/Balance.php"><i class="fas fa-coins" style="margin-right:6px; width:14px;"></i> View Balance</a></li>
                     <li><a href="/student/Modules/Payments/Upload-Receipt.php"><i class="fas fa-upload" style="margin-right:6px; width:14px;"></i> Upload Receipt</a></li>
-                    <li><a href="/student/Modules/Payments/History.php"><i class="fas fa-credit-card" style="margin-right:6px; width:14px;"></i> Make Payment</a></li>
+                    <li><a href="/student/Modules/Payments/Make-Payment.php"><i class="fas fa-credit-card" style="margin-right:6px; width:14px;"></i> Make Payment</a></li>
                 </ul>
             </li>
         </ul>
