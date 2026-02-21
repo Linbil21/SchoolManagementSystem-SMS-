@@ -1034,61 +1034,58 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                             result.is_valid = true;
                             result.confidence = 90; 
 
-                            // 1. DUAL-SCAN NAME EXTRACTION (Anchor-Based + Safety Net)
+                            // 1. GRID-LOCK LAYOUT PARSER (Optimized for PSA Column Structure)
                             let nameParts = [];
-                            const lines = text.toUpperCase().split('\n').map(l => l.trim()).filter(l => l.length > 1);
+                            const allLines = text.toUpperCase().split('\n').map(l => l.trim());
                             
-                            const hardcoreBlacklist = [
-                                "NCR", "MUNICIPAL", "PROVINCE", "CITY", "REPUBLIC", "OFFICE", "REGISTRAR", "GENERAL", 
-                                "PHILIPPINES", "CERTIFICATE", "LIVE", "BIRTH", "REMARKS", "FORM", "REVISED", "STATISTICS", 
-                                "AUTHORITY", "NATIONAL", "TION", "NOSIS", "ANIOTATION", "SCSSMTUTN", "FEY", "HAL", "AY", 
-                                "MOATH", "DEE", "PNC", "NONE", "COPY", "CERTIFIED", "TRUE", "SEAL", "DATE", "SEX", "MALE", "FEMALE"
-                            ];
+                            // SKIP HEADER: PSA Names never appear in the first 4 lines of OCR
+                            const lines = allLines.slice(4, 25); 
+                            
+                            const blacklist = ["NCR", "MUNICIPAL", "PROVINCE", "CITY", "REPUBLIC", "OFFICE", "REGISTRAR", "GENERAL", "PHILIPPINES", "CERTIFICATE", "LIVE", "BIRTH", "REVISED", "STATISTICS", "AUTHORITY", "NATIONAL", "TION", "NOSIS", "DATE", "SEX", "MALE", "FEMALE"];
 
-                            // Strategy A: Find the Name Anchor (Lenient Search)
-                            let anchorIdx = -1;
-                            for (let i = 0; i < Math.min(lines.length, 15); i++) {
-                                // Match "1. NAME", "NAME:", "CHILD'S NAME", or just "1" at start
-                                if (lines[i].includes("NAME") || lines[i].includes("CHILD") || lines[i].match(/^[1IL7]\b/)) {
-                                    anchorIdx = i;
+                            let nameLine = "";
+                            // Target only "Section 1" of the PSA
+                            for (let i = 0; i < lines.length; i++) {
+                                if (lines[i].includes("NAME") || lines[i].match(/^[1IL7]\b/)) {
+                                    // The actual name is usually the next non-empty line
+                                    for (let j = i + 1; j < i + 4; j++) {
+                                        if (lines[j] && lines[j].length > 5 && !lines[j].includes("SEX")) {
+                                            nameLine = lines[j];
+                                            break;
+                                        }
+                                    }
                                     break;
                                 }
                             }
 
-                            if (anchorIdx !== -1) {
-                                // Capture a block of 3 lines around the anchor
-                                let blockLines = lines.slice(Math.max(0, anchorIdx), anchorIdx + 4);
-                                let cleanText = blockLines.join(" ").replace(/1\.|NAME|\(|FIRST|\)|MIDDLE|LAST|CHILD|BIRTH|[^A-Z\s]/g, ' ').trim();
-                                let fragments = cleanText.split(/\s+/).filter(p => {
-                                    return (p.length >= 2 && !hardcoreBlacklist.includes(p) && /[AEIOUY]/.test(p));
-                                });
-                                if (fragments.length >= 2) nameParts = fragments;
-                            }
-
-                            // Strategy B: Safety Net (If no anchor found, look for 2-4 clean words in the top section)
-                            if (nameParts.length < 2) {
-                                for (let i = 0; i < Math.min(lines.length, 10); i++) {
-                                    let clean = lines[i].replace(/[^A-Z\s]/g, ' ').trim();
-                                    let parts = clean.split(/\s+/).filter(p => p.length >= 3 && !hardcoreBlacklist.includes(p) && /[AEIOUY]/.test(p));
-                                    if (parts.length >= 2 && parts.length <= 5) {
-                                        nameParts = parts;
-                                        break;
-                                    }
-                                }
-                            }
-
-                            // 2. PRECISION POPULATE (Handles James Ryan Carabuena)
-                            if (nameParts.length >= 2) {
-                                result.first_name = ''; result.middle_name = ''; result.last_name = '';
-
-                                if (nameParts.length >= 3) {
-                                    // Map to James | Ryan | Carabuena
-                                    result.last_name = nameParts.pop();      // Last word
-                                    result.middle_name = nameParts.pop();    // Second to last
-                                    result.first_name = nameParts.join(' '); // All others
+                            if (nameLine) {
+                                // Clean the line: Keep letters and large gaps
+                                let clean = nameLine.replace(/[^A-Z\s]{4,}/g, ' ').replace(/1\.|NAME|FIRST|MIDDLE|LAST|CHILD|BIRTH/g, ' ').trim();
+                                
+                                // Split by "Double Space" to detect column gaps
+                                let columns = clean.split(/\s\s+/).filter(c => c.length >= 2);
+                                
+                                if (columns.length >= 3) {
+                                    // Case: Lowell Jr (First) | Alejaga (Middle) | Toribio (Last)
+                                    result.last_name = columns[2].trim();
+                                    result.middle_name = columns[1].trim();
+                                    result.first_name = columns[0].trim();
+                                } else if (columns.length === 2) {
+                                    // Case: James Ryan (First) | Carabuena (Last)
+                                    result.last_name = columns[1].trim();
+                                    result.first_name = columns[0].trim();
+                                    result.middle_name = "";
                                 } else {
-                                    result.last_name = nameParts[1];
-                                    result.first_name = nameParts[0];
+                                    // Fallback for messy single-line OCR
+                                    let parts = clean.split(/\s+/).filter(p => !blacklist.includes(p) && p.length >= 3);
+                                    if (parts.length >= 3) {
+                                        result.last_name = parts.pop();
+                                        result.middle_name = parts.pop();
+                                        result.first_name = parts.join(' ');
+                                    } else if (parts.length === 2) {
+                                        result.last_name = parts[1];
+                                        result.first_name = parts[0];
+                                    }
                                 }
                                 
                                 result.is_valid = true;
