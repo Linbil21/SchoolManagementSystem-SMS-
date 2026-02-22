@@ -73,7 +73,14 @@ try {
     <style>
         :root {
             --primary-blue: #1648bc;
-            --bg-light: #f7fafc;
+            --primary-dark: #0f172a;
+            --bg-light: #f8fafc;
+            --border-soft: #e2e8f0;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --shadow-premium: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
         }
 
         * {
@@ -85,219 +92,199 @@ try {
 
         body {
             background: var(--bg-light);
-            display: flex;
-            min-height: 100vh;
+            color: var(--text-dark);
         }
 
         .main-wrapper {
             flex: 1;
             display: flex;
             flex-direction: column;
+            min-height: 100vh;
         }
 
         .content-area {
-            padding: 30px;
+            padding: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
         }
 
-        .module-header {
-            margin-bottom: 25px;
+        .header-section {
+            margin-bottom: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .header-section h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: var(--primary-dark);
+            margin-bottom: 8px;
+        }
+
+        .header-section p {
+            color: var(--text-muted);
+            font-size: 1rem;
         }
 
         .table-card {
             background: white;
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+            border-radius: 30px;
+            box-shadow: var(--shadow-premium);
+            border: 1px solid var(--border-soft);
+            overflow: hidden;
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
+        .table-header {
+            padding: 30px 40px;
+            border-bottom: 1px solid var(--border-soft);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
+
+        .table-header h3 { font-weight: 800; font-size: 1.25rem; color: var(--primary-dark); }
+
+        table { width: 100%; border-collapse: collapse; }
 
         th {
             text-align: left;
-            padding: 12px;
-            border-bottom: 2px solid #edf2f7;
-            color: #718096;
-            font-size: 0.85rem;
+            padding: 20px 40px;
+            background: #f8fafc;
+            color: var(--text-muted);
+            font-weight: 700;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
         td {
-            padding: 12px;
-            border-bottom: 1px solid #edf2f7;
-            color: #2d3748;
-            font-size: 0.9rem;
+            padding: 25px 40px;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 0.95rem;
+            vertical-align: middle;
         }
 
-        /* Premium Modal Styles */
-        .modal {
-            display: none;
+        .app-row { transition: all 0.2s; cursor: pointer; }
+        .app-row:hover { background: #f8faff; }
+
+        .badge-status {
+            padding: 6px 14px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            background: #fff7ed;
+            color: #c2410c;
+        }
+
+        .btn-action-pro {
+            padding: 10px 18px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-view-pro { background: #f1f5f9; color: #475569; }
+        .btn-view-pro:hover { background: #e2e8f0; color: #1e293b; }
+
+        .btn-eval-pro { 
+            background: var(--primary-blue); 
+            color: white;
+            box-shadow: 0 4px 12px rgba(22, 72, 188, 0.2);
+        }
+        .btn-eval-pro:hover { 
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(22, 72, 188, 0.3);
+        }
+
+        /* Modal Redesign */
+        .student-modal-overlay {
             position: fixed;
-            z-index: 9999;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(15, 23, 42, 0.8) !important;
-            backdrop-filter: blur(12px) !important;
-            overflow-y: auto;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(12px);
+            z-index: 99999;
+            display: none;
             align-items: center;
             justify-content: center;
+            padding: 20px;
         }
 
-        .modal[style*="display: block"] {
-            display: flex !important;
-        }
-
-        .modal-content {
+        .student-modal-content {
             background: white;
-            margin: auto;
-            width: 95%;
-            max-width: 850px;
-            border-radius: 28px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 600px;
+            border-radius: 35px;
+            box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.3);
             overflow: hidden;
-            animation: modalPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            animation: modalScale 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        @keyframes modalPop {
-            from { transform: scale(0.9) translateY(20px); opacity: 0; }
-            to { transform: scale(1) translateY(0); opacity: 1; }
+        @keyframes modalScale {
+            from { transform: scale(0.95); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
         }
 
-        .modal-header {
-            padding: 20px 30px;
-            background: #f8fafc;
-            border-bottom: 1px solid #edf2f7;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .modal-body {
-            padding: 30px;
-        }
-
-        .modal-footer {
-            padding: 20px 30px;
-            background: #f8fafc;
-            border-top: 1px solid #edf2f7;
-            display: flex;
-            justify-content: flex-end;
-            gap: 12px;
-        }
-
-        /* Premium Modal Styles Improvements */
-        .modal-profile-box {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 30px;
+        .modal-profile-header {
+            padding: 40px;
             background: linear-gradient(135deg, #1648bc 0%, #1e3a8a 100%);
-            border-radius: 24px;
-            margin-bottom: 28px;
+            color: white;
             text-align: center;
-            color: white;
-            box-shadow: 0 10px 25px -5px rgba(22, 72, 188, 0.3);
+            position: relative;
         }
 
-        .modal-avatar {
-            width: 90px;
-            height: 90px;
-            border-radius: 28px;
-            background: rgba(255, 255, 255, 0.2);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 2.2rem;
-            color: white;
-            margin-bottom: 15px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
+        .modal-avatar-pro {
+            width: 100px; height: 100px; border-radius: 30px;
+            background: rgba(255, 255, 255, 0.15);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2.5rem; font-weight: 800; margin: 0 auto 20px;
+            border: 3px solid rgba(255, 255, 255, 0.2);
             backdrop-filter: blur(10px);
-            font-weight: 800;
         }
 
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
+        .modal-info-section { padding: 35px 40px; }
+
+        .info-card-pro {
             background: #f8fafc;
-            padding: 24px;
             border-radius: 20px;
+            padding: 20px;
             border: 1px solid #eef2ff;
-        }
-
-        .document-preview {
-            background: #ffffff;
-            padding: 12px;
-            border-radius: 18px;
-            border: 1px solid #f1f5f9;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            transition: all 0.3s ease;
-        }
-        .document-preview:hover {
-            border-color: #1648bc;
-            transform: translateY(-3px);
-            background: #f8faff;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
-        }
-
-        .document-preview.active {
-            border-color: #1648bc;
-            background: #eef2ff;
-            border-width: 2px;
-        }
-
-        #modalDocumentContainer {
+            margin-bottom: 25px;
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
+            gap: 20px;
         }
 
-        @media (max-width: 600px) {
-            #modalDocumentContainer {
-                grid-template-columns: 1fr;
-            }
+        .info-item label { 
+            display: block; font-size: 0.7rem; font-weight: 800; 
+            color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; 
+        }
+        .info-item p { font-weight: 700; color: var(--primary-dark); font-size: 0.95rem; }
+
+        .modal-footer-pro {
+            padding: 30px 40px;
+            background: white;
+            border-top: 1px solid var(--border-soft);
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
         }
 
-        /* Robust Modal Styles */
-        .student-modal-overlay { 
-            position: fixed !important; top: 0 !important; left: 0 !important; 
-            width: 100vw !important; height: 100vh !important; 
-            background: rgba(15, 23, 42, 0.85) !important; 
-            display: none; align-items: center; justify-content: center; 
-            z-index: 999999 !important; backdrop-filter: blur(8px) !important; 
-            padding: 20px; opacity: 1 !important; visibility: visible !important;
+        .btn-close-pro {
+            padding: 12px 25px; border-radius: 14px; border: 2px solid var(--border-soft);
+            background: white; color: var(--text-muted); font-weight: 700; cursor: pointer;
         }
-
-        .student-modal-content { 
-            background: white !important; width: 100%; max-width: 550px; 
-            border-radius: 28px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); 
-            overflow: hidden; position: relative; z-index: 1000000 !important;
-        }
-
-        .student-modal-header { 
-            padding: 24px 32px; border-bottom: 1px solid #edf2f7; 
-            display: flex; justify-content: space-between; align-items: center; 
-            background: #f8fafc; 
-        }
-
-        .student-btn-close { 
-            width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
-            background: #f1f5f9; border: none; border-radius: 12px; color: #64748b; cursor: pointer;
-        }
-
-        .student-modal-body { 
-            padding: 32px; max-height: 70vh; overflow-y: auto; overflow-x: hidden;
-            scrollbar-width: none;
-        }
-        .student-modal-body::-webkit-scrollbar { display: none; }
+        
+        #evalSpinner { margin-right: 8px; display: none; }
+    </style>
 
         .student-modal-footer { 
             padding: 20px 32px; border-top: 1px solid #edf2f7; display: flex; justify-content: flex-end; background: #f8fafc; 
@@ -306,40 +293,31 @@ try {
 </head>
 
 <body>
-    <!-- View Modal -->
+    <!-- Premium View Modal -->
     <div id="viewModal" class="student-modal-overlay">
         <div class="student-modal-content">
-            <div class="student-modal-header">
-                <h2 style="font-weight: 800; color: #1e293b;">Application Details</h2>
-                <button class="student-btn-close" onclick="closeViewModal()"><i class="fas fa-times"></i></button>
+            <div class="modal-profile-header">
+                <div class="modal-avatar-pro" id="modalAvatar">JD</div>
+                <h2 id="modalProfileName" style="font-weight: 800; font-size: 1.6rem; letter-spacing: -0.02em;">John Doe</h2>
+                <p id="modalProfileCourse" style="opacity: 0.8; font-weight: 500; font-size: 0.95rem;">BS Computer Science</p>
             </div>
-            <div class="student-modal-body">
-                <div class="modal-profile-box">
-                    <div class="modal-avatar" id="modalAvatar">JD</div>
-                    <h2 id="modalProfileName" style="font-weight: 800; font-size: 1.5rem; margin-bottom: 2px;">John Doe</h2>
-                    <p id="modalProfileCourse" style="opacity: 0.9; font-weight: 500; font-size: 0.9rem;">BS Information Technology</p>
-                </div>
-
-                <div class="info-grid">
+            
+            <div class="modal-info-section">
+                <div class="info-card-pro">
                     <div class="info-item">
                         <label>Application ID</label>
-                        <p id="modalAppId">#APP-2024-001</p>
-                    </div>
-                    <div class="info-item">
-                        <label>Full Name</label>
-                        <p id="modalFullName">John Doe</p>
-                    </div>
-                    <div class="info-item">
-                        <label>Applied Course</label>
-                        <p id="modalCourse">BS Information Technology</p>
+                        <p id="modalAppId">#APP-10293</p>
                     </div>
                     <div class="info-item">
                         <label>Submission Date</label>
-                        <p id="modalDate">2024-01-10</p>
+                        <p id="modalDate">Jan 12, 2024</p>
                     </div>
+                </div>
+
+                <div class="info-card-pro">
                     <div class="info-item">
                         <label>Email Address</label>
-                        <p id="modalEmail">john.doe@example.com</p>
+                        <p id="modalEmail">john@university.edu</p>
                     </div>
                     <div class="info-item">
                         <label>Contact Number</label>
@@ -347,26 +325,19 @@ try {
                     </div>
                 </div>
 
-                <div style="margin-top: 30px; margin-bottom: 20px;">
-                    <h3 style="font-size: 0.9rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 15px;">Attached Documents</h3>
-                    <div id="modalDocumentContainer">
-                        <!-- Dynamic Docs -->
-                    </div>
-                </div>
-
-                <!-- Integrated Preview Area -->
-                <div id="modalPreviewArea" style="display: none; border-top: 2px dashed #e2e8f0; padding-top: 25px; margin-top: 25px;">
-                    <h3 style="font-size: 0.9rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 15px;">Document Preview</h3>
-                    <div id="previewContent" style="width: 100%; min-height: 250px; border-radius: 20px; overflow: hidden; background: #f8fafc; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: center;">
-                    </div>
+                <div style="background: #fffbeb; border: 1px solid #fef3c7; padding: 20px; border-radius: 20px; color: #92400e; font-size: 0.85rem; display: flex; gap: 12px; align-items: center;">
+                    <i class="fas fa-info-circle fa-lg"></i>
+                    <p style="font-weight: 600;">Moving to evaluation will alert the student and lock this application phase.</p>
                 </div>
             </div>
-            <div class="student-modal-footer">
-                <button onclick="closeViewModal()"
-                    style="padding: 10px 20px; border-radius: 10px; border: 1px solid #e2e8f0; background: white; font-weight: 600; cursor: pointer;">Close</button>
-                <button onclick="proceedToEval(event)"
-                    style="padding: 10px 25px; border-radius: 10px; background: #1648bc; color: white; border: none; font-weight: 600; cursor: pointer;">Proceed
-                    to Evaluation</button>
+
+            <div class="modal-footer-pro">
+                <button class="btn-close-pro" onclick="closeViewModal()">Dismiss</button>
+                <button class="btn-action-pro btn-eval-pro" onclick="proceedToEval(event)">
+                    <i class="fas fa-circle-notch fa-spin" id="evalSpinner"></i>
+                    <i class="fas fa-arrow-right" id="evalIcon"></i>
+                    Move to Evaluation
+                </button>
             </div>
         </div>
     </div>
@@ -374,73 +345,69 @@ try {
     <div class="main-wrapper">
         <?php include '../Components/header.php'; ?>
         <div class="content-area">
-            <div class="module-header" style="display: flex; justify-content: space-between; align-items: flex-end;">
+            <div class="header-section">
                 <div>
                     <h1>New Applications</h1>
-                    <p>Manage and process incoming student applications.</p>
+                    <p>Identify and process newly submitted enrollment requests.</p>
                 </div>
-                <div class="search-box" style="position: relative;">
-                    <i class="fas fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #94a3b8;"></i>
-                    <input type="text" id="appSearch" onkeyup="filterTable('appSearch', 'appTable')" placeholder="Search applications..." 
-                        style="padding: 10px 15px 10px 40px; border-radius: 10px; border: 1px solid #e2e8f0; outline: none; width: 280px;">
+                <div style="position: relative;">
+                    <i class="fas fa-search" style="position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 0.9rem;"></i>
+                    <input type="text" id="appSearch" onkeyup="filterTable('appSearch', 'appTable')" placeholder="Search applicants..." 
+                        style="padding: 14px 20px 14px 45px; border-radius: 16px; border: 2px solid #f1f5f9; outline: none; width: 320px; font-size: 0.9rem; font-weight: 600; transition: 0.3s;"
+                        onfocus="this.style.borderColor='#1648bc'">
                 </div>
             </div>
+
             <div class="table-card">
                 <table id="appTable">
                     <thead>
                         <tr>
-                            <th>Student ID</th>
-                            <th>Full Name</th>
+                            <th>Application ID</th>
+                            <th>Student Information</th>
                             <th>Applied Course</th>
-                            <th>Submission Date</th>
-                            <th>Status</th>
+                            <th>Date Submitted</th>
                             <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php if (empty($applications)): ?>
                             <tr>
-                                <td colspan="6" style="text-align: center; padding: 40px; color: #64748b;">
-                                    <div style="display: flex; flex-direction: column; align-items: center; gap: 15px;">
-                                        <i class="fas fa-folder-open" style="font-size: 3rem; color: #e2e8f0;"></i>
-                                        <p>No new applications found.</p>
+                                <td colspan="5" style="text-align: center; padding: 80px;">
+                                    <div style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
+                                        <div style="width: 100px; height: 100px; background: #f8fafc; border-radius: 30px; display: flex; align-items: center; justify-content: center;">
+                                            <i class="fas fa-inbox fa-3x" style="color: #e2e8f0;"></i>
+                                        </div>
+                                        <p style="color: #64748b; font-weight: 600;">No pending applications in your queue.</p>
                                     </div>
                                 </td>
                             </tr>
                         <?php else: ?>
                             <?php foreach ($applications as $app): ?>
-                                <tr>
-                                    <td><?php echo htmlspecialchars($app->application_no); ?></td>
-                                    <td><?php echo htmlspecialchars($app->first_name . ' ' . $app->last_name); ?></td>
-                                    <td><?php echo htmlspecialchars($app->course_display_name); ?></td>
-                                    <td><?php echo date('Y-m-d', strtotime($app->submission_date)); ?></td>
+                                <tr class="app-row">
+                                    <td style="font-weight: 800; color: var(--primary-dark); font-size: 0.9rem;">#<?php echo htmlspecialchars($app->application_no); ?></td>
                                     <td>
-                                        <span style="background: #fef3c7; color: #d97706; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem;">
-                                            <?php echo htmlspecialchars($app->status); ?>
-                                        </span>
+                                        <div style="font-weight: 800; color: var(--primary-dark);"><?php echo htmlspecialchars($app->first_name . ' ' . $app->last_name); ?></div>
+                                        <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;"><?php echo htmlspecialchars($app->email); ?></div>
                                     </td>
+                                    <td style="font-weight: 700; color: #475569; font-size: 0.85rem;"><?php echo htmlspecialchars($app->course_display_name); ?></td>
+                                    <td style="color: var(--text-muted); font-weight: 600;"><?php echo date('M d, Y', strtotime($app->submission_date)); ?></td>
                                     <td>
                                         <?php 
                                             $appData = [
                                                 'name' => $app->first_name . ' ' . $app->last_name,
                                                 'no' => $app->application_no,
                                                 'course' => $app->course_display_name,
-                                                'date' => date('Y-m-d', strtotime($app->submission_date)),
+                                                'date' => date('M d, Y', strtotime($app->submission_date)),
                                                 'email' => $app->email,
                                                 'phone' => $app->phone_number
                                             ];
                                         ?>
-                                        <div style="display: flex; gap: 5px;">
-                                            <button
-                                                onclick="openDetailModal(<?php echo htmlspecialchars(json_encode($appData), ENT_QUOTES, 'UTF-8'); ?>)"
-                                                style="border: none; background: #1648bc; color: white; padding: 6px 14px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-weight: 500;">
-                                                <i class="fas fa-eye" style="font-size: 0.85rem;"></i> View
+                                        <div style="display: flex; gap: 10px;">
+                                            <button class="btn-action-pro btn-view-pro" onclick="openDetailModal(<?php echo htmlspecialchars(json_encode($appData), ENT_QUOTES, 'UTF-8'); ?>)">
+                                                <i class="fas fa-eye"></i> Details
                                             </button>
-                                            <button
-                                                onclick="deleteApplication('<?php echo $app->application_no; ?>', '<?php echo addslashes($app->first_name . ' ' . $app->last_name); ?>')"
-                                                style="border: none; background: #fee2e2; color: #ef4444; padding: 6px 14px; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-weight: 500;"
-                                                title="Delete Application">
-                                                <i class="fas fa-trash-alt" style="font-size: 0.85rem;"></i>
+                                            <button class="btn-action-pro" style="background: #fef2f2; color: #ef4444;" onclick="deleteApplication('<?php echo $app->application_no; ?>', '<?php echo addslashes($app->first_name . ' ' . $app->last_name); ?>')">
+                                                <i class="fas fa-trash-alt"></i>
                                             </button>
                                         </div>
                                     </td>
@@ -483,41 +450,13 @@ try {
         function openDetailModal(data) {
             try {
                 currentAppId = data.no;
-                console.log('Opening detail modal...', data);
-                if (document.getElementById('modalFullName')) document.getElementById('modalFullName').textContent = data.name;
                 if (document.getElementById('modalProfileName')) document.getElementById('modalProfileName').textContent = data.name;
-                if (document.getElementById('modalAppId')) document.getElementById('modalAppId').textContent = data.no;
-                if (document.getElementById('modalCourse')) document.getElementById('modalCourse').textContent = data.course;
+                if (document.getElementById('modalAvatar')) document.getElementById('modalAvatar').textContent = data.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+                if (document.getElementById('modalAppId')) document.getElementById('modalAppId').textContent = '#' + data.no;
                 if (document.getElementById('modalProfileCourse')) document.getElementById('modalProfileCourse').textContent = data.course;
                 if (document.getElementById('modalDate')) document.getElementById('modalDate').textContent = data.date;
                 if (document.getElementById('modalEmail')) document.getElementById('modalEmail').textContent = data.email;
                 if (document.getElementById('modalContact')) document.getElementById('modalContact').textContent = data.phone;
-
-                // Populate Documents (Simulated or from data if available)
-                const docContainer = document.getElementById('modalDocumentContainer');
-                docContainer.innerHTML = '';
-                
-                const sampleDocs = [
-                    { title: 'Form 138 (Report Card)', icon: 'fa-file-pdf', color: '#ef4444' },
-                    { title: 'Good Moral Certificate', icon: 'fa-certificate', color: '#1648bc' }
-                ];
-
-                sampleDocs.forEach(doc => {
-                    docContainer.innerHTML += `
-                        <div class="document-preview" onclick="previewDocument('dummy_path_logic', this)" style="cursor: pointer;">
-                            <div style="display: flex; align-items: center; gap: 15px; pointer-events: none;">
-                                <div style="width: 40px; height: 40px; background: #f8fafc; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: ${doc.color};">
-                                    <i class="fas ${doc.icon}"></i>
-                                </div>
-                                <span style="font-size: 0.85rem; font-weight: 700; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 130px;">${doc.title}</span>
-                            </div>
-                        </div>
-                    `;
-                });
-
-                // Reset Preview
-                document.getElementById('modalPreviewArea').style.display = 'none';
-                document.getElementById('previewContent').innerHTML = '';
 
                 const modal = document.getElementById('viewModal');
                 if (modal) {
@@ -526,25 +465,7 @@ try {
                 }
             } catch (err) {
                 console.error('Error opening detail modal:', err);
-                alert('Could not open details. Please check console.');
             }
-        }
-
-        function previewDocument(path, el) {
-            // Visual Feedback
-            document.querySelectorAll('.document-preview').forEach(i => i.classList.remove('active'));
-            if(el) el.classList.add('active');
-
-            const previewArea = document.getElementById('modalPreviewArea');
-            const previewContent = document.getElementById('previewContent');
-            previewArea.style.display = 'block';
-            previewContent.innerHTML = `
-                <div style="padding: 40px; text-align: center; color: #64748b;">
-                    <i class="fas fa-info-circle" style="font-size: 2rem; margin-bottom: 10px;"></i>
-                    <p>Selection of specific document files is handled in the <strong>Evaluation</strong> stage.</p>
-                </div>
-            `;
-            previewArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
         function closeViewModal() {
@@ -557,8 +478,11 @@ try {
             if (!currentAppId) return;
 
             const btn = event.currentTarget;
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            const spinner = btn.querySelector('#evalSpinner');
+            const icon = btn.querySelector('#evalIcon');
+            
+            if (spinner) spinner.style.display = 'inline-block';
+            if (icon) icon.style.display = 'none';
             btn.disabled = true;
 
             const formData = new FormData();
@@ -573,15 +497,25 @@ try {
                 const data = await response.json();
 
                 if (data.success) {
-                    window.location.href = 'Evaluation.php';
+                    Swal.fire({
+                        title: 'Moved to Evaluation!',
+                        text: 'Redirecting you to the Evaluation Workspace...',
+                        icon: 'success',
+                        timer: 1500,
+                        showConfirmButton: false
+                    }).then(() => {
+                        window.location.href = 'Evaluation.php';
+                    });
                 } else {
                     Swal.fire('Error!', data.message, 'error');
-                    btn.innerHTML = originalText;
+                    if (spinner) spinner.style.display = 'none';
+                    if (icon) icon.style.display = 'inline-block';
                     btn.disabled = false;
                 }
             } catch (error) {
                 Swal.fire('Error!', 'Something went wrong.', 'error');
-                btn.innerHTML = originalText;
+                if (spinner) spinner.style.display = 'none';
+                if (icon) icon.style.display = 'inline-block';
                 btn.disabled = false;
             }
         }

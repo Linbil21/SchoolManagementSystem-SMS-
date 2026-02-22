@@ -132,11 +132,16 @@ $approved_today = $pdo->query("SELECT COUNT(*) FROM admission_applications WHERE
     <style>
         :root {
             --primary-blue: #1648bc;
-            --bg-light: #f7fafc;
-            --text-dark: #2d3748;
-            --text-gray: #718096;
-            --success: #22c55e;
+            --primary-dark: #0f172a;
+            --bg-light: #f8fafc;
+            --glass-bg: rgba(255, 255, 255, 0.95);
+            --border-soft: #e2e8f0;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+            --success: #10b981;
             --warning: #f59e0b;
+            --danger: #ef4444;
+            --shadow-premium: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
         }
 
         * {
@@ -148,368 +153,375 @@ $approved_today = $pdo->query("SELECT COUNT(*) FROM admission_applications WHERE
 
         body {
             background: var(--bg-light);
-            display: flex;
-            min-height: 100vh;
+            color: var(--text-dark);
+            overflow-x: hidden;
         }
 
         .main-wrapper {
             flex: 1;
             display: flex;
             flex-direction: column;
-            overflow-x: hidden;
+            min-height: 100vh;
         }
 
         .content-area {
-            padding: 30px;
-            flex: 1;
+            padding: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
         }
 
         .header-section {
+            margin-bottom: 40px;
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
+            align-items: flex-end;
         }
 
         .header-section h1 {
-            font-size: 1.8rem;
-            color: var(--text-dark);
+            font-size: 2.2rem;
             font-weight: 800;
+            letter-spacing: -0.02em;
+            color: var(--primary-dark);
+            margin-bottom: 8px;
         }
 
         .header-section p {
-            color: var(--text-gray);
-            font-size: 0.95rem;
+            color: var(--text-muted);
+            font-size: 1rem;
         }
 
+        /* Stats Cards */
         .stats-row {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
         }
 
         .stat-card {
             background: white;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+            padding: 30px;
+            border-radius: 24px;
+            box-shadow: var(--shadow-premium);
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 20px;
+            border: 1px solid var(--border-soft);
+            transition: transform 0.3s ease;
         }
 
+        .stat-card:hover { transform: translateY(-5px); }
+
         .stat-icon {
-            width: 45px;
-            height: 45px;
-            border-radius: 10px;
+            width: 60px;
+            height: 60px;
+            border-radius: 18px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.2rem;
+            font-size: 1.5rem;
         }
 
+        /* Table Section */
         .evaluation-table-card {
             background: white;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            border-radius: 30px;
+            box-shadow: var(--shadow-premium);
+            border: 1px solid var(--border-soft);
             overflow: hidden;
         }
 
         .table-header {
-            padding: 20px 25px;
-            border-bottom: 1px solid #edf2f7;
+            padding: 30px 40px;
+            border-bottom: 1px solid var(--border-soft);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            background: #ffffff;
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+        .table-header h3 { font-weight: 800; font-size: 1.25rem; color: var(--primary-dark); }
+
+        table { width: 100%; border-collapse: collapse; }
 
         th {
             text-align: left;
-            padding: 15px 25px;
+            padding: 20px 40px;
             background: #f8fafc;
-            color: var(--text-gray);
-            font-weight: 600;
-            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 700;
+            font-size: 0.75rem;
             text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
         td {
-            padding: 18px 25px;
+            padding: 25px 40px;
             border-bottom: 1px solid #f1f5f9;
-            font-size: 0.9rem;
-            color: var(--text-dark);
+            font-size: 0.95rem;
+            vertical-align: middle;
         }
 
+        .eval-row { transition: all 0.2s; cursor: pointer; }
+        .eval-row:hover { background: #f8faff; }
+
+        /* Badges */
         .badge {
-            padding: 6px 12px;
-            border-radius: 20px;
+            padding: 6px 14px;
+            border-radius: 12px;
             font-size: 0.75rem;
-            font-weight: 600;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
 
-        .badge-pending {
-            background: #fee2e2;
-            color: #ef4444;
-        }
+        .badge-pending { background: #fff7ed; color: #c2410c; }
+        .badge-processing { background: #eff6ff; color: #1d4ed8; }
+        .badge-verified { background: #f0fdf4; color: #15803d; }
+        .badge-unverified { background: #fef2f2; color: #b91c1c; }
 
-        .badge-processing {
-            background: #fef3c7;
-            color: #d97706;
-        }
-
-        .btn-evaluate {
+        .btn-evaluate-action {
             background: var(--primary-blue);
             color: white;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-weight: 700;
             border: none;
-            padding: 8px 16px;
-            border-radius: 8px;
             cursor: pointer;
-            transition: 0.3s;
+            transition: all 0.3s;
             font-size: 0.85rem;
+            box-shadow: 0 4px 12px rgba(22, 72, 188, 0.2);
         }
 
-        .btn-evaluate:hover {
-            background: #1a3a8a;
+        .btn-evaluate-action:hover {
             transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(22, 72, 188, 0.3);
+            background: #1a3a8a;
         }
 
-        /* Premium Modal Styles Improvements */
-        .eval-modal-content { 
-            background: white !important; width: 100%; max-width: 950px; 
-            border-radius: 32px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); 
-            overflow: hidden; position: relative; z-index: 1000000 !important;
-            display: flex; flex-direction: column;
-        }
-
-        .eval-modal-header { 
-            padding: 24px 35px; border-bottom: 1px solid #edf2f7; 
-            display: flex; justify-content: space-between; align-items: center; 
-            background: linear-gradient(135deg, #1648bc 0%, #1e3a8a 100%);
-            color: white;
-        }
-
-        .eval-modal-header h2 { color: white !important; font-size: 1.5rem !important; }
-        .eval-modal-header p { color: rgba(255, 255, 255, 0.8) !important; }
-
-        .eval-columns {
-            display: grid;
-            grid-template-columns: 450px 1fr;
-            min-height: 600px;
-        }
-
-        .eval-left-panel {
-            padding: 25px;
-            border-right: 1px solid #edf2f7;
-            background: #fcfdfe;
-            overflow-y: auto;
-            overflow-x: hidden;
-            max-height: 75vh;
-            scrollbar-width: none;
-        }
-        .eval-left-panel::-webkit-scrollbar { display: none; }
-
-        .eval-right-panel {
-            padding: 25px;
-            background: white;
-            overflow-y: auto;
-            overflow-x: hidden;
-            max-height: 75vh;
-            scrollbar-width: none;
-        }
-        .eval-right-panel::-webkit-scrollbar { display: none; }
-
-        .doc-item {
-            background: white;
-            padding: 14px;
-            border-radius: 16px;
-            border: 1px solid #f1f5f9;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            transition: 0.2s;
-            cursor: pointer;
-        }
-        .doc-item:hover { border-color: var(--primary-blue); background: #f8faff; transform: translateX(5px); }
-        .doc-item.active { border-color: var(--primary-blue); background: #eef2ff; border-width: 2px; }
-
-        @media (max-width: 900px) {
-            .eval-columns { grid-template-columns: 1fr; }
-            .eval-right-panel { border-top: 1px solid #edf2f7; min-height: 400px; }
-            .eval-modal-content { max-width: 95%; margin: 20px auto; }
-        }
-
-        .eval-modal-footer { 
-            padding: 20px 32px; border-top: 1px solid #edf2f7; display: flex; justify-content: flex-end; background: #f8fafc; gap: 12px;
-        }
-
-        .doc-item {
-            background: white;
-            padding: 12px;
-            border-radius: 16px;
-            border: 1px solid #f1f5f9;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            transition: 0.2s;
-            cursor: pointer;
-        }
-
-        #modalDocList {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-        }
-        .doc-item:hover { border-color: var(--primary-blue); background: #ffffff; }
-
-        /* Premium Modal Styles */
-        .modal {
+        /* MODAL REDESIGN */
+        .eval-modal-overlay {
             display: none;
             position: fixed;
-            z-index: 9999;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(15, 23, 42, 0.8) !important;
-            backdrop-filter: blur(12px) !important;
-            overflow-y: auto;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(12px);
+            z-index: 99999;
             align-items: center;
             justify-content: center;
+            padding: 20px;
         }
 
-        .modal[style*="display: block"] {
-            display: flex !important;
-        }
-
-        .modal-content {
+        .eval-modal-container {
             background: white;
-            margin: auto;
-            width: 95%;
-            max-width: 850px;
-            border-radius: 28px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 1100px;
+            height: 90vh;
+            border-radius: 35px;
             overflow: hidden;
-            animation: modalPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-            position: relative;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.3);
+            animation: modalScale 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        @keyframes modalPop {
-            from { transform: scale(0.9) translateY(20px); opacity: 0; }
-            to { transform: scale(1) translateY(0); opacity: 1; }
+        @keyframes modalScale {
+            from { transform: scale(0.95); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
         }
 
-        .modal-header {
-            padding: 24px 32px;
-            background: #f8fafc;
-            border-bottom: 1px solid #edf2f7;
+        .eval-modal-header-pro {
+            padding: 30px 45px;
+            background: linear-gradient(135deg, #1648bc 0%, #1e3a8a 100%);
+            color: white;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .modal-body {
-            padding: 32px;
+        .eval-student-info h2 { font-weight: 800; font-size: 1.6rem; letter-spacing: -0.02em; }
+        .eval-student-info p { opacity: 0.8; font-size: 0.9rem; font-weight: 500; }
+
+        .eval-close-btn {
+            width: 45px; height: 45px; border-radius: 15px; border: none;
+            background: rgba(255, 255, 255, 0.15); color: white;
+            cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center;
+        }
+        .eval-close-btn:hover { background: rgba(255, 255, 255, 0.3); transform: rotate(90deg); }
+
+        .eval-modal-body-split {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 460px 1fr;
+            overflow: hidden;
         }
 
-        .student-modal-body { 
-            padding: 32px; max-height: 70vh; overflow-y: auto; overflow-x: hidden;
+        .eval-left-form {
+            padding: 35px 45px;
+            background: #fcfdfe;
+            border-right: 1px solid var(--border-soft);
+            overflow-y: auto;
             scrollbar-width: none;
         }
-        .student-modal-body::-webkit-scrollbar { display: none; }
+        .eval-left-form::-webkit-scrollbar { display: none; }
 
-        .modal-footer {
-            padding: 24px 32px;
-            background: #f8fafc;
-            border-top: 1px solid #edf2f7;
+        .eval-right-preview {
+            background: #f1f5f9;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .section-title-mod {
+            font-size: 0.7rem;
+            font-weight: 800;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .section-title-mod::after { content: ''; flex: 1; height: 1px; background: var(--border-soft); }
+
+        .doc-item-pro {
+            background: white;
+            padding: 16px 20px;
+            border-radius: 18px;
+            border: 2px solid #f1f5f9;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .doc-item-pro:hover { border-color: var(--primary-blue); transform: translateX(5px); background: #f8faff; }
+        .doc-item-pro.active { border-color: var(--primary-blue); background: #eef2ff; }
+
+        .doc-icon-box {
+            width: 44px; height: 44px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
+        }
+
+        .eval-input-group { margin-bottom: 25px; }
+        .eval-input-group label { display: block; font-weight: 700; color: var(--primary-dark); font-size: 0.9rem; margin-bottom: 10px; }
+        
+        .eval-select, .eval-textarea {
+            width: 100%; border-radius: 16px; border: 2px solid var(--border-soft);
+            padding: 14px 18px; font-family: inherit; font-size: 0.95rem; font-weight: 600;
+            color: var(--primary-dark); outline: none; transition: 0.3s;
+        }
+        .eval-select:focus, .eval-textarea:focus { border-color: var(--primary-blue); box-shadow: 0 0 0 4px rgba(22, 72, 188, 0.05); }
+
+        .eval-textarea { height: 120px; resize: none; }
+
+        .eval-modal-footer-pro {
+            padding: 25px 45px;
+            background: #ffffff;
+            border-top: 1px solid var(--border-soft);
             display: flex;
             justify-content: flex-end;
-            gap: 16px;
+            gap: 15px;
         }
 
-        .status-pill {
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
+        .btn-cancel-eval {
+            padding: 14px 28px; border-radius: 16px; border: 2px solid var(--border-soft);
+            background: white; color: var(--text-muted); font-weight: 700; cursor: pointer; transition: 0.3s;
         }
+        .btn-cancel-eval:hover { background: #f8fafc; border-color: var(--text-muted); color: var(--primary-dark); }
 
-        .eval-row:hover {
-            background-color: #f0f7ff !important;
-            transition: background-color 0.2s ease;
+        .btn-save-eval {
+            padding: 14px 35px; border-radius: 16px; border: none;
+            background: var(--primary-blue); color: white; font-weight: 700; cursor: pointer;
+            transition: all 0.3s; box-shadow: 0 8px 16px rgba(22, 72, 188, 0.25);
         }
+        .btn-save-eval:hover { transform: translateY(-3px); box-shadow: 0 12px 24px rgba(22, 72, 188, 0.35); }
 
-        .eval-row:active {
-            background-color: #e0efff !important;
+        /* Preview Area */
+        #previewPlaceholder {
+            height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            color: var(--text-muted); text-align: center; padding: 40px;
+        }
+        #previewPlaceholder i { font-size: 4rem; margin-bottom: 20px; opacity: 0.2; color: var(--primary-blue); }
+
+        #previewContent { height: 100%; width: 100%; background: #f8fafc; overflow: hidden; }
+
+        @media (max-width: 1000px) {
+            .eval-modal-body-split { grid-template-columns: 1fr; }
+            .eval-right-preview { display: none; }
+            .eval-modal-container { max-width: 600px; height: auto; max-height: 95vh; }
         }
     </style>
 </head>
 
 <body>
-    <!-- Review Modal -->
+    <!-- Premium Evaluation Modal -->
     <div id="reviewModal" class="eval-modal-overlay">
-        <div class="eval-modal-content">
-            <div class="eval-modal-header">
-                <div>
-                    <h2 id="modalStudentName" style="font-weight: 800; color: #1e293b; font-size: 1.4rem;">Student Name</h2>
-                    <p id="modalStudentCourse" style="color: #64748b; font-size: 0.85rem;">Course Title</p>
+        <div class="eval-modal-container">
+            <div class="eval-modal-header-pro">
+                <div class="eval-student-info">
+                    <h2 id="modalStudentName">Student Name</h2>
+                    <p id="modalStudentCourse">BS Computer Science | Freshman Applicant</p>
                 </div>
-                <button onclick="closeReviewModal()"
-                    style="background: #f1f5f9; border: none; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; color: #64748b;">
-                    <i class="fas fa-times"></i>
+                <button class="eval-close-btn" onclick="closeReviewModal()">
+                    <i class="fas fa-times fa-lg"></i>
                 </button>
             </div>
-            <div class="eval-columns">
-                <!-- Left Panel: Form & Docs List -->
-                <div class="eval-left-panel">
-                    <div style="margin-bottom: 25px;">
-                        <h4 style="color: #64748b; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 15px;">Documents Review</h4>
-                        <div id="modalDocList">
-                        </div>
+            
+            <div class="eval-modal-body-split">
+                <!-- Data & Form Panel -->
+                <div class="eval-left-form">
+                    <div class="section-title-mod">
+                        <i class="fas fa-folder-open"></i> DOCUMENTS REVIEW
+                    </div>
+                    <div id="modalDocList" style="margin-bottom: 35px;">
+                        <!-- Injected by JS -->
                     </div>
 
                     <form id="evaluationForm" method="POST">
                         <input type="hidden" name="action" value="submit_evaluation">
                         <input type="hidden" name="application_id" id="modalAppId">
-                        <div style="border-top: 1px solid #edf2f7; padding-top: 20px;">
-                            <h4 style="color: #64748b; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px;">Evaluation Status</h4>
-                            <select name="status" id="modalEvalStatus"
-                                style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 16px; outline: none; font-family: inherit; font-weight: 600; color: #1e293b;">
-                                <option value="Approved">Accept & Verify For Payment</option>
-                                <option value="Processing">Keep Processing</option>
-                                <option value="Rejected">Reject Application</option>
+                        
+                        <div class="section-title-mod">
+                            <i class="fas fa-clipboard-check"></i> FINAL DECISION
+                        </div>
+                        
+                        <div class="eval-input-group">
+                            <label>Application Status</label>
+                            <select name="status" id="modalEvalStatus" class="eval-select">
+                                <option value="Approved">Approve & Generate Payment Link</option>
+                                <option value="Processing">Keep for Further Review</option>
+                                <option value="Rejected">Decline Application</option>
                             </select>
-                            
-                            <h4 style="color: #64748b; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">Internal Notes</h4>
-                            <textarea name="notes" placeholder="Add evaluation notes..."
-                                style="width: 100%; height: 100px; padding: 16px; border-radius: 16px; border: 1px solid #e2e8f0; outline: none; resize: none; font-family: inherit; font-size: 0.9rem; color: #475569;"></textarea>
+                        </div>
+
+                        <div class="eval-input-group">
+                            <label>Evaluation Notes (Internal)</label>
+                            <textarea name="notes" placeholder="Specify reasons for approval or rejection..." class="eval-textarea"></textarea>
                         </div>
                     </form>
                 </div>
 
-                <!-- Right Panel: Built-in Preview -->
-                <div class="eval-right-panel">
-                    <div id="previewPlaceholder" style="height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #94a3b8; text-align: center;">
-                        <i class="fas fa-eye" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.3;"></i>
-                        <p style="font-weight: 500;">Click "View" on any document<br>to see a live preview here.</p>
+                <!-- Preview Panel -->
+                <div class="eval-right-preview">
+                    <div id="previewPlaceholder">
+                        <i class="fas fa-file-invoice"></i>
+                        <h3 style="color: var(--primary-dark); margin-bottom: 10px; font-weight: 800;">Interactive Preview</h3>
+                        <p>Select any document on the left to inspect credentials<br>directly within this workspace.</p>
                     </div>
-                    <div id="previewContent" style="display: none; height: 100%;">
-                        <!-- Content injected by JS -->
+                    <div id="previewContent" style="display: none;">
+                        <!-- Injected by JS -->
                     </div>
                 </div>
             </div>
-            <div class="eval-modal-footer">
-                <button onclick="closeReviewModal()"
-                    style="padding: 12px 24px; border-radius: 12px; border: 1px solid #e2e8f0; background: white; color: #475569; font-weight: 700; cursor: pointer;">Cancel</button>
-                <button onclick="saveEvaluation()"
-                    style="padding: 12px 28px; border-radius: 12px; background: var(--primary-blue); color: white; border: none; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(22, 72, 188, 0.2);">Confirm & Save</button>
+
+            <div class="eval-modal-footer-pro">
+                <button class="btn-cancel-eval" onclick="closeReviewModal()">Discard Changes</button>
+                <button class="btn-save-eval" onclick="saveEvaluation()">Finalize Evaluation</button>
             </div>
         </div>
     </div>
@@ -519,56 +531,55 @@ $approved_today = $pdo->query("SELECT COUNT(*) FROM admission_applications WHERE
         <div class="content-area">
             <div class="header-section">
                 <div>
-                    <h1>Application Evaluation</h1>
+                    <h1>Evaluation Workspace</h1>
                     <p>Review and verify submitted student documents and credentials.</p>
                 </div>
-                <button class="btn-evaluate"><i class="fas fa-filter"></i> Filter</button>
+                <button class="btn-evaluate-action" onclick="toggleFilter()"><i class="fas fa-filter"></i> Refine Search</button>
             </div>
 
             <?php if ($message): ?>
-                <div style="background: #dcfce7; color: #166534; padding: 15px; border-radius: 12px; margin-bottom: 25px; border: 1px solid #bbf7d0; font-size: 0.9rem;">
-                    <i class="fas fa-check-circle"></i> <?php echo $message; ?>
+                <div style="background: #f0fdf4; color: #15803d; padding: 20px; border-radius: 20px; margin-bottom: 30px; border: 1px solid #bbf7d0; font-weight: 600; display: flex; align-items: center; gap: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+                    <i class="fas fa-check-circle fa-lg"></i> <?php echo $message; ?>
                 </div>
             <?php endif; ?>
 
             <?php if ($error): ?>
-                <div style="background: #fee2e2; color: #991b1b; padding: 15px; border-radius: 12px; margin-bottom: 25px; border: 1px solid #fecaca; font-size: 0.9rem;">
-                    <i class="fas fa-exclamation-circle"></i> <?php echo $error; ?>
+                <div style="background: #fef2f2; color: #b91c1c; padding: 20px; border-radius: 20px; margin-bottom: 30px; border: 1px solid #fecaca; font-weight: 600; display: flex; align-items: center; gap: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+                    <i class="fas fa-exclamation-circle fa-lg"></i> <?php echo $error; ?>
                 </div>
             <?php endif; ?>
 
             <div class="stats-row">
                 <div class="stat-card">
-                    <div class="stat-icon" style="background: #eef2ff; color: #1648bc;"><i class="fas fa-clock"></i>
-                    </div>
+                    <div class="stat-icon" style="background: #eff6ff; color: #1d4ed8;"><i class="fas fa-clock"></i></div>
                     <div>
-                        <p style="font-size: 0.8rem; color: var(--text-gray);">Pending Review</p>
-                        <h3 style="font-size: 1.2rem;"><?php echo $pending_count; ?></h3>
+                        <p style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Pending Review</p>
+                        <h3 style="font-size: 1.5rem; font-weight: 800;"><?php echo $pending_count; ?></h3>
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon" style="background: #ecfdf5; color: #10b981;"><i
-                            class="fas fa-check-circle"></i></div>
+                    <div class="stat-icon" style="background: #f0fdf4; color: #10b981;"><i class="fas fa-check-circle"></i></div>
                     <div>
-                        <p style="font-size: 0.8rem; color: var(--text-gray);">Approved Today</p>
-                        <h3 style="font-size: 1.2rem;"><?php echo $approved_today; ?></h3>
+                        <p style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Approved Today</p>
+                        <h3 style="font-size: 1.5rem; font-weight: 800;"><?php echo $approved_today; ?></h3>
                     </div>
                 </div>
             </div>
 
             <div class="evaluation-table-card">
-                <div class="table-header" style="display: flex; justify-content: space-between; align-items: center;">
-                    <h3 style="font-size: 1.1rem; font-weight: 700;">Recent Submissions</h3>
-                    <div class="search-box" style="position: relative;">
-                        <i class="fas fa-search" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #94a3b8;"></i>
-                        <input type="text" id="evalSearch" onkeyup="filterTable('evalSearch', 'evalTable')" placeholder="Search submissions..." 
-                            style="padding: 10px 15px 10px 40px; border-radius: 10px; border: 1px solid #edf2f7; outline: none; width: 280px; font-size: 0.9rem;">
+                <div class="table-header">
+                    <h3>Recent Submissions</h3>
+                    <div style="position: relative;">
+                        <i class="fas fa-search" style="position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 0.9rem;"></i>
+                        <input type="text" id="evalSearch" onkeyup="filterTable('evalSearch', 'evalTable')" placeholder="Search by name or email..." 
+                            style="padding: 14px 20px 14px 45px; border-radius: 16px; border: 2px solid #f1f5f9; outline: none; width: 320px; font-size: 0.9rem; font-weight: 600; transition: 0.3s;"
+                            onfocus="this.style.borderColor='#1648bc'">
                     </div>
                 </div>
                 <table id="evalTable">
                     <thead>
                         <tr>
-                            <th>Student Name</th>
+                            <th>Student Information</th>
                             <th>Verification</th>
                             <th>Target Course</th>
                             <th>Documents</th>
@@ -578,7 +589,7 @@ $approved_today = $pdo->query("SELECT COUNT(*) FROM admission_applications WHERE
                     </thead>
                     <tbody>
                         <?php foreach ($apps as $app): ?>
-                            <tr class="eval-row" style="cursor: pointer;"
+                            <tr class="eval-row" 
                                 onclick="openReviewModal(
                                     '<?php echo $app->applicationId; ?>',
                                     '<?php echo addslashes($app->first_name . ' ' . $app->last_name); ?>', 
@@ -590,40 +601,47 @@ $approved_today = $pdo->query("SELECT COUNT(*) FROM admission_applications WHERE
                                     '<?php echo $app->barangay_clearance; ?>',
                                     '<?php echo $app->id_picture; ?>'
                                 )">
-                                <td style="font-weight: 600;">
-                                    <?php echo htmlspecialchars($app->first_name . ' ' . $app->last_name); ?>
-                                    <div style="font-size: 0.75rem; font-weight: 400; color: #64748b;"><?php echo htmlspecialchars($app->email); ?></div>
+                                <td>
+                                    <div style="font-weight: 800; color: var(--primary-dark);"><?php echo htmlspecialchars($app->first_name . ' ' . $app->last_name); ?></div>
+                                    <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;"><?php echo htmlspecialchars($app->email); ?></div>
                                 </td>
                                 <td>
                                     <?php if ($app->is_verified): ?>
-                                        <span class="badge" style="background: #dcfce7; color: #166534; font-size: 0.7rem;">
+                                        <span class="badge badge-verified">
                                             <i class="fas fa-check-circle"></i> Verified
                                         </span>
                                     <?php else: ?>
-                                        <span class="badge" style="background: #fee2e2; color: #991b1b; font-size: 0.7rem;">
+                                        <span class="badge badge-unverified">
                                             <i class="fas fa-times-circle"></i> Unverified
                                         </span>
                                     <?php endif; ?>
                                 </td>
-                                <td><?php echo htmlspecialchars($app->course_display_name); ?></td>
+                                <td style="font-weight: 700; color: #475569; font-size: 0.85rem;"><?php echo htmlspecialchars($app->course_display_name); ?></td>
                                 <td>
-                                    <div style="font-size: 0.75rem; color: #64748b;">
+                                    <div style="display: flex; gap: 5px; flex-wrap: wrap;">
                                         <?php 
-                                        $docs = [];
-                                        if ($app->birth_cert) $docs[] = "PSA";
-                                        if ($app->form_138) $docs[] = "F-138";
-                                        if ($app->form_137) $docs[] = "F-137";
-                                        if ($app->good_moral) $docs[] = "Moral";
-                                        if ($app->barangay_clearance) $docs[] = "Brgy";
-                                        if ($app->id_picture) $docs[] = "ID";
-                                        echo !empty($docs) ? implode(", ", $docs) : "No documents";
+                                        $docs = [
+                                            'PSA' => $app->birth_cert,
+                                            'F-138' => $app->form_138,
+                                            'F-137' => $app->form_137,
+                                            'Moral' => $app->good_moral,
+                                            'Brgy' => $app->barangay_clearance,
+                                            'ID' => $app->id_picture
+                                        ];
+                                        foreach ($docs as $label => $exists) {
+                                            if ($exists) echo "<span style='padding: 2px 6px; background: #f1f5f9; border-radius: 6px; font-size: 0.65rem; font-weight: 800; color: #64748b; border: 1px solid #e2e8f0;'>$label</span>";
+                                        }
+                                        if (!array_filter($docs)) echo "<span style='color: #94a3b8; font-size: 0.8rem;'>No uploads</span>";
                                         ?>
                                     </div>
                                 </td>
-                                <td><span class="badge <?php echo ($app->status == 'Pending') ? 'badge-pending' : 'badge-processing'; ?>">
-                                    <?php echo htmlspecialchars($app->status); ?></span>
+                                <td>
+                                    <span class="badge <?php echo ($app->status == 'Pending') ? 'badge-pending' : 'badge-processing'; ?>">
+                                        <i class="fas <?php echo ($app->status == 'Pending') ? 'fa-hourglass-start' : 'fa-spinner fa-spin'; ?>" style="font-size: 0.7rem;"></i>
+                                        <?php echo htmlspecialchars($app->status); ?>
+                                    </span>
                                 </td>
-                                <td><button class="btn-evaluate">Evaluate</button></td>
+                                <td><button class="btn-evaluate-action">Review</button></td>
                             </tr>
                         <?php endforeach; ?>
                         <?php if (empty($apps)): ?>
@@ -637,6 +655,7 @@ $approved_today = $pdo->query("SELECT COUNT(*) FROM admission_applications WHERE
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         function filterTable(inputId, tableId) {
             const input = document.getElementById(inputId);
@@ -660,22 +679,30 @@ $approved_today = $pdo->query("SELECT COUNT(*) FROM admission_applications WHERE
             }
         }
 
+        function toggleFilter() {
+            Swal.fire({
+                title: 'Refine Evaluation List',
+                text: 'Advanced filtering options are coming soon.',
+                icon: 'info',
+                confirmButtonColor: '#1648bc'
+            });
+        }
+
         function openReviewModal(id, name, course, psa, f138, f137, moral, brgy, idpic) {
             document.getElementById('modalAppId').value = id;
             document.getElementById('modalStudentName').textContent = name;
-            document.getElementById('modalStudentCourse').textContent = course;
+            document.getElementById('modalStudentCourse').textContent = course + ' | Official Applicant';
             
-            // Build Doc List
             const list = document.getElementById('modalDocList');
             list.innerHTML = '';
             
             const docs = [
-                { name: 'PSA Birth Certificate', path: psa, icon: 'fa-id-card', color: '#eef2ff', text: '#1648bc' },
-                { name: 'Form 138 (Report Card)', path: f138, icon: 'fa-file-pdf', color: '#fee2e2', text: '#ef4444' },
-                { name: 'Form 137 (TOR)', path: f137, icon: 'fa-scroll', color: '#f0fdf4', text: '#16a34a' },
-                { name: 'Good Moral Certificate', path: moral, icon: 'fa-certificate', color: '#fff7ed', text: '#ea580c' },
-                { name: 'Barangay Clearance', path: brgy, icon: 'fa-map-marker-alt', color: '#f0f9ff', text: '#0369a1' },
-                { name: 'Passport Size ID', path: idpic, icon: 'fa-id-badge', color: '#f5f3ff', text: '#7c3aed' }
+                { name: 'PSA Birth Certificate', path: psa, icon: 'fa-id-card', color: '#eef2ff', text: '#1d4ed8' },
+                { name: 'Report Card (F-138)', path: f138, icon: 'fa-file-pdf', color: '#fef2f2', text: '#b91c1c' },
+                { name: 'Form 137 (TOR)', path: f137, icon: 'fa-scroll', color: '#f0fdf4', text: '#15803d' },
+                { name: 'Good Moral Cert.', path: moral, icon: 'fa-certificate', color: '#fff7ed', text: '#c2410c' },
+                { name: 'Brgy Clearance', path: brgy, icon: 'fa-map-marker-alt', color: '#f0f9ff', text: '#0369a1' },
+                { name: 'Passport Size ID', path: idpic, icon: 'fa-user-circle', color: '#f5f3ff', text: '#6d28d9' }
             ];
 
             let docFound = false;
@@ -683,17 +710,17 @@ $approved_today = $pdo->query("SELECT COUNT(*) FROM admission_applications WHERE
                 if (doc.path) {
                     docFound = true;
                     const item = document.createElement('div');
-                    item.className = 'doc-item';
+                    item.className = 'doc-item-pro';
                     const fullPath = '../../' + doc.path;
                     item.innerHTML = `
-                        <div style="display: flex; align-items: center; gap: 12px; pointer-events: none;">
-                            <div style="width: 40px; height: 40px; background: ${doc.color}; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: ${doc.text};">
-                                <i class="fas ${doc.icon}"></i>
-                            </div>
-                            <div>
-                                <p style="font-weight: 700; font-size: 0.8rem; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px;">${doc.name}</p>
-                            </div>
+                        <div class="doc-icon-box" style="background: ${doc.color}; color: ${doc.text};">
+                            <i class="fas ${doc.icon}"></i>
                         </div>
+                        <div style="flex: 1;">
+                            <p style="font-weight: 700; font-size: 0.85rem; color: #1e293b; margin-bottom: 2px;">${doc.name}</p>
+                            <p style="font-size: 0.7rem; color: var(--text-muted); font-weight: 500;">Review Credentials</p>
+                        </div>
+                        <i class="fas fa-chevron-right" style="font-size: 0.7rem; color: #cbd5e1;"></i>
                     `;
                     item.onclick = function() { previewDoc(fullPath, this); };
                     list.appendChild(item);
@@ -701,66 +728,101 @@ $approved_today = $pdo->query("SELECT COUNT(*) FROM admission_applications WHERE
             });
 
             if (!docFound) {
-                list.innerHTML = '<div style="text-align: center; padding: 20px; color: #94a3b8; font-size: 0.9rem;">No documents uploaded.</div>';
+                list.innerHTML = `
+                    <div style="background: #f8fafc; border-radius: 20px; padding: 30px; text-align: center; border: 2px dashed #e2e8f0;">
+                        <i class="fas fa-file-excel fa-2x" style="color: #94a3b8; margin-bottom: 15px;"></i>
+                        <p style="color: #64748b; font-weight: 600; font-size: 0.9rem;">No documents found for this applicant.</p>
+                    </div>`;
             }
 
-            const modal = document.getElementById('reviewModal');
-            if (modal) {
-                modal.style.display = 'flex';
-                document.body.style.overflow = 'hidden';
-            }
+            document.getElementById('reviewModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            
+            // Reset Preview
+            document.getElementById('previewContent').style.display = 'none';
+            document.getElementById('previewPlaceholder').style.display = 'flex';
         }
 
         function closeReviewModal() {
             document.getElementById('reviewModal').style.display = 'none';
             document.body.style.overflow = 'auto';
-            document.getElementById('previewContent').style.display = 'none';
-            document.getElementById('previewPlaceholder').style.display = 'flex';
         }
 
-        function previewDoc(path, btn) {
-            // UI Update
-            document.querySelectorAll('.doc-item').forEach(i => i.classList.remove('active'));
-            btn.closest('.doc-item').classList.add('active');
+        function previewDoc(path, element) {
+            document.querySelectorAll('.doc-item-pro').forEach(i => i.classList.remove('active'));
+            element.classList.add('active');
 
             const placeholder = document.getElementById('previewPlaceholder');
             const container = document.getElementById('previewContent');
             
             placeholder.style.display = 'none';
             container.style.display = 'block';
-            container.innerHTML = '<div style="height:100%; display:flex; align-items:center; justify-content:center;"><i class="fas fa-spinner fa-spin fa-2x"></i></div>';
+            container.innerHTML = `
+                <div style="height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; background: #eaeff5;">
+                    <i class="fas fa-circle-notch fa-spin fa-3x" style="color: var(--primary-blue); margin-bottom: 20px;"></i>
+                    <p style="font-weight: 700; color: var(--primary-dark);">Loading Document Content...</p>
+                </div>`;
             
             const ext = path.split('.').pop().toLowerCase();
             
             setTimeout(() => {
                 if(['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext)) {
-                    container.innerHTML = `<img src="${path}" style="width:100%; height:100%; object-fit:contain;">`;
+                    container.innerHTML = `<img src="${path}" style="width:100%; height:100%; object-fit:contain; padding: 20px; animation: fadeIn 0.5s ease;">`;
                 } else if(ext === 'pdf') {
-                    container.innerHTML = `<iframe src="${path}" style="width:100%; height:600px; border:none;"></iframe>`;
+                    container.innerHTML = `<iframe src="${path}" style="width:100%; height:100%; border:none;"></iframe>`;
                 } else {
-                    container.innerHTML = `<div style="padding:50px; text-align:center;">File preview not supported. <a href="${path}" target="_blank">Open file.</a></div>`;
+                    container.innerHTML = `
+                        <div style="padding:100px 40px; text-align:center;">
+                            <i class="fas fa-file-alt fa-4x" style="color: #cbd5e1; margin-bottom: 25px;"></i>
+                            <h3 style="margin-bottom: 10px;">Preview Unavailable</h3>
+                            <p style="color: var(--text-muted); margin-bottom: 20px;">This file type cannot be rendered directly.</p>
+                            <a href="${path}" target="_blank" class="btn-evaluate-action" style="text-decoration:none; display:inline-block;">Download File Instead</a>
+                        </div>`;
                 }
-            }, 300);
+            }, 600);
         }
 
         function saveEvaluation() {
             const status = document.getElementById('modalEvalStatus').value;
-            const confirmMsg = status === 'Approved' 
-                ? 'Approving this application will automatically create a Student Record and assign Tuition Fees. Proceed?' 
-                : 'Save evaluation changes?';
-            
-            if (confirm(confirmMsg)) {
-                document.getElementById('evaluationForm').submit();
+            let title = 'Finalize Review?';
+            let text = 'Save current evaluation status?';
+            let icon = 'question';
+
+            if (status === 'Approved') {
+                title = 'Approve Application?';
+                text = 'This will officially Enroll the student, generate fees, and send payment instructions via email.';
+                icon = 'success';
+            } else if (status === 'Rejected') {
+                title = 'Decline Applicant?';
+                text = 'Are you sure you want to reject this application? This action is permanent.';
+                icon = 'warning';
             }
+
+            Swal.fire({
+                title: title,
+                text: text,
+                icon: icon,
+                showCancelButton: true,
+                confirmButtonColor: status === 'Approved' ? '#10b981' : '#1648bc',
+                cancelButtonColor: '#94a3b8',
+                confirmButtonText: 'Yes, Confirm'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Processing...',
+                        text: 'Updating records and sending notifications...',
+                        allowOutsideClick: false,
+                        didOpen: () => { Swal.showLoading(); }
+                    });
+                    document.getElementById('evaluationForm').submit();
+                }
+            });
         }
 
         window.onclick = function (event) {
             const modal = document.getElementById('reviewModal');
-            if (event.target == modal) {
-                closeReviewModal();
-            }
+            if (event.target == modal) closeReviewModal();
         }
     </script>
 </body>
-
 </html>

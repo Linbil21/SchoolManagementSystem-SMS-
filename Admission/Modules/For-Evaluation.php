@@ -24,30 +24,54 @@ try {
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* Styles from previous file... keeping it simple by re-declaring or we could have a common CSS. 
-           For now, copying styles is safer to avoid breaking layout. */
-        :root { --primary-blue: #1648bc; --bg-light: #f7fafc; }
+        :root {
+            --primary-blue: #1648bc;
+            --primary-dark: #0f172a;
+            --bg-light: #f8fafc;
+            --border-soft: #e2e8f0;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+            --shadow-premium: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        body { background: var(--bg-light); display: flex; min-height: 100vh; }
-        .main-wrapper { flex: 1; display: flex; flex-direction: column; }
-        .content-area { padding: 30px; }
-        .module-header { margin-bottom: 25px; }
-        .table-card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02); }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th { text-align: left; padding: 12px; border-bottom: 2px solid #edf2f7; color: #718096; font-size: 0.85rem; }
-        td { padding: 12px; border-bottom: 1px solid #edf2f7; color: #2d3748; font-size: 0.9rem; }
-        /* Modal Styles needed for GlobalModal */
-        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(5px); overflow-y: auto; }
-        .modal-content { background: white; margin: 50px auto; width: 90%; max-width: 600px; border-radius: 20px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); animation: modalSlide 0.3s ease-out; }
-        @keyframes modalSlide { from { transform: translateY(-30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        .modal-header { padding: 20px 30px; background: #f8fafc; border-bottom: 1px solid #edf2f7; display: flex; justify-content: space-between; align-items: center; }
-        .modal-body { padding: 30px; }
-        .modal-footer { padding: 20px 30px; background: #f8fafc; border-top: 1px solid #edf2f7; display: flex; justify-content: flex-end; gap: 12px; }
-        .modal-profile-box { display: flex; flex-direction: column; align-items: center; padding: 20px; background: linear-gradient(to bottom, #f8fafc, #ffffff); border-radius: 20px; margin-bottom: 30px; border: 1px solid #edf2f7; }
-        .modal-avatar { width: 80px; height: 80px; border-radius: 50%; background: #eef2ff; display: flex; justify-content: center; align-items: center; font-size: 2rem; color: #1648bc; margin-bottom: 15px; border: 4px solid white; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
-        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .info-item label { display: block; font-size: 0.8rem; color: #718096; font-weight: 600; margin-bottom: 5px; }
-        .info-item p { font-weight: 700; color: #2d3748; }
+        body { background: var(--bg-light); color: var(--text-dark); }
+        .main-wrapper { flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+        .content-area { padding: 40px; max-width: 1400px; margin: 0 auto; width: 100%; }
+
+        .header-section { margin-bottom: 40px; }
+        .header-section h1 { font-size: 2.2rem; font-weight: 800; color: var(--primary-dark); }
+        .header-section p { color: var(--text-muted); }
+
+        .table-card {
+            background: white;
+            border-radius: 30px;
+            box-shadow: var(--shadow-premium);
+            border: 1px solid var(--border-soft);
+            overflow: hidden;
+        }
+
+        table { width: 100%; border-collapse: collapse; }
+        th {
+            text-align: left; padding: 20px 40px; background: #f8fafc;
+            color: var(--text-muted); font-weight: 700; font-size: 0.75rem;
+            text-transform: uppercase; letter-spacing: 0.05em;
+        }
+        td { padding: 25px 40px; border-bottom: 1px solid #f1f5f9; font-size: 0.95rem; vertical-align: middle; }
+
+        .app-row:hover { background: #f8faff; transition: 0.3s; }
+        
+        .badge-review {
+            padding: 6px 14px; border-radius: 12px; font-size: 0.75rem; font-weight: 700;
+            background: #e0f2fe; color: #0369a1; display: inline-flex; align-items: center; gap: 6px;
+        }
+
+        .btn-eval-action {
+            padding: 10px 20px; border-radius: 12px; background: var(--primary-blue);
+            color: white; font-weight: 700; border: none; cursor: pointer; transition: 0.3s;
+            box-shadow: 0 4px 12px rgba(22, 72, 188, 0.2);
+        }
+        .btn-eval-action:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(22, 72, 188, 0.3); }
     </style>
 </head>
 
@@ -56,17 +80,18 @@ try {
     <div class="main-wrapper">
         <?php include '../Components/header.php'; ?>
         <div class="content-area">
-            <div class="module-header">
+            <div class="header-section">
                 <h1>For Evaluation</h1>
-                <p>Review and process student applications.</p>
+                <p>Track applications currently being reviewed by the admission team.</p>
             </div>
+
             <div class="table-card">
                 <table>
                     <thead>
                         <tr>
-                            <th>Student ID</th>
-                            <th>Full Name</th>
-                            <th>Course</th>
+                            <th>Application ID</th>
+                            <th>Student Information</th>
+                            <th>Preferred Course</th>
                             <th>Status</th>
                             <th>Action</th>
                         </tr>
@@ -74,16 +99,34 @@ try {
                     <tbody>
                         <?php if (empty($processing_apps)): ?>
                             <tr>
-                                <td colspan="5" style="text-align: center; padding: 40px; color: #94a3b8;">No applications currently for evaluation.</td>
+                                <td colspan="5" style="text-align: center; padding: 80px;">
+                                    <div style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
+                                        <div style="width: 100px; height: 100px; background: #f8fafc; border-radius: 30px; display: flex; align-items: center; justify-content: center;">
+                                            <i class="fas fa-clipboard-check fa-3x" style="color: #e2e8f0;"></i>
+                                        </div>
+                                        <p style="color: #64748b; font-weight: 600;">No applications are currently in the evaluation queue.</p>
+                                    </div>
+                                </td>
                             </tr>
                         <?php else: ?>
                             <?php foreach ($processing_apps as $app): ?>
-                                <tr>
-                                    <td><?php echo htmlspecialchars($app->application_no); ?></td>
-                                    <td><?php echo htmlspecialchars($app->first_name . ' ' . $app->last_name); ?></td>
-                                    <td><?php echo htmlspecialchars($app->preferred_course_1); ?></td>
-                                    <td><span style="background: #e0f2fe; color: #0284c7; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem;">Under Review</span></td>
-                                    <td><button onclick="window.location.href='Evaluation.php'" style="border: none; background: #1648bc; color: white; padding: 6px 12px; border-radius: 6px; cursor: pointer;">Evaluate</button></td>
+                                <tr class="app-row">
+                                    <td style="font-weight: 800; color: var(--primary-dark);">#<?php echo htmlspecialchars($app->application_no); ?></td>
+                                    <td>
+                                        <div style="font-weight: 800; color: var(--primary-dark);"><?php echo htmlspecialchars($app->first_name . ' ' . $app->last_name); ?></div>
+                                        <div style="font-size: 0.8rem; color: var(--text-muted);"><?php echo htmlspecialchars($app->email); ?></div>
+                                    </td>
+                                    <td style="font-weight: 700; color: #475569;"><?php echo htmlspecialchars($app->preferred_course_1); ?></td>
+                                    <td>
+                                        <span class="badge-review">
+                                            <i class="fas fa-spinner fa-spin"></i> Under Review
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <button class="btn-eval-action" onclick="window.location.href='Evaluation.php'">
+                                            Workspace <i class="fas fa-arrow-right" style="margin-left: 5px; font-size: 0.8rem;"></i>
+                                        </button>
+                                    </td>
                                 </tr>
                             <?php endforeach; ?>
                         <?php endif; ?>
@@ -93,8 +136,6 @@ try {
         </div>
     </div>
     
-    <!-- Include Global Modal and Scripts -->
-    <?php include '../Components/GlobalModal.php'; ?>
     <?php include '../Components/GlobalScripts.php'; ?>
 </body>
 </html>
