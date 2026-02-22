@@ -60,6 +60,7 @@ try {
     <title>New Applications - Admission</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../../Assets/css/theme.css">
     <style>
         * {
             margin: 0;
@@ -441,6 +442,11 @@ try {
         #evalSpinner {
             margin-right: 8px;
             display: none;
+        }
+
+        /* Fix for stray CSS text display */
+        body > :not(.sidebar):not(.main-wrapper):not(.student-modal-overlay) {
+            display: none !important;
         }
     </style>
 </head>
