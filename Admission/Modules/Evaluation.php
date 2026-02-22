@@ -143,10 +143,11 @@ $apps = $pdo->query("SELECT a.*, s.is_verified,
                           e.birth_cert, e.form_138, e.form_137, e.good_moral, e.barangay_clearance, e.id_picture,
                           (SELECT 
                               CASE 
-                                  WHEN proof_of_payment LIKE 'Assets/%' OR proof_of_payment LIKE '/Assets/%' 
-                                       OR proof_of_payment LIKE 'uploads/%' OR proof_of_payment LIKE '/uploads/%' 
-                                  THEN proof_of_payment
-                                  ELSE CONCAT('Assets/image/uploads/payments/', proof_of_payment)
+                                  WHEN proof_of_payment LIKE 'Assets/%' THEN CONCAT('/', proof_of_payment)
+                                  WHEN proof_of_payment LIKE '/Assets/%' THEN proof_of_payment
+                                  WHEN proof_of_payment LIKE 'uploads/%' THEN CONCAT('/', proof_of_payment)
+                                  WHEN proof_of_payment LIKE '/uploads/%' THEN proof_of_payment
+                                  ELSE CONCAT('/Assets/image/uploads/payments/', proof_of_payment)
                               END
                            FROM payments WHERE enrollment_id = e.enrollmentId AND proof_of_payment IS NOT NULL ORDER BY created_at ASC LIMIT 1) as downpayment_receipt
                    FROM admission_applications a 
@@ -756,11 +757,10 @@ $approved_today = $pdo->query("SELECT COUNT(*) FROM admission_applications WHERE
                     docFound = true;
                     const item = document.createElement('div');
                     item.className = 'doc-item-pro';
-                    const rootPath = '<?php echo $root_path; ?>';
+                    const rootPath = '<?php echo $root_path; ?>' || '/';
                     let cleanPath = doc.path ? doc.path.trim() : "";
                     
                     if (cleanPath && !cleanPath.startsWith('http') && !cleanPath.startsWith('/') && !cleanPath.startsWith('Assets/') && !cleanPath.startsWith('uploads/')) {
-                        // Standardize directory based on modern app structure
                         if (doc.icon === 'fa-receipt') {
                             cleanPath = 'Assets/image/uploads/payments/' + cleanPath;
                         } else if (doc.icon === 'fa-user-circle') {
@@ -770,7 +770,17 @@ $approved_today = $pdo->query("SELECT COUNT(*) FROM admission_applications WHERE
                         }
                     }
                     
-                    const fullPath = cleanPath.startsWith('http') ? cleanPath : (cleanPath.startsWith('/') ? cleanPath : rootPath + cleanPath);
+                    let fullPath = cleanPath;
+                    if (!cleanPath.startsWith('http') && !cleanPath.startsWith('/')) {
+                        fullPath = rootPath + cleanPath;
+                    }
+                    
+                    // Extra safety: If it still doesn't start with /, force it (for ems.jampzdev.com simplicity)
+                    if (!fullPath.startsWith('http') && !fullPath.startsWith('/')) {
+                        fullPath = '/' + fullPath;
+                    }
+
+                    console.log('Resolving doc:', doc.name, '->', fullPath);
                     item.innerHTML = `
                         <div class="doc-icon-box" style="background: ${doc.color}; color: ${doc.text};">
                             <i class="fas ${doc.icon}"></i>
@@ -826,7 +836,9 @@ $approved_today = $pdo->query("SELECT COUNT(*) FROM admission_applications WHERE
             
             setTimeout(() => {
                 if(['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext)) {
-                    container.innerHTML = `<img src="${path}" style="width:100%; height:100%; object-fit:contain; padding: 20px; animation: fadeIn 0.5s ease;">`;
+                    container.innerHTML = `<img src="${path}" 
+                        onerror="if(!this.src.includes('uploads/receipts/')) this.src = this.src.replace('Assets/image/uploads/payments/', 'uploads/receipts/')"
+                        style="width:100%; height:100%; object-fit:contain; padding: 20px; animation: fadeIn 0.5s ease;">`;
                 } else if(ext === 'pdf') {
                     container.innerHTML = `<iframe src="${path}" style="width:100%; height:100%; border:none;"></iframe>`;
                 } else {
