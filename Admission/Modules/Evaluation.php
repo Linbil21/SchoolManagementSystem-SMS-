@@ -107,7 +107,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 // Fetch pending and processing applications with their documents from enrollments
 $apps = $pdo->query("SELECT a.*, s.is_verified, 
                           COALESCE(c.course_name, a.preferred_course_1) as course_display_name,
-                          e.birth_cert, e.form_138, e.form_137, e.good_moral, e.barangay_clearance, e.id_picture
+                          e.birth_cert, e.form_138, e.form_137, e.good_moral, e.barangay_clearance, e.id_picture,
+                          (SELECT proof_of_payment FROM payments WHERE enrollment_id = e.enrollmentId AND proof_of_payment IS NOT NULL ORDER BY created_at ASC LIMIT 1) as downpayment_receipt
                    FROM admission_applications a 
                    LEFT JOIN students s ON a.email = s.email
                    LEFT JOIN enrollments e ON a.email = e.email
@@ -601,7 +602,8 @@ $approved_today = $pdo->query("SELECT COUNT(*) FROM admission_applications WHERE
                                     '<?php echo $app->form_137; ?>',
                                     '<?php echo $app->good_moral; ?>',
                                     '<?php echo $app->barangay_clearance; ?>',
-                                    '<?php echo $app->id_picture; ?>'
+                                    '<?php echo $app->id_picture; ?>',
+                                    '<?php echo $app->downpayment_receipt; ?>'
                                 )">
                                 <td>
                                     <div style="font-weight: 800; color: var(--primary-dark);"><?php echo htmlspecialchars($app->first_name . ' ' . $app->last_name); ?></div>
@@ -690,7 +692,7 @@ $approved_today = $pdo->query("SELECT COUNT(*) FROM admission_applications WHERE
             });
         }
 
-        function openReviewModal(id, name, course, psa, f138, f137, moral, brgy, idpic) {
+        function openReviewModal(id, name, course, psa, f138, f137, moral, brgy, idpic, receipt) {
             document.getElementById('modalAppId').value = id;
             document.getElementById('modalStudentName').textContent = name;
             document.getElementById('modalStudentCourse').textContent = course + ' | Official Applicant';
@@ -704,7 +706,8 @@ $approved_today = $pdo->query("SELECT COUNT(*) FROM admission_applications WHERE
                 { name: 'Form 137 (TOR)', path: f137, icon: 'fa-scroll', color: '#f0fdf4', text: '#15803d' },
                 { name: 'Good Moral Cert.', path: moral, icon: 'fa-certificate', color: '#fff7ed', text: '#c2410c' },
                 { name: 'Brgy Clearance', path: brgy, icon: 'fa-map-marker-alt', color: '#f0f9ff', text: '#0369a1' },
-                { name: 'Passport Size ID', path: idpic, icon: 'fa-user-circle', color: '#f5f3ff', text: '#6d28d9' }
+                { name: 'Passport Size ID', path: idpic, icon: 'fa-user-circle', color: '#f5f3ff', text: '#6d28d9' },
+                { name: 'Downpayment Receipt', path: receipt, icon: 'fa-receipt', color: '#ecfdf5', text: '#059669' }
             ];
 
             let docFound = false;

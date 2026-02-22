@@ -36,9 +36,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['proof'])) {
             $pdo->beginTransaction();
             
             // 1. Insert into payments table
-            $stmt = $pdo->prepare("INSERT INTO payments (enrollment_id, amount, payment_method, status, transaction_id) 
-                                 SELECT enrollmentId, ?, ?, 'Pending', ? FROM enrollments WHERE email = ? LIMIT 1");
-            $stmt->execute([$amount, $channel, $reference, $_SESSION['email']]);
+            $stmt = $pdo->prepare("INSERT INTO payments (enrollment_id, amount, payment_method, status, transaction_id, proof_of_payment) 
+                                 SELECT enrollmentId, ?, ?, 'Pending', ?, ? FROM enrollments WHERE email = ? LIMIT 1");
+            $stmt->execute([$amount, $channel, $reference, $proof_path, $_SESSION['email']]);
             
             // 2. Update enrollment status to 'Validation'
             $stmt = $pdo->prepare("UPDATE enrollments SET status = 'Validation' WHERE email = ?");
