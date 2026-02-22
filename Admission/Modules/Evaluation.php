@@ -141,7 +141,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 $apps = $pdo->query("SELECT a.*, s.is_verified, 
                           COALESCE(c.course_name, a.preferred_course_1) as course_display_name,
                           e.birth_cert, e.form_138, e.form_137, e.good_moral, e.barangay_clearance, e.id_picture,
-                          (SELECT proof_of_payment FROM payments WHERE enrollment_id = e.enrollmentId AND proof_of_payment IS NOT NULL ORDER BY created_at ASC LIMIT 1) as downpayment_receipt
+                          (SELECT 
+                              CASE 
+                                  WHEN proof_of_payment LIKE 'Assets/%' OR proof_of_payment LIKE 'uploads/%' THEN proof_of_payment
+                                  ELSE CONCAT('uploads/receipts/', proof_of_payment)
+                              END
+                           FROM payments WHERE enrollment_id = e.enrollmentId AND proof_of_payment IS NOT NULL ORDER BY created_at ASC LIMIT 1) as downpayment_receipt
                    FROM admission_applications a 
                    LEFT JOIN students s ON a.email = s.email
                    LEFT JOIN enrollments e ON a.email = e.email
@@ -750,7 +755,14 @@ $approved_today = $pdo->query("SELECT COUNT(*) FROM admission_applications WHERE
                     const item = document.createElement('div');
                     item.className = 'doc-item-pro';
                     const rootPath = '<?php echo $root_path; ?>';
-                    const fullPath = doc.path.startsWith('http') ? doc.path : (doc.path.startsWith('/') ? doc.path : rootPath + doc.path);
+                    let cleanPath = doc.path;
+                    if (cleanPath && !cleanPath.startsWith('http') && !cleanPath.startsWith('/') && !cleanPath.startsWith('Assets/') && !cleanPath.startsWith('uploads/')) {
+                        // Guess directory based on icon or name if prefix is missing
+                        if (doc.icon === 'fa-receipt') cleanPath = 'uploads/receipts/' + cleanPath;
+                        else if (doc.icon === 'fa-user-circle') cleanPath = 'Assets/image/uploads/students/' + cleanPath;
+                        else cleanPath = 'uploads/requirements/' + cleanPath;
+                    }
+                    const fullPath = cleanPath.startsWith('http') ? cleanPath : (cleanPath.startsWith('/') ? cleanPath : rootPath + cleanPath);
                     item.innerHTML = `
                         <div class="doc-icon-box" style="background: ${doc.color}; color: ${doc.text};">
                             <i class="fas ${doc.icon}"></i>

@@ -428,7 +428,11 @@ try {
             const img = document.getElementById('modalImg');
             if (data.proof_of_payment) {
                 const rootPath = '<?php echo $root_path; ?>';
-                img.src = data.proof_of_payment.startsWith('/') ? data.proof_of_payment : rootPath + data.proof_of_payment;
+                let pop = data.proof_of_payment;
+                if (!pop.startsWith('Assets/') && !pop.startsWith('uploads/') && !pop.startsWith('/')) {
+                    pop = 'uploads/receipts/' + pop;
+                }
+                img.src = pop.startsWith('/') ? pop : rootPath + pop;
                 img.style.display = 'block';
             } else {
                 img.style.display = 'none';

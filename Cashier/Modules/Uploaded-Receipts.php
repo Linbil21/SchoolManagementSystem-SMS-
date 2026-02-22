@@ -280,7 +280,11 @@ $root_path = $project_base . '/';
                                     $amount = number_format($row->amount, 2);
                                     $date = date('M d, Y', strtotime($row->created_at));
                                     $method = htmlspecialchars($row->payment_method);
-                                    $img = $root_path . htmlspecialchars($row->proof_of_payment);
+                                    $pop = $row->proof_of_payment;
+                                    if ($pop && strpos($pop, 'Assets/') !== 0 && strpos($pop, 'uploads/') !== 0 && strpos($pop, '/') !== 0) {
+                                        $pop = 'uploads/receipts/' . $pop;
+                                    }
+                                    $img = $root_path . htmlspecialchars($pop);
                                     $purpose = htmlspecialchars($row->purpose ?? "");
                                     echo "<tr>
                                             <td>
