@@ -430,7 +430,7 @@ try {
                 const rootPath = '<?php echo $root_path; ?>';
                 let pop = data.proof_of_payment;
                 if (!pop.startsWith('Assets/') && !pop.startsWith('uploads/') && !pop.startsWith('/')) {
-                    pop = 'uploads/receipts/' + pop;
+                    pop = 'Assets/image/uploads/payments/' + pop;
                 }
                 img.src = pop.startsWith('/') ? pop : rootPath + pop;
                 img.style.display = 'block';

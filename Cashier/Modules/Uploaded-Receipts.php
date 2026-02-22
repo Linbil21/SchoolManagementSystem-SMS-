@@ -282,7 +282,7 @@ $root_path = $project_base . '/';
                                     $method = htmlspecialchars($row->payment_method);
                                     $pop = $row->proof_of_payment;
                                     if ($pop && strpos($pop, 'Assets/') !== 0 && strpos($pop, 'uploads/') !== 0 && strpos($pop, '/') !== 0) {
-                                        $pop = 'uploads/receipts/' . $pop;
+                                        $pop = 'Assets/image/uploads/payments/' . $pop;
                                     }
                                     $img = $root_path . htmlspecialchars($pop);
                                     $purpose = htmlspecialchars($row->purpose ?? "");
