@@ -35,7 +35,12 @@ try {
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        body { background: var(--bg-light); color: var(--text-dark); }
+        body { 
+            display: flex;
+            min-height: 100vh;
+            background: var(--bg-light); 
+            color: var(--text-dark); 
+        }
         .main-wrapper { flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
         .content-area { padding: 40px; max-width: 1400px; margin: 0 auto; width: 100%; }
 

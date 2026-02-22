@@ -91,6 +91,8 @@ try {
         }
 
         body {
+            display: flex;
+            min-height: 100vh;
             background: var(--bg-light);
             color: var(--text-dark);
         }
@@ -113,7 +115,7 @@ try {
             margin-bottom: 40px;
             display: flex;
             justify-content: space-between;
-            align-items: flex-end;
+            align-items: center;
         }
 
         .header-section h1 {

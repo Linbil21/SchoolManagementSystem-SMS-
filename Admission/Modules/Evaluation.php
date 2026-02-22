@@ -152,6 +152,8 @@ $approved_today = $pdo->query("SELECT COUNT(*) FROM admission_applications WHERE
         }
 
         body {
+            display: flex;
+            min-height: 100vh;
             background: var(--bg-light);
             color: var(--text-dark);
             overflow-x: hidden;
@@ -175,7 +177,7 @@ $approved_today = $pdo->query("SELECT COUNT(*) FROM admission_applications WHERE
             margin-bottom: 40px;
             display: flex;
             justify-content: space-between;
-            align-items: flex-end;
+            align-items: center;
         }
 
         .header-section h1 {
