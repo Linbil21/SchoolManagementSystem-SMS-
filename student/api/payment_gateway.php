@@ -113,6 +113,10 @@ try {
         if ($enrollment_id) {
             $update = $pdo->prepare("UPDATE enrollments SET balance = balance - ? WHERE enrollmentId = ?");
             $update->execute([$amount, $enrollment_id]);
+        } else {
+            // Aggressive fallback: deduct balance by their email if the enrollment ID didn't perfectly map
+            $update = $pdo->prepare("UPDATE enrollments SET balance = balance - ? WHERE email = ?");
+            $update->execute([$amount, $student_email]);
         }
     } catch (PDOException $ex) {
         // Silently ignore if balance column doesn't exist

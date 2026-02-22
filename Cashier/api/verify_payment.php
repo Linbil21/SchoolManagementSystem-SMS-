@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute([$status, $remarks, $payment_id]);
 
         // 2. Notify student
-        $payment_stmt = $pdo->prepare("SELECT e.email, e.first_name, p.amount FROM payments p JOIN enrollments e ON p.enrollment_id = e.enrollmentId WHERE p.payment_id = ?");
+        $payment_stmt = $pdo->prepare("SELECT p.amount, p.description, p.enrollment_id, e.email, e.first_name FROM payments p LEFT JOIN enrollments e ON p.enrollment_id = e.enrollmentId WHERE p.payment_id = ?");
         $payment_stmt->execute([$payment_id]);
         $payment = $payment_stmt->fetch();
 
@@ -35,11 +35,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $notif_title = "Payment " . $status;
             $notif_message = "Your payment of ₱" . number_format($payment->amount, 2) . " has been " . strtolower($status) . ".";
             
+            // Extract email from fallback description if standard query resulted in NULL email
+            $target_email = $payment->email;
+            if (!$target_email && preg_match('/Paid by:\s*([^\s\]]+)/i', $payment->description, $matches)) {
+                $target_email = $matches[1];
+            }
+
             // Get user_id if student exists
-            $stmt = $pdo->prepare("SELECT id FROM students WHERE email = ?");
-            $stmt->execute([$payment->email]);
-            $student_ref = $stmt->fetch();
-            $target_user_id = $student_ref ? $student_ref->id : NULL;
+            $target_user_id = NULL;
+            if ($target_email) {
+                $stmt = $pdo->prepare("SELECT id FROM students WHERE email = ?");
+                $stmt->execute([$target_email]);
+                $student_ref = $stmt->fetch();
+                if ($student_ref) {
+                    $target_user_id = $student_ref->id;
+                }
+            }
 
             $notif_stmt = $pdo->prepare("INSERT INTO notifications (user_id, type, title, message, link, icon, icon_bg, icon_color) VALUES (?, 'payment', ?, ?, '/student/Modules/Payments/History.php', 'fa-receipt', ?, ?)");
             
@@ -50,25 +61,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // 3. If Verified: Deduct Balance & Update Status for Final Admission Check
             if ($status === 'Verified') {
-                $stmt = $pdo->prepare("SELECT enrollment_id, amount FROM payments WHERE payment_id = ?");
-                $stmt->execute([$payment_id]);
-                $payInfo = $stmt->fetch();
-                
-                if ($payInfo) {
-                    $enrollment_id = $payInfo->enrollment_id;
-                    $amount_paid = $payInfo->amount;
+                $enrollment_id = $payment->enrollment_id;
+                $amount_paid = $payment->amount;
 
-                    // Get current balance
-                    $balStmt = $pdo->prepare("SELECT balance FROM enrollments WHERE enrollmentId = ?");
-                    $balStmt->execute([$enrollment_id]);
-                    $currentBal = $balStmt->fetch()->balance;
-
-                    // Calculate new balance
-                    $newBalance = $currentBal - $amount_paid;
-
-                    // Update Enrollment: Set Balance and Status to 'Validation' for final step
-                    $pdo->prepare("UPDATE enrollments SET balance = ?, status = 'Validation' WHERE enrollmentId = ?")
-                        ->execute([$newBalance, $enrollment_id]);
+                if ($enrollment_id) {
+                    // Standard update by enrollment id
+                    $pdo->prepare("UPDATE enrollments SET balance = balance - ?, status = 'Validation' WHERE enrollmentId = ?")
+                        ->execute([$amount_paid, $enrollment_id]);
+                } elseif ($target_email) {
+                    // Fallback aggressive update by email
+                    $pdo->prepare("UPDATE enrollments SET balance = balance - ?, status = 'Validation' WHERE email = ?")
+                        ->execute([$amount_paid, $target_email]);
                 }
             }
         }
