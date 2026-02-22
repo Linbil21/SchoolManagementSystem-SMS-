@@ -3,6 +3,19 @@ session_start();
 require_once '../../auth/Security.php';
 checkRole(['cashier', 'superadmin']);
 $role = $_SESSION['role'];
+
+// Robust absolute-relative path logic
+$script_name = $_SERVER['SCRIPT_NAME'];
+$check_paths = ['/Super-admin/', '/Admin/', '/Cashier/', '/Admission/', '/auth/', '/student/', '/modules/'];
+$project_base = '';
+
+foreach ($check_paths as $path) {
+    if (($pos = stripos($script_name, $path)) !== false) {
+        $project_base = rtrim(substr($script_name, 0, $pos), '/');
+        break;
+    }
+}
+$root_path = $project_base . '/';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -267,7 +280,7 @@ $role = $_SESSION['role'];
                                     $amount = number_format($row->amount, 2);
                                     $date = date('M d, Y', strtotime($row->created_at));
                                     $method = htmlspecialchars($row->payment_method);
-                                    $img = "/" . htmlspecialchars($row->proof_of_payment);
+                                    $img = "<?php echo $root_path; ?>" . htmlspecialchars($row->proof_of_payment);
                                     $purpose = htmlspecialchars($row->purpose ?? "");
                                     echo "<tr>
                                             <td>

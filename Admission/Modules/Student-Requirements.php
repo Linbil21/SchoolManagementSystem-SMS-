@@ -7,6 +7,19 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admission') {
 
 require_once '../../Database/config.php';
 
+// Robust absolute-relative path logic
+$script_name = $_SERVER['SCRIPT_NAME'];
+$check_paths = ['/Super-admin/', '/Admin/', '/Cashier/', '/Admission/', '/auth/', '/student/', '/modules/'];
+$project_base = '';
+
+foreach ($check_paths as $path) {
+    if (($pos = stripos($script_name, $path)) !== false) {
+        $project_base = rtrim(substr($script_name, 0, $pos), '/');
+        break;
+    }
+}
+$root_path = $project_base . '/';
+
 // Handle AJAX Delete
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'delete_requirement') {
     header('Content-Type: application/json');
@@ -469,7 +482,9 @@ try {
             // Avatar handling
             const avatarBox = document.getElementById('modalAvatar');
             if (data.avatar && data.avatar.trim()) {
-                avatarBox.innerHTML = `<img src="../../${data.avatar}" alt="Avatar">`;
+                const rootPath = '<?php echo $root_path; ?>';
+                const avatarPath = data.avatar.startsWith('/') ? data.avatar : rootPath + data.avatar;
+                avatarBox.innerHTML = `<img src="${avatarPath}" alt="Avatar">`;
             } else {
                 avatarBox.innerHTML = `<i class="fas fa-user"></i>`;
             }
@@ -497,7 +512,9 @@ try {
                     ? `<span style="color: #16a34a; font-size: 0.8rem; font-weight: 700;">Submitted</span>` 
                     : `<span style="color: #ef4444; font-size: 0.8rem; font-weight: 700;">Missing</span>`;
                 
-                const clickAttr = isSubmitted ? `onclick="previewDocument('../../${doc.path}', this)"` : '';
+                const rootPath = '<?php echo $root_path; ?>';
+                const docPath = doc.path.startsWith('http') ? doc.path : (doc.path.startsWith('/') ? doc.path : rootPath + doc.path);
+                const clickAttr = isSubmitted ? `onclick="previewDocument('${docPath}', this)"` : '';
                 const clickableClass = isSubmitted ? 'clickable' : '';
 
                 list.innerHTML += `

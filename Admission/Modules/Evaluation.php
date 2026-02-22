@@ -8,6 +8,19 @@ checkRole(['admission']);
 $message = '';
 $error = '';
 
+// Robust absolute-relative path logic
+$script_name = $_SERVER['SCRIPT_NAME'];
+$check_paths = ['/Super-admin/', '/Admin/', '/Cashier/', '/Admission/', '/auth/', '/student/', '/modules/'];
+$project_base = '';
+
+foreach ($check_paths as $path) {
+    if (($pos = stripos($script_name, $path)) !== false) {
+        $project_base = rtrim(substr($script_name, 0, $pos), '/');
+        break;
+    }
+}
+$root_path = $project_base . '/';
+
 // Handle Evaluation Submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     try {
@@ -597,13 +610,13 @@ $approved_today = $pdo->query("SELECT COUNT(*) FROM admission_applications WHERE
                                     '<?php echo $app->applicationId; ?>',
                                     '<?php echo addslashes($app->first_name . ' ' . $app->last_name); ?>', 
                                     '<?php echo addslashes($app->course_display_name); ?>',
-                                    '<?php echo $app->birth_cert; ?>',
-                                    '<?php echo $app->form_138; ?>',
-                                    '<?php echo $app->form_137; ?>',
-                                    '<?php echo $app->good_moral; ?>',
-                                    '<?php echo $app->barangay_clearance; ?>',
-                                    '<?php echo $app->id_picture; ?>',
-                                    '<?php echo $app->downpayment_receipt; ?>'
+                                    '<?php echo addslashes($app->birth_cert); ?>',
+                                    '<?php echo addslashes($app->form_138); ?>',
+                                    '<?php echo addslashes($app->form_137); ?>',
+                                    '<?php echo addslashes($app->good_moral); ?>',
+                                    '<?php echo addslashes($app->barangay_clearance); ?>',
+                                    '<?php echo addslashes($app->id_picture); ?>',
+                                    '<?php echo addslashes($app->downpayment_receipt); ?>'
                                 )">
                                 <td>
                                     <div style="font-weight: 800; color: var(--primary-dark);"><?php echo htmlspecialchars($app->first_name . ' ' . $app->last_name); ?></div>
@@ -716,7 +729,8 @@ $approved_today = $pdo->query("SELECT COUNT(*) FROM admission_applications WHERE
                     docFound = true;
                     const item = document.createElement('div');
                     item.className = 'doc-item-pro';
-                    const fullPath = '../../' + doc.path;
+                    const rootPath = '<?php echo $root_path; ?>';
+                    const fullPath = doc.path.startsWith('http') ? doc.path : (doc.path.startsWith('/') ? doc.path : rootPath + doc.path);
                     item.innerHTML = `
                         <div class="doc-icon-box" style="background: ${doc.color}; color: ${doc.text};">
                             <i class="fas ${doc.icon}"></i>

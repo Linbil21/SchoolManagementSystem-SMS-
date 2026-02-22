@@ -7,6 +7,19 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'cashier') {
     exit();
 }
 
+// Robust absolute-relative path logic
+$script_name = $_SERVER['SCRIPT_NAME'];
+$check_paths = ['/Super-admin/', '/Admin/', '/Cashier/', '/Admission/', '/auth/', '/student/', '/modules/'];
+$project_base = '';
+
+foreach ($check_paths as $path) {
+    if (($pos = stripos($script_name, $path)) !== false) {
+        $project_base = rtrim(substr($script_name, 0, $pos), '/');
+        break;
+    }
+}
+$root_path = $project_base . '/';
+
 // Fetch Online Payments from the database
 try {
     $stmt = $pdo->prepare("
@@ -414,7 +427,8 @@ try {
             
             const img = document.getElementById('modalImg');
             if (data.proof_of_payment) {
-                img.src = '/' + data.proof_of_payment;
+                const rootPath = '<?php echo $root_path; ?>';
+                img.src = data.proof_of_payment.startsWith('/') ? data.proof_of_payment : rootPath + data.proof_of_payment;
                 img.style.display = 'block';
             } else {
                 img.style.display = 'none';
