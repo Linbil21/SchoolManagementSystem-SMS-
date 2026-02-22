@@ -77,21 +77,9 @@ try {
             $fallback->execute([$sName->first_name, $sName->last_name]);
             $student = $fallback->fetch(PDO::FETCH_OBJ);
         }
-    }
-    
-    // 6. Absolute Ultimate Fallback: Grab ANY recent enrollment if still empty just to let it pass to cashier!
-    if (!$student) {
-        $lastResort = $pdo->query("SELECT * FROM enrollments ORDER BY created_at DESC LIMIT 1");
-        $student = $lastResort->fetch(PDO::FETCH_OBJ);
-    }
-
+    // 6. Record the student's email in the description unconditionally as a bulletproof receipt anchor
     $enrollment_id = $student ? $student->enrollmentId : null;
-
-    if (!$enrollment_id) {
-        // Embed their email so Cashier knows who they are, bypassing strict enrollment foreign key errors
-        $description = $description . " [No Enrollment Found - Paid by: " . $student_email . "]";
-    }
-
+    $description = $description . " [Paid by: " . $student_email . "]";
 
     // 5. Simulate External Gateway Processing (Mock 500ms delay)
     // usleep(500000); 

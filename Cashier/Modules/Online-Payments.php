@@ -11,12 +11,12 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'cashier') {
 try {
     $stmt = $pdo->prepare("
         SELECT p.*, 
-               IFNULL(e.first_name, 'Guest') as first_name, 
-               IFNULL(e.last_name, 'Student') as last_name, 
+               IFNULL(e.first_name, IFNULL(s.first_name, 'Guest')) as first_name, 
+               IFNULL(e.last_name, IFNULL(s.last_name, 'Student')) as last_name, 
                IFNULL(s.student_id, IFNULL(e.reference_code, p.paymentId)) as student_id 
         FROM payments p 
         LEFT JOIN enrollments e ON p.enrollment_id = e.enrollmentId 
-        LEFT JOIN students s ON (s.email = e.email)
+        LEFT JOIN students s ON (s.email = e.email OR (e.email IS NULL AND p.description LIKE CONCAT('%Paid by: ', s.email, '%')))
         WHERE p.payment_method IN ('Online Banking', 'E-Wallet (GCash/Maya)', 'GCash', 'Maya', 'Credit/Debit Card', 'Digital Wallet')
         ORDER BY p.created_at DESC
     ");
