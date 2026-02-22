@@ -207,7 +207,6 @@ try {
             box-shadow: 0 8px 20px rgba(22, 72, 188, 0.3);
         }
 
-        /* Modal Redesign */
         .student-modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
