@@ -149,7 +149,7 @@ checkRole(['student']);
             color: #94a3b8;
         }
 
-        .action-btn {
+        .proceed-btn {
             background: var(--primary);
             color: white !important;
             border: none;
@@ -167,7 +167,7 @@ checkRole(['student']);
             min-width: fit-content;
         }
 
-        .action-btn:hover {
+        .proceed-btn:hover {
             background: #1d4ed8;
             color: white !important;
         }
@@ -277,7 +277,7 @@ checkRole(['student']);
                     <h3>Total Units: 17.0</h3>
                     <p>Maximum allowable units: 23.0</p>
                 </div>
-                <a href="View-Assessment.php" class="action-btn">
+                <a href="View-Assessment.php" class="proceed-btn">
                     Proceed to Assessment <i class="fas fa-arrow-right"
                         style="margin-left: 10px; hover: color: white;"></i>
                 </a>

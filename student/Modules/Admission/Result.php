@@ -137,7 +137,7 @@ $course = $app ? $app->course_display_name : 'N/A';
             letter-spacing: 0.5px;
         }
 
-        .action-btn {
+        .result-action-btn {
             background: #2563eb;
             color: white;
             padding: 16px 36px;
@@ -160,7 +160,7 @@ $course = $app ? $app->course_display_name : 'N/A';
             overflow: hidden;
         }
 
-        .action-btn::before {
+        .result-action-btn::before {
             content: '';
             position: absolute;
             top: 0; left: -100%;
@@ -169,16 +169,16 @@ $course = $app ? $app->course_display_name : 'N/A';
             transition: left 0.3s ease;
         }
 
-        .action-btn:hover::before {
+        .result-action-btn:hover::before {
             left: 0;
         }
 
-        .action-btn:hover {
+        .result-action-btn:hover {
             transform: translateY(-3px);
             box-shadow: 0 14px 30px rgba(37, 99, 235, 0.4);
         }
 
-        .action-btn:active {
+        .result-action-btn:active {
             transform: translateY(-1px);
         }
 
@@ -217,7 +217,7 @@ $course = $app ? $app->course_display_name : 'N/A';
                     </div>
 
                     <div class="btn-area">
-                        <a href="/student/Dashboard.php" class="action-btn" style="background: linear-gradient(135deg, #0369a1, #0284c7);">
+                        <a href="/student/Dashboard.php" class="result-action-btn" style="background: linear-gradient(135deg, #0369a1, #0284c7);">
                             <i class="fas fa-home"></i> Back to Dashboard
                         </a>
                     </div>
@@ -240,7 +240,7 @@ $course = $app ? $app->course_display_name : 'N/A';
                     </div>
 
                     <div class="btn-area">
-                        <a href="/student/Modules/Enrollment/Enrollment-Status.php" class="action-btn" style="background: linear-gradient(135deg, #b45309, #d97706);">
+                        <a href="/student/Modules/Enrollment/Enrollment-Status.php" class="result-action-btn" style="background: linear-gradient(135deg, #b45309, #d97706);">
                             <i class="fas fa-wallet"></i> Select Payment Method
                         </a>
                     </div>
@@ -268,7 +268,7 @@ $course = $app ? $app->course_display_name : 'N/A';
                     </div>
 
                     <div class="btn-area">
-                        <a href="/student/Modules/Academic/Schedule.php" class="action-btn" style="background: linear-gradient(135deg, #15803d, #16a34a);">
+                        <a href="/student/Modules/Academic/Schedule.php" class="result-action-btn" style="background: linear-gradient(135deg, #15803d, #16a34a);">
                             <i class="fas fa-calendar-alt"></i> View Class Schedule
                         </a>
                     </div>
@@ -284,7 +284,7 @@ $course = $app ? $app->course_display_name : 'N/A';
                         Your application status is currently: <strong><?php echo htmlspecialchars($enrollment_status); ?></strong>.
                     </p>
                     <div class="btn-area">
-                        <a href="/student/Dashboard.php" class="action-btn" style="background: linear-gradient(135deg, #dc2626, #ef4444);">
+                        <a href="/student/Dashboard.php" class="result-action-btn" style="background: linear-gradient(135deg, #dc2626, #ef4444);">
                             <i class="fas fa-home"></i> Back to Dashboard
                         </a>
                     </div>
