@@ -337,6 +337,16 @@ if (count($name_parts) >= 2) {
 
     .mark-all { font-size: 0.75rem; color: #1648bc; cursor: pointer; display: block; margin-top: 5px; text-align: right; }
 
+    .dropdown-body {
+        max-height: 380px;
+        overflow-y: auto;
+    }
+
+    .dropdown-body::-webkit-scrollbar { width: 6px; }
+    .dropdown-body::-webkit-scrollbar-track { background: transparent; }
+    .dropdown-body::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; }
+    [data-theme="dark"] .dropdown-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); }
+
     .dropdown-item { padding: 12px 20px; border-bottom: 1px solid var(--border-color); cursor: pointer; transition: 0.2s; position: relative; }
     .dropdown-item:hover { background: var(--hover-bg); }
     .dropdown-item.unread { background: #eff6ff; }
