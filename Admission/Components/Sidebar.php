@@ -311,7 +311,6 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admission@sms.com';
     .sidebar-menu ul li a:hover {
         background: var(--hover-bg);
         color: var(--accent-color);
-        328:         color: var(--accent-color);
     }
 
     .icon-box {
