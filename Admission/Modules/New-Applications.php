@@ -206,8 +206,7 @@ try {
             transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(22, 72, 188, 0.3);
         }
-/* 
-        .student-modal-overlay {
+.student-modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(15, 23, 42, 0.7);
@@ -217,7 +216,7 @@ try {
             align-items: center;
             justify-content: center;
             padding: 20px;
-        } */
+        }
 
         .student-modal-content {
             background: white;
