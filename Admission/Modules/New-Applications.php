@@ -7,9 +7,11 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admission') {
 
 require_once '../../Database/config.php';
 
-// Handle AJAX Move to Evaluation
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'proceed_to_evaluation') {
+// Handle AJAX requests
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     header('Content-Type: application/json');
+    
+    $action = $_POST['action'];
     $appId = $_POST['application_no'] ?? null;
 
     if (!$appId) {
@@ -18,59 +20,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     }
 
     try {
-        $stmt = $pdo->prepare("UPDATE admission_applications SET status = 'Processing' WHERE application_no = ?");
-        $stmt->execute([$appId]);
-        echo json_encode(['success' => true, 'message' => 'Application moved to evaluation.']);
+        if ($action === 'proceed_to_evaluation') {
+            $stmt = $pdo->prepare("UPDATE admission_applications SET status = 'Processing' WHERE application_no = ?");
+            $stmt->execute([$appId]);
+            echo json_encode(['success' => true, 'message' => 'Application moved to evaluation.']);
+        } 
+        elseif ($action === 'delete_application') {
+            $stmt = $pdo->prepare("DELETE FROM admission_applications WHERE application_no = ?");
+            $stmt->execute([$appId]);
+            echo json_encode(['success' => true, 'message' => 'Application deleted successfully.']);
+        }
     } catch (PDOException $e) {
-        echo json_encode(['success' => false, 'message' => 'Update failed: ' . $e->getMessage()]);
+        echo json_encode(['success' => false, 'message' => 'Operation failed: ' . $e->getMessage()]);
     }
     exit;
 }
 
-// Handle AJAX Delete
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'delete_application') {
-    header('Content-Type: application/json');
-    $appId = $_POST['application_no'] ?? null;
-
-    if (!$appId) {
-        echo json_encode(['success' => false, 'message' => 'Application ID missing.']);
-        exit;
-    }
-
-    try {
-        $stmt = $pdo->prepare("DELETE FROM admission_applications WHERE application_no = ?");
-        $stmt->execute([$appId]);
-        echo json_encode(['success' => true, 'message' => 'Application deleted successfully.']);
-    } catch (PDOException $e) {
-        echo json_encode(['success' => false, 'message' => 'Delete failed: ' . $e->getMessage()]);
-    }
-    exit;
-}
-
+// Fetch pending applications
 try {
-    $stmt = $pdo->prepare("SELECT a.*, COALESCE(c.course_name, a.preferred_course_1) as course_display_name 
-                           FROM admission_applications a 
-                           LEFT JOIN courses c ON (TRIM(a.preferred_course_1) = CAST(c.courseId AS CHAR) OR a.preferred_course_1 = c.course_name)
-                           WHERE a.status = 'Pending' 
-                           ORDER BY a.submission_date DESC");
+    $stmt = $pdo->prepare("
+        SELECT a.*, COALESCE(c.course_name, a.preferred_course_1) as course_display_name 
+        FROM admission_applications a 
+        LEFT JOIN courses c ON (TRIM(a.preferred_course_1) = CAST(c.courseId AS CHAR) OR a.preferred_course_1 = c.course_name)
+        WHERE a.status = 'Pending' 
+        ORDER BY a.submission_date DESC
+    ");
     $stmt->execute();
     $applications = $stmt->fetchAll();
 } catch (PDOException $e) {
     $applications = [];
+    error_log("Database error: " . $e->getMessage());
 }
 ?>
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>New Applications - Admission</title>
-    <!-- Same styles as Settings.php (abbreviated for this example) -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
         :root {
             --primary-blue: #1648bc;
             --primary-dark: #0f172a;
@@ -80,14 +77,10 @@ try {
             --text-muted: #64748b;
             --success: #10b981;
             --danger: #ef4444;
+            --warning-bg: #fffbeb;
+            --warning-border: #fef3c7;
+            --warning-text: #92400e;
             --shadow-premium: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
         }
 
         body {
@@ -116,6 +109,8 @@ try {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
         }
 
         .header-section h1 {
@@ -131,6 +126,34 @@ try {
             font-size: 1rem;
         }
 
+        .search-wrapper {
+            position: relative;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        .search-input {
+            padding: 14px 20px 14px 45px;
+            border-radius: 16px;
+            border: 2px solid #f1f5f9;
+            outline: none;
+            width: 320px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary-blue);
+        }
+
         .table-card {
             background: white;
             border-radius: 30px;
@@ -139,17 +162,10 @@ try {
             overflow: hidden;
         }
 
-        .table-header {
-            padding: 30px 40px;
-            border-bottom: 1px solid var(--border-soft);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        table {
+            width: 100%;
+            border-collapse: collapse;
         }
-
-        .table-header h3 { font-weight: 800; font-size: 1.25rem; color: var(--primary-dark); }
-
-        table { width: 100%; border-collapse: collapse; }
 
         th {
             text-align: left;
@@ -169,46 +185,139 @@ try {
             vertical-align: middle;
         }
 
-        .app-row { transition: all 0.2s; cursor: pointer; }
-        .app-row:hover { background: #f8faff; }
-
-        .badge-status {
-            padding: 6px 14px;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            background: #fff7ed;
-            color: #c2410c;
+        .app-row {
+            transition: all 0.2s ease;
+            cursor: pointer;
         }
 
-        .btn-action-pro {
+        .app-row:hover {
+            background: #f8faff;
+        }
+
+        .app-id {
+            font-weight: 800;
+            color: var(--primary-dark);
+            font-size: 0.9rem;
+        }
+
+        .student-name {
+            font-weight: 800;
+            color: var(--primary-dark);
+        }
+
+        .student-email {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .course-name {
+            font-weight: 700;
+            color: #475569;
+            font-size: 0.85rem;
+        }
+
+        .submission-date {
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .btn {
             padding: 10px 18px;
             border-radius: 12px;
             font-weight: 700;
             font-size: 0.85rem;
             border: none;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
             display: inline-flex;
             align-items: center;
             gap: 8px;
         }
 
-        .btn-view-pro { background: #f1f5f9; color: #475569; }
-        .btn-view-pro:hover { background: #e2e8f0; color: #1e293b; }
+        .btn-view {
+            background: #f1f5f9;
+            color: #475569;
+        }
 
-        .btn-eval-pro { 
-            background: var(--primary-blue); 
+        .btn-view:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+
+        .btn-delete {
+            background: #fef2f2;
+            color: var(--danger);
+        }
+
+        .btn-delete:hover {
+            background: #fee2e2;
+        }
+
+        .btn-eval {
+            background: var(--primary-blue);
             color: white;
             box-shadow: 0 4px 12px rgba(22, 72, 188, 0.2);
         }
-        .btn-eval-pro:hover { 
+
+        .btn-eval:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(22, 72, 188, 0.3);
         }
+
+        .btn-close {
+            padding: 12px 25px;
+            border-radius: 14px;
+            border: 2px solid var(--border-soft);
+            background: white;
+            color: var(--text-muted);
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-close:hover {
+            background: #f8fafc;
+        }
+
+        .action-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px;
+        }
+
+        .empty-icon {
+            width: 100px;
+            height: 100px;
+            background: #f8fafc;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+
+        .empty-icon i {
+            color: #e2e8f0;
+            font-size: 3rem;
+        }
+
+        .empty-text {
+            color: #64748b;
+            font-weight: 600;
+        }
+
+        /* Modal Styles */
         .student-modal-overlay {
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             background: rgba(15, 23, 42, 0.7);
             backdrop-filter: blur(12px);
             z-index: 99999;
@@ -229,8 +338,14 @@ try {
         }
 
         @keyframes modalScale {
-            from { transform: scale(0.95); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
+            from {
+                transform: scale(0.95);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
         }
 
         .modal-profile-header {
@@ -238,21 +353,41 @@ try {
             background: linear-gradient(135deg, #1648bc 0%, #1e3a8a 100%);
             color: white;
             text-align: center;
-            position: relative;
         }
 
-        .modal-avatar-pro {
-            width: 100px; height: 100px; border-radius: 30px;
+        .modal-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 30px;
             background: rgba(255, 255, 255, 0.15);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 2.5rem; font-weight: 800; margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin: 0 auto 20px;
             border: 3px solid rgba(255, 255, 255, 0.2);
             backdrop-filter: blur(10px);
         }
 
-        .modal-info-section { padding: 35px 40px; }
+        .modal-name {
+            font-weight: 800;
+            font-size: 1.6rem;
+            letter-spacing: -0.02em;
+            margin-bottom: 5px;
+        }
 
-        .info-card-pro {
+        .modal-course {
+            opacity: 0.8;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .modal-info-section {
+            padding: 35px 40px;
+        }
+
+        .info-grid {
             background: #f8fafc;
             border-radius: 20px;
             padding: 20px;
@@ -263,13 +398,38 @@ try {
             gap: 20px;
         }
 
-        .info-item label { 
-            display: block; font-size: 0.7rem; font-weight: 800; 
-            color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; 
+        .info-item label {
+            display: block;
+            font-size: 0.7rem;
+            font-weight: 800;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-bottom: 6px;
         }
-        .info-item p { font-weight: 700; color: var(--primary-dark); font-size: 0.95rem; }
 
-        .modal-footer-pro {
+        .info-item p {
+            font-weight: 700;
+            color: var(--primary-dark);
+            font-size: 0.95rem;
+        }
+
+        .warning-box {
+            background: var(--warning-bg);
+            border: 1px solid var(--warning-border);
+            padding: 20px;
+            border-radius: 20px;
+            color: var(--warning-text);
+            font-size: 0.85rem;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .warning-box p {
+            font-weight: 600;
+        }
+
+        .modal-footer {
             padding: 30px 40px;
             background: white;
             border-top: 1px solid var(--border-soft);
@@ -278,27 +438,24 @@ try {
             gap: 15px;
         }
 
-        .btn-close-pro {
-            padding: 12px 25px; border-radius: 14px; border: 2px solid var(--border-soft);
-            background: white; color: var(--text-muted); font-weight: 700; cursor: pointer;
+        #evalSpinner {
+            margin-right: 8px;
+            display: none;
         }
-        
-        #evalSpinner { margin-right: 8px; display: none; }
     </style>
 </head>
-
 <body>
-    <!-- Premium View Modal -->
+    <!-- View Modal -->
     <div id="viewModal" class="student-modal-overlay">
         <div class="student-modal-content">
             <div class="modal-profile-header">
-                <div class="modal-avatar-pro" id="modalAvatar">JD</div>
-                <h2 id="modalProfileName" style="font-weight: 800; font-size: 1.6rem; letter-spacing: -0.02em;">John Doe</h2>
-                <p id="modalProfileCourse" style="opacity: 0.8; font-weight: 500; font-size: 0.95rem;">BS Computer Science</p>
+                <div class="modal-avatar" id="modalAvatar">JD</div>
+                <h2 id="modalProfileName" class="modal-name">John Doe</h2>
+                <p id="modalProfileCourse" class="modal-course">BS Computer Science</p>
             </div>
             
             <div class="modal-info-section">
-                <div class="info-card-pro">
+                <div class="info-grid">
                     <div class="info-item">
                         <label>Application ID</label>
                         <p id="modalAppId">#APP-10293</p>
@@ -309,7 +466,7 @@ try {
                     </div>
                 </div>
 
-                <div class="info-card-pro">
+                <div class="info-grid">
                     <div class="info-item">
                         <label>Email Address</label>
                         <p id="modalEmail">john@university.edu</p>
@@ -320,15 +477,15 @@ try {
                     </div>
                 </div>
 
-                <div style="background: #fffbeb; border: 1px solid #fef3c7; padding: 20px; border-radius: 20px; color: #92400e; font-size: 0.85rem; display: flex; gap: 12px; align-items: center;">
+                <div class="warning-box">
                     <i class="fas fa-info-circle fa-lg"></i>
-                    <p style="font-weight: 600;">Moving to evaluation will alert the student and lock this application phase.</p>
+                    <p>Moving to evaluation will alert the student and lock this application phase.</p>
                 </div>
             </div>
 
-            <div class="modal-footer-pro">
-                <button class="btn-close-pro" onclick="closeViewModal()">Dismiss</button>
-                <button class="btn-action-pro btn-eval-pro" onclick="proceedToEval(event)">
+            <div class="modal-footer">
+                <button class="btn-close" onclick="closeViewModal()">Dismiss</button>
+                <button class="btn btn-eval" onclick="proceedToEval(event)">
                     <i class="fas fa-circle-notch fa-spin" id="evalSpinner"></i>
                     <i class="fas fa-arrow-right" id="evalIcon"></i>
                     Move to Evaluation
@@ -336,20 +493,27 @@ try {
             </div>
         </div>
     </div>
+
     <?php include '../Components/Sidebar.php'; ?>
+    
     <div class="main-wrapper">
         <?php include '../Components/header.php'; ?>
+        
         <div class="content-area">
             <div class="header-section">
                 <div>
                     <h1>New Applications</h1>
                     <p>Identify and process newly submitted enrollment requests.</p>
                 </div>
-                <div style="position: relative;">
-                    <i class="fas fa-search" style="position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 0.9rem;"></i>
-                    <input type="text" id="appSearch" onkeyup="filterTable('appSearch', 'appTable')" placeholder="Search applicants..." 
-                        style="padding: 14px 20px 14px 45px; border-radius: 16px; border: 2px solid #f1f5f9; outline: none; width: 320px; font-size: 0.9rem; font-weight: 600; transition: 0.3s;"
-                        onfocus="this.style.borderColor='#1648bc'">
+                <div class="search-wrapper">
+                    <i class="fas fa-search search-icon"></i>
+                    <input 
+                        type="text" 
+                        id="appSearch" 
+                        onkeyup="filterTable()" 
+                        placeholder="Search applicants..." 
+                        class="search-input"
+                    >
                 </div>
             </div>
 
@@ -367,25 +531,23 @@ try {
                     <tbody>
                         <?php if (empty($applications)): ?>
                             <tr>
-                                <td colspan="5" style="text-align: center; padding: 80px;">
-                                    <div style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
-                                        <div style="width: 100px; height: 100px; background: #f8fafc; border-radius: 30px; display: flex; align-items: center; justify-content: center;">
-                                            <i class="fas fa-inbox fa-3x" style="color: #e2e8f0;"></i>
-                                        </div>
-                                        <p style="color: #64748b; font-weight: 600;">No pending applications in your queue.</p>
+                                <td colspan="5" class="empty-state">
+                                    <div class="empty-icon">
+                                        <i class="fas fa-inbox"></i>
                                     </div>
+                                    <p class="empty-text">No pending applications in your queue.</p>
                                 </td>
                             </tr>
                         <?php else: ?>
                             <?php foreach ($applications as $app): ?>
                                 <tr class="app-row">
-                                    <td style="font-weight: 800; color: var(--primary-dark); font-size: 0.9rem;">#<?php echo htmlspecialchars($app->application_no); ?></td>
+                                    <td class="app-id">#<?php echo htmlspecialchars($app->application_no); ?></td>
                                     <td>
-                                        <div style="font-weight: 800; color: var(--primary-dark);"><?php echo htmlspecialchars($app->first_name . ' ' . $app->last_name); ?></div>
-                                        <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;"><?php echo htmlspecialchars($app->email); ?></div>
+                                        <div class="student-name"><?php echo htmlspecialchars($app->first_name . ' ' . $app->last_name); ?></div>
+                                        <div class="student-email"><?php echo htmlspecialchars($app->email); ?></div>
                                     </td>
-                                    <td style="font-weight: 700; color: #475569; font-size: 0.85rem;"><?php echo htmlspecialchars($app->course_display_name); ?></td>
-                                    <td style="color: var(--text-muted); font-weight: 600;"><?php echo date('M d, Y', strtotime($app->submission_date)); ?></td>
+                                    <td class="course-name"><?php echo htmlspecialchars($app->course_display_name); ?></td>
+                                    <td class="submission-date"><?php echo date('M d, Y', strtotime($app->submission_date)); ?></td>
                                     <td>
                                         <?php 
                                             $appData = [
@@ -397,11 +559,17 @@ try {
                                                 'phone' => $app->phone_number
                                             ];
                                         ?>
-                                        <div style="display: flex; gap: 10px;">
-                                            <button class="btn-action-pro btn-view-pro" onclick="openDetailModal(<?php echo htmlspecialchars(json_encode($appData), ENT_QUOTES, 'UTF-8'); ?>)">
+                                        <div class="action-group">
+                                            <button 
+                                                class="btn btn-view" 
+                                                onclick='openDetailModal(<?php echo json_encode($appData, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP); ?>)'
+                                            >
                                                 <i class="fas fa-eye"></i> Details
                                             </button>
-                                            <button class="btn-action-pro" style="background: #fef2f2; color: #ef4444;" onclick="deleteApplication('<?php echo $app->application_no; ?>', '<?php echo addslashes($app->first_name . ' ' . $app->last_name); ?>')">
+                                            <button 
+                                                class="btn btn-delete" 
+                                                onclick="deleteApplication('<?php echo $app->application_no; ?>', '<?php echo addslashes($app->first_name . ' ' . $app->last_name); ?>')"
+                                            >
                                                 <i class="fas fa-trash-alt"></i>
                                             </button>
                                         </div>
@@ -414,52 +582,62 @@ try {
             </div>
         </div>
     </div>
-    <!-- View Application Modal -->
 
     <?php include '../Components/GlobalScripts.php'; ?>
+    
     <script>
-        function filterTable(inputId, tableId) {
-            const input = document.getElementById(inputId);
-            const filter = input.value.toLowerCase();
-            const table = document.getElementById(tableId);
-            const tr = table.getElementsByTagName("tr");
+        // State
+        let currentAppId = null;
 
-            for (let i = 1; i < tr.length; i++) {
+        // Filter table function
+        function filterTable() {
+            const input = document.getElementById('appSearch');
+            const filter = input.value.toLowerCase();
+            const table = document.getElementById('appTable');
+            const rows = table.getElementsByTagName('tr');
+
+            for (let i = 1; i < rows.length; i++) {
                 let rowVisible = false;
-                const td = tr[i].getElementsByTagName("td");
-                for (let j = 0; j < td.length; j++) {
-                    if (td[j]) {
-                        const txtValue = td[j].textContent || td[j].innerText;
-                        if (txtValue.toLowerCase().indexOf(filter) > -1) {
+                const cells = rows[i].getElementsByTagName('td');
+                
+                for (let j = 0; j < cells.length; j++) {
+                    if (cells[j]) {
+                        const textValue = cells[j].textContent || cells[j].innerText;
+                        if (textValue.toLowerCase().includes(filter)) {
                             rowVisible = true;
                             break;
                         }
                     }
                 }
-                tr[i].style.display = rowVisible ? "" : "none";
+                
+                rows[i].style.display = rowVisible ? '' : 'none';
             }
         }
 
-        let currentAppId = null;
-
+        // Modal functions
         function openDetailModal(data) {
             try {
                 currentAppId = data.no;
-                if (document.getElementById('modalProfileName')) document.getElementById('modalProfileName').textContent = data.name;
-                if (document.getElementById('modalAvatar')) document.getElementById('modalAvatar').textContent = data.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
-                if (document.getElementById('modalAppId')) document.getElementById('modalAppId').textContent = '#' + data.no;
-                if (document.getElementById('modalProfileCourse')) document.getElementById('modalProfileCourse').textContent = data.course;
-                if (document.getElementById('modalDate')) document.getElementById('modalDate').textContent = data.date;
-                if (document.getElementById('modalEmail')) document.getElementById('modalEmail').textContent = data.email;
-                if (document.getElementById('modalContact')) document.getElementById('modalContact').textContent = data.phone;
+                
+                document.getElementById('modalProfileName').textContent = data.name;
+                document.getElementById('modalAvatar').textContent = data.name
+                    .split(' ')
+                    .map(n => n[0])
+                    .join('')
+                    .toUpperCase()
+                    .substring(0, 2);
+                document.getElementById('modalAppId').textContent = '#' + data.no;
+                document.getElementById('modalProfileCourse').textContent = data.course;
+                document.getElementById('modalDate').textContent = data.date;
+                document.getElementById('modalEmail').textContent = data.email;
+                document.getElementById('modalContact').textContent = data.phone;
 
                 const modal = document.getElementById('viewModal');
-                if (modal) {
-                    modal.style.display = 'flex';
-                    document.body.style.overflow = 'hidden';
-                }
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
             } catch (err) {
                 console.error('Error opening detail modal:', err);
+                Swal.fire('Error', 'Failed to open application details.', 'error');
             }
         }
 
@@ -469,15 +647,16 @@ try {
             currentAppId = null;
         }
 
+        // Proceed to evaluation
         async function proceedToEval(event) {
             if (!currentAppId) return;
 
             const btn = event.currentTarget;
-            const spinner = btn.querySelector('#evalSpinner');
-            const icon = btn.querySelector('#evalIcon');
+            const spinner = document.getElementById('evalSpinner');
+            const icon = document.getElementById('evalIcon');
             
-            if (spinner) spinner.style.display = 'inline-block';
-            if (icon) icon.style.display = 'none';
+            spinner.style.display = 'inline-block';
+            icon.style.display = 'none';
             btn.disabled = true;
 
             const formData = new FormData();
@@ -485,36 +664,35 @@ try {
             formData.append('application_no', currentAppId);
 
             try {
-                const response = await fetch('New-Applications.php', {
+                const response = await fetch(window.location.href, {
                     method: 'POST',
                     body: formData
                 });
+                
                 const data = await response.json();
 
                 if (data.success) {
-                    Swal.fire({
+                    await Swal.fire({
                         title: 'Moved to Evaluation!',
                         text: 'Redirecting you to the Evaluation Workspace...',
                         icon: 'success',
                         timer: 1500,
                         showConfirmButton: false
-                    }).then(() => {
-                        window.location.href = 'Evaluation.php';
                     });
+                    
+                    window.location.href = 'Evaluation.php';
                 } else {
                     Swal.fire('Error!', data.message, 'error');
-                    if (spinner) spinner.style.display = 'none';
-                    if (icon) icon.style.display = 'inline-block';
-                    btn.disabled = false;
+                    resetButtonState(spinner, icon, btn);
                 }
             } catch (error) {
+                console.error('Error:', error);
                 Swal.fire('Error!', 'Something went wrong.', 'error');
-                if (spinner) spinner.style.display = 'none';
-                if (icon) icon.style.display = 'inline-block';
-                btn.disabled = false;
+                resetButtonState(spinner, icon, btn);
             }
         }
 
+        // Delete application
         async function deleteApplication(id, name) {
             const result = await Swal.fire({
                 title: 'Are you sure?',
@@ -533,32 +711,40 @@ try {
                 formData.append('application_no', id);
 
                 try {
-                    const response = await fetch('New-Applications.php', {
+                    const response = await fetch(window.location.href, {
                         method: 'POST',
                         body: formData
                     });
+                    
                     const data = await response.json();
 
                     if (data.success) {
-                        Swal.fire('Deleted!', data.message, 'success').then(() => {
-                            location.reload();
-                        });
+                        await Swal.fire('Deleted!', data.message, 'success');
+                        location.reload();
                     } else {
                         Swal.fire('Error!', data.message, 'error');
                     }
                 } catch (error) {
+                    console.error('Error:', error);
                     Swal.fire('Error!', 'Something went wrong while deleting.', 'error');
                 }
             }
         }
 
-        window.onclick = function (event) {
+        // Helper functions
+        function resetButtonState(spinner, icon, btn) {
+            spinner.style.display = 'none';
+            icon.style.display = 'inline-block';
+            btn.disabled = false;
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
             const modal = document.getElementById('viewModal');
-            if (event.target == modal) {
+            if (event.target === modal) {
                 closeViewModal();
             }
         }
     </script>
 </body>
-
 </html>
