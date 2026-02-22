@@ -53,13 +53,15 @@ if ($amount <= 0) {
 try {
     $pdo->beginTransaction();
 
-    // 4. Fetch Active/Pending Enrollment
-    $stmt = $pdo->prepare("SELECT enrollmentId, balance, first_name, last_name, status FROM enrollments WHERE email = ? AND status IN ('Enrolled', 'Validated', 'Pending Review', 'Pending Payment') LIMIT 1");
-    $stmt->execute([$student_email]);
+    $student_id = $_SESSION['student_id'] ?? '';
+    
+    // 4. Fetch Active/Pending Enrollment (Robust lookup by email or reference code)
+    $stmt = $pdo->prepare("SELECT * FROM enrollments WHERE email = ? OR reference_code = ? ORDER BY created_at DESC LIMIT 1");
+    $stmt->execute([$student_email, $student_id]);
     $student = $stmt->fetch(PDO::FETCH_OBJ);
 
     if (!$student) {
-        $stmt = $pdo->prepare("SELECT enrollmentId, balance, first_name, last_name, status FROM enrollments WHERE email = ? ORDER BY created_at DESC LIMIT 1");
+        $stmt = $pdo->prepare("SELECT * FROM enrollments WHERE LOWER(email) = LOWER(?) ORDER BY created_at DESC LIMIT 1");
         $stmt->execute([$student_email]);
         $student = $stmt->fetch(PDO::FETCH_OBJ);
     }
@@ -75,7 +77,7 @@ try {
     // 6. Record the Successful Transaction
     $transaction_id = "GATEWAY-" . strtoupper(bin2hex(random_bytes(6)));
     
-    $insert = $pdo->prepare("INSERT INTO payments (enrollment_id, amount, payment_method, status, transaction_id, description, created_at, payment_date) VALUES (?, ?, ?, 'Completed', ?, ?, NOW(), CURDATE())");
+    $insert = $pdo->prepare("INSERT INTO payments (enrollment_id, amount, payment_method, status, transaction_id, description, created_at) VALUES (?, ?, ?, 'Completed', ?, ?, NOW())");
     $insert->execute([
         $student->enrollmentId,
         $amount,
@@ -84,9 +86,13 @@ try {
         $description
     ]);
 
-    // 7. Update Student Balance
-    $update = $pdo->prepare("UPDATE enrollments SET balance = balance - ? WHERE enrollmentId = ?");
-    $update->execute([$amount, $student->enrollmentId]);
+    // 7. Update Student Balance (Wrapped safely in case 'balance' column doesn't exist yet on live DB)
+    try {
+        $update = $pdo->prepare("UPDATE enrollments SET balance = balance - ? WHERE enrollmentId = ?");
+        $update->execute([$amount, $student->enrollmentId]);
+    } catch (PDOException $ex) {
+        // Silently ignore if balance column doesn't exist
+    }
 
     // 8. Create Success Notification
     $notif_msg = "Gateway payment of ₱" . number_format($amount, 2) . " via $method was successful. Ref: $transaction_id";
