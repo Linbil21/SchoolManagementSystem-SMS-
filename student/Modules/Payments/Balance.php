@@ -6,7 +6,7 @@ checkRole(['student']);
 
 // Admission Approval Check
 $enrollment_status = $_SESSION['enrollment_status'] ?? 'Pending';
-$allowed_payment_statuses = ['Pending Payment', 'Validation', 'Enrolled'];
+$allowed_payment_statuses = ['Pending', 'Pending Payment', 'Validation', 'Enrolled'];
 if (!in_array($enrollment_status, $allowed_payment_statuses)) {
     header("Location: ../Admission/Result.php");
     exit();
@@ -151,6 +151,18 @@ if (!in_array($enrollment_status, $allowed_payment_statuses)) {
             border-bottom: 1px solid #f1f5f9;
         }
 
+        .tag-projected {
+            background: #fff7ed;
+            color: #ea580c;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-left: 10px;
+            border: 1px solid #ffedd5;
+        }
+
         .fee-row {
             display: flex;
             justify-content: space-between;
@@ -179,6 +191,18 @@ if (!in_array($enrollment_status, $allowed_payment_statuses)) {
             color: var(--primary);
         }
 
+        .info-banner {
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            padding: 15px 20px;
+            border-radius: 12px;
+            color: #0369a1;
+            font-size: 0.85rem;
+            margin-bottom: 25px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
     </style>
 </head>
 
@@ -189,19 +213,19 @@ if (!in_array($enrollment_status, $allowed_payment_statuses)) {
         <div class="content-area">
             <?php
             require_once '../../../Database/config.php';
-            // Secure session handling
-            if(!isset($_SESSION['email'])) {
-                 // Prevent error if accessed directly
-                 $student_email = 'student@sms.com';
-            } else {
-                 $student_email = $_SESSION['email'];
-            }
+            $student_email = $_SESSION['email'] ?? 'student@sms.com';
 
             $balance = 0;
             $total_fee = 0;
+            $is_projected = true;
+            $tuition = 0;
+            $misc = 0;
+            $lab = 0;
+            $course_name = "N/A";
             $enrolled = false;
 
             try {
+                // 1. Check for official enrollment record
                 $stmt = $pdo->prepare("SELECT * FROM enrollments WHERE email = ? ORDER BY created_at DESC LIMIT 1");
                 $stmt->execute([$student_email]);
                 $enrollment = $stmt->fetch();
@@ -209,38 +233,81 @@ if (!in_array($enrollment_status, $allowed_payment_statuses)) {
                 if ($enrollment) {
                     $balance = $enrollment->balance;
                     $total_fee = $enrollment->total_fee;
-                    
-                    // Read actual persisted fees
                     $tuition = $enrollment->tuition_fee ?? 0;
-                    $misc = $enrollment->misc_fee ?? 0;
-                    $lab = $enrollment->lab_fee ?? 0;
+                    $misc = $enrollment->misc_fee ?? 4200;
+                    $lab = $enrollment->lab_fee ?? 1500;
+                    $is_projected = ($enrollment->status === 'Pending Review' || $enrollment->status === 'Pending' || $enrollment->status === 'Validation');
                     $enrolled = true;
+                } else {
+                    // 2. No enrollment yet: check admission application for course choice
+                    $app_stmt = $pdo->prepare("SELECT a.*, c.course_name FROM admission_applications a 
+                                               LEFT JOIN courses c ON (a.preferred_course_1 = CAST(c.courseId AS CHAR) OR a.preferred_course_1 = c.course_name)
+                                               WHERE a.email = ? LIMIT 1");
+                    $app_stmt->execute([$student_email]);
+                    $app = $app_stmt->fetch();
+
+                    if ($app) {
+                        $course_name = $app->course_name ?: $app->preferred_course_1;
+                        // Mock assessment based on standard rates
+                        $tuition = 13500; // ~18 units * 750
+                        $misc = 4200;
+                        $lab = 1500;
+                        $total_fee = $tuition + $misc + $lab;
+                        
+                        // Calculate balance by checking payments already made via email fallback
+                        $pay_stmt = $pdo->prepare("SELECT SUM(amount) FROM payments WHERE (description LIKE ? OR enrollment_id IS NULL) AND status IN ('Completed', 'Verified')");
+                        $pay_stmt->execute(["%$student_email%"]);
+                        $payments_made = $pay_stmt->fetchColumn() ?: 0;
+                        
+                        $balance = $total_fee - $payments_made;
+                        $is_projected = true;
+                        $enrolled = true; // Set true to show the breakdown even if projected
+                    }
                 }
             } catch (PDOException $e) {
                 // error fetching
             }
 
-            // Fallback for empty/new assessments to avoid empty UI
-            if ($enrolled && $total_fee <= 0) {
-                 // If total fee is 0 but they are enrolled, maybe it's not yet assessed
-                 // We can keep everything at 0 or show a message
-            }
-            
             $paid = $total_fee - $balance;
             ?>
             
+            <div class="page-header">
+                <h1 class="page-title">Accounts Balance</h1>
+                <p style="color: var(--secondary); font-size: 0.9rem;">View your current financial standing and fee breakdowns.</p>
+            </div>
+
+            <?php if ($is_projected): ?>
+            <div class="info-banner">
+                <i class="fas fa-magic" style="font-size: 1.2rem;"></i>
+                <div>
+                    <strong>Projected Assessment</strong><br>
+                    This is a preliminary estimation based on your preferred course choice. Final charges will be updated upon official enrollment approval.
+                </div>
+            </div>
+            <?php endif; ?>
+            
             <div class="balance-card">
-                <div class="balance-label">Outstanding Balance</div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                    <div class="balance-label">Current Outstanding Balance</div>
+                    <?php if ($is_projected): ?>
+                        <span class="tag-projected" style="background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2);">Pending Approval</span>
+                    <?php endif; ?>
+                </div>
                 <div class="balance-amount">
                     <span class="currency">₱</span>
                     <?php echo number_format($balance, 2); ?>
                 </div>
-                <div style="margin-bottom: 20px; font-size: 0.9rem; color: rgba(255,255,255,0.7);">
-                    <i class="fas fa-info-circle"></i> As of <?php echo date('F d, Y'); ?>
+                <div style="margin-bottom: 25px; font-size: 0.9rem; color: rgba(255,255,255,0.7);">
+                    <i class="fas fa-clock"></i> Last updated: <?php echo date('F d, Y • h:i A'); ?>
                 </div>
-                <a href="Upload-Receipt.php" class="pay-btn">
-                    Pay Now <i class="fas fa-arrow-right"></i>
-                </a>
+                <div style="display: flex; gap: 12px;">
+                    <a href="History.php" class="pay-btn" style="background: white; color: #1e293b;">
+                        <i class="fas fa-wallet"></i> My Receipts
+                    </a>
+                    <a href="../../Dashboard.php" class="pay-btn" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3);">
+                        Make Payment
+                    </a>
+                </div>
             </div>
 
             <div class="breakdown-card">
@@ -281,7 +348,7 @@ if (!in_array($enrollment_status, $allowed_payment_statuses)) {
                 </div>
                 <?php else: ?>
                 <div style="text-align:center; padding: 20px; color: var(--secondary);">
-                    No active enrollment record found to display breakdown.
+                    No active enrollment record or application found to display breakdown.
                 </div>
                 <?php endif; ?>
             </div>

@@ -31,6 +31,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['role'] = 'student';
             $_SESSION['profile_image'] = $student->profile_image;
 
+            // Fetch Admission & Enrollment Progress
+            $app_stmt = $pdo->prepare("SELECT status FROM admission_applications WHERE email = ? ORDER BY submission_date DESC LIMIT 1");
+            $app_stmt->execute([$student->email]);
+            $_SESSION['admission_status'] = $app_stmt->fetchColumn() ?: 'Pending';
+
+            $enr_stmt = $pdo->prepare("SELECT status FROM enrollments WHERE email = ? ORDER BY created_at DESC LIMIT 1");
+            $enr_stmt->execute([$student->email]);
+            $_SESSION['enrollment_status'] = $enr_stmt->fetchColumn() ?: 'Pending';
+
             // Notification for successful verification
             $notif_title = $type == 'register' ? 'New Student Verified' : 'Student Logged In';
             $notif_msg = $student->first_name . " " . $student->last_name . ($type == 'register' ? " has completed verification." : " has logged in successfully.");

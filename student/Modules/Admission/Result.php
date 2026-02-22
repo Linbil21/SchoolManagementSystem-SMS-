@@ -216,9 +216,12 @@ $course = $app ? $app->course_display_name : 'N/A';
                         </div>
                     </div>
 
-                    <div class="btn-area">
+                    <div class="btn-area" style="display:flex; flex-direction:column; gap:12px; align-items:center;">
                         <a href="/student/Dashboard.php" class="result-action-btn" style="background: linear-gradient(135deg, #0369a1, #0284c7);">
                             <i class="fas fa-home"></i> Back to Dashboard
+                        </a>
+                        <a href="/student/Modules/Payments/Balance.php" style="color: #0369a1; font-weight: 700; text-decoration: none; font-size: 0.9rem; margin-top: 5px; display: flex; align-items: center; gap: 8px;">
+                            <i class="fas fa-file-invoice-dollar"></i> View Projected Fees & Balance
                         </a>
                     </div>
                 </div>
