@@ -2,7 +2,8 @@
 // Database configuration
 
 // Check if running on localhost (XAMPP) or Live Server
-if ($_SERVER['HTTP_HOST'] == 'localhost' || $_SERVER['HTTP_HOST'] == '127.0.0.1') {
+$host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+if ($host == 'localhost' || $host == '127.0.0.1') {
     // Local / XAMPP Credentials
     define('DB_HOST', 'localhost');
     define('DB_USER', 'root');

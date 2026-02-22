@@ -14,6 +14,19 @@ header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-W
 session_start();
 require_once '../../Database/config.php';
 
+// Fallback for getallheaders() if not on Apache
+if (!function_exists('getallheaders')) {
+    function getallheaders() {
+        $headers = [];
+        foreach ($_SERVER as $name => $value) {
+            if (substr($name, 0, 5) == 'HTTP_') {
+                $headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
+            }
+        }
+        return $headers;
+    }
+}
+
 // Mock API Key Check (for simulated security)
 $headers = getallheaders();
 $api_key = $headers['X-Gateway-Key'] ?? 'demo_key_123';
@@ -56,7 +69,7 @@ try {
     $student_id = $_SESSION['student_id'] ?? '';
     
     // 4. Fetch Active/Pending Enrollment (Robust lookup by email or reference code)
-    $stmt = $pdo->prepare("SELECT * FROM enrollments WHERE TRIM(email) = TRIM(?) OR reference_code = ? ORDER BY created_at DESC LIMIT 1");
+    $stmt = $pdo->prepare("SELECT * FROM enrollments WHERE (TRIM(email) = TRIM(?) AND email != '') OR (reference_code = ? AND reference_code != '') ORDER BY created_at DESC LIMIT 1");
     $stmt->execute([$student_email, $student_id]);
     $student = $stmt->fetch(PDO::FETCH_OBJ);
 
@@ -77,6 +90,7 @@ try {
             $fallback->execute([$sName->first_name, $sName->last_name]);
             $student = $fallback->fetch(PDO::FETCH_OBJ);
         }
+    }
     // 6. Record the student's email in the description unconditionally as a bulletproof receipt anchor
     $enrollment_id = $student ? $student->enrollmentId : null;
     $description = $description . " [Paid by: " . $student_email . "]";

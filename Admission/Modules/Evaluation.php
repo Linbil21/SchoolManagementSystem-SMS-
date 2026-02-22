@@ -41,10 +41,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 $pdo->prepare("UPDATE admission_applications SET status = 'Approved' WHERE applicationId = ?")
                     ->execute([$app_id]);
 
-                // 2. Create/Update Student Record if doesn't exist
+                // 2. Create/Update Student Record if doesn't exist (Auto-Transfer Logic)
                 $stmt = $pdo->prepare("SELECT * FROM students WHERE email = ?");
                 $stmt->execute([$app->email]);
                 $student = $stmt->fetch();
+
+                if (!$student) {
+                    // Generate temp student ID if not exists
+                    $id_stmt = $pdo->query("SELECT MAX(userId) as last_id FROM users");
+                    $last_id = $id_stmt->fetch()->last_id ?? rand(1000, 9999);
+                    $new_student_id = "STU-" . date('Y') . "-" . str_pad($last_id + 1, 4, '0', STR_PAD_LEFT);
+                    
+                    // Create basic student account so they can login
+                    $default_pass = password_hash('student123', PASSWORD_DEFAULT);
+                    $ins_student = $pdo->prepare("INSERT INTO students (student_id, first_name, mid_name, last_name, email, password, course, year_level, status, is_verified) VALUES (?, ?, ?, ?, ?, ?, ?, 'First Year', 'Regular', 1)");
+                    $ins_student->execute([
+                        $new_student_id,
+                        $app->first_name,
+                        $app->mid_name ?? '',
+                        $app->last_name,
+                        $app->email,
+                        $default_pass,
+                        $app->course_display_name,
+                    ]);
+                }
 
                 // 3. Create or Update Enrollment & Assign Default Fees
                 $tuition = 15000.00;
@@ -509,7 +529,7 @@ $approved_today = $pdo->query("SELECT COUNT(*) FROM admission_applications WHERE
                         <div class="eval-input-group">
                             <label>Application Status</label>
                             <select name="status" id="modalEvalStatus" class="eval-select">
-                                <option value="Approved">Approve & Generate Payment Link</option>
+                                <option value="Approved">Verify & Auto-Transfer to Enrollment</option>
                                 <option value="Processing">Keep for Further Review</option>
                                 <option value="Rejected">Decline Application</option>
                             </select>
