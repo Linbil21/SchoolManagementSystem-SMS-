@@ -280,7 +280,7 @@ $root_path = $project_base . '/';
                                     $amount = number_format($row->amount, 2);
                                     $date = date('M d, Y', strtotime($row->created_at));
                                     $method = htmlspecialchars($row->payment_method);
-                                    $img = "<?php echo $root_path; ?>" . htmlspecialchars($row->proof_of_payment);
+                                    $img = $root_path . htmlspecialchars($row->proof_of_payment);
                                     $purpose = htmlspecialchars($row->purpose ?? "");
                                     echo "<tr>
                                             <td>
