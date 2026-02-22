@@ -269,8 +269,14 @@ checkRole(['student']);
                         $student_email = $_SESSION['email'];
                         
                         try {
-                            $stmt = $pdo->prepare("SELECT p.* FROM payments p JOIN enrollments e ON p.enrollment_id = e.enrollmentId WHERE e.email = ? ORDER BY p.created_at DESC");
-                            $stmt->execute([$student_email]);
+                            $stmt = $pdo->prepare("
+                                SELECT p.* 
+                                FROM payments p 
+                                LEFT JOIN enrollments e ON p.enrollment_id = e.enrollmentId 
+                                WHERE e.email = ? OR p.description LIKE ? 
+                                ORDER BY p.created_at DESC
+                            ");
+                            $stmt->execute([$student_email, "%$student_email%"]);
                             $payments = $stmt->fetchAll();
 
                             if (count($payments) > 0) {
