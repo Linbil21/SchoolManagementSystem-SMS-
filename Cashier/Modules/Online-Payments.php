@@ -10,11 +10,14 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'cashier') {
 // Fetch Online Payments from the database
 try {
     $stmt = $pdo->prepare("
-        SELECT p.*, e.first_name, e.last_name, IFNULL(s.student_id, e.reference_code) as student_id 
+        SELECT p.*, 
+               IFNULL(e.first_name, 'Guest') as first_name, 
+               IFNULL(e.last_name, 'Student') as last_name, 
+               IFNULL(s.student_id, IFNULL(e.reference_code, p.paymentId)) as student_id 
         FROM payments p 
-        JOIN enrollments e ON p.enrollment_id = e.enrollmentId 
-        LEFT JOIN students s ON e.email = s.email
-        WHERE p.payment_method IN ('Online Banking', 'E-Wallet (GCash/Maya)', 'GCash', 'Maya', 'Credit/Debit Card')
+        LEFT JOIN enrollments e ON p.enrollment_id = e.enrollmentId 
+        LEFT JOIN students s ON (s.email = e.email)
+        WHERE p.payment_method IN ('Online Banking', 'E-Wallet (GCash/Maya)', 'GCash', 'Maya', 'Credit/Debit Card', 'Digital Wallet')
         ORDER BY p.created_at DESC
     ");
     $stmt->execute();
