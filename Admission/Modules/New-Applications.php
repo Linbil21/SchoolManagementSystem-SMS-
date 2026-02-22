@@ -36,21 +36,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     exit;
 }
 
-ob_start();
-register_shutdown_function(function () {
-    $output = ob_get_clean();
-    if ($output === false) {
-        return;
-    }
+// ob_start();
+// register_shutdown_function(function () {
+//     $output = ob_get_clean();
+//     if ($output === false) {
+//         return;
+//     }
 
-    $output = preg_replace(
-        '/\s*\.student-modal-footer\s*\{\s*padding:\s*20px\s*32px;\s*border-top:\s*1px\s*solid\s*#edf2f7;\s*display:\s*flex;\s*justify-content:\s*flex-end;\s*background:\s*#f8fafc;\s*\}\s*/i',
-        '',
-        $output
-    );
+//     $output = preg_replace(
+//         '/\s*\.student-modal-footer\s*\{\s*padding:\s*20px\s*32px;\s*border-top:\s*1px\s*solid\s*#edf2f7;\s*display:\s*flex;\s*justify-content:\s*flex-end;\s*background:\s*#f8fafc;\s*\}\s*/i',
+//         '',
+//         $output
+//     );
 
-    echo $output;
-});
+//     echo $output;
+// });
 
 // Fetch pending applications
 try {
