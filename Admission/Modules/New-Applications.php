@@ -7,6 +7,26 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admission') {
 
 require_once '../../Database/config.php';
 
+// Handle AJAX Move to Evaluation
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'proceed_to_evaluation') {
+    header('Content-Type: application/json');
+    $appId = $_POST['application_no'] ?? null;
+
+    if (!$appId) {
+        echo json_encode(['success' => false, 'message' => 'Application ID missing.']);
+        exit;
+    }
+
+    try {
+        $stmt = $pdo->prepare("UPDATE admission_applications SET status = 'Processing' WHERE application_no = ?");
+        $stmt->execute([$appId]);
+        echo json_encode(['success' => true, 'message' => 'Application moved to evaluation.']);
+    } catch (PDOException $e) {
+        echo json_encode(['success' => false, 'message' => 'Update failed: ' . $e->getMessage()]);
+    }
+    exit;
+}
+
 // Handle AJAX Delete
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'delete_application') {
     header('Content-Type: application/json');
@@ -344,7 +364,7 @@ try {
             <div class="student-modal-footer">
                 <button onclick="closeViewModal()"
                     style="padding: 10px 20px; border-radius: 10px; border: 1px solid #e2e8f0; background: white; font-weight: 600; cursor: pointer;">Close</button>
-                <button onclick="proceedToEval()"
+                <button onclick="proceedToEval(event)"
                     style="padding: 10px 25px; border-radius: 10px; background: #1648bc; color: white; border: none; font-weight: 600; cursor: pointer;">Proceed
                     to Evaluation</button>
             </div>
@@ -458,8 +478,11 @@ try {
             }
         }
 
+        let currentAppId = null;
+
         function openDetailModal(data) {
             try {
+                currentAppId = data.no;
                 console.log('Opening detail modal...', data);
                 if (document.getElementById('modalFullName')) document.getElementById('modalFullName').textContent = data.name;
                 if (document.getElementById('modalProfileName')) document.getElementById('modalProfileName').textContent = data.name;
@@ -527,10 +550,40 @@ try {
         function closeViewModal() {
             document.getElementById('viewModal').style.display = 'none';
             document.body.style.overflow = 'auto';
+            currentAppId = null;
         }
 
-        function proceedToEval() {
-            window.location.href = 'Evaluation.php';
+        async function proceedToEval(event) {
+            if (!currentAppId) return;
+
+            const btn = event.currentTarget;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            btn.disabled = true;
+
+            const formData = new FormData();
+            formData.append('action', 'proceed_to_evaluation');
+            formData.append('application_no', currentAppId);
+
+            try {
+                const response = await fetch('New-Applications.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    window.location.href = 'Evaluation.php';
+                } else {
+                    Swal.fire('Error!', data.message, 'error');
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }
+            } catch (error) {
+                Swal.fire('Error!', 'Something went wrong.', 'error');
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
         }
 
         async function deleteApplication(id, name) {

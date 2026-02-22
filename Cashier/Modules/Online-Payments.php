@@ -362,6 +362,12 @@ try {
                         </div>
                     </div>
 
+                    <div class="info-item" style="margin-top: 10px;">
+                        <label>Verification Remarks</label>
+                        <textarea id="modalRemarks" placeholder="Add remarks..." 
+                            style="width: 100%; height: 80px; padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0; outline: none; resize: none; font-family: inherit; font-size: 0.9rem;"></textarea>
+                    </div>
+
                     <div class="modal-actions" id="modalActionButtons">
                         <button class="btn-action btn-reject" onclick="updateStatus('Rejected')">Reject</button>
                         <button class="btn-action btn-approve" onclick="updateStatus('Verified')">Verify & Post</button>
@@ -429,7 +435,7 @@ try {
         }
 
         function updateStatus(status) {
-            const remarks = document.querySelector('textarea[placeholder="Add remarks..."]').value;
+            const remarks = document.getElementById('modalRemarks').value;
             
             Swal.fire({
                 title: 'Confirm ' + status,
