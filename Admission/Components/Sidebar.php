@@ -1,5 +1,5 @@
 <?php
-// Admission Sidebar Component
+// Admission Sidebar Component - v2.0.2
 $current_page = basename($_SERVER['PHP_SELF']);
 
 // Robust absolute-relative path logic
