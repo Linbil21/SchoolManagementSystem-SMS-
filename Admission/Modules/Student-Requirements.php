@@ -1,8 +1,9 @@
 <?php
+/**
+ * Student Requirements Module
+ */
 require_once __DIR__ . '/../../auth/Security.php';
 checkRole(['admission']);
-
-
 require_once '../../Database/config.php';
 
 // Robust absolute-relative path logic
@@ -470,71 +471,94 @@ try {
     function openStudentModal(data) {
         try {
             console.log('Opening student modal...', data);
-            document.getElementById('modalStudentName').textContent = data.name;
-            document.getElementById('modalStudentID').textContent = data.id;
-            document.getElementById('modalCourse').textContent = data.course;
+            if (!data) throw new Error('No data provided');
+
+            // Safe update for main fields
+            setSafeText('modalStudentName', data.name);
+            setSafeText('modalStudentID', data.id);
+            setSafeText('modalCourse', data.course);
             
             // Avatar handling
             const avatarBox = document.getElementById('modalAvatar');
-            if (data.avatar && data.avatar.trim()) {
-                const rootPath = '<?php echo $root_path; ?>';
-                const avatarPath = data.avatar.startsWith('/') ? data.avatar : rootPath + data.avatar;
-                avatarBox.innerHTML = `<img src="${avatarPath}" alt="Avatar">`;
-            } else {
-                avatarBox.innerHTML = `<i class="fas fa-user"></i>`;
+            if (avatarBox) {
+                if (data.avatar && String(data.avatar).trim()) {
+                    const rootPath = '<?php echo $root_path; ?>';
+                    const avatarPath = String(data.avatar).startsWith('/') ? data.avatar : rootPath + data.avatar;
+                    avatarBox.innerHTML = `<img src="${avatarPath}" alt="Avatar" onerror="this.parentElement.innerHTML='<i class=\'fas fa-user\'></i>'">`;
+                } else {
+                    avatarBox.innerHTML = `<i class="fas fa-user"></i>`;
+                }
             }
 
-            document.getElementById('modalGuardianName').textContent = (data.guardian.name || '').trim() ? data.guardian.name : 'Not Provided';
-            document.getElementById('modalGuardianContact').textContent = (data.guardian.contact || '').trim() ? data.guardian.contact : 'No Contact Number';
+            // Guardian info
+            const gName = data.guardian?.name || '';
+            const gContact = data.guardian?.contact || '';
+            setSafeText('modalGuardianName', gName.trim() ? gName : 'Not Provided');
+            setSafeText('modalGuardianContact', gContact.trim() ? gContact : 'No Contact');
             
             const docs = [
-                { title: 'Passport Size ID', path: data.docs.id_pic },
-                { title: 'PSA Birth Certificate', path: data.docs.psa },
-                { title: 'Form 138 (Report Card)', path: data.docs.f138 },
-                { title: 'Form 137 (TOR)', path: data.docs.f137 },
-                { title: 'Good Moral Certificate', path: data.docs.moral },
-                { title: 'Barangay Clearance', path: data.docs.brgy }
+                { title: 'Passport Size ID', path: data.docs?.id_pic },
+                { title: 'PSA Birth Certificate', path: data.docs?.psa },
+                { title: 'Form 138 (Report Card)', path: data.docs?.f138 },
+                { title: 'Form 137 (TOR)', path: data.docs?.f137 },
+                { title: 'Good Moral Certificate', path: data.docs?.moral },
+                { title: 'Barangay Clearance', path: data.docs?.brgy }
             ];
 
             const list = document.getElementById('modalRequirementsList');
-            list.innerHTML = '';
+            if (list) {
+                list.innerHTML = '';
+                docs.forEach(doc => {
+                    const isSubmitted = doc.path && String(doc.path).trim() !== '' && String(doc.path).toLowerCase() !== 'null';
+                    const iconClass = isSubmitted ? 'fa-check' : 'fa-times';
+                    const colorClass = isSubmitted ? 'yes' : 'no';
+                    const statusText = isSubmitted 
+                        ? `<span style="color: #16a34a; font-size: 0.8rem; font-weight: 700;">Submitted</span>` 
+                        : `<span style="color: #ef4444; font-size: 0.8rem; font-weight: 700;">Missing</span>`;
+                    
+                    const rootPath = '<?php echo $root_path; ?>';
+                    let docPath = '';
+                    if (isSubmitted && doc.path) {
+                        const pathStr = String(doc.path);
+                        docPath = pathStr.startsWith('http') ? pathStr : (pathStr.startsWith('/') ? pathStr : rootPath + pathStr);
+                    }
+                    const clickAttr = isSubmitted ? `onclick="previewDocument('${docPath}', this)"` : '';
+                    const clickableClass = isSubmitted ? 'clickable' : '';
 
-            docs.forEach(doc => {
-                const isSubmitted = doc.path && String(doc.path).trim() !== '' && String(doc.path).toLowerCase() !== 'null';
-                const iconClass = isSubmitted ? 'fa-check' : 'fa-times';
-                const colorClass = isSubmitted ? 'yes' : 'no';
-                const statusText = isSubmitted 
-                    ? `<span style="color: #16a34a; font-size: 0.8rem; font-weight: 700;">Submitted</span>` 
-                    : `<span style="color: #ef4444; font-size: 0.8rem; font-weight: 700;">Missing</span>`;
-                
-                const rootPath = '<?php echo $root_path; ?>';
-                const docPath = doc.path.startsWith('http') ? doc.path : (doc.path.startsWith('/') ? doc.path : rootPath + doc.path);
-                const clickAttr = isSubmitted ? `onclick="previewDocument('${docPath}', this)"` : '';
-                const clickableClass = isSubmitted ? 'clickable' : '';
-
-                list.innerHTML += `
-                    <div class="req-item ${clickableClass}" ${clickAttr}>
-                        <div class="req-icon ${colorClass}">
-                            <i class="fas ${iconClass}"></i>
+                    list.innerHTML += `
+                        <div class="req-item ${clickableClass}" ${clickAttr}>
+                            <div class="req-icon ${colorClass}">
+                                <i class="fas ${iconClass}"></i>
+                            </div>
+                            <div style="flex: 1; min-width: 0;">
+                                <div style="font-weight: 700; font-size: 0.85rem; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${doc.title}</div>
+                                ${statusText}
+                            </div>
                         </div>
-                        <div style="flex: 1; min-width: 0;">
-                            <div style="font-weight: 700; font-size: 0.85rem; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${doc.title}</div>
-                            ${statusText}
-                        </div>
-                    </div>
-                `;
-            });
+                    `;
+                });
+            }
 
             // Reset preview
-            document.getElementById('modalPreviewArea').style.display = 'none';
-            document.getElementById('previewContent').innerHTML = '';
+            const previewArea = document.getElementById('modalPreviewArea');
+            const previewContent = document.getElementById('previewContent');
+            if (previewArea) previewArea.style.display = 'none';
+            if (previewContent) previewContent.innerHTML = '';
 
-            document.getElementById('viewModal').style.display = 'flex';
-            document.body.style.overflow = 'hidden';
+            const modal = document.getElementById('viewModal');
+            if (modal) {
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }
         } catch (err) {
             console.error('Error opening student modal:', err);
-            alert('Could not open modal. Please check console for details.');
+            alert('Could not open modal. Error: ' + err.message);
         }
+    }
+
+    function setSafeText(id, text) {
+        const el = document.getElementById(id);
+        if (el) el.textContent = text || '';
     }
 
     function previewDocument(path, el) {
