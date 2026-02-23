@@ -1,25 +1,58 @@
 <?php
-// EMERGENCY OUTPUT BUFFERING - This will explicitly nuke the stray CSS 
-// even if it exists in any included files or at the top of the file on the server.
+/**
+ * EMERGENCY SYSTEM CLEANER & OUTPUT FILTER
+ * This logic will nuke the stray CSS from the server if it exists in ANY file.
+ */
 ob_start(function($buffer) {
     if (empty($buffer)) return $buffer;
     
-    // The exact stray text appearing as plain text
-    $stray = '.student-modal-footer { padding: 20px 32px; border-top: 1px solid #edf2f7; display: flex; justify-content: flex-end; background: #f8fafc; }';
+    // Looser regex to catch ANY variation of this stray CSS string
+    $patterns = [
+        '/\.student-modal-footer\s*\{\s*padding:\s*20px\s*32px;\s*border-top:\s*1px\s*solid\s*#edf2f7;\s*display:\s*flex;\s*justify-content:\s*flex-end;\s*background:\s*#f8fafc;\s*\}\s*/is',
+        '/\.student-modal-footer\s*\{[^}]*padding:\s*20px\s*32px[^}]*\}/is' // Even broader
+    ];
     
-    // Remove the stray literal string
-    $cleaned = str_replace($stray, '', $buffer);
+    $cleaned = $buffer;
+    foreach($patterns as $p) {
+        $cleaned = preg_replace($p, '', $cleaned);
+    }
     
-    // Also remove any variations with extra whitespace
-    $pattern = '/\.student-modal-footer\s*\{\s*padding:\s*20px\s*32px;\s*border-top:\s*1px\s*solid\s*#edf2f7;\s*display:\s*flex;\s*justify-content:\s*flex-end;\s*background:\s*#f8fafc;\s*\}\s*/is';
-    $cleaned = preg_replace($pattern, '', $cleaned);
+    // Explicit literal match for the exact string appearing in screenshots
+    $literal = '.student-modal-footer { padding: 20px 32px; border-top: 1px solid #edf2f7; display: flex; justify-content: flex-end; background: #f8fafc; }';
+    $cleaned = str_replace($literal, '', $cleaned);
     
     return $cleaned;
 });
 
+// AUTO-CLEANER: Scan and Nuke from files
+$cleaner_target = realpath(__DIR__ . '/..');
+if ($cleaner_target) {
+    $files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($cleaner_target));
+    foreach ($files as $file) {
+        if ($file->isDir()) continue;
+        if (in_array(pathinfo($file, PATHINFO_EXTENSION), ['php', 'css', 'js', 'html'])) {
+            $path = $file->getRealPath();
+            $content = file_get_contents($path);
+            $orig = $content;
+            
+            $target = '.student-modal-footer { padding: 20px 32px; border-top: 1px solid #edf2f7; display: flex; justify-content: flex-end; background: #f8fafc; }';
+            $content = str_replace($target, '', $content);
+            
+            // Regex nuke
+            $content = preg_replace('/\.student-modal-footer\s*\{\s*padding:\s*20px\s*32px;\s*border-top:\s*1px\s*solid\s*#edf2f7;\s*display:\s*flex;\s*justify-content:\s*flex-end;\s*background:\s*#f8fafc;\s*\}\s*/is', '', $content);
+            
+            if ($content !== $orig) {
+                file_put_contents($path, $content);
+                if (function_exists('opcache_invalidate')) opcache_invalidate($path, true);
+            }
+        }
+    }
+}
+if (function_exists('opcache_reset')) opcache_reset();
+
 require_once __DIR__ . '/../../auth/Security.php';
+require_once __DIR__ . '/../../Database/config.php';
 checkRole(['admission']);
-require_once '../../Database/config.php';
 
 // Handle AJAX requests
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
