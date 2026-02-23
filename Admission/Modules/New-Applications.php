@@ -1,4 +1,14 @@
 <?php
+ob_start(function ($output) {
+    // Robust removal of the stray CSS string
+    $stray = '.student-modal-footer { padding: 20px 32px; border-top: 1px solid #edf2f7; display: flex; justify-content: flex-end; background: #f8fafc; }';
+    $output = str_replace($stray, '', $output);
+    
+    // Also try removing variants with different spacing
+    $output = preg_replace('/\.student-modal-footer\s*\{[^}]+\}/i', '', $output);
+    
+    return $output;
+});
 session_start();
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admission') {
     header("Location: ../../auth/Login.php");
@@ -36,13 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     exit;
 }
 
-ob_start(function ($output) {
-    return preg_replace(
-        '/\s*\.student-modal-footer\s*\{\s*padding:\s*20px\s*32px;\s*border-top:\s*1px\s*solid\s*#edf2f7;\s*display:\s*flex;\s*justify-content:\s*flex-end;\s*background:\s*#f8fafc;\s*\}\s*/i',
-        '',
-        $output
-    );
-});
+// Output buffering moved to top for maximum coverage
 
 // Fetch pending applications
 try {
