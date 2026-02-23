@@ -1,67 +1,154 @@
 <?php
-ob_start(function ($output) {
-    // Robust removal of the stray CSS string
-    $stray = '.student-modal-footer { padding: 20px 32px; border-top: 1px solid #edf2f7; display: flex; justify-content: flex-end; background: #f8fafc; }';
-    $output = str_replace($stray, '', $output);
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+require_once '../Database/config.php';
+
+$email = $_GET['email'] ?? '';
+$type = $_GET['type'] ?? 'login';
+$error = $_GET['error'] ?? '';
+$resend_status = $_GET['resend_status'] ?? '';
+
+// Handle Resend OTP
+if (isset($_GET['resend']) && $_GET['resend'] == '1' && !empty($email)) {
+    try {
+        // Generate new 6-digit OTP
+        $new_otp = sprintf("%06d", mt_rand(1, 999999));
+        
+        // Update verification_code in database
+        $stmt = $pdo->prepare("UPDATE students SET verification_code = ? WHERE email = ?");
+        $stmt->execute([$new_otp, $email]);
+        
+        if ($stmt->rowCount() > 0) {
+            // Send email with new OTP (i-configure ang mail settings)
+            $to = $email;
+            $subject = "Your New OTP Code";
+            $message = "Your new verification code is: $new_otp";
+            $headers = "From: no-reply@yourdomain.com\r\n" .
+                       "Reply-To: no-reply@yourdomain.com\r\n" .
+                       "X-Mailer: PHP/" . phpversion();
+            
+            if (mail($to, $subject, $message, $headers)) {
+                $resend_status = 'success';
+            } else {
+                $resend_status = 'mail_failed';
+            }
+        } else {
+            $resend_status = 'email_not_found';
+        }
+    } catch (PDOException $e) {
+        $resend_status = 'db_error';
+    }
     
-    // Also try removing variants with different spacing
-    $output = preg_replace('/\.student-modal-footer\s*\{[^}]+\}/i', '', $output);
-    
-    return $output;
-});
-session_start();
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admission') {
-    header("Location: ../../auth/Login.php");
+    // Redirect back to verification page with status
+    header("Location: Verification.php?email=" . urlencode($email) . "&type=" . urlencode($type) . "&resend_status=" . $resend_status);
     exit();
 }
 
-require_once '../../Database/config.php';
-
-// Handle AJAX requests
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
-    header('Content-Type: application/json');
-    
-    $action = $_POST['action'];
-    $appId = $_POST['application_no'] ?? null;
-
-    if (!$appId) {
-        echo json_encode(['success' => false, 'message' => 'Application ID missing.']);
-        exit;
-    }
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $otp = implode('', $_POST['otp']);
+    $email = $_POST['email'];
+    $type = $_POST['type'];
 
     try {
-        if ($action === 'proceed_to_evaluation') {
-            $stmt = $pdo->prepare("UPDATE admission_applications SET status = 'Processing' WHERE application_no = ?");
-            $stmt->execute([$appId]);
-            echo json_encode(['success' => true, 'message' => 'Application moved to evaluation.']);
-        } 
-        elseif ($action === 'delete_application') {
-            $stmt = $pdo->prepare("DELETE FROM admission_applications WHERE application_no = ?");
-            $stmt->execute([$appId]);
-            echo json_encode(['success' => true, 'message' => 'Application deleted successfully.']);
+        $stmt = $pdo->prepare("SELECT * FROM students WHERE email = ? AND verification_code = ?");
+        $stmt->execute([$email, $otp]);
+        $student = $stmt->fetch();
+
+        if ($student) {
+            // Verify and clear code
+            $updateStmt = $pdo->prepare("UPDATE students SET is_verified = 1, verification_code = NULL, status = 'online' WHERE id = ?");
+            $updateStmt->execute([$student->id]);
+
+            // Set Session
+            $_SESSION['user_id'] = $student->id;
+            $_SESSION['student_id'] = $student->student_id;
+            $_SESSION['email'] = $student->email;
+            $_SESSION['fullname'] = $student->first_name . ' ' . $student->last_name;
+            $_SESSION['role'] = 'student';
+            $_SESSION['profile_image'] = $student->profile_image;
+
+            // Fetch Admission & Enrollment Progress
+            $app_stmt = $pdo->prepare("SELECT status FROM admission_applications WHERE email = ? ORDER BY submission_date DESC LIMIT 1");
+            $app_stmt->execute([$student->email]);
+            $_SESSION['admission_status'] = $app_stmt->fetchColumn() ?: 'Pending';
+
+            $enr_stmt = $pdo->prepare("SELECT status FROM enrollments WHERE email = ? ORDER BY created_at DESC LIMIT 1");
+            $enr_stmt->execute([$student->email]);
+            $_SESSION['enrollment_status'] = $enr_stmt->fetchColumn() ?: 'Pending';
+
+            // Notification for successful verification
+            $notif_title = $type == 'register' ? 'New Student Verified' : 'Student Logged In';
+            $notif_msg = $student->first_name . " " . $student->last_name . ($type == 'register' ? " has completed verification." : " has logged in successfully.");
+            $notif_type = $type == 'register' ? 'verification_success' : 'login_success';
+            
+            $notif_stmt = $pdo->prepare("INSERT INTO notifications (user_id, type, title, message, profile_image, icon, icon_bg, icon_color) VALUES (NULL, ?, ?, ?, ?, 'fa-check-circle', '#d1fae5', '#059669')");
+            $notif_stmt->execute([$notif_type, $notif_title, $notif_msg, $student->profile_image]);
+
+            // Ipakita ang success message na may delay bago mag-redirect
+            ?>
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta http-equiv="refresh" content="3;url=../student/Dashboard.php">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Verification Successful</title>
+                <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+                <style>
+                    body {
+                        font-family: 'Poppins', sans-serif;
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        height: 100vh;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        margin: 0;
+                        color: #fff;
+                        text-align: center;
+                    }
+                    .message-box {
+                        background: rgba(255,255,255,0.2);
+                        backdrop-filter: blur(10px);
+                        padding: 40px;
+                        border-radius: 20px;
+                        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+                    }
+                    .spinner {
+                        border: 4px solid rgba(255,255,255,0.3);
+                        border-top: 4px solid #fff;
+                        border-radius: 50%;
+                        width: 50px;
+                        height: 50px;
+                        animation: spin 1s linear infinite;
+                        margin: 20px auto;
+                    }
+                    @keyframes spin {
+                        0% { transform: rotate(0deg); }
+                        100% { transform: rotate(360deg); }
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="message-box">
+                    <i class="fas fa-check-circle" style="font-size: 4rem; margin-bottom: 20px;"></i>
+                    <h2>Verification Successful!</h2>
+                    <p>Welcome, <?php echo htmlspecialchars($_SESSION['fullname']); ?>! You will be redirected to your dashboard in 3 seconds.</p>
+                    <div class="spinner"></div>
+                    <p>If you are not redirected, <a href="../student/Dashboard.php" style="color: #fff; font-weight: 600;">click here</a>.</p>
+                </div>
+                <script src="https://kit.fontawesome.com/your-kit.js" crossorigin="anonymous"></script>
+            </body>
+            </html>
+            <?php
+            exit();
+        } else {
+            header("Location: Verification.php?email=" . urlencode($email) . "&type=" . $type . "&error=invalid_otp");
+            exit();
         }
     } catch (PDOException $e) {
-        echo json_encode(['success' => false, 'message' => 'Operation failed: ' . $e->getMessage()]);
+        die("Error: " . $e->getMessage());
     }
-    exit;
-}
-
-// Output buffering moved to top for maximum coverage
-
-// Fetch pending applications
-try {
-    $stmt = $pdo->prepare("
-        SELECT a.*, COALESCE(c.course_name, a.preferred_course_1) as course_display_name 
-        FROM admission_applications a 
-        LEFT JOIN courses c ON (TRIM(a.preferred_course_1) = CAST(c.courseId AS CHAR) OR a.preferred_course_1 = c.course_name)
-        WHERE a.status = 'Pending' 
-        ORDER BY a.submission_date DESC
-    ");
-    $stmt->execute();
-    $applications = $stmt->fetchAll();
-} catch (PDOException $e) {
-    $applications = [];
-    error_log("Database error: " . $e->getMessage());
 }
 ?>
 <!DOCTYPE html>
@@ -69,11 +156,20 @@ try {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>New Applications - Admission</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="../../Assets/css/theme.css">
+    <title>OTP Verification - SMS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --secondary: #64748b;
+            --success: #059669;
+            --danger: #dc2626;
+            --background: #f8fafc;
+            --glass: rgba(255, 255, 255, 0.9);
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -81,683 +177,291 @@ try {
             font-family: 'Poppins', sans-serif;
         }
 
-        :root {
-            --primary-blue: #1648bc;
-            --primary-dark: #0f172a;
-            --bg-light: #f8fafc;
-            --border-soft: #e2e8f0;
-            --text-dark: #1e293b;
-            --text-muted: #64748b;
-            --success: #10b981;
-            --danger: #ef4444;
-            --warning-bg: #fffbeb;
-            --warning-border: #fef3c7;
-            --warning-text: #92400e;
-            --shadow-premium: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
-        }
-
         body {
-            display: flex;
+            background: linear-gradient(rgba(30, 58, 138, 0.6), rgba(30, 58, 138, 0.6)), url('../Assets/image/background.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
             min-height: 100vh;
-            background: var(--bg-light);
-            color: var(--text-dark);
-        }
-
-        .main-wrapper {
-            flex: 1;
             display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-
-        .content-area {
-            padding: 40px;
-            max-width: 1400px;
-            margin: 0 auto;
-            width: 100%;
-        }
-
-        .header-section {
-            margin-bottom: 40px;
-            display: flex;
-            justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 20px;
+            justify-content: center;
+            padding: 20px;
         }
 
-        .header-section h1 {
-            font-size: 2.2rem;
-            font-weight: 800;
-            letter-spacing: -0.02em;
-            color: var(--primary-dark);
-            margin-bottom: 8px;
-        }
-
-        .header-section p {
-            color: var(--text-muted);
-            font-size: 1rem;
-        }
-
-        .search-wrapper {
-            position: relative;
-        }
-
-        .search-icon {
-            position: absolute;
-            left: 18px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #94a3b8;
-            font-size: 0.9rem;
-        }
-
-        .search-input {
-            padding: 14px 20px 14px 45px;
-            border-radius: 16px;
-            border: 2px solid #f1f5f9;
-            outline: none;
-            width: 320px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .search-input:focus {
-            border-color: var(--primary-blue);
-        }
-
-        .table-card {
-            background: white;
-            border-radius: 30px;
-            box-shadow: var(--shadow-premium);
-            border: 1px solid var(--border-soft);
-            overflow: hidden;
-        }
-
-        table {
+        .verification-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
             width: 100%;
-            border-collapse: collapse;
+            max-width: 450px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            animation: slideUp 0.6s ease-out;
         }
 
-        th {
-            text-align: left;
-            padding: 20px 40px;
-            background: #f8fafc;
-            color: var(--text-muted);
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .icon-box {
+            width: 80px;
+            height: 80px;
+            background: #dbeafe;
+            color: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 2rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(37, 99, 235, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+        }
+
+        h2 {
+            color: #1e293b;
+            margin-bottom: 10px;
             font-weight: 700;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
         }
 
-        td {
-            padding: 25px 40px;
-            border-bottom: 1px solid #f1f5f9;
+        p {
+            color: var(--secondary);
             font-size: 0.95rem;
-            vertical-align: middle;
+            margin-bottom: 30px;
         }
 
-        .app-row {
-            transition: all 0.2s ease;
-            cursor: pointer;
+        .email-display {
+            color: var(--primary);
+            font-weight: 600;
+            word-break: break-all;
         }
 
-        .app-row:hover {
-            background: #f8faff;
+        .otp-inputs {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
         }
 
-        .app-id {
-            font-weight: 800;
-            color: var(--primary-dark);
-            font-size: 0.9rem;
-        }
-
-        .student-name {
-            font-weight: 800;
-            color: var(--primary-dark);
-        }
-
-        .student-email {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            font-weight: 500;
-        }
-
-        .course-name {
+        .otp-field {
+            width: 50px;
+            height: 60px;
+            text-align: center;
+            font-size: 1.5rem;
             font-weight: 700;
-            color: #475569;
-            font-size: 0.85rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            background: white;
+            transition: all 0.3s ease;
+            color: #1e293b;
         }
 
-        .submission-date {
-            color: var(--text-muted);
+        .otp-field:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+            outline: none;
+            transform: translateY(-2px);
+        }
+
+        .verify-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(to right, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+        }
+
+        .verify-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
+        }
+
+        .verify-btn:active {
+            transform: translateY(0);
+        }
+
+        .resend-link {
+            display: block;
+            margin-top: 25px;
+            color: var(--secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+
+        .resend-link b {
+            color: var(--primary);
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+
+        .resend-link.disabled b {
+            pointer-events: none;
+            opacity: 0.5;
+        }
+
+        #timer {
+            color: var(--primary);
             font-weight: 600;
         }
 
-        .btn {
-            padding: 10px 18px;
-            border-radius: 12px;
-            font-weight: 700;
+        .error-msg, .success-msg {
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 20px;
             font-size: 0.85rem;
-            border: none;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: inline-flex;
+            display: flex;
             align-items: center;
             gap: 8px;
         }
 
-        .btn-view {
-            background: #f1f5f9;
-            color: #475569;
-        }
-
-        .btn-view:hover {
-            background: #e2e8f0;
-            color: #1e293b;
-        }
-
-        .btn-delete {
-            background: #fef2f2;
+        .error-msg {
+            background: #fee2e2;
             color: var(--danger);
         }
 
-        .btn-delete:hover {
-            background: #fee2e2;
-        }
-
-        .btn-eval {
-            background: var(--primary-blue);
-            color: white;
-            box-shadow: 0 4px 12px rgba(22, 72, 188, 0.2);
-        }
-
-        .btn-eval:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(22, 72, 188, 0.3);
-        }
-
-        .btn-close {
-            padding: 12px 25px;
-            border-radius: 14px;
-            border: 2px solid var(--border-soft);
-            background: white;
-            color: var(--text-muted);
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .btn-close:hover {
-            background: #f8fafc;
-        }
-
-        .action-group {
-            display: flex;
-            gap: 10px;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 80px;
-        }
-
-        .empty-icon {
-            width: 100px;
-            height: 100px;
-            background: #f8fafc;
-            border-radius: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px;
-        }
-
-        .empty-icon i {
-            color: #e2e8f0;
-            font-size: 3rem;
-        }
-
-        .empty-text {
-            color: #64748b;
-            font-weight: 600;
-        }
-
-        /* Modal Styles */
-        .student-modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(15, 23, 42, 0.7);
-            backdrop-filter: blur(12px);
-            z-index: 99999;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .student-modal-content {
-            background: white;
-            width: 100%;
-            max-width: 600px;
-            border-radius: 35px;
-            box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.3);
-            overflow: hidden;
-            animation: modalScale 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-
-        @keyframes modalScale {
-            from {
-                transform: scale(0.95);
-                opacity: 0;
-            }
-            to {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-
-        .modal-profile-header {
-            padding: 40px;
-            background: linear-gradient(135deg, #1648bc 0%, #1e3a8a 100%);
-            color: white;
-            text-align: center;
-        }
-
-        .modal-avatar {
-            width: 100px;
-            height: 100px;
-            border-radius: 30px;
-            background: rgba(255, 255, 255, 0.15);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.5rem;
-            font-weight: 800;
-            margin: 0 auto 20px;
-            border: 3px solid rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
-        }
-
-        .modal-name {
-            font-weight: 800;
-            font-size: 1.6rem;
-            letter-spacing: -0.02em;
-            margin-bottom: 5px;
-        }
-
-        .modal-course {
-            opacity: 0.8;
-            font-weight: 500;
-            font-size: 0.95rem;
-        }
-
-        .modal-info-section {
-            padding: 35px 40px;
-        }
-
-        .info-grid {
-            background: #f8fafc;
-            border-radius: 20px;
-            padding: 20px;
-            border: 1px solid #eef2ff;
-            margin-bottom: 25px;
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-        }
-
-        .info-item label {
-            display: block;
-            font-size: 0.7rem;
-            font-weight: 800;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            margin-bottom: 6px;
-        }
-
-        .info-item p {
-            font-weight: 700;
-            color: var(--primary-dark);
-            font-size: 0.95rem;
-        }
-
-        .warning-box {
-            background: var(--warning-bg);
-            border: 1px solid var(--warning-border);
-            padding: 20px;
-            border-radius: 20px;
-            color: var(--warning-text);
-            font-size: 0.85rem;
-            display: flex;
-            gap: 12px;
-            align-items: center;
-        }
-
-        .warning-box p {
-            font-weight: 600;
-        }
-
-        .modal-footer {
-            padding: 30px 40px;
-            background: white;
-            border-top: 1px solid var(--border-soft);
-            display: flex;
-            justify-content: flex-end;
-            gap: 15px;
-        }
-
-        #evalSpinner {
-            margin-right: 8px;
-            display: none;
+        .success-msg {
+            background: #d1fae5;
+            color: var(--success);
         }
     </style>
 </head>
 <body>
-    <!-- View Modal -->
-    <div id="viewModal" class="student-modal-overlay">
-        <div class="student-modal-content">
-            <div class="modal-profile-header">
-                <div class="modal-avatar" id="modalAvatar">JD</div>
-                <h2 id="modalProfileName" class="modal-name">John Doe</h2>
-                <p id="modalProfileCourse" class="modal-course">BS Computer Science</p>
+    <div class="verification-container">
+        <div class="icon-box">
+            <i class="fas fa-shield-halved"></i>
+        </div>
+        <h2>Verification Code</h2>
+        <p>We've sent a 6-digit code to <br><span class="email-display"><?php echo htmlspecialchars($email); ?></span></p>
+
+        <?php if ($error === 'invalid_otp'): ?>
+            <div class="error-msg">
+                <i class="fas fa-exclamation-circle"></i> Invalid verification code. Please try again.
             </div>
+        <?php endif; ?>
+
+        <?php if ($resend_status === 'success'): ?>
+            <div class="success-msg">
+                <i class="fas fa-check-circle"></i> A new OTP has been sent to your email.
+            </div>
+        <?php elseif ($resend_status === 'mail_failed'): ?>
+            <div class="error-msg">
+                <i class="fas fa-exclamation-circle"></i> Failed to send email. Please try again later.
+            </div>
+        <?php elseif ($resend_status === 'email_not_found'): ?>
+            <div class="error-msg">
+                <i class="fas fa-exclamation-circle"></i> Email not found. Please register again.
+            </div>
+        <?php elseif ($resend_status === 'db_error'): ?>
+            <div class="error-msg">
+                <i class="fas fa-exclamation-circle"></i> Database error. Please contact support.
+            </div>
+        <?php endif; ?>
+
+        <form action="Verification.php" method="POST">
+            <input type="hidden" name="email" value="<?php echo htmlspecialchars($email); ?>">
+            <input type="hidden" name="type" value="<?php echo htmlspecialchars($type); ?>">
             
-            <div class="modal-info-section">
-                <div class="info-grid">
-                    <div class="info-item">
-                        <label>Application ID</label>
-                        <p id="modalAppId">#APP-10293</p>
-                    </div>
-                    <div class="info-item">
-                        <label>Submission Date</label>
-                        <p id="modalDate">Jan 12, 2024</p>
-                    </div>
-                </div>
-
-                <div class="info-grid">
-                    <div class="info-item">
-                        <label>Email Address</label>
-                        <p id="modalEmail">john@university.edu</p>
-                    </div>
-                    <div class="info-item">
-                        <label>Contact Number</label>
-                        <p id="modalContact">+63 912 345 6789</p>
-                    </div>
-                </div>
-
-                <div class="warning-box">
-                    <i class="fas fa-info-circle fa-lg"></i>
-                    <p>Moving to evaluation will alert the student and lock this application phase.</p>
-                </div>
+            <div class="otp-inputs">
+                <input type="text" name="otp[]" maxlength="1" class="otp-field" required autofocus>
+                <input type="text" name="otp[]" maxlength="1" class="otp-field" required>
+                <input type="text" name="otp[]" maxlength="1" class="otp-field" required>
+                <input type="text" name="otp[]" maxlength="1" class="otp-field" required>
+                <input type="text" name="otp[]" maxlength="1" class="otp-field" required>
+                <input type="text" name="otp[]" maxlength="1" class="otp-field" required>
             </div>
 
-            <div class="modal-footer">
-                <button class="btn-close" onclick="closeViewModal()">Dismiss</button>
-                <button class="btn btn-eval" onclick="proceedToEval(event)">
-                    <i class="fas fa-circle-notch fa-spin" id="evalSpinner"></i>
-                    <i class="fas fa-arrow-right" id="evalIcon"></i>
-                    Move to Evaluation
-                </button>
-            </div>
+            <button type="submit" class="verify-btn">Verify Account</button>
+        </form>
+
+        <div class="resend-link" id="resendSection">
+            <span id="resendText">Didn't receive code? <b id="resendBtn">Resend Code</b></span>
+            <span id="timer" style="display: none;">Resend in <span id="countdown">60</span>s</span>
         </div>
+        <a href="Login.php" style="margin-top: 15px; display: block; color: var(--secondary); font-size: 0.85rem; text-decoration: none;">
+            <i class="fas fa-arrow-left"></i> Back to Login
+        </a>
     </div>
 
-    <?php include '../Components/Sidebar.php'; ?>
-    
-    <div class="main-wrapper">
-        <?php include '../Components/header.php'; ?>
-        
-        <div class="content-area">
-            <div class="header-section">
-                <div>
-                    <h1>New Applications</h1>
-                    <p>Identify and process newly submitted enrollment requests.</p>
-                </div>
-                <div class="search-wrapper">
-                    <i class="fas fa-search search-icon"></i>
-                    <input 
-                        type="text" 
-                        id="appSearch" 
-                        onkeyup="filterTable()" 
-                        placeholder="Search applicants..." 
-                        class="search-input"
-                    >
-                </div>
-            </div>
-
-            <div class="table-card">
-                <table id="appTable">
-                    <thead>
-                        <tr>
-                            <th>Application ID</th>
-                            <th>Student Information</th>
-                            <th>Applied Course</th>
-                            <th>Date Submitted</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php if (empty($applications)): ?>
-                            <tr>
-                                <td colspan="5" class="empty-state">
-                                    <div class="empty-icon">
-                                        <i class="fas fa-inbox"></i>
-                                    </div>
-                                    <p class="empty-text">No pending applications in your queue.</p>
-                                </td>
-                            </tr>
-                        <?php else: ?>
-                            <?php foreach ($applications as $app): ?>
-                                <tr class="app-row">
-                                    <td class="app-id">#<?php echo htmlspecialchars($app->application_no); ?></td>
-                                    <td>
-                                        <div class="student-name"><?php echo htmlspecialchars($app->first_name . ' ' . $app->last_name); ?></div>
-                                        <div class="student-email"><?php echo htmlspecialchars($app->email); ?></div>
-                                    </td>
-                                    <td class="course-name"><?php echo htmlspecialchars($app->course_display_name); ?></td>
-                                    <td class="submission-date"><?php echo date('M d, Y', strtotime($app->submission_date)); ?></td>
-                                    <td>
-                                        <?php 
-                                            $appData = [
-                                                'name' => $app->first_name . ' ' . $app->last_name,
-                                                'no' => $app->application_no,
-                                                'course' => $app->course_display_name,
-                                                'date' => date('M d, Y', strtotime($app->submission_date)),
-                                                'email' => $app->email,
-                                                'phone' => $app->phone_number
-                                            ];
-                                        ?>
-                                        <div class="action-group">
-                                            <button 
-                                                class="btn btn-view" 
-                                                onclick='openDetailModal(<?php echo json_encode($appData, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP); ?>)'
-                                            >
-                                                <i class="fas fa-eye"></i> Details
-                                            </button>
-                                            <button 
-                                                class="btn btn-delete" 
-                                                onclick="deleteApplication('<?php echo $app->application_no; ?>', '<?php echo addslashes($app->first_name . ' ' . $app->last_name); ?>')"
-                                            >
-                                                <i class="fas fa-trash-alt"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <?php include '../Components/GlobalScripts.php'; ?>
-    
     <script>
-        // State
-        let currentAppId = null;
-
-        // Filter table function
-        function filterTable() {
-            const input = document.getElementById('appSearch');
-            const filter = input.value.toLowerCase();
-            const table = document.getElementById('appTable');
-            const rows = table.getElementsByTagName('tr');
-
-            for (let i = 1; i < rows.length; i++) {
-                let rowVisible = false;
-                const cells = rows[i].getElementsByTagName('td');
-                
-                for (let j = 0; j < cells.length; j++) {
-                    if (cells[j]) {
-                        const textValue = cells[j].textContent || cells[j].innerText;
-                        if (textValue.toLowerCase().includes(filter)) {
-                            rowVisible = true;
-                            break;
-                        }
+        // OTP input navigation
+        const inputs = document.querySelectorAll('.otp-field');
+        inputs.forEach((input, index) => {
+            input.addEventListener('keyup', (e) => {
+                if (e.key >= '0' && e.key <= '9') {
+                    if (index < inputs.length - 1) {
+                        inputs[index + 1].focus();
+                    }
+                } else if (e.key === 'Backspace') {
+                    if (index > 0) {
+                        inputs[index - 1].focus();
                     }
                 }
-                
-                rows[i].style.display = rowVisible ? '' : 'none';
-            }
-        }
-
-        // Modal functions
-        function openDetailModal(data) {
-            try {
-                currentAppId = data.no;
-                
-                document.getElementById('modalProfileName').textContent = data.name;
-                document.getElementById('modalAvatar').textContent = data.name
-                    .split(' ')
-                    .map(n => n[0])
-                    .join('')
-                    .toUpperCase()
-                    .substring(0, 2);
-                document.getElementById('modalAppId').textContent = '#' + data.no;
-                document.getElementById('modalProfileCourse').textContent = data.course;
-                document.getElementById('modalDate').textContent = data.date;
-                document.getElementById('modalEmail').textContent = data.email;
-                document.getElementById('modalContact').textContent = data.phone;
-
-                const modal = document.getElementById('viewModal');
-                modal.style.display = 'flex';
-                document.body.style.overflow = 'hidden';
-            } catch (err) {
-                console.error('Error opening detail modal:', err);
-                Swal.fire('Error', 'Failed to open application details.', 'error');
-            }
-        }
-
-        function closeViewModal() {
-            document.getElementById('viewModal').style.display = 'none';
-            document.body.style.overflow = 'auto';
-            currentAppId = null;
-        }
-
-        // Proceed to evaluation
-        async function proceedToEval(event) {
-            if (!currentAppId) return;
-
-            const btn = event.currentTarget;
-            const spinner = document.getElementById('evalSpinner');
-            const icon = document.getElementById('evalIcon');
-            
-            spinner.style.display = 'inline-block';
-            icon.style.display = 'none';
-            btn.disabled = true;
-
-            const formData = new FormData();
-            formData.append('action', 'proceed_to_evaluation');
-            formData.append('application_no', currentAppId);
-
-            try {
-                const response = await fetch(window.location.href, {
-                    method: 'POST',
-                    body: formData
-                });
-                
-                const data = await response.json();
-
-                if (data.success) {
-                    await Swal.fire({
-                        title: 'Moved to Evaluation!',
-                        text: 'Redirecting you to the Evaluation Workspace...',
-                        icon: 'success',
-                        timer: 1500,
-                        showConfirmButton: false
-                    });
-                    
-                    window.location.href = 'Evaluation.php';
-                } else {
-                    Swal.fire('Error!', data.message, 'error');
-                    resetButtonState(spinner, icon, btn);
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                Swal.fire('Error!', 'Something went wrong.', 'error');
-                resetButtonState(spinner, icon, btn);
-            }
-        }
-
-        // Delete application
-        async function deleteApplication(id, name) {
-            const result = await Swal.fire({
-                title: 'Are you sure?',
-                text: `You are about to delete the application of ${name}. This action cannot be undone!`,
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#ef4444',
-                cancelButtonColor: '#718096',
-                confirmButtonText: 'Yes, delete it!',
-                cancelButtonText: 'Cancel'
             });
 
-            if (result.isConfirmed) {
-                const formData = new FormData();
-                formData.append('action', 'delete_application');
-                formData.append('application_no', id);
-
-                try {
-                    const response = await fetch(window.location.href, {
-                        method: 'POST',
-                        body: formData
-                    });
-                    
-                    const data = await response.json();
-
-                    if (data.success) {
-                        await Swal.fire('Deleted!', data.message, 'success');
-                        location.reload();
-                    } else {
-                        Swal.fire('Error!', data.message, 'error');
-                    }
-                } catch (error) {
-                    console.error('Error:', error);
-                    Swal.fire('Error!', 'Something went wrong while deleting.', 'error');
+            input.addEventListener('paste', (e) => {
+                e.preventDefault();
+                const data = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, inputs.length);
+                for (let i = 0; i < data.length; i++) {
+                    inputs[i].value = data[i];
                 }
-            }
-        }
+                if (data.length === inputs.length) {
+                    inputs[inputs.length - 1].focus();
+                }
+            });
+        });
 
-        // Helper functions
-        function resetButtonState(spinner, icon, btn) {
-            spinner.style.display = 'none';
-            icon.style.display = 'inline-block';
-            btn.disabled = false;
-        }
+        // Resend OTP with countdown timer
+        const resendBtn = document.getElementById('resendBtn');
+        const resendText = document.getElementById('resendText');
+        const timerSpan = document.getElementById('timer');
+        const countdownSpan = document.getElementById('countdown');
+        const resendSection = document.getElementById('resendSection');
+        let countdown = 60;
+        let timerInterval;
 
-        // Close modal when clicking outside
-        window.onclick = function(event) {
-            const modal = document.getElementById('viewModal');
-            if (event.target === modal) {
-                closeViewModal();
-            }
-        }
+        resendBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Disable resend button and start timer
+            resendBtn.style.pointerEvents = 'none';
+            resendBtn.style.opacity = '0.5';
+            resendText.style.display = 'none';
+            timerSpan.style.display = 'inline';
+
+            // Redirect to resend endpoint
+            window.location.href = 'Verification.php?resend=1&email=<?php echo urlencode($email); ?>&type=<?php echo urlencode($type); ?>';
+
+            // Start countdown
+            timerInterval = setInterval(function() {
+                countdown--;
+                countdownSpan.textContent = countdown;
+                if (countdown <= 0) {
+                    clearInterval(timerInterval);
+                    resendBtn.style.pointerEvents = 'auto';
+                    resendBtn.style.opacity = '1';
+                    resendText.style.display = 'inline';
+                    timerSpan.style.display = 'none';
+                    countdown = 60;
+                }
+            }, 1000);
+        });
     </script>
 </body>
 </html>

@@ -1,5 +1,9 @@
 <?php
-require_once '../Database/config.php';
-$stmt = $pdo->query("DESCRIBE payments");
-echo json_encode($stmt->fetchAll(PDO::FETCH_ASSOC));
-?>
+require_once 'Database/config.php';
+try {
+    $stmt = $pdo->query("DESCRIBE enrollments");
+    $fields = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    echo json_encode($fields, JSON_PRETTY_PRINT);
+} catch (Exception $e) {
+    echo $e->getMessage();
+}
