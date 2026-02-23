@@ -481,9 +481,11 @@ try {
             // Avatar handling
             const avatarBox = document.getElementById('modalAvatar');
             if (avatarBox) {
-                if (data.avatar && String(data.avatar).trim()) {
+                const avatarRaw = data.avatar || '';
+                const avatarStr = String(avatarRaw);
+                if (avatarStr.trim() && avatarStr !== 'null') {
                     const rootPath = '<?php echo $root_path; ?>';
-                    const avatarPath = String(data.avatar).startsWith('/') ? data.avatar : rootPath + data.avatar;
+                    const avatarPath = avatarStr.startsWith('/') ? avatarStr : rootPath + avatarStr;
                     avatarBox.innerHTML = `<img src="${avatarPath}" alt="Avatar" onerror="this.parentElement.innerHTML='<i class=\'fas fa-user\'></i>'">`;
                 } else {
                     avatarBox.innerHTML = `<i class="fas fa-user"></i>`;
@@ -491,25 +493,26 @@ try {
             }
 
             // Guardian info
-            const gName = data.guardian?.name || '';
-            const gContact = data.guardian?.contact || '';
+            const gName = (data.guardian && data.guardian.name) ? String(data.guardian.name) : '';
+            const gContact = (data.guardian && data.guardian.contact) ? String(data.guardian.contact) : '';
             setSafeText('modalGuardianName', gName.trim() ? gName : 'Not Provided');
             setSafeText('modalGuardianContact', gContact.trim() ? gContact : 'No Contact');
             
             const docs = [
-                { title: 'Passport Size ID', path: data.docs?.id_pic },
-                { title: 'PSA Birth Certificate', path: data.docs?.psa },
-                { title: 'Form 138 (Report Card)', path: data.docs?.f138 },
-                { title: 'Form 137 (TOR)', path: data.docs?.f137 },
-                { title: 'Good Moral Certificate', path: data.docs?.moral },
-                { title: 'Barangay Clearance', path: data.docs?.brgy }
+                { title: 'Passport Size ID', path: data.docs ? data.docs.id_pic : null },
+                { title: 'PSA Birth Certificate', path: data.docs ? data.docs.psa : null },
+                { title: 'Form 138 (Report Card)', path: data.docs ? data.docs.f138 : null },
+                { title: 'Form 137 (TOR)', path: data.docs ? data.docs.f137 : null },
+                { title: 'Good Moral Certificate', path: data.docs ? data.docs.moral : null },
+                { title: 'Barangay Clearance', path: data.docs ? data.docs.brgy : null }
             ];
 
             const list = document.getElementById('modalRequirementsList');
             if (list) {
                 list.innerHTML = '';
                 docs.forEach(doc => {
-                    const isSubmitted = doc.path && String(doc.path).trim() !== '' && String(doc.path).toLowerCase() !== 'null';
+                    const pathVal = doc.path;
+                    const isSubmitted = pathVal && String(pathVal).trim() !== '' && String(pathVal).toLowerCase() !== 'null';
                     const iconClass = isSubmitted ? 'fa-check' : 'fa-times';
                     const colorClass = isSubmitted ? 'yes' : 'no';
                     const statusText = isSubmitted 
@@ -518,9 +521,11 @@ try {
                     
                     const rootPath = '<?php echo $root_path; ?>';
                     let docPath = '';
-                    if (isSubmitted && doc.path) {
-                        const pathStr = String(doc.path);
-                        docPath = pathStr.startsWith('http') ? pathStr : (pathStr.startsWith('/') ? pathStr : rootPath + pathStr);
+                    if (isSubmitted && pathVal) {
+                        const pathStr = String(pathVal);
+                        const hasHttp = pathStr.indexOf('http') === 0;
+                        const hasSlash = pathStr.indexOf('/') === 0;
+                        docPath = hasHttp ? pathStr : (hasSlash ? pathStr : rootPath + pathStr);
                     }
                     const clickAttr = isSubmitted ? `onclick="previewDocument('${docPath}', this)"` : '';
                     const clickableClass = isSubmitted ? 'clickable' : '';
