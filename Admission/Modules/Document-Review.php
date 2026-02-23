@@ -1,9 +1,6 @@
 <?php
-session_start();
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admission') {
-    header("Location: ../../auth/Login.php");
-    exit();
-}
+require_once __DIR__ . '/../../auth/Security.php';
+checkRole(['admission']);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -60,3 +57,5 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admission') {
     <?php include '../Components/GlobalScripts.php'; ?>
 </body>
 </html>
+
+

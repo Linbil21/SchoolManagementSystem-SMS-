@@ -1,8 +1,7 @@
 <?php
-session_start();
-require_once '../../Database/config.php';
-require_once '../../auth/Security.php';
+require_once __DIR__ . '/../../auth/Security.php';
 checkRole(['admission', 'superadmin']);
+
 
 $message = '';
 $error = '';
@@ -169,3 +168,4 @@ $validation_list = $pdo->query($sql)->fetchAll();
     </div>
 </body>
 </html>
+

@@ -1,9 +1,9 @@
 <?php
-session_start();
 require_once '../../auth/Security.php';
 require_once '../../Database/config.php';
 require_once '../../auth/mail_helper.php';
 checkRole(['admission']);
+
 
 $message = '';
 $error = '';
