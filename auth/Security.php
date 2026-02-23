@@ -5,44 +5,6 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-/**
- * Robust fix for stray CSS appearing on pages.
- * Filters the final output to ensure the problematic string is never displayed.
- */
-ob_start(function($buffer) {
-    if (empty($buffer)) return $buffer;
-    
-    // EXTREMELY AGGRESSIVE FILTER: Matches any variation of the student-modal-footer plain text.
-    // We use a looser regex to catch possible whitespace or character differences.
-    $stray_pattern = '/\.student-modal-footer\s*\{[^}]*padding:\s*20px\s*32px[^}]*background:\s*#f8fafc;?\s*\}/is';
-    
-    $filtered = $buffer;
-    
-    // Debug detection - if it exists at all, we want to know
-    if (preg_match_all($stray_pattern, $filtered, $matches, PREG_OFFSET_CAPTURE)) {
-        foreach (array_reverse($matches[0]) as $match) {
-            $offset = $match[1];
-            $string = $match[0];
-            
-            // CONTEXT CHECK: Only remove if NOT inside a <style> tag
-            $before = substr($filtered, 0, $offset);
-            $lastStyleOpen = strrpos($before, '<style');
-            $lastStyleClose = strrpos($before, '</style>');
-            
-            if ($lastStyleOpen === false || ($lastStyleClose !== false && $lastStyleClose > $lastStyleOpen)) {
-                // Remove the stray text
-                $filtered = substr_replace($filtered, '', $offset, strlen($string));
-                
-                // Optional: Log to a hit file on the server for debugging (uncomment if needed)
-                // file_put_contents(__DIR__ . '/filter_hits.log', date('H:i:s') . ' - Caught: ' . substr($string, 0, 50) . "...\n", FILE_APPEND);
-            }
-        }
-    }
-    
-    return $filtered;
-});
-
-
 
 
 /**
