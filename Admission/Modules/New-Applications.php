@@ -1,9 +1,24 @@
 <?php
+// EMERGENCY OUTPUT BUFFERING - This will explicitly nuke the stray CSS 
+// even if it exists in any included files or at the top of the file on the server.
+ob_start(function($buffer) {
+    if (empty($buffer)) return $buffer;
+    
+    // The exact stray text appearing as plain text
+    $stray = '.student-modal-footer { padding: 20px 32px; border-top: 1px solid #edf2f7; display: flex; justify-content: flex-end; background: #f8fafc; }';
+    
+    // Remove the stray literal string
+    $cleaned = str_replace($stray, '', $buffer);
+    
+    // Also remove any variations with extra whitespace
+    $pattern = '/\.student-modal-footer\s*\{\s*padding:\s*20px\s*32px;\s*border-top:\s*1px\s*solid\s*#edf2f7;\s*display:\s*flex;\s*justify-content:\s*flex-end;\s*background:\s*#f8fafc;\s*\}\s*/is';
+    $cleaned = preg_replace($pattern, '', $cleaned);
+    
+    return $cleaned;
+});
+
 require_once __DIR__ . '/../../auth/Security.php';
 checkRole(['admission']);
-
-
-
 require_once '../../Database/config.php';
 
 // Handle AJAX requests
@@ -55,135 +70,172 @@ try {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>New Applications - Admission</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>New Applications - Admission Workspace</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="../../Assets/css/theme.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-
         :root {
-            --primary-blue: #1648bc;
+            --primary: #1648bc;
             --primary-dark: #0f172a;
-            --bg-light: #f8fafc;
-            --border-soft: #e2e8f0;
-            --text-dark: #1e293b;
+            --surface: #ffffff;
+            --background: #f8fafc;
+            --border: #e2e8f0;
+            --text-main: #1e293b;
             --text-muted: #64748b;
             --success: #10b981;
             --danger: #ef4444;
-            --warning-bg: #fffbeb;
-            --warning-border: #fef3c7;
-            --warning-text: #92400e;
-            --shadow-premium: 0 20px 25px -5px rgba(0,0,0,0.05), 0 10px 10px -5px rgba(0,0,0,0.02);
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
         }
 
-        body { display: flex; min-height: 100vh; background: var(--bg-light); color: var(--text-dark); }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        
+        body { background: var(--background); color: var(--text-main); display: flex; min-height: 100vh; }
         .main-wrapper { flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
-        .content-area { padding: 40px; max-width: 1400px; margin: 0 auto; width: 100%; }
+        .content-area { padding: 30px; max-width: 1400px; margin: 0 auto; width: 100%; animation: fadeIn 0.4s ease-out; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         .header-section {
-            margin-bottom: 40px; display: flex; justify-content: space-between;
+            margin-bottom: 30px; display: flex; justify-content: space-between;
             align-items: center; flex-wrap: wrap; gap: 20px;
         }
-        .header-section h1 { font-size: 2.2rem; font-weight: 800; letter-spacing: -0.02em; color: var(--primary-dark); margin-bottom: 8px; }
-        .header-section p { color: var(--text-muted); font-size: 1rem; }
+        .header-section h1 { font-size: 1.8rem; font-weight: 800; color: var(--primary-dark); letter-spacing: -0.02em; }
+        .header-section p { color: var(--text-muted); font-size: 0.95rem; }
 
-        .search-wrapper { position: relative; }
-        .search-icon { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 0.9rem; }
+        .search-box { position: relative; }
+        .search-box i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
         .search-input {
-            padding: 14px 20px 14px 45px; border-radius: 16px; border: 2px solid #f1f5f9;
-            outline: none; width: 320px; font-size: 0.9rem; font-weight: 600; transition: all 0.3s ease;
+            padding: 12px 20px 12px 45px; border-radius: 14px; border: 1px solid var(--border);
+            outline: none; width: 300px; font-size: 0.9rem; transition: all 0.2s;
+            background: white;
         }
-        .search-input:focus { border-color: var(--primary-blue); }
+        .search-input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(22, 72, 188, 0.05); }
 
-        .table-card { background: white; border-radius: 30px; box-shadow: var(--shadow-premium); border: 1px solid var(--border-soft); overflow: hidden; }
+        .table-container {
+            background: white; border-radius: 20px; border: 1px solid var(--border);
+            overflow: hidden; box-shadow: var(--shadow-sm);
+        }
         table { width: 100%; border-collapse: collapse; }
-        th { text-align: left; padding: 20px 40px; background: #f8fafc; color: var(--text-muted); font-weight: 700; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; }
-        td { padding: 25px 40px; border-bottom: 1px solid #f1f5f9; font-size: 0.95rem; vertical-align: middle; }
+        th { 
+            text-align: left; padding: 18px 24px; background: #fcfdfe; 
+            color: var(--text-muted); font-weight: 700; font-size: 0.75rem; 
+            text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--border);
+        }
+        td { padding: 20px 24px; border-bottom: 1px solid var(--background); transition: 0.2s; }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: #f8faff; }
 
-        .app-row { transition: all 0.2s ease; cursor: pointer; }
-        .app-row:hover { background: #f8faff; }
-        .app-id { font-weight: 800; color: var(--primary-dark); font-size: 0.9rem; }
-        .student-name { font-weight: 800; color: var(--primary-dark); }
+        .app-id { font-weight: 700; color: var(--primary); font-family: monospace; font-size: 1rem; }
+        .student-name { font-weight: 700; color: var(--primary-dark); font-size: 0.95rem; }
         .student-email { font-size: 0.8rem; color: var(--text-muted); font-weight: 500; }
-        .course-name { font-weight: 700; color: #475569; font-size: 0.85rem; }
-        .submission-date { color: var(--text-muted); font-weight: 600; }
+        .course-tag { 
+            display: inline-block; padding: 4px 10px; border-radius: 8px; 
+            background: #eef2ff; color: #4338ca; font-size: 0.75rem; font-weight: 700;
+        }
+        .date-text { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; }
 
-        .btn { padding: 10px 18px; border-radius: 12px; font-weight: 700; font-size: 0.85rem; border: none; cursor: pointer; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 8px; }
-        .btn-view { background: #f1f5f9; color: #475569; }
-        .btn-view:hover { background: #e2e8f0; color: #1e293b; }
-        .btn-delete { background: #fef2f2; color: var(--danger); }
-        .btn-delete:hover { background: #fee2e2; }
-        .btn-eval { background: var(--primary-blue); color: white; box-shadow: 0 4px 12px rgba(22,72,188,0.2); }
-        .btn-eval:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(22,72,188,0.3); }
-        .btn-close { padding: 12px 25px; border-radius: 14px; border: 2px solid var(--border-soft); background: white; color: var(--text-muted); font-weight: 700; cursor: pointer; transition: all 0.3s ease; }
-        .btn-close:hover { background: #f8fafc; }
-        .action-group { display: flex; gap: 10px; }
+        .btn-group { display: flex; gap: 8px; }
+        .btn-icon {
+            width: 36px; height: 36px; border-radius: 10px; display: flex; 
+            align-items: center; justify-content: center; border: 1px solid var(--border);
+            background: white; color: var(--text-muted); cursor: pointer; transition: 0.2s;
+        }
+        .btn-icon:hover { background: #f1f5f9; color: var(--primary-dark); border-color: #cbd5e1; }
+        .btn-icon.delete:hover { background: #fef2f2; color: var(--danger); border-color: #fecaca; }
 
-        .empty-state { text-align: center; padding: 80px; }
-        .empty-icon { width: 100px; height: 100px; background: #f1f5f9; border-radius: 30px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
-        .empty-icon i { color: #e2e8f0; font-size: 3rem; }
-        .empty-text { color: #64748b; font-weight: 600; }
+        .btn-primary-sm {
+            padding: 8px 16px; border-radius: 10px; background: var(--primary);
+            color: white; border: none; font-weight: 700; font-size: 0.85rem;
+            cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 8px;
+        }
+        .btn-primary-sm:hover { background: #1a3a8a; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(22, 72, 188, 0.2); }
 
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,23,42,0.7); backdrop-filter: blur(12px); z-index: 99999; display: none; align-items: center; justify-content: center; padding: 20px; }
-        .modal-box { background: white; width: 100%; max-width: 600px; border-radius: 35px; box-shadow: 0 30px 60px -12px rgba(0,0,0,0.3); overflow: hidden; animation: modalScale 0.4s cubic-bezier(0.34,1.56,0.64,1); }
-        @keyframes modalScale { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .empty-state { text-align: center; padding: 60px 20px; }
+        .empty-icon { font-size: 3rem; color: var(--border); margin-bottom: 15px; }
+        .empty-text { color: var(--text-muted); font-weight: 600; }
 
-        .modal-head { padding: 40px; background: linear-gradient(135deg, #1648bc 0%, #1e3a8a 100%); color: white; text-align: center; }
-        .modal-avatar { width: 100px; height: 100px; border-radius: 30px; background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; font-weight: 800; margin: 0 auto 20px; border: 3px solid rgba(255,255,255,0.2); }
-        .modal-head h2 { font-weight: 800; font-size: 1.6rem; letter-spacing: -0.02em; margin-bottom: 5px; }
-        .modal-head p { opacity: 0.8; font-weight: 500; font-size: 0.95rem; }
-        .modal-body { padding: 35px 40px; }
-        .info-grid { background: #f8fafc; border-radius: 20px; padding: 20px; border: 1px solid #eef2ff; margin-bottom: 25px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
-        .info-item label { display: block; font-size: 0.7rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; }
-        .info-item p { font-weight: 700; color: var(--primary-dark); font-size: 0.95rem; }
-        .warning-note { background: var(--warning-bg); border: 1px solid var(--warning-border); padding: 20px; border-radius: 20px; color: var(--warning-text); font-size: 0.85rem; display: flex; gap: 12px; align-items: center; }
-        .warning-note p { font-weight: 600; }
-        .modal-actions { padding: 30px 40px; background: white; border-top: 1px solid var(--border-soft); display: flex; justify-content: flex-end; gap: 15px; }
-        #evalSpinner { margin-right: 8px; display: none; }
+        /* Modal enhancements */
+        .modal-overlay { 
+            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); 
+            backdrop-filter: blur(8px); z-index: 10000; display: none; 
+            align-items: center; justify-content: center; padding: 20px;
+        }
+        .modal-card { 
+            background: white; width: 100%; max-width: 550px; border-radius: 24px; 
+            overflow: hidden; box-shadow: var(--shadow-lg); animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        .modal-header { padding: 30px; background: var(--primary-dark); color: white; display: flex; align-items: center; gap: 20px; }
+        .modal-avatar { 
+            width: 64px; height: 64px; border-radius: 18px; background: rgba(255, 255, 255, 0.1); 
+            display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 800;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+        .modal-body { padding: 30px; }
+        .info-card { 
+            background: #f8fafc; border: 1px solid var(--border); border-radius: 16px; 
+            padding: 20px; margin-bottom: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px;
+        }
+        .info-box label { display: block; font-size: 0.65rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px; }
+        .info-box p { font-weight: 700; color: var(--primary-dark); font-size: 0.9rem; }
+        
+        .alert-box { 
+            background: #fffbeb; border: 1px solid #fef3c7; color: #92400e; 
+            padding: 15px; border-radius: 12px; font-size: 0.85rem; display: flex; gap: 12px; align-items: center;
+        }
+
+        .modal-footer { padding: 24px 30px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 12px; }
+        .btn-outline { 
+            padding: 10px 20px; border-radius: 12px; border: 1px solid var(--border); 
+            background: white; color: var(--text-muted); font-weight: 700; cursor: pointer; transition: 0.2s;
+        }
+        .btn-outline:hover { background: #f8fafc; color: var(--primary-dark); border-color: #cbd5e1; }
     </style>
 </head>
 <body>
-    <!-- View Modal -->
-    <div id="viewModal" class="modal-overlay">
-        <div class="modal-box">
-            <div class="modal-head">
-                <div class="modal-avatar" id="modalAvatar">JD</div>
-                <h2 id="modalProfileName">John Doe</h2>
-                <p id="modalProfileCourse">BS Computer Science</p>
+    <!-- Modal -->
+    <div id="appModal" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div class="modal-avatar" id="mAvatar">JD</div>
+                <div>
+                    <h2 id="mName" style="font-size: 1.25rem;">Student Name</h2>
+                    <p id="mCourse" style="opacity: 0.7; font-size: 0.85rem;">Course Title</p>
+                </div>
             </div>
             <div class="modal-body">
-                <div class="info-grid">
-                    <div class="info-item">
+                <div class="info-card">
+                    <div class="info-box">
                         <label>Application ID</label>
-                        <p id="modalAppId">#APP-10293</p>
+                        <p id="mID">#0000</p>
                     </div>
-                    <div class="info-item">
+                    <div class="info-box">
                         <label>Submission Date</label>
-                        <p id="modalDate">Jan 12, 2024</p>
+                        <p id="mDate">N/A</p>
                     </div>
-                </div>
-                <div class="info-grid">
-                    <div class="info-item">
+                    <div class="info-box">
                         <label>Email Address</label>
-                        <p id="modalEmail">john@university.edu</p>
+                        <p id="mEmail">N/A</p>
                     </div>
-                    <div class="info-item">
+                    <div class="info-box">
                         <label>Contact Number</label>
-                        <p id="modalContact">+63 912 345 6789</p>
+                        <p id="mPhone">N/A</p>
                     </div>
                 </div>
-                <div class="warning-note">
-                    <i class="fas fa-info-circle fa-lg"></i>
-                    <p>Moving to evaluation will alert the student and lock this application phase.</p>
+                <div class="alert-box">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p>Moving to evaluation will notify the applicant and move this record to the evaluation queue.</p>
                 </div>
             </div>
-            <div class="modal-actions">
-                <button class="btn-close" onclick="closeViewModal()">Dismiss</button>
-                <button class="btn btn-eval" onclick="proceedToEval(event)">
-                    <i class="fas fa-circle-notch fa-spin" id="evalSpinner"></i>
-                    <i class="fas fa-arrow-right" id="evalIcon"></i>
-                    Move to Evaluation
+            <div class="modal-footer">
+                <button class="btn-outline" onclick="closeModal()">Dismiss</button>
+                <button class="btn-primary-sm" onclick="moveSubmitting(this)">
+                    <span id="btnText">Proceed to Evaluation</span>
+                    <i class="fas fa-circle-notch fa-spin" id="btnSpinner" style="display:none;"></i>
                 </button>
             </div>
         </div>
@@ -198,59 +250,51 @@ try {
             <div class="header-section">
                 <div>
                     <h1>New Applications</h1>
-                    <p>Identify and process newly submitted enrollment requests.</p>
+                    <p>List of newly submitted applications pending initial review.</p>
                 </div>
-                <div class="search-wrapper">
-                    <i class="fas fa-search search-icon"></i>
-                    <input type="text" id="appSearch" onkeyup="filterTable()" placeholder="Search applicants..." class="search-input">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="tableSearch" onkeyup="searchTable()" placeholder="Search applications..." class="search-input">
                 </div>
             </div>
 
-            <div class="table-card">
+            <div class="table-container">
                 <table id="appTable">
                     <thead>
                         <tr>
-                            <th>Application ID</th>
-                            <th>Student Information</th>
-                            <th>Applied Course</th>
-                            <th>Date Submitted</th>
-                            <th>Action</th>
+                            <th>ID</th>
+                            <th>Student Details</th>
+                            <th>Preferred Course</th>
+                            <th>Submission Date</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php if (empty($applications)): ?>
                             <tr>
-                                <td colspan="5" class="empty-state">
-                                    <div class="empty-icon"><i class="fas fa-inbox"></i></div>
-                                    <p class="empty-text">No pending applications in your queue.</p>
+                                <td colspan="5">
+                                    <div class="empty-state">
+                                        <div class="empty-icon"><i class="fas fa-inbox"></i></div>
+                                        <p class="empty-text">No pending applications found.</p>
+                                    </div>
                                 </td>
                             </tr>
                         <?php else: ?>
                             <?php foreach ($applications as $app): ?>
-                                <tr class="app-row">
-                                    <td class="app-id">#<?php echo htmlspecialchars($app->application_no); ?></td>
+                                <tr>
+                                    <td><span class="app-id">#<?php echo htmlspecialchars($app->application_no); ?></span></td>
                                     <td>
                                         <div class="student-name"><?php echo htmlspecialchars($app->first_name . ' ' . $app->last_name); ?></div>
                                         <div class="student-email"><?php echo htmlspecialchars($app->email); ?></div>
                                     </td>
-                                    <td class="course-name"><?php echo htmlspecialchars($app->course_display_name); ?></td>
-                                    <td class="submission-date"><?php echo date('M d, Y', strtotime($app->submission_date)); ?></td>
+                                    <td><span class="course-tag"><?php echo htmlspecialchars($app->course_display_name); ?></span></td>
+                                    <td><span class="date-text"><?php echo date('M d, Y', strtotime($app->submission_date)); ?></span></td>
                                     <td>
-                                        <?php
-                                            $appData = [
-                                                'name'   => $app->first_name . ' ' . $app->last_name,
-                                                'no'     => $app->application_no,
-                                                'course' => $app->course_display_name,
-                                                'date'   => date('M d, Y', strtotime($app->submission_date)),
-                                                'email'  => $app->email,
-                                                'phone'  => $app->phone_number
-                                            ];
-                                        ?>
-                                        <div class="action-group">
-                                            <button class="btn btn-view" onclick='openDetailModal(<?php echo json_encode($appData, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP); ?>)'>
-                                                <i class="fas fa-eye"></i> Details
+                                        <div class="btn-group">
+                                            <button class="btn-primary-sm" onclick='showModal(<?php echo json_encode($app); ?>)'>
+                                                Review
                                             </button>
-                                            <button class="btn btn-delete" onclick="deleteApplication('<?php echo $app->application_no; ?>', '<?php echo addslashes($app->first_name . ' ' . $app->last_name); ?>')">
+                                            <button class="btn-icon delete" onclick="deleteApp('<?php echo $app->application_no; ?>', '<?php echo addslashes($app->first_name." ".$app->last_name); ?>')">
                                                 <i class="fas fa-trash-alt"></i>
                                             </button>
                                         </div>
@@ -264,100 +308,117 @@ try {
         </div>
     </div>
 
-    <?php include '../Components/GlobalScripts.php'; ?>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        let currentAppId = null;
+        let selectedAppID = null;
 
-        function filterTable() {
-            const filter = document.getElementById('appSearch').value.toLowerCase();
+        function searchTable() {
+            const input = document.getElementById('tableSearch');
+            const filter = input.value.toLowerCase();
             const rows = document.getElementById('appTable').getElementsByTagName('tr');
             for (let i = 1; i < rows.length; i++) {
-                let visible = false;
-                const cells = rows[i].getElementsByTagName('td');
-                for (let j = 0; j < cells.length; j++) {
-                    if ((cells[j].textContent || cells[j].innerText).toLowerCase().includes(filter)) {
-                        visible = true; break;
-                    }
-                }
-                rows[i].style.display = visible ? '' : 'none';
+                const text = rows[i].textContent.toLowerCase();
+                rows[i].style.display = text.includes(filter) ? '' : 'none';
             }
         }
 
-        function openDetailModal(data) {
-            try {
-                currentAppId = data.no;
-                document.getElementById('modalProfileName').textContent = data.name;
-                document.getElementById('modalAvatar').textContent = data.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
-                document.getElementById('modalAppId').textContent = '#' + data.no;
-                document.getElementById('modalProfileCourse').textContent = data.course;
-                document.getElementById('modalDate').textContent = data.date;
-                document.getElementById('modalEmail').textContent = data.email;
-                document.getElementById('modalContact').textContent = data.phone;
-                document.getElementById('viewModal').style.display = 'flex';
-                document.body.style.overflow = 'hidden';
-            } catch (err) {
-                console.error(err);
-                Swal.fire('Error', 'Failed to open application details.', 'error');
-            }
+        function showModal(data) {
+            selectedAppID = data.application_no;
+            document.getElementById('mName').textContent = data.first_name + ' ' + data.last_name;
+            document.getElementById('mAvatar').textContent = (data.first_name[0] + data.last_name[0]).toUpperCase();
+            document.getElementById('mCourse').textContent = data.course_display_name;
+            document.getElementById('mID').textContent = '#' + data.application_no;
+            document.getElementById('mEmail').textContent = data.email;
+            document.getElementById('mPhone').textContent = data.phone_number;
+            document.getElementById('mDate').textContent = new Date(data.submission_date).toLocaleDateString();
+            
+            document.getElementById('appModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
         }
 
-        function closeViewModal() {
-            document.getElementById('viewModal').style.display = 'none';
+        function closeModal() {
+            document.getElementById('appModal').style.display = 'none';
             document.body.style.overflow = 'auto';
-            currentAppId = null;
+            selectedAppID = null;
         }
 
-        async function proceedToEval(event) {
-            if (!currentAppId) return;
-            const btn = event.currentTarget;
-            const spinner = document.getElementById('evalSpinner');
-            const icon = document.getElementById('evalIcon');
-            spinner.style.display = 'inline-block';
-            icon.style.display = 'none';
+        async function moveSubmitting(btn) {
+            if (!selectedAppID) return;
+            
+            const btnText = document.getElementById('btnText');
+            const spinner = document.getElementById('btnSpinner');
+            
             btn.disabled = true;
+            btnText.style.display = 'none';
+            spinner.style.display = 'inline-block';
+
             const formData = new FormData();
             formData.append('action', 'proceed_to_evaluation');
-            formData.append('application_no', currentAppId);
+            formData.append('application_no', selectedAppID);
+
             try {
-                const res = await fetch(window.location.href, { method: 'POST', body: formData });
-                const data = await res.json();
-                if (data.success) {
-                    await Swal.fire({ title: 'Moved to Evaluation!', text: 'Redirecting...', icon: 'success', timer: 1500, showConfirmButton: false });
-                    window.location.href = 'Evaluation.php';
+                const response = await fetch(window.location.href, { method: 'POST', body: formData });
+                const result = await response.json();
+                
+                if (result.success) {
+                    Swal.fire({
+                        title: 'Success!',
+                        text: result.message,
+                        icon: 'success',
+                        timer: 1500,
+                        showConfirmButton: false
+                    }).then(() => {
+                        window.location.href = 'Evaluation.php';
+                    });
                 } else {
-                    Swal.fire('Error!', data.message, 'error');
-                    resetBtn(spinner, icon, btn);
+                    Swal.fire('Error', result.message, 'error');
+                    resetBtn(btn, btnText, spinner);
                 }
-            } catch (e) {
-                Swal.fire('Error!', 'Something went wrong.', 'error');
-                resetBtn(spinner, icon, btn);
+            } catch (error) {
+                Swal.fire('Error', 'An unexpected error occurred.', 'error');
+                resetBtn(btn, btnText, spinner);
             }
         }
 
-        async function deleteApplication(id, name) {
-            const result = await Swal.fire({ title: 'Are you sure?', text: `Delete application of ${name}?`, icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444', cancelButtonColor: '#718096', confirmButtonText: 'Yes, delete it!' });
+        async function deleteApp(id, name) {
+            const result = await Swal.fire({
+                title: 'Are you sure?',
+                text: `You are about to delete ${name}'s application.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                confirmButtonText: 'Yes, delete it!'
+            });
+
             if (result.isConfirmed) {
                 const formData = new FormData();
                 formData.append('action', 'delete_application');
                 formData.append('application_no', id);
+                
                 try {
-                    const res = await fetch(window.location.href, { method: 'POST', body: formData });
-                    const data = await res.json();
-                    if (data.success) { await Swal.fire('Deleted!', data.message, 'success'); location.reload(); }
-                    else Swal.fire('Error!', data.message, 'error');
-                } catch (e) { Swal.fire('Error!', 'Something went wrong.', 'error'); }
+                    const response = await fetch(window.location.href, { method: 'POST', body: formData });
+                    const res = await response.json();
+                    if (res.success) {
+                        Swal.fire('Deleted', res.message, 'success').then(() => location.reload());
+                    } else {
+                        Swal.fire('Error', res.message, 'error');
+                    }
+                } catch (e) {
+                    Swal.fire('Error', 'Failed to delete application', 'error');
+                }
             }
         }
 
-        function resetBtn(spinner, icon, btn) {
-            spinner.style.display = 'none';
-            icon.style.display = 'inline-block';
+        function resetBtn(btn, text, spinner) {
             btn.disabled = false;
+            text.style.display = 'inline-block';
+            spinner.style.display = 'none';
         }
 
-        window.onclick = function(event) {
-            if (event.target === document.getElementById('viewModal')) closeViewModal();
+        window.onclick = function(e) {
+            if (e.target === document.getElementById('appModal')) closeModal();
         }
     </script>
 </body>
 </html>
+
