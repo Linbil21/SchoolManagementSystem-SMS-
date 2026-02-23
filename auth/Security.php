@@ -6,6 +6,26 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 /**
+ * Robust fix for stray CSS appearing on pages.
+ * Filters the final output to ensure the problematic string is never displayed.
+ */
+ob_start(function($buffer) {
+    if (empty($buffer)) return $buffer;
+    
+    // The exact stray string seen in screenshots
+    $stray = '.student-modal-footer { padding: 20px 32px; border-top: 1px solid #edf2f7; display: flex; justify-content: flex-end; background: #f8fafc; }';
+    
+    // Remove exact match
+    $filtered = str_replace($stray, '', $buffer);
+    
+    // Remove regex variants (multiple spaces, different line endings)
+    $filtered = preg_replace('/\.student-modal-footer\s*\{\s*padding:\s*20px\s*32px;\s*border-top:\s*1px\s*solid\s*#edf2f7;\s*display:\s*flex;\s*justify-content:\s*flex-end;\s*background:\s*#f8fafc;\s*\}\s*/i', '', $filtered);
+    
+    return $filtered;
+});
+
+
+/**
  * Checks if the current user has access based on their role.
  * If not, redirects them to their appropriate dashboard.
  * 

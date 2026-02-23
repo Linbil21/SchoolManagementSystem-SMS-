@@ -182,7 +182,14 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admission@sms.com';
                     <span>Account Settings</span>
                 </a>
             </li>
+            <li class="<?php echo ($current_page == 'Purge-Cache.php') ? 'active' : ''; ?>">
+                <a href="<?php echo $root; ?>Admission/Modules/Purge-Cache.php" style="color: #6366f1;">
+                    <i class="fas fa-sync-alt"></i>
+                    <span>Refresh Cache</span>
+                </a>
+            </li>
             <li>
+
                 <a href="javascript:void(0)" onclick="openLogoutModal()" style="color: #ef4444;">
                     <i class="fas fa-power-off"></i>
                     <span>End Session</span>
