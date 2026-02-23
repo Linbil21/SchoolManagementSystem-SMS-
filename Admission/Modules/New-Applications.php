@@ -17,9 +17,7 @@ ob_start(function($buffer) {
         $cleaned = preg_replace($p, '', $cleaned);
     }
     
-    // Explicit literal match for the exact string appearing in screenshots
-    $literal = '.student-modal-footer { padding: 20px 32px; border-top: 1px solid #edf2f7; display: flex; justify-content: flex-end; background: #f8fafc; }';
-    $cleaned = str_replace($literal, '', $cleaned);
+    
     
     return $cleaned;
 });
@@ -93,6 +91,52 @@ try {
     ");
     $stmt->execute();
     $applications = $stmt->fetchAll();
+
+    // DUMMY DATA INJECTION - For demonstration if database is empty
+    if (empty($applications)) {
+        $applications = [
+            (object)[
+                'application_no' => 'ENR260000001',
+                'first_name' => 'Leon',
+                'last_name' => 'Kennedy',
+                'email' => 'l.kennedy@raccoon-pd.gov',
+                'preferred_course_1' => 'BS Criminology',
+                'course_display_name' => 'B.S. in Criminology',
+                'submission_date' => date('Y-m-d H:i:s'),
+                'phone_number' => '0917-123-4567'
+            ],
+            (object)[
+                'application_no' => 'ENR260000002',
+                'first_name' => 'Ada',
+                'last_name' => 'Wong',
+                'email' => 'ada.w@spy.org',
+                'preferred_course_1' => 'BS Computer Science',
+                'course_display_name' => 'B.S. in Computer Science',
+                'submission_date' => date('Y-m-d H:i:s', strtotime('-1 hour')),
+                'phone_number' => '0922-000-8888'
+            ],
+            (object)[
+                'application_no' => 'ENR260000003',
+                'first_name' => 'Claire',
+                'last_name' => 'Redfield',
+                'email' => 'claire@terrasave.org',
+                'preferred_course_1' => 'BS Hospitality Management',
+                'course_display_name' => 'B.S. in Hospitality Management',
+                'submission_date' => date('Y-m-d H:i:s', strtotime('-2 hours')),
+                'phone_number' => '0945-333-2222'
+            ],
+            (object)[
+                'application_no' => 'ENR260000004',
+                'first_name' => 'Albert',
+                'last_name' => 'Wesker',
+                'email' => 'wesker@umbrella.corp',
+                'preferred_course_1' => 'BS Biology',
+                'course_display_name' => 'B.S. in Biology',
+                'submission_date' => date('Y-m-d H:i:s', strtotime('-1 day')),
+                'phone_number' => '0966-666-6666'
+            ]
+        ];
+    }
 } catch (PDOException $e) {
     $applications = [];
     error_log("Database error: " . $e->getMessage());
