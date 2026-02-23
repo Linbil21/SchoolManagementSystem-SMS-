@@ -1,4 +1,14 @@
 <?php
+/**
+ * DEPLOY FIX - Overwrites New-Applications.php on the server with clean version
+ * Access this file on the live server once then DELETE IT immediately.
+ */
+header('Content-Type: text/plain; charset=utf-8');
+
+$targetFile = __DIR__ . '/Admission/Modules/New-Applications.php';
+
+$cleanContent = <<<'PHPEOF'
+<?php
 session_start();
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admission') {
     header("Location: ../../auth/Login.php");
@@ -134,12 +144,15 @@ try {
         .modal-avatar { width: 100px; height: 100px; border-radius: 30px; background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; font-weight: 800; margin: 0 auto 20px; border: 3px solid rgba(255,255,255,0.2); }
         .modal-head h2 { font-weight: 800; font-size: 1.6rem; letter-spacing: -0.02em; margin-bottom: 5px; }
         .modal-head p { opacity: 0.8; font-weight: 500; font-size: 0.95rem; }
+
         .modal-body { padding: 35px 40px; }
         .info-grid { background: #f8fafc; border-radius: 20px; padding: 20px; border: 1px solid #eef2ff; margin-bottom: 25px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
         .info-item label { display: block; font-size: 0.7rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; }
         .info-item p { font-weight: 700; color: var(--primary-dark); font-size: 0.95rem; }
+
         .warning-note { background: var(--warning-bg); border: 1px solid var(--warning-border); padding: 20px; border-radius: 20px; color: var(--warning-text); font-size: 0.85rem; display: flex; gap: 12px; align-items: center; }
         .warning-note p { font-weight: 600; }
+
         .modal-actions { padding: 30px 40px; background: white; border-top: 1px solid var(--border-soft); display: flex; justify-content: flex-end; gap: 15px; }
         #evalSpinner { margin-right: 8px; display: none; }
     </style>
@@ -362,3 +375,46 @@ try {
     </script>
 </body>
 </html>
+PHPEOF;
+
+echo "=== DEPLOY FIX ===\n\n";
+echo "Target: $targetFile\n\n";
+
+if (!file_exists($targetFile)) {
+    echo "ERROR: Target file not found!\n";
+    exit;
+}
+
+// Backup old file first
+$backupFile = $targetFile . '.bak.' . time();
+copy($targetFile, $backupFile);
+echo "Backup created: " . basename($backupFile) . "\n";
+
+// Write clean content
+if (file_put_contents($targetFile, $cleanContent)) {
+    echo "SUCCESS: New-Applications.php overwritten with clean version!\n";
+    echo "Size written: " . strlen($cleanContent) . " bytes\n\n";
+} else {
+    echo "FAILED: Could not write to file. Check permissions.\n\n";
+    exit;
+}
+
+// Verify
+$written = file_get_contents($targetFile);
+if (strpos($written, 'student-modal-footer { padding') !== false) {
+    echo "WARNING: stray CSS still present after write!\n";
+} else {
+    echo "VERIFIED: No stray CSS in file.\n";
+}
+
+// Clear OPCache
+if (function_exists('opcache_reset')) {
+    opcache_reset();
+    echo "OPCache cleared!\n";
+} else {
+    echo "OPCache not available (may not be needed).\n";
+}
+
+echo "\nDONE! Access New-Applications.php and hard reload (Ctrl+Shift+R).\n";
+echo "DELETE this file (deploy_new_apps.php) after use!\n";
+?>
