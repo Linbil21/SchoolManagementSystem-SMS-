@@ -25,7 +25,8 @@ foreach ($iterator as $file) {
     if ($file->getExtension() !== 'php') continue;
     
     $filename = $file->getBasename();
-    if ($filename === 'Nuke-Stray.php' || $filename === 'emergency_scan.php') continue;
+    if ($filename === 'Fix-Stray.php' || $filename === 'emergency_scan.php' || $filename === 'Nuke-Stray.php') continue;
+
 
     $scanned_count++;
     $path = $file->getPathname();
