@@ -12,17 +12,37 @@ if (session_status() === PHP_SESSION_NONE) {
 ob_start(function($buffer) {
     if (empty($buffer)) return $buffer;
     
-    // The exact stray string seen in screenshots
-    $stray = '.student-modal-footer { padding: 20px 32px; border-top: 1px solid #edf2f7; display: flex; justify-content: flex-end; background: #f8fafc; }';
+    // EXTREMELY AGGRESSIVE FILTER: Matches any variation of the student-modal-footer plain text.
+    // We use a looser regex to catch possible whitespace or character differences.
+    $stray_pattern = '/\.student-modal-footer\s*\{[^}]*padding:\s*20px\s*32px[^}]*background:\s*#f8fafc;?\s*\}/is';
     
-    // Remove exact match
-    $filtered = str_replace($stray, '', $buffer);
+    $filtered = $buffer;
     
-    // Remove regex variants (multiple spaces, different line endings)
-    $filtered = preg_replace('/\.student-modal-footer\s*\{\s*padding:\s*20px\s*32px;\s*border-top:\s*1px\s*solid\s*#edf2f7;\s*display:\s*flex;\s*justify-content:\s*flex-end;\s*background:\s*#f8fafc;\s*\}\s*/i', '', $filtered);
+    // Debug detection - if it exists at all, we want to know
+    if (preg_match_all($stray_pattern, $filtered, $matches, PREG_OFFSET_CAPTURE)) {
+        foreach (array_reverse($matches[0]) as $match) {
+            $offset = $match[1];
+            $string = $match[0];
+            
+            // CONTEXT CHECK: Only remove if NOT inside a <style> tag
+            $before = substr($filtered, 0, $offset);
+            $lastStyleOpen = strrpos($before, '<style');
+            $lastStyleClose = strrpos($before, '</style>');
+            
+            if ($lastStyleOpen === false || ($lastStyleClose !== false && $lastStyleClose > $lastStyleOpen)) {
+                // Remove the stray text
+                $filtered = substr_replace($filtered, '', $offset, strlen($string));
+                
+                // Optional: Log to a hit file on the server for debugging (uncomment if needed)
+                // file_put_contents(__DIR__ . '/filter_hits.log', date('H:i:s') . ' - Caught: ' . substr($string, 0, 50) . "...\n", FILE_APPEND);
+            }
+        }
+    }
     
     return $filtered;
 });
+
+
 
 
 /**
