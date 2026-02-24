@@ -84,6 +84,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 $existing_enr = $stmt->fetch();
 
                 if ($existing_enr) {
+                    $enrollment_id = $existing_enr->enrollmentId;
+                    // Sum existing payments
+                    $paid_stmt = $pdo->prepare("SELECT SUM(amount) as paid FROM payments WHERE (enrollment_id = ? OR (enrollment_id IS NULL AND description LIKE ?)) AND status IN ('Completed', 'Verified')");
+                    $paid_stmt->execute([$enrollment_id, "%" . $app->email . "%"]);
+                    $total_paid = $paid_stmt->fetch()->paid ?? 0;
+                    $new_balance = $total - $total_paid;
+
                     // Update existing
                     $ref_code = $existing_enr->reference_code;
                     $sql = "UPDATE enrollments SET 
@@ -94,9 +101,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                             balance = ?,
                             status = 'Pending Payment'
                             WHERE enrollmentId = ?";
-                    $pdo->prepare($sql)->execute([$course_id, $tuition, $misc, $total, $total, $existing_enr->enrollmentId]);
+                    $pdo->prepare($sql)->execute([$course_id, $tuition, $misc, $total, $new_balance, $enrollment_id]);
+                    
+                    // Link orphaned payments
+                    $pdo->prepare("UPDATE payments SET enrollment_id = ? WHERE description LIKE ? AND enrollment_id IS NULL")->execute([$enrollment_id, "%" . $app->email . "%"]);
+                    
                     $message = "Application #{$app->application_no} approved. Assessment updated. Status set to Pending Payment. Student can now proceed to Cashier.";
                 } else {
+                    // Sum existing payments
+                    $paid_stmt = $pdo->prepare("SELECT SUM(amount) as paid FROM payments WHERE description LIKE ? AND status IN ('Completed', 'Verified')");
+                    $paid_stmt->execute(["%" . $app->email . "%"]);
+                    $total_paid = $paid_stmt->fetch()->paid ?? 0;
+                    $new_balance = $total - $total_paid;
+
                     // Insert new
                     $ref_code = "ENR-" . date('Y') . "-" . strtoupper(substr(md5(uniqid()), 0, 6));
                     $sql = "INSERT INTO enrollments (reference_code, admission_type, course_id, first_name, last_name, gender, birthdate, contact_number, email, year_level, status, tuition_fee, misc_fee, total_fee, balance) 
@@ -114,8 +131,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                         $tuition,
                         $misc,
                         $total,
-                        $total
+                        $new_balance
                     ]);
+                    
+                    $new_enr_id = $pdo->lastInsertId();
+                    // Link orphaned payments
+                    $pdo->prepare("UPDATE payments SET enrollment_id = ? WHERE description LIKE ? AND enrollment_id IS NULL")->execute([$new_enr_id, "%" . $app->email . "%"]);
+
                     $message = "Application #{$app->application_no} approved and student record created. Status set to Pending Payment (Direct to Cashier).";
                 }
 
