@@ -293,13 +293,16 @@ checkRole(['student']);
                                     
                                     echo "<tr>";
                                     echo "<td>" . htmlspecialchars($date) . "</td>";
-                                    echo "<td>" . htmlspecialchars($payment->transaction_id) . "</td>";
+                                    echo "<td>
+                                        <div style='font-weight: 700; color: #1e293b;'>" . htmlspecialchars($payment->transaction_id) . "</div>
+                                        <div style='font-size: 0.72rem; color: #64748b; font-weight: 500;'>" . htmlspecialchars($payment->description ?: $payment->purpose ?: 'Payment Transaction') . "</div>
+                                    </td>";
                                     echo "<td>" . htmlspecialchars($payment->payment_method) . "</td>";
                                     echo "<td style='font-weight: 600;'>₱" . number_format($payment->amount, 2) . "</td>";
                                     echo "<td><span class='status-badge {$status_class}'>" . htmlspecialchars($payment->status) . "</span></td>";
                                     echo "<td>
                                         <div style='display: flex; gap: 8px;'>
-                                            <button class='view-btn' onclick=\"openModal('" . htmlspecialchars($payment->transaction_id) . "', '" . htmlspecialchars($payment->payment_method) . "', '" . number_format($payment->amount, 2) . "', '" . htmlspecialchars($date) . "', '" . htmlspecialchars($payment->status) . "', '/" . htmlspecialchars($payment->proof_of_payment) . "')\">View</button>
+                                            <button class='view-btn' onclick=\"openModal('" . htmlspecialchars($payment->transaction_id) . "', '" . htmlspecialchars($payment->payment_method) . "', '" . number_format($payment->amount, 2) . "', '" . htmlspecialchars($date) . "', '" . htmlspecialchars($payment->status) . "', '" . htmlspecialchars($payment->description ?: $payment->purpose ?: 'General Payment') . "', '/" . htmlspecialchars($payment->proof_of_payment) . "')\">View</button>
                                             <a href='Print-Receipt.php?id=" . htmlspecialchars($payment->transaction_id) . "' target='_blank' class='view-btn' style='text-decoration: none; display: flex; align-items: center; gap: 5px; background: #f8fafc; border-color: #2563eb; color: #2563eb;'>
                                                 <i class='fas fa-print'></i> Receipt
                                             </a>
@@ -354,6 +357,10 @@ checkRole(['student']);
             <div class="detail-row">
                 <span class="detail-label">Status</span>
                 <span class="detail-value" id="modalStatus">--</span>
+            </div>
+            <div class="detail-row" style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed #e2e8f0;">
+                <span class="detail-label">Description</span>
+                <span class="detail-value" id="modalDesc" style="font-weight: 500; color: #64748b;">--</span>
             </div>
 
             <div style="display: flex; gap: 10px; margin-top: 20px;">
@@ -487,12 +494,13 @@ checkRole(['student']);
 
         const modal = document.getElementById('receiptModal');
 
-        function openModal(ref, channel, amount, date, status, image) {
+        function openModal(ref, channel, amount, date, status, desc, image) {
             document.getElementById('modalRef').textContent = ref;
             document.getElementById('modalChannel').textContent = channel;
             document.getElementById('modalAmount').textContent = amount;
             document.getElementById('modalDate').textContent = date;
             document.getElementById('modalStatus').textContent = status;
+            document.getElementById('modalDesc').textContent = desc;
             document.getElementById('modalPrintBtn').href = 'Print-Receipt.php?id=' + ref;
             
             const preview = document.querySelector('.receipt-preview');
