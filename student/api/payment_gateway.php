@@ -91,9 +91,10 @@ try {
             $student = $fallback->fetch(PDO::FETCH_OBJ);
         }
     }
-    // 6. Record the student's email in the description unconditionally as a bulletproof receipt anchor
+    // 6. Record the student's name in the description as a professional receipt anchor
     $enrollment_id = $student ? $student->enrollmentId : null;
-    $description = $description . " [Paid by: " . $student_email . "]";
+    $student_full_name = $student ? (trim($student->first_name . " " . $student->last_name)) : $student_email;
+    $description = $description . " [Paid by: " . $student_full_name . "]";
 
     // 5. Simulate External Gateway Processing (Mock 500ms delay)
     // usleep(500000); 

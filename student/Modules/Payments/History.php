@@ -270,7 +270,7 @@ checkRole(['student']);
                         
                         try {
                             $stmt = $pdo->prepare("
-                                SELECT p.* 
+                                SELECT p.*, e.first_name, e.last_name 
                                 FROM payments p 
                                 LEFT JOIN enrollments e ON p.enrollment_id = e.enrollmentId 
                                 WHERE e.email = ? OR p.description LIKE ? 
@@ -291,18 +291,24 @@ checkRole(['student']);
                                         $status_class = 'status-pending';
                                     }
                                     
-                                    echo "<tr>";
+                                    // Cleanup description: Replace [Paid by: email@...] with [Paid by: Student Name]
+                                    $raw_desc = $payment->description ?: $payment->purpose ?: 'Payment Transaction';
+                                    $display_name = trim(($payment->first_name ?? '') . " " . ($payment->last_name ?? ''));
+                                    if (empty($display_name)) $display_name = $student_email;
+                                    
+                                    $clean_desc = preg_replace('/\[Paid by:.*?\]/i', "[Paid by: " . $display_name . "]", $raw_desc);
+
                                     echo "<td>" . htmlspecialchars($date) . "</td>";
                                     echo "<td>
                                         <div style='font-weight: 700; color: #1e293b;'>" . htmlspecialchars($payment->transaction_id) . "</div>
-                                        <div style='font-size: 0.72rem; color: #64748b; font-weight: 500;'>" . htmlspecialchars($payment->description ?: $payment->purpose ?: 'Payment Transaction') . "</div>
+                                        <div style='font-size: 0.72rem; color: #64748b; font-weight: 500;'>" . htmlspecialchars($clean_desc) . "</div>
                                     </td>";
                                     echo "<td>" . htmlspecialchars($payment->payment_method) . "</td>";
                                     echo "<td style='font-weight: 600;'>₱" . number_format($payment->amount, 2) . "</td>";
                                     echo "<td><span class='status-badge {$status_class}'>" . htmlspecialchars($payment->status) . "</span></td>";
                                     echo "<td>
                                         <div style='display: flex; gap: 8px;'>
-                                            <button class='view-btn' onclick=\"openModal('" . htmlspecialchars($payment->transaction_id) . "', '" . htmlspecialchars($payment->payment_method) . "', '" . number_format($payment->amount, 2) . "', '" . htmlspecialchars($date) . "', '" . htmlspecialchars($payment->status) . "', '" . htmlspecialchars($payment->description ?: $payment->purpose ?: 'General Payment') . "', '/" . htmlspecialchars($payment->proof_of_payment) . "')\">View</button>
+                                            <button class='view-btn' onclick=\"openModal('" . htmlspecialchars($payment->transaction_id) . "', '" . htmlspecialchars($payment->payment_method) . "', '" . number_format($payment->amount, 2) . "', '" . htmlspecialchars($date) . "', '" . htmlspecialchars($payment->status) . "', '" . htmlspecialchars($clean_desc) . "', '/" . htmlspecialchars($payment->proof_of_payment) . "')\">View</button>
                                             <a href='Print-Receipt.php?id=" . htmlspecialchars($payment->transaction_id) . "' target='_blank' class='view-btn' style='text-decoration: none; display: flex; align-items: center; gap: 5px; background: #f8fafc; border-color: #2563eb; color: #2563eb;'>
                                                 <i class='fas fa-print'></i> Receipt
                                             </a>

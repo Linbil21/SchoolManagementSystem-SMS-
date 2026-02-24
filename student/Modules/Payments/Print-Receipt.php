@@ -149,7 +149,13 @@ try {
         <div class="payment-summary">
             <div class="summary-row">
                 <span class="label">Payment Description</span>
-                <span class="value"><?php echo $payment->description ?: 'Fee Payment'; ?></span>
+                <span class="value">
+                    <?php 
+                        $raw_desc = $payment->description ?: 'Fee Payment';
+                        $full_name = trim($payment->first_name . " " . $payment->last_name);
+                        echo htmlspecialchars(preg_replace('/\[Paid by:.*?\]/i', "[Paid by: " . $full_name . "]", $raw_desc)); 
+                    ?>
+                </span>
             </div>
             <div class="summary-row">
                 <span class="label">Semester / Term</span>
