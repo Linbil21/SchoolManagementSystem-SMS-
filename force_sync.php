@@ -11,6 +11,7 @@ $filesToUpdate = [
     'Admission/Modules/New-Applications.php',
     'Admission/Modules/Student-Requirements.php',
     'Admission/Modules/Evaluation.php',
+    'Admission/Modules/Enrollment-Validation.php',
     'auth/Security.php'
 ];
 
