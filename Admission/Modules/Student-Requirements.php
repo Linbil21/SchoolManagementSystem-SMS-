@@ -306,13 +306,7 @@ try {
             border-width: 2px;
         }
 
-        /* .student-modal-footer {
-            padding: 20px 32px;
-            border-top: 1px solid #edf2f7;
-            display: flex;
-            justify-content: flex-end;
-            background: #f8fafc;
-        } */
+       
     </style>
 </head>
 
