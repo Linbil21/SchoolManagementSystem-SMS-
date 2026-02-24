@@ -5,24 +5,6 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-/**
- * EMERGENCY GLOBAL CSS FILTER
- * Nukes the stray .student-modal-footer text from any page output.
- */
-ob_start(function($buffer) {
-    if (empty($buffer)) return $buffer;
-    // Aggressive nuke for the stray CSS text
-    $pattern = '/\.student-modal-footer\s*\{[^}]*padding:\s*20px\s*32px[^}]*\}/is';
-    $cleaned = preg_replace($pattern, '', $buffer);
-    
-    // Literal fallback for the exact string reported
-    $literal = '.student-modal-footer { padding: 20px 32px; border-top: 1px solid #edf2f7; display: flex; justify-content: flex-end; background: #f8fafc; }';
-    $cleaned = str_replace($literal, '', $cleaned);
-    
-    return $cleaned;
-});
-
-
 
 /**
  * Checks if the current user has access based on their role.
