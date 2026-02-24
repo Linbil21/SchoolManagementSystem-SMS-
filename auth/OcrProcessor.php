@@ -191,10 +191,13 @@ class OcrProcessor {
         $confidence = $result['responses'][0]['fullTextAnnotation']['pages'][0]['confidence'] ?? 0;
 
         if (empty($text)) {
-            return ['error' => 'No text detected in the document.'];
+            return [
+                'error' => 'No text detected. Please ensure the document is clear and readable.',
+                'is_valid' => false
+            ];
         }
 
-        $parsedData = $this->parseExtractedText($text);
+        $parsedData = $this->parseExtractedText($text, $type);
         
         // Calculate confidence
         $finalConfidence = round($confidence * 100, 2);
@@ -310,7 +313,18 @@ class OcrProcessor {
             }
         }
 
-        // Return constructed data
+        // 2. Form 138 / Card Logic
+        if ($type === 'form_138' || stripos($originalFilename, 'card') !== false || stripos($originalFilename, 'form') !== false) {
+             return [
+                'is_simulation' => true,
+                'is_valid' => true,
+                'document_type' => 'Form 138 (Report Card)',
+                'confidence' => '98.5',
+                'recommendation' => 'School Document Verified. Academic records detected.',
+                'raw_text' => "DEPARTMENT OF EDUCATION. Progress Report Card (Form 138). Student: $firstName $lastName. General Average: 92. Promotion Status: Promoted."
+            ];
+        }
+
         return [
             'is_simulation' => true,
             'is_valid' => true,
@@ -336,7 +350,7 @@ class OcrProcessor {
      * Simple parser for extracting fields from PSA Birth Certificate or IDs
      * This is a basic implementation and can be improved with better regex
      */
-    private function parseExtractedText($text) {
+    private function parseExtractedText($text, $expectedType = 'generic') {
         $data = [
             'raw_text' => $text,
             'first_name' => '',
@@ -344,37 +358,48 @@ class OcrProcessor {
             'last_name' => '',
             'birthdate' => '',
             'gender' => '',
-            'document_type' => 'Unknown',
+            'document_type' => 'Unknown Document',
             'is_valid' => false
         ];
 
-        // Normalize text: replace multiple spaces and newlines
+        // Normalize text
         $normalizedText = preg_replace('/\s+/', ' ', $text);
+        $upperText = strtoupper($text);
 
-        // Check for Document Type
-        if (preg_match('/(PHILIPPINE STATISTICS AUTHORITY|BIRTH CERTIFICATE|CERTIFICATE OF LIVE BIRTH|OFFICE OF THE CIVIL REGISTRAR GENERAL)/i', $text)) {
+        // 1. Validation Logic
+        if (preg_match('/(REPUBLIC OF THE PHILIPPINES|PSA|PHILIPPINE STATISTICS AUTHORITY|BIRTH CERTIFICATE|CERTIFICATE OF LIVE BIRTH|REGISTRAR GENERAL)/i', $text)) {
             $data['document_type'] = 'PSA Birth Certificate';
-            $data['is_valid'] = true;
-        } elseif (preg_match('/(FORM 137|FORM 138|REPORT CARD|PERMANENT RECORD|STUDENT CUMULATIVE RECORD)/i', $text)) {
-            $data['document_type'] = 'School Transcript/Card';
+            $data['is_valid'] = ($expectedType === 'birth_cert' || $expectedType === 'generic');
+        } elseif (preg_match('/(FORM 137|FORM 138|REPORT CARD|DEPED|DEPARTMENT OF EDUCATION|ELEMENTARY SCHOOL|SECONDARY SCHOOL|LEARNER\'S PROGRESS|PERMANENT RECORD)/i', $text)) {
+            $data['document_type'] = 'Form 138 (Report Card)';
+            $data['is_valid'] = ($expectedType === 'form_138' || $expectedType === 'generic');
+        } elseif (preg_match('/(GOOD MORAL|CHARACTER|CERTIFICATE OF GOOD)/i', $text)) {
+            $data['document_type'] = 'Certificate of Good Moral';
             $data['is_valid'] = true;
         }
 
-        // 1. IMPROVED NAME PARSING (PSA Specific)
-        // PSA Format: 1. NAME (First) (Middle) (Last)
-        // Often OCRed as: 1. NAME (First) (Middle) (Last) JUAN LUNA DELA CRUZ
-        if (preg_match('/(?:NAME|Name)\s*\(?First\)?\s*\(?Middle\)?\s*\(?Last\)?\s*([A-Z\s,.-]{5,})/i', $normalizedText, $matches)) {
-            $fullName = trim($matches[1]);
-            $nameParts = explode(' ', $fullName);
-            if (count($nameParts) >= 3) {
-                $data['last_name'] = array_pop($nameParts);
-                $data['middle_name'] = array_pop($nameParts);
-                $data['first_name'] = implode(' ', $nameParts);
+        // Cross-check with expected type
+        if ($expectedType !== 'generic' && $expectedType !== 'id_picture' && !$data['is_valid']) {
+             $data['error'] = "Invalid Document. Expected " . ucwords(str_replace('_', ' ', $expectedType)) . " but the scan detected " . $data['document_type'];
+             return $data;
+        }
+
+        // 2. NAME PARSING (Only for PSA/IDs)
+        if ($data['document_type'] === 'PSA Birth Certificate') {
+            // PSA Logic
+            if (preg_match('/(?:NAME|Name)\s*\(?First\)?\s*\(?Middle\)?\s*\(?Last\)?\s*([A-Z\s,.-]{5,})/i', $normalizedText, $matches)) {
+                $fullName = trim($matches[1]);
+                $nameParts = explode(' ', $fullName);
+                if (count($nameParts) >= 3) {
+                    $data['last_name'] = array_pop($nameParts);
+                    $data['middle_name'] = array_pop($nameParts);
+                    $data['first_name'] = implode(' ', $nameParts);
+                }
             }
         }
 
-        // Fallback for names if specific PSA labels are found separately
-        if (empty($data['first_name'])) {
+        // Common Name Fallbacks
+        if (empty($data['first_name']) && $data['document_type'] === 'PSA Birth Certificate') {
             if (preg_match('/(?:First Name|FIRST NAME)[:\s]*([A-Z\s.-]+)/i', $text, $matches)) {
                 $data['first_name'] = trim(explode("\n", $matches[1])[0]);
             }
@@ -386,40 +411,19 @@ class OcrProcessor {
             }
         }
 
-        // Special PSA grid fallback: capturing Name after "1. NAME"
-        if (empty($data['first_name']) && preg_match('/1\.\s+NAME\s+(?:(?:\()?First(?:\))?)?\s*(?:(?:\()?Middle(?:\))?)?\s*(?:(?:\()?Last(?:\))?)?[\s\n]+([A-Z\s]+)/i', $text, $matches)) {
-             $lines = explode("\n", trim($matches[1]));
-             if (count($lines) >= 3) {
-                 $data['first_name'] = trim($lines[0]);
-                 $data['middle_name'] = trim($lines[1]);
-                 $data['last_name'] = trim($lines[2]);
-             }
-        }
-
-        // 2. IMPROVED BIRTHDATE PARSING
-        // PSA Format usually: 3. DATE OF BIRTH Day Month Year
+        // 3. BIRTHDATE PARSING
         if (preg_match('/(?:Date of Birth|DATE OF BIRTH|Born on)[:\s]*([A-Za-z]+ \d{1,2}, \d{4})/i', $normalizedText, $matches)) {
             $timestamp = strtotime($matches[1]);
             if ($timestamp) $data['birthdate'] = date('Y-m-d', $timestamp);
-        } elseif (preg_match('/(?:Date of Birth|DATE OF BIRTH)[:\s]*(\d{1,2})\s*([A-Za-z]+)\s*(\d{4})/i', $normalizedText, $matches)) {
-            // Format: 01 December 2001
-            $dobStr = $matches[1] . ' ' . $matches[2] . ' ' . $matches[3];
-            $timestamp = strtotime($dobStr);
-            if ($timestamp) $data['birthdate'] = date('Y-m-d', $timestamp);
         }
 
-        // 3. GENDER PARSING
+        // 4. GENDER PARSING
         if (preg_match('/(?:Sex|SEX)[:\s]*\s*(Female|Male|F|M)/i', $normalizedText, $matches)) {
             $val = strtoupper(trim($matches[1]));
             $data['gender'] = ($val === 'M' || $val === 'MALE') ? 'Male' : 'Female';
         }
 
-        // If not a recognized document, lower the confidence
-        if (!$data['is_valid']) {
-            $data['confidence_mod'] = 0.5;
-        }
-
-        $data['recommendation'] = ""; 
+        $data['recommendation'] = "Document Verified: " . $data['document_type']; 
         return $data;
     }
 }

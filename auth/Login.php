@@ -650,7 +650,9 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                                 <!-- Step 2: Primary Documents -->
                                 <div class="form-step">
                                     <h3 class="step-title">Primary Documents</h3>
-                                    <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 20px;">Please upload clear copies of your documents. Use <b>Smart Scan</b> for PSA to auto-fill your info.</p>
+                                    <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 20px;">
+                                        Please upload clear copies of your documents. Use <b style="color: var(--primary-blue);">Smart Scan</b> to automatically verify and extract your information.
+                                    </p>
                                     
                                     <div class="row row-3">
                                         <div class="col input-group">
@@ -667,9 +669,10 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                                         </div>
                                         <div class="col input-group">
                                             <label>Passport Size ID <span>*</span></label>
-                                            <input type="file" name="id_picture" required class="ocr-input" data-type="id_picture">
+                                            <input type="file" name="id_picture" required class="ocr-input" data-type="id_picture" accept="image/*">
                                             <div class="ocr-badge" onclick="triggerScan(this)"><i class="fas fa-magic"></i> Smart Scan</div>
                                             <div class="ocr-status"></div>
+                                            <small style="color: #ef4444; font-size: 0.65rem; font-weight: 700;">* MUST BE PORTRAIT (VERTICAL)</small>
                                         </div>
                                     </div>
 

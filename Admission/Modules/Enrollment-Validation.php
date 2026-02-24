@@ -216,13 +216,27 @@ try {
                                         <div class="financial-row">
                                             <span class="total-amount">Total Fee: ₱<?php echo number_format($row->total_fee, 2); ?></span>
                                             <span class="paid-amount">Settled: ₱<?php echo number_format($row->total_fee - $row->balance, 2); ?></span>
-                                            <span class="balance-amount">Balance: ₱<?php echo number_format($row->balance, 2); ?></span>
+                                            <?php if ($row->balance > 0): ?>
+                                                <span class="balance-amount" style="color: #ef4444; font-weight: 800;">
+                                                    <i class="fas fa-exclamation-triangle"></i> Unpaid: ₱<?php echo number_format($row->balance, 2); ?>
+                                                </span>
+                                            <?php else: ?>
+                                                <span class="badge badge-verified" style="margin-top: 5px;">
+                                                    <i class="fas fa-check-double"></i> Fully Settled
+                                                </span>
+                                            <?php endif; ?>
                                         </div>
                                     </td>
                                     <td style="text-align: right;">
-                                        <button class="btn-confirm" onclick="confirmEnrollment('<?php echo $row->enrollmentId; ?>', '<?php echo addslashes($row->first_name . ' ' . $row->last_name); ?>')">
-                                            <i class="fas fa-user-check"></i> Validate Enrollment
-                                        </button>
+                                        <?php if ($row->balance <= 0): ?>
+                                            <button class="btn-confirm" onclick="confirmEnrollment('<?php echo $row->enrollmentId; ?>', '<?php echo addslashes($row->first_name . ' ' . $row->last_name); ?>')">
+                                                <i class="fas fa-user-check"></i> Validate Enrollment
+                                            </button>
+                                        <?php else: ?>
+                                            <button class="btn-confirm" style="background: #cbd5e1; cursor: not-allowed; box-shadow: none;" disabled title="Student has pending balance">
+                                                <i class="fas fa-lock"></i> Payment Pending
+                                            </button>
+                                        <?php endif; ?>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
