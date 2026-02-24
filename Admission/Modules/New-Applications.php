@@ -219,7 +219,15 @@ try {
             padding: 15px; border-radius: 12px; font-size: 0.85rem; display: flex; gap: 12px; align-items: center;
         }
 
-        .modal-footer { padding: 24px 30px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 12px; }
+        .modal-footer { 
+            padding: 20px 32px; 
+            border-top: 1px solid #edf2f7; 
+            display: flex; 
+            justify-content: flex-end; 
+            background: #f8fafc;
+            gap: 12px; 
+        }
+        .student-modal-footer { padding: 20px 32px; border-top: 1px solid #edf2f7; display: flex; justify-content: flex-end; background: #f8fafc; }
         .btn-outline { 
             padding: 10px 20px; border-radius: 12px; border: 1px solid var(--border); 
             background: white; color: var(--text-muted); font-weight: 700; cursor: pointer; transition: 0.2s;
