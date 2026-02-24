@@ -464,13 +464,14 @@ $approved_today = $pdo->query("SELECT COUNT(*) FROM admission_applications WHERE
         .eval-textarea { height: 120px; resize: none; }
 
         .eval-modal-footer-pro {
-            padding: 25px 45px;
-            background: #ffffff;
-            border-top: 1px solid var(--border-soft);
+            padding: 20px 32px;
+            background: #f8fafc;
+            border-top: 1px solid #edf2f7;
             display: flex;
             justify-content: flex-end;
             gap: 15px;
         }
+        .student-modal-footer { padding: 20px 32px; border-top: 1px solid #edf2f7; display: flex; justify-content: flex-end; background: #f8fafc; }
 
         .btn-cancel-eval {
             padding: 14px 28px; border-radius: 16px; border: 2px solid var(--border-soft);
@@ -563,7 +564,7 @@ $approved_today = $pdo->query("SELECT COUNT(*) FROM admission_applications WHERE
                 </div>
             </div>
 
-            <div class="eval-modal-footer-pro">
+            <div class="eval-modal-footer-pro student-modal-footer">
                 <button class="btn-cancel-eval" onclick="closeReviewModal()">Discard Changes</button>
                 <button class="btn-save-eval" onclick="saveEvaluation()">Finalize Evaluation</button>
             </div>
