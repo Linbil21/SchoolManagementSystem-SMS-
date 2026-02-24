@@ -120,11 +120,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 }
 
                 // 4. Send Email Notification with Payment Instructions
+                $mail_stmt = $pdo->prepare("SELECT total_fee, balance FROM enrollments WHERE email = ? ORDER BY created_at DESC LIMIT 1");
+                $mail_stmt->execute([$app->email]);
+                $enr_data = $mail_stmt->fetch();
+                $actual_total = $enr_data ? $enr_data->total_fee : $total;
+                $actual_balance = $enr_data ? $enr_data->balance : $total;
+                $actual_paid = $actual_total - $actual_balance;
+
                 sendPaymentInstructionEmail($app->email, [
                     'first_name' => $app->first_name,
                     'last_name' => $app->last_name,
                     'reference_code' => $ref_code,
-                    'total_fee' => $total
+                    'total_fee' => $actual_total,
+                    'balance' => $actual_balance,
+                    'paid' => $actual_paid
                 ]);
             }
         } else {

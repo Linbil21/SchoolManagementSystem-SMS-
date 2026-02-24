@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute([$status, $remarks, $payment_id]);
 
         // 2. Notify student
-        $payment_stmt = $pdo->prepare("SELECT p.amount, p.description, p.enrollment_id, e.email, e.first_name FROM payments p LEFT JOIN enrollments e ON p.enrollment_id = e.enrollmentId WHERE p.payment_id = ?");
+        $payment_stmt = $pdo->prepare("SELECT p.amount, p.description, p.enrollment_id, p.transaction_id, p.payment_method, e.email, e.first_name, e.last_name, e.balance FROM payments p LEFT JOIN enrollments e ON p.enrollment_id = e.enrollmentId WHERE p.payment_id = ?");
         $payment_stmt->execute([$payment_id]);
         $payment = $payment_stmt->fetch();
 
@@ -44,9 +44,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Get user_id if student exists
             $target_user_id = NULL;
             if ($target_email) {
-                $stmt = $pdo->prepare("SELECT id FROM students WHERE email = ?");
-                $stmt->execute([$target_email]);
-                $student_ref = $stmt->fetch();
+                $innerStmt = $pdo->prepare("SELECT id FROM students WHERE email = ?");
+                $innerStmt->execute([$target_email]);
+                $student_ref = $innerStmt->fetch();
                 if ($student_ref) {
                     $target_user_id = $student_ref->id;
                 }
@@ -63,6 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($status === 'Verified') {
                 $enrollment_id = $payment->enrollment_id;
                 $amount_paid = $payment->amount;
+                $new_balance = ($payment->balance ?? 0) - $amount_paid;
 
                 if ($enrollment_id) {
                     // Standard update by enrollment id
@@ -72,6 +73,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     // Fallback aggressive update by email
                     $pdo->prepare("UPDATE enrollments SET balance = balance - ?, status = 'Validation' WHERE email = ?")
                         ->execute([$amount_paid, $target_email]);
+                }
+
+                // 4. Send Official Receipt Email
+                if ($target_email) {
+                    require_once '../../auth/mail_helper.php';
+                    sendPaymentReceiptEmail($target_email, [
+                        'first_name' => $payment->first_name ?? 'Guest',
+                        'last_name' => $payment->last_name ?? 'Student',
+                        'amount' => $amount_paid,
+                        'method' => $payment->payment_method,
+                        'transaction_id' => $payment->transaction_id,
+                        'description' => $payment->description,
+                        'new_balance' => $new_balance
+                    ]);
                 }
             }
         }

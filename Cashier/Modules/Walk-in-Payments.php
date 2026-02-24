@@ -18,19 +18,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         $amount = floatval($_POST['amount']);
         $method = $_POST['method'];
         $ref = $_POST['reference'];
+        $desc = $_POST['description'] ?? 'Cashier Payment';
 
         $pdo->beginTransaction();
 
         // 1. Insert into payments table
-        $stmt = $pdo->prepare("INSERT INTO payments (enrollment_id, amount, payment_method, transaction_id, status) VALUES (?, ?, ?, ?, 'Completed')");
-        $stmt->execute([$enrollment_id, $amount, $method, $ref ?: 'WALKIN-'.time()]);
+        $transaction_id = $ref ?: 'WALKIN-' . strtoupper(substr(md5(time()), 0, 8));
+        $stmt = $pdo->prepare("INSERT INTO payments (enrollment_id, amount, payment_method, transaction_id, description, status, created_at) VALUES (?, ?, ?, ?, ?, 'Completed', NOW())");
+        $stmt->execute([$enrollment_id, $amount, $method, $transaction_id, $desc]);
 
         // 2. Update balance and status in enrollments table
         $stmt = $pdo->prepare("UPDATE enrollments SET balance = balance - ?, status = 'Validation' WHERE enrollmentId = ?");
         $stmt->execute([$amount, $enrollment_id]);
 
+        // 3. Send Email Receipt
+        $student_stmt = $pdo->prepare("SELECT first_name, last_name, email, balance FROM enrollments WHERE enrollmentId = ?");
+        $student_stmt->execute([$enrollment_id]);
+        $student_data = $student_stmt->fetch();
+
+        if ($student_data && $student_data->email) {
+            require_once '../../auth/mail_helper.php';
+            sendPaymentReceiptEmail($student_data->email, [
+                'first_name' => $student_data->first_name,
+                'last_name' => $student_data->last_name,
+                'amount' => $amount,
+                'method' => $method . ' (Walk-in)',
+                'transaction_id' => $transaction_id,
+                'description' => $desc,
+                'new_balance' => $student_data->balance
+            ]);
+        }
+
         $pdo->commit();
-        $message = "Payment of ₱" . number_format($amount, 2) . " successfully posted!";
+        $message = "Payment of ₱" . number_format($amount, 2) . " successfully posted and receipt sent to student email!";
     } catch (Exception $e) {
         $pdo->rollBack();
         $error = "Payment error: " . $e->getMessage();
@@ -177,6 +197,17 @@ if ($search) {
                             <option value="Check">Check</option>
                             <option value="Card">Credit/Debit Card</option>
                             <option value="Bank">Bank Transfer</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Payment Description</label>
+                        <select name="description">
+                            <option value="Initial Downpayment">Initial Downpayment</option>
+                            <option value="Full Tuition Fee">Full Tuition Fee</option>
+                            <option value="Monthly Installment">Monthly Installment</option>
+                            <option value="Miscellaneous Fee">Miscellaneous Fee</option>
+                            <option value="Laboratory Fee">Laboratory Fee</option>
+                            <option value="Other">Other</option>
                         </select>
                     </div>
                     <div class="form-group">

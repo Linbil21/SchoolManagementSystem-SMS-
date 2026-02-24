@@ -130,6 +130,22 @@ try {
     $notif = $pdo->prepare("INSERT INTO notifications (user_id, type, title, message, icon, icon_bg, icon_color) SELECT userId, 'payment', 'Payment Successful', ?, 'fa-check-circle', '#dcfce7', '#16a34a' FROM users WHERE email = ?");
     $notif->execute([$notif_msg, $student_email]);
 
+    // 9. Send Email Receipt
+    require_once __DIR__ . '/../../auth/mail_helper.php';
+    $fname = $student ? $student->first_name : 'Guest';
+    $lname = $student ? $student->last_name : 'Student';
+    $bal = $student ? (($student->balance ?? 0) - $amount) : 0;
+    
+    sendPaymentReceiptEmail($student_email, [
+        'first_name' => $fname,
+        'last_name' => $lname,
+        'amount' => $amount,
+        'method' => $method,
+        'transaction_id' => $transaction_id,
+        'description' => $description,
+        'new_balance' => $bal
+    ]);
+
     $pdo->commit();
 
     // 9. Respond with Gateway Receipt Data

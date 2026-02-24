@@ -245,6 +245,16 @@ function sendPaymentInstructionEmail($recipientEmail, $details)
         $student_name = strtoupper($details['first_name'] . ' ' . $details['last_name']);
         $ref = $details['reference_code'];
         $total_fee = number_format($details['total_fee'], 2);
+        $balance = number_format($details['balance'] ?? $details['total_fee'], 2);
+        $paid = number_format($details['paid'] ?? 0, 2);
+
+        $assessment_row = "<tr><td style='color: #64748b; padding-bottom: 5px;'>Total Assessment:</td><td style='color: #1e293b; font-weight: 700;'>₱$total_fee</td></tr>";
+        if (floatval($paid) > 0) {
+            $assessment_row .= "<tr><td style='color: #64748b; padding-bottom: 5px;'>Total Settled:</td><td style='color: #16a34a; font-weight: 700;'>₱$paid</td></tr>";
+            $assessment_row .= "<tr><td style='color: #64748b; padding-bottom: 5px;'>Remaining Balance:</td><td style='color: #ef4444; font-weight: 700;'>₱$balance</td></tr>";
+        } else {
+             $assessment_row .= "<tr><td style='color: #64748b; padding-bottom: 5px;'>Outstanding Balance:</td><td style='color: #1e293b; font-weight: 700;'>₱$balance</td></tr>";
+        }
 
         $mail->Body = "
         <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333;'>
@@ -260,7 +270,7 @@ function sendPaymentInstructionEmail($recipientEmail, $details)
                     <h3 style='margin-top: 0; color: #1e293b;'>Payment Summary</h3>
                     <table style='width: 100%; font-size: 14px;'>
                         <tr><td style='color: #64748b; padding-bottom: 5px;'>Reference Code:</td><td><strong>$ref</strong></td></tr>
-                        <tr><td style='color: #64748b; padding-bottom: 5px;'>Total Assessment:</td><td style='color: #1e293b; font-weight: 700;'>₱$total_fee</td></tr>
+                        $assessment_row
                     </table>
                 </div>
 
@@ -282,6 +292,83 @@ function sendPaymentInstructionEmail($recipientEmail, $details)
                 <hr style='border: 0; border-top: 1px solid #e2e8f0; margin: 20px 0;'>
                 <p style='text-align: center; font-size: 12px; color: #94a3b8;'>
                     &copy; 2026 SMS Official Portal. Admission Department.
+                </p>
+            </div>
+        </div>
+        ";
+
+        $mail->send();
+        return true;
+    } catch (Exception $e) {
+        $last_mail_error = $e->getMessage();
+        return false;
+    }
+}
+
+function sendPaymentReceiptEmail($recipientEmail, $details)
+{
+    global $last_mail_error;
+    $dummy_domains = ['@example.com', '@test.com', '@mailinator.com', '@yopmail.com'];
+    foreach ($dummy_domains as $domain) {
+        if (strpos($recipientEmail, $domain) !== false) return true;
+    }
+
+    $mail = new PHPMailer(true);
+
+    try {
+        $mail->isSMTP();
+        $mail->Host = 'smtp.gmail.com';
+        $mail->SMTPAuth = true;
+        $mail->Username = 'linbilcelestre31@gmail.com';
+        $mail->Password = 'ncim rfhg jisu zzam';
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port = 587;
+        
+        $mail->setFrom('linbilcelestre31@gmail.com', 'SMS Cashier');
+        $mail->addAddress($recipientEmail);
+
+        $mail->isHTML(true);
+        $mail->Subject = "Payment Receipt: " . $details['transaction_id'] . " - SMS Official";
+
+        $student_name = strtoupper($details['first_name'] . ' ' . $details['last_name']);
+        $amount = number_format($details['amount'], 2);
+        $method = $details['method'];
+        $ref = $details['transaction_id'];
+        $desc = $details['description'] ?? 'General Payment';
+        $balance = number_format($details['new_balance'], 2);
+
+        $mail->Body = "
+        <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333;'>
+            <div style='background: #16a34a; padding: 30px; text-align: center; border-radius: 10px 10px 0 0;'>
+                <h1 style='color: white; margin: 0; font-size: 24px;'>Payment Received!</h1>
+            </div>
+            <div style='padding: 30px; border: 1px solid #e2e8f0; border-top: none; border-radius: 0 0 10px 10px;'>
+                <p>Dear <strong>$student_name</strong>,</p>
+                <p>Thank you for your payment. Your transaction has been successfully processed and verified.</p>
+                
+                <div style='background: #f0fdf4; padding: 25px; border-radius: 12px; margin: 20px 0; border: 1px solid #bbf7d0;'>
+                    <h3 style='margin-top: 0; color: #166534; font-size: 1.1rem;'>Transaction Details</h3>
+                    <table style='width: 100%; font-size: 14px;'>
+                        <tr><td style='color: #64748b; padding-bottom: 8px;'>Amount Paid:</td><td style='color: #166534; font-weight: 800; font-size: 1.2rem;'>₱$amount</td></tr>
+                        <tr><td style='color: #64748b; padding-bottom: 8px;'>Payment For:</td><td><strong>$desc</strong></td></tr>
+                        <tr><td style='color: #64748b; padding-bottom: 8px;'>Channel:</td><td>$method</td></tr>
+                        <tr><td style='color: #64748b; padding-bottom: 8px;'>Reference No:</td><td><strong>$ref</strong></td></tr>
+                        <tr style='border-top: 1px solid #bbf7d0;'><td style='color: #64748b; padding-top: 10px;'>Remaining Balance:</td><td style='padding-top: 10px; font-weight: 700; color: #ef4444;'>₱$balance</td></tr>
+                    </table>
+                </div>
+
+                <p>You can view and print your full electronic receipt through the student portal.</p>
+                
+                <div style='text-align: center; margin-top: 30px;'>
+                    <a href='https://ems.jampzdev.com/student/Modules/Payments/History.php' style='background: #16a34a; color: white; padding: 12px 25px; text-decoration: none; border-radius: 8px; font-weight: 700;'>View History</a>
+                </div>
+
+                <p style='font-size: 13px; color: #64748b; margin-top: 30px; text-align: center;'>
+                    This is an official automated receipt. No signature required.
+                </p>
+                <hr style='border: 0; border-top: 1px solid #e2e8f0; margin: 20px 0;'>
+                <p style='text-align: center; font-size: 12px; color: #94a3b8;'>
+                    &copy; 2026 SMS Official Portal. Office of the Cashier.
                 </p>
             </div>
         </div>
