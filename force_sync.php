@@ -10,6 +10,7 @@ echo "<h1>Forcing Update from GitHub</h1>";
 $filesToUpdate = [
     'Admission/Modules/New-Applications.php',
     'Admission/Modules/Student-Requirements.php',
+    'Admission/Modules/Evaluation.php',
     'auth/Security.php'
 ];
 
