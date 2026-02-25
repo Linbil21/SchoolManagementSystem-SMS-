@@ -672,7 +672,9 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                                             <input type="file" name="id_picture" required class="ocr-input" data-type="id_picture" accept="image/*">
                                             <div class="ocr-badge" onclick="triggerScan(this)"><i class="fas fa-magic"></i> Smart Scan</div>
                                             <div class="ocr-status"></div>
-                                            <small style="color: #ef4444; font-size: 0.65rem; font-weight: 700;">* MUST BE PORTRAIT (VERTICAL)</small>
+                                             <div style="background: #fee2e2; color: #dc2626; padding: 8px; border-radius: 6px; font-size: 0.7rem; font-weight: 800; margin-top: 8px; border: 1px solid #fecaca; text-align: center;">
+                                                <i class="fas fa-exclamation-triangle"></i> PORTRAIT ONLY (Vertical)
+                                             </div>
                                         </div>
                                     </div>
 
@@ -1262,11 +1264,48 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
             document.head.appendChild(swalScript);
         }
 
-        // AUTO-TRIGGER SCAN ON FILE SELECTION (PSA ONLY)
+        // AUTO-TRIGGER SCAN ON FILE SELECTION (PSA ONLY) & ID ORIENTATION CHECK
         document.querySelectorAll('.ocr-input').forEach(input => {
             input.addEventListener('change', function() {
+                const file = this.files[0];
+                const docType = this.getAttribute('data-type');
+                
+                if (!file) return;
+
+                // SPECIAL CHECK FOR PASSPORT SIZE ID (Blocks Logos & Landscape)
+                if (docType === 'id_picture') {
+                    const img = new Image();
+                    img.onload = function() {
+                        const isPortrait = this.height > this.width;
+                        const isTooSmall = this.width < 120 || this.height < 120; // Logos are often small
+                        
+                        if (!isPortrait) {
+                            Swal.fire({
+                                title: 'Portrait Required',
+                                text: 'Passport size photo MUST be in PORTRAIT (Vertical) orientation. Logos and landscape images are not allowed.',
+                                icon: 'error',
+                                confirmButtonColor: '#ef4444'
+                            });
+                            input.value = ''; // Clear file
+                            return;
+                        }
+                        
+                        if (isTooSmall) {
+                            Swal.fire({
+                                title: 'Image Too Small',
+                                text: 'The image is too small to be a clear passport photo. Please upload a high-quality 2x2 or passport size image.',
+                                icon: 'warning',
+                                confirmButtonColor: '#f59e0b'
+                            });
+                            input.value = ''; // Clear file
+                            return;
+                        }
+                    };
+                    img.src = URL.createObjectURL(file);
+                }
+
                 // Only auto-scan if it's the Birth Certificate (PSA)
-                if (this.getAttribute('data-type') === 'birth_cert' && this.files && this.files.length > 0) {
+                if (docType === 'birth_cert' && this.files.length > 0) {
                     const badge = this.closest('.input-group').querySelector('.ocr-badge');
                     if (badge) triggerScan(badge);
                 }
@@ -1404,6 +1443,26 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
             if (formStepsNum !== formSteps.length - 1) return; 
 
             e.preventDefault();
+
+            // Final Validation for ID Picture
+            const idInput = document.querySelector('input[name="id_picture"]');
+            if (idInput && idInput.files && idInput.files[0]) {
+                const file = idInput.files[0];
+                const img = new Image();
+                img.src = URL.createObjectURL(file);
+                await new Promise(resolve => {
+                    img.onload = () => {
+                        if (img.width >= img.height) {
+                            Swal.fire('Portrait Required', 'Your Passport Size ID must be and image in PORTRAIT orientation (Vertical).', 'error');
+                            idInput.value = '';
+                            return;
+                        }
+                        resolve();
+                    };
+                });
+                if (idInput.value === '') return; // Stopped by orientation validation
+            }
+
             const formData = new FormData(this);
             formData.append('ajax', '1');
             

@@ -109,6 +109,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             foreach ($upload_fields as $field => $dir) {
                 $uploaded_paths[$field] = null;
                 if (isset($_FILES[$field]) && $_FILES[$field]['error'] == 0) {
+                    // Orientation Check for ID Picture
+                    if ($field === 'id_picture') {
+                        $img_info = getimagesize($_FILES[$field]['tmp_name']);
+                        if ($img_info && $img_info[0] >= $img_info[1]) {
+                             if ($isAjax) {
+                                header('Content-Type: application/json');
+                                echo json_encode(['status' => 'error', 'message' => 'ID Picture must be in PORTRAIT orientation (Vertical). Logos/Landscape are not allowed.']);
+                                exit();
+                            }
+                            header("Location: Login.php?error=invalid_image");
+                            exit();
+                        }
+                    }
                     if (!is_dir($dir)) mkdir($dir, 0777, true);
                     $file_extension = pathinfo($_FILES[$field]["name"], PATHINFO_EXTENSION);
                     $new_filename = $student_id . "_" . $field . "_" . time() . "." . $file_extension;

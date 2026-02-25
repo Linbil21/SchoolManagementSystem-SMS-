@@ -39,6 +39,13 @@ if ($fileSize > 5 * 1024 * 1024) {
     exit();
 }
 
+// Orientation Check (Portrait Required)
+$img_info = getimagesize($fileTmpName);
+if ($img_info && $img_info[0] >= $img_info[1]) {
+    echo json_encode(['success' => false, 'message' => 'Profile image must be in PORTRAIT orientation (Vertical). Private logos or landscape images are not allowed for IDs.']);
+    exit();
+}
+
 // Generate unique filename
 $newFileName = 'student_' . $student_id . '_' . uniqid() . '.' . $fileExt;
 $uploadDir = '../../Assets/image/uploads/students/';
