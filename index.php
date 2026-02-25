@@ -84,7 +84,7 @@
         }
 
         .navbar-brand img {
-            height: 50px;
+            height: 75px;
             width: auto;
         }
 
@@ -165,16 +165,16 @@
         .circular-logo-wrapper {
             position: absolute;
             top: 25%;
-            right: 20%;
-            width: 90px;
-            height: 90px;
+            right: 15%;
+            width: 135px;
+            height: 135px;
             background: white;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             box-shadow: 0 20px 40px rgba(0,0,0,0.08);
-            padding: 10px;
+            padding: 15px;
             z-index: 5;
             animation: float 5s ease-in-out infinite;
         }
@@ -187,9 +187,9 @@
         .student-illustration {
             position: absolute;
             bottom: 0;
-            right: 0;
-            width: 60%;
-            max-width: 320px;
+            right: -30px;
+            width: 45%;
+            max-width: 280px;
             z-index: 1;
         }
 
