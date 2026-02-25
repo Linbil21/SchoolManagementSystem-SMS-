@@ -166,15 +166,15 @@
             position: absolute;
             top: 25%;
             right: 20%;
-            width: 140px;
-            height: 140px;
+            width: 90px;
+            height: 90px;
             background: white;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             box-shadow: 0 20px 40px rgba(0,0,0,0.08);
-            padding: 20px;
+            padding: 10px;
             z-index: 5;
             animation: float 5s ease-in-out infinite;
         }
@@ -188,8 +188,8 @@
             position: absolute;
             bottom: 0;
             right: 0;
-            width: 70%;
-            max-width: 450px;
+            width: 60%;
+            max-width: 320px;
             z-index: 1;
         }
 
@@ -217,18 +217,18 @@
             .hero-visuals {
                 position: relative;
                 width: 100%;
-                height: 350px;
-                margin-top: 3rem;
+                height: 300px;
+                margin-top: 2rem;
             }
             .circular-logo-wrapper {
                 top: 0;
                 right: 50%;
                 transform: translateX(50%) !important;
-                width: 110px;
-                height: 110px;
+                width: 80px;
+                height: 80px;
             }
             .student-illustration {
-                width: 90%;
+                width: 80%;
                 left: 0;
             }
         }
