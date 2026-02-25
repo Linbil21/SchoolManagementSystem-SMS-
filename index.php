@@ -52,11 +52,10 @@
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: -1;
-            background: url('Assets/image/crad_bg.png');
-            background-size: 500px;
-            background-repeat: repeat;
-            opacity: 0.15;
+            z-index: -2;
+            background: linear-gradient(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.85)), url('Assets/image/background.jpg');
+            background-size: cover;
+            background-position: center;
         }
 
         .bg-diagonal {
@@ -118,11 +117,11 @@
         }
 
         .system-name {
-            font-size: 4.5rem;
+            font-size: 4rem;
             color: var(--primary-blue);
             font-weight: 900;
             margin-bottom: 1.5rem;
-            line-height: 1;
+            line-height: 1.1;
         }
 
         .system-description {
@@ -181,7 +180,7 @@
         }
 
         .circular-logo-wrapper img {
-            width: 100%;
+            width: 80%;
             height: auto;
         }
 
@@ -246,6 +245,7 @@
             <div class="container">
                 <a class="navbar-brand" href="#">
                     <img src="Assets/image/logo.png" alt="Logo">
+                    <span class="ms-2 d-none d-sm-inline-block text-dark fw-bold" style="font-size: 1.2rem;">SMS Portal</span>
                 </a>
                 
                 <div class="ms-auto d-flex align-items-center">
@@ -255,7 +255,8 @@
                     <div class="collapse navbar-collapse d-none d-lg-block">
                         <ul class="navbar-nav me-4">
                             <li class="nav-item"><a class="nav-link fw-bold text-dark" href="#">Home</a></li>
-                            <li class="nav-item"><a class="nav-link fw-bold text-dark" href="#features">Services</a></li>
+                            <li class="nav-item"><a class="nav-link fw-bold text-dark" href="#">About</a></li>
+                            <li class="nav-item"><a class="nav-link fw-bold text-dark" href="#">Contact</a></li>
                         </ul>
                     </div>
                     <a href="auth/Login.php" class="btn btn-get-started d-none d-sm-block">
@@ -271,9 +272,9 @@
                 <div class="row align-items-center">
                     <div class="col-lg-6 hero-content" data-aos="fade-up">
                         <h2 class="welcome-text">Welcome to</h2>
-                        <h1 class="system-name">CRAD System</h1>
+                        <h1 class="system-name">School Management System</h1>
                         <p class="system-description">
-                            Center for Research and Development - Intelligent Progressive Research Submission & Tracking System
+                            Empowering education through efficient management, streamlined records, and seamless institutional communication.
                         </p>
                         <a href="auth/Login.php" class="btn btn-get-started">
                             Get Started
@@ -284,12 +285,13 @@
             
             <div class="hero-visuals">
                 <div class="circular-logo-wrapper" data-aos="zoom-in" data-aos-delay="200">
-                    <img src="Assets/image/circular_logo.png" alt="School Management System Logo">
+                    <img src="Assets/image/logo.png" alt="School Management System Logo">
                 </div>
                 <img src="Assets/image/students_hero.png" alt="Students studying" class="student-illustration" data-aos="fade-up" data-aos-delay="400">
             </div>
         </section>
     </div>
+
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
