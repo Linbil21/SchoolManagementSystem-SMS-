@@ -655,7 +655,7 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                                     </p>
                                     
                                     <div class="doc-grid">
-                                        <!-- Birth Certificate -->
+                                        <!-- Birth Certificate Card -->
                                         <div class="doc-card">
                                             <div class="doc-header">
                                                 <div class="doc-icon-box"><i class="fas fa-file-contract"></i></div>
@@ -664,57 +664,77 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                                                     <span class="doc-hint">Official verification document.</span>
                                                 </div>
                                             </div>
-                                            <div class="doc-body">
-                                                <div class="custom-file-upload">
-                                                    <input type="file" name="birth_cert" class="ocr-input file-input-hidden" data-type="birth_cert">
-                                                    <div class="file-input-trigger">
-                                                        <i class="fas fa-cloud-upload-alt"></i> <span>Choose PSA File</span>
-                                                    </div>
+                                            
+                                            <div class="doc-preview-container" onclick="this.nextElementSibling.querySelector('input').click()">
+                                                <img src="" alt="Preview">
+                                                <div class="preview-placeholder">
+                                                    <i class="fas fa-cloud-upload-alt"></i>
+                                                    <span>Click to upload PSA</span>
+                                                </div>
+                                            </div>
+
+                                            <div class="doc-body" style="display:none;">
+                                                <input type="file" name="birth_cert" class="ocr-input" data-type="birth_cert" onchange="previewImage(this)">
+                                            </div>
+
+                                            <div class="doc-actions">
+                                                <div class="btn-upload-secondary" onclick="this.previousElementSibling.querySelector('input').click()">
+                                                    <i class="fas fa-sync"></i> Change
                                                 </div>
                                                 <div class="ai-scan-btn" onclick="triggerScan(this)">
-                                                    <i class="fas fa-magic"></i> AI Smart Scan
+                                                    <i class="fas fa-magic"></i> AI Scan
                                                 </div>
-                                                <div class="ocr-status doc-status-pill"></div>
                                             </div>
+                                            <div class="doc-status-msg"></div>
                                         </div>
 
-                                        <!-- Passport ID -->
+                                        <!-- Passport ID Card -->
                                         <div class="doc-card">
+                                            <div class="portrait-badge">
+                                                <i class="fas fa-portrait"></i> PORTRAIT REQ.
+                                            </div>
                                             <div class="doc-header">
-                                                <div class="doc-icon-box"><i class="fas fa-id-badge"></i></div>
+                                                <div class="doc-icon-box"><i class="fas fa-user-circle"></i></div>
                                                 <div class="doc-title-box">
-                                                    <label>Passport Size ID <span>*</span></label>
-                                                    <span class="doc-hint">Required for student identity.</span>
+                                                    <label>Passport ID <span>*</span></label>
+                                                    <span class="doc-hint">Official student photo.</span>
                                                 </div>
                                             </div>
-                                            <div class="doc-body">
-                                                <div class="custom-file-upload">
-                                                    <input type="file" name="id_picture" required class="ocr-input file-input-hidden" data-type="id_picture" accept="image/*">
-                                                    <div class="file-input-trigger">
-                                                        <i class="fas fa-camera"></i> <span>Upload Passport ID</span>
-                                                    </div>
+
+                                            <div class="doc-preview-container" onclick="this.nextElementSibling.querySelector('input').click()">
+                                                <img src="" alt="Preview">
+                                                <div class="preview-placeholder">
+                                                    <i class="fas fa-camera"></i>
+                                                    <span>Click to upload ID</span>
+                                                </div>
+                                            </div>
+
+                                            <div class="doc-body" style="display:none;">
+                                                <input type="file" name="id_picture" required class="ocr-input" data-type="id_picture" accept="image/*" onchange="previewImage(this)">
+                                            </div>
+
+                                            <div class="doc-actions">
+                                                <div class="btn-upload-secondary" onclick="this.previousElementSibling.querySelector('input').click()">
+                                                    <i class="fas fa-sync"></i> Change
                                                 </div>
                                                 <div class="ai-scan-btn" onclick="triggerScan(this)">
-                                                    <i class="fas fa-magic"></i> AI Smart Scan
-                                                </div>
-                                                <div class="ocr-status doc-status-pill"></div>
-                                                <div class="portrait-badge">
-                                                    <i class="fas fa-portrait"></i> PORTRAIT ONLY (Vertical)
+                                                    <i class="fas fa-magic"></i> AI Scan
                                                 </div>
                                             </div>
+                                            <div class="doc-status-msg"></div>
                                         </div>
                                     </div>
 
-                                    <div class="toggle-choice-container">
-                                        <label class="main-label">Secondary Documents?</label>
+                                    <div class="selection-card">
+                                        <label class="main-label">Secondary Documents Available?</label>
                                         <div class="segmented-pill">
                                             <label>
                                                 <input type="radio" name="has_secondary_docs" value="yes" checked> 
-                                                <span><i class="fas fa-check-circle"></i> Yes, I have them</span>
+                                                <span>Yes, I have them</span>
                                             </label>
                                             <label>
                                                 <input type="radio" name="has_secondary_docs" value="no"> 
-                                                <span><i class="fas fa-times-circle"></i> No, not yet</span>
+                                                <span>No, not yet</span>
                                             </label>
                                         </div>
                                     </div>
@@ -732,93 +752,121 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                                         <!-- Form 138 -->
                                         <div class="doc-card">
                                             <div class="doc-header">
-                                                <div class="doc-icon-box" style="background: #ecfdf5; color: #059669;"><i class="fas fa-file-invoice"></i></div>
+                                                <div class="doc-icon-box" style="background:#ecfdf5; color:#059669;"><i class="fas fa-file-invoice"></i></div>
                                                 <div class="doc-title-box">
                                                     <label>Form 138</label>
-                                                    <span class="doc-hint">Report Card (Completed Level)</span>
+                                                    <span class="doc-hint">Academic Report Card</span>
                                                 </div>
                                             </div>
-                                            <div class="doc-body">
-                                                <div class="custom-file-upload">
-                                                    <input type="file" name="form_138" class="ocr-input file-input-hidden" data-type="form_138">
-                                                    <div class="file-input-trigger">
-                                                        <i class="fas fa-upload"></i> <span>Choose Form 138</span>
-                                                    </div>
+                                            <div class="doc-preview-container" onclick="this.nextElementSibling.querySelector('input').click()">
+                                                <img src="" alt="Preview">
+                                                <div class="preview-placeholder">
+                                                    <i class="fas fa-file-upload"></i>
+                                                    <span>Upload Report Card</span>
                                                 </div>
-                                                <div class="ai-scan-btn" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); shadow: 0 4px 10px rgba(16, 185, 129, 0.2);" onclick="triggerScan(this)">
-                                                    <i class="fas fa-magic"></i> AI Smart Scan
-                                                </div>
-                                                <div class="ocr-status doc-status-pill"></div>
                                             </div>
+                                            <div class="doc-body" style="display:none;">
+                                                <input type="file" name="form_138" class="ocr-input" data-type="form_138" onchange="previewImage(this)">
+                                            </div>
+                                            <div class="doc-actions">
+                                                <div class="btn-upload-secondary" onclick="this.previousElementSibling.querySelector('input').click()">
+                                                    <i class="fas fa-sync"></i> Change
+                                                </div>
+                                                <div class="ai-scan-btn" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);" onclick="triggerScan(this)">
+                                                    <i class="fas fa-magic"></i> AI Scan
+                                                </div>
+                                            </div>
+                                            <div class="doc-status-msg"></div>
                                         </div>
 
                                         <!-- Form 137 -->
                                         <div class="doc-card">
                                             <div class="doc-header">
-                                                <div class="doc-icon-box" style="background: #fef3c7; color: #d97706;"><i class="fas fa-file-alt"></i></div>
+                                                <div class="doc-icon-box" style="background:#fef3c7; color:#d97706;"><i class="fas fa-file-alt"></i></div>
                                                 <div class="doc-title-box">
                                                     <label>Form 137</label>
-                                                    <span class="doc-hint">Permanent Academic Record</span>
+                                                    <span class="doc-hint">Permanent Record Copy</span>
                                                 </div>
                                             </div>
-                                            <div class="doc-body">
-                                                <div class="custom-file-upload">
-                                                    <input type="file" name="form_137" class="ocr-input file-input-hidden">
-                                                    <div class="file-input-trigger">
-                                                        <i class="fas fa-upload"></i> <span>Choose Form 137</span>
-                                                    </div>
+                                            <div class="doc-preview-container" onclick="this.nextElementSibling.querySelector('input').click()">
+                                                <img src="" alt="Preview">
+                                                <div class="preview-placeholder">
+                                                    <i class="fas fa-file-upload"></i>
+                                                    <span>Upload Form 137</span>
                                                 </div>
-                                                <div class="ai-scan-btn" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); shadow: 0 4px 10px rgba(245, 158, 11, 0.2);" onclick="triggerScan(this)">
-                                                    <i class="fas fa-magic"></i> AI Smart Scan
-                                                </div>
-                                                <div class="ocr-status doc-status-pill"></div>
                                             </div>
+                                            <div class="doc-body" style="display:none;">
+                                                <input type="file" name="form_137" class="ocr-input" onchange="previewImage(this)">
+                                            </div>
+                                            <div class="doc-actions">
+                                                <div class="btn-upload-secondary" onclick="this.previousElementSibling.querySelector('input').click()">
+                                                    <i class="fas fa-sync"></i> Change
+                                                </div>
+                                                <div class="ai-scan-btn" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);" onclick="triggerScan(this)">
+                                                    <i class="fas fa-magic"></i> AI Scan
+                                                </div>
+                                            </div>
+                                            <div class="doc-status-msg"></div>
                                         </div>
 
                                         <!-- Good Moral -->
                                         <div class="doc-card">
                                             <div class="doc-header">
-                                                <div class="doc-icon-box" style="background: #fdf2f8; color: #db2777;"><i class="fas fa-award"></i></div>
+                                                <div class="doc-icon-box" style="background:#fdf2f8; color:#db2777;"><i class="fas fa-award"></i></div>
                                                 <div class="doc-title-box">
                                                     <label>Good Moral</label>
-                                                    <span class="doc-hint">Official Conduct Certificate</span>
+                                                    <span class="doc-hint">Certificate of Conduct</span>
                                                 </div>
                                             </div>
-                                            <div class="doc-body">
-                                                <div class="custom-file-upload">
-                                                    <input type="file" name="good_moral" class="ocr-input file-input-hidden">
-                                                    <div class="file-input-trigger">
-                                                        <i class="fas fa-upload"></i> <span>Choose Certificate</span>
-                                                    </div>
+                                            <div class="doc-preview-container" onclick="this.nextElementSibling.querySelector('input').click()">
+                                                <img src="" alt="Preview">
+                                                <div class="preview-placeholder">
+                                                    <i class="fas fa-file-upload"></i>
+                                                    <span>Upload Certificate</span>
                                                 </div>
-                                                <div class="ai-scan-btn" style="background: linear-gradient(135deg, #ec4899 0%, #db2777 100%); shadow: 0 4px 10px rgba(236, 72, 153, 0.2);" onclick="triggerScan(this)">
-                                                    <i class="fas fa-magic"></i> AI Smart Scan
-                                                </div>
-                                                <div class="ocr-status doc-status-pill"></div>
                                             </div>
+                                            <div class="doc-body" style="display:none;">
+                                                <input type="file" name="good_moral" class="ocr-input" onchange="previewImage(this)">
+                                            </div>
+                                            <div class="doc-actions">
+                                                <div class="btn-upload-secondary" onclick="this.previousElementSibling.querySelector('input').click()">
+                                                    <i class="fas fa-sync"></i> Change
+                                                </div>
+                                                <div class="ai-scan-btn" style="background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);" onclick="triggerScan(this)">
+                                                    <i class="fas fa-magic"></i> AI Scan
+                                                </div>
+                                            </div>
+                                            <div class="doc-status-msg"></div>
                                         </div>
 
                                         <!-- Brgy Clearance -->
                                         <div class="doc-card">
                                             <div class="doc-header">
-                                                <div class="doc-icon-box" style="background: #f0fdf4; color: #16a34a;"><i class="fas fa-home"></i></div>
+                                                <div class="doc-icon-box" style="background:#f0fdf4; color:#16a34a;"><i class="fas fa-home"></i></div>
                                                 <div class="doc-title-box">
                                                     <label>Brgy Clearance</label>
                                                     <span class="doc-hint">Local Residence Proof</span>
                                                 </div>
                                             </div>
-                                            <div class="doc-body">
-                                                <div class="custom-file-upload">
-                                                    <input type="file" name="barangay_clearance" class="ocr-input file-input-hidden">
-                                                    <div class="file-input-trigger">
-                                                        <i class="fas fa-upload"></i> <span>Choose Clearance</span>
-                                                    </div>
+                                            <div class="doc-preview-container" onclick="this.nextElementSibling.querySelector('input').click()">
+                                                <img src="" alt="Preview">
+                                                <div class="preview-placeholder">
+                                                    <i class="fas fa-file-upload"></i>
+                                                    <span>Upload Clearance</span>
                                                 </div>
-                                                <div class="ai-scan-btn" style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); shadow: 0 4px 10px rgba(34, 197, 94, 0.2);" onclick="triggerScan(this)">
-                                                    <i class="fas fa-magic"></i> AI Smart Scan
-                                                </div>
-                                                <div class="ocr-status doc-status-pill"></div>
                                             </div>
+                                            <div class="doc-body" style="display:none;">
+                                                <input type="file" name="barangay_clearance" class="ocr-input" onchange="previewImage(this)">
+                                            </div>
+                                            <div class="doc-actions">
+                                                <div class="btn-upload-secondary" onclick="this.previousElementSibling.querySelector('input').click()">
+                                                    <i class="fas fa-sync"></i> Change
+                                                </div>
+                                                <div class="ai-scan-btn" style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);" onclick="triggerScan(this)">
+                                                    <i class="fas fa-magic"></i> AI Scan
+                                                </div>
+                                            </div>
+                                            <div class="doc-status-msg"></div>
                                         </div>
                                     </div>
 
@@ -1067,7 +1115,7 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
             
             const card = badge.closest('.doc-card');
             const fileInput = card.querySelector('input[type="file"]');
-            const statusDiv = card.querySelector('.doc-status-pill');
+            const statusDiv = card.querySelector('.doc-status-msg');
 
             if (!fileInput.files || fileInput.files.length === 0) {
                 statusDiv.innerHTML = '<span style="color: #e11d48;"><i class="fas fa-exclamation-circle"></i> Select file first.</span>';
@@ -1410,21 +1458,24 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                     const badge = card?.querySelector('.ai-scan-btn');
                     if (badge) triggerScan(badge);
                 }
-
-                // Update label text when file is selected
-                if (this.files && this.files.length > 0) {
-                    const trigger = this.nextElementSibling;
-                    if (trigger && trigger.classList.contains('file-input-trigger')) {
-                        const fileName = this.files[0].name;
-                        const truncatedName = fileName.length > 20 ? fileName.substring(0, 17) + '...' : fileName;
-                        trigger.querySelector('span').textContent = 'Selected: ' + truncatedName;
-                        trigger.style.borderColor = 'var(--primary-blue)';
-                        trigger.style.color = 'var(--primary-blue)';
-                        trigger.style.background = '#f0f7ff';
-                    }
-                }
             });
         });
+
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                const card = input.closest('.doc-card');
+                const container = card.querySelector('.doc-preview-container');
+                const img = container.querySelector('img');
+                
+                reader.onload = function(e) {
+                    img.src = e.target.result;
+                    container.classList.add('has-image');
+                }
+                
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
 
 
         // AUTO-SYNC ADDRESS TO GUARDIAN
