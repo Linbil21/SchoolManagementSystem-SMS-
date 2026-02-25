@@ -654,48 +654,68 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                                         Please upload clear copies of your documents. Use <b style="color: var(--primary-blue);">Smart Scan</b> to automatically verify and extract your information.
                                     </p>
                                     
-                                    <div class="requirement-list">
-                                        <div class="requirement-row">
-                                            <div class="requirement-info">
-                                                <label>Birth Cert (PSA)</label>
-                                                <p class="doc-desc">Official PSA copy for verification.</p>
-                                            </div>
-                                            <div class="requirement-actions">
-                                                <input type="file" name="birth_cert" class="ocr-input" data-type="birth_cert">
-                                                <div class="ocr-badge-compact" onclick="triggerScan(this)"><i class="fas fa-magic"></i> Smart Scan</div>
-                                            </div>
-                                            <div class="ocr-status-compact"></div>
-                                        </div>
-
-                                        <div class="requirement-row" style="flex-wrap: wrap;">
-                                            <div class="requirement-info">
-                                                <label>Passport Size ID <span>*</span></label>
-                                                <p class="doc-desc">Current 2x2 or 1x1 photo.</p>
-                                                <div class="portrait-warning-slim">
-                                                    <i class="fas fa-info-circle"></i> PORTRAIT ONLY (Vertical)
+                                    <div class="doc-grid">
+                                        <!-- Birth Certificate -->
+                                        <div class="doc-card">
+                                            <div class="doc-header">
+                                                <div class="doc-icon-box"><i class="fas fa-file-contract"></i></div>
+                                                <div class="doc-title-box">
+                                                    <label>Birth Cert (PSA)</label>
+                                                    <span class="doc-hint">Official verification document.</span>
                                                 </div>
                                             </div>
-                                            <div class="requirement-actions">
-                                                <input type="file" name="id_picture" required class="ocr-input" data-type="id_picture" accept="image/*">
-                                                <div class="ocr-badge-compact" onclick="triggerScan(this)"><i class="fas fa-magic"></i> Smart Scan</div>
+                                            <div class="doc-body">
+                                                <div class="custom-file-upload">
+                                                    <input type="file" name="birth_cert" class="ocr-input file-input-hidden" data-type="birth_cert">
+                                                    <div class="file-input-trigger">
+                                                        <i class="fas fa-cloud-upload-alt"></i> <span>Choose PSA File</span>
+                                                    </div>
+                                                </div>
+                                                <div class="ai-scan-btn" onclick="triggerScan(this)">
+                                                    <i class="fas fa-magic"></i> AI Smart Scan
+                                                </div>
+                                                <div class="ocr-status doc-status-pill"></div>
                                             </div>
-                                            <div class="ocr-status-compact" style="width: 100%;"></div>
+                                        </div>
+
+                                        <!-- Passport ID -->
+                                        <div class="doc-card">
+                                            <div class="doc-header">
+                                                <div class="doc-icon-box"><i class="fas fa-id-badge"></i></div>
+                                                <div class="doc-title-box">
+                                                    <label>Passport Size ID <span>*</span></label>
+                                                    <span class="doc-hint">Required for student identity.</span>
+                                                </div>
+                                            </div>
+                                            <div class="doc-body">
+                                                <div class="custom-file-upload">
+                                                    <input type="file" name="id_picture" required class="ocr-input file-input-hidden" data-type="id_picture" accept="image/*">
+                                                    <div class="file-input-trigger">
+                                                        <i class="fas fa-camera"></i> <span>Upload Passport ID</span>
+                                                    </div>
+                                                </div>
+                                                <div class="ai-scan-btn" onclick="triggerScan(this)">
+                                                    <i class="fas fa-magic"></i> AI Smart Scan
+                                                </div>
+                                                <div class="ocr-status doc-status-pill"></div>
+                                                <div class="portrait-badge">
+                                                    <i class="fas fa-portrait"></i> PORTRAIT ONLY (Vertical)
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
 
-                                    <div class="row" style="margin-top: 25px;">
-                                        <div class="col input-group col-full">
-                                            <label style="color: var(--primary-blue); font-weight: 700; margin-bottom: 12px;">Secondary Documents?</label>
-                                            <div class="segmented-control">
-                                                <label>
-                                                    <input type="radio" name="has_secondary_docs" value="yes" checked> 
-                                                    <i class="fas fa-check-circle"></i> Yes, I have them
-                                                </label>
-                                                <label>
-                                                    <input type="radio" name="has_secondary_docs" value="no"> 
-                                                    <i class="fas fa-times-circle"></i> No, not yet
-                                                </label>
-                                            </div>
+                                    <div class="toggle-choice-container">
+                                        <label class="main-label">Secondary Documents?</label>
+                                        <div class="segmented-pill">
+                                            <label>
+                                                <input type="radio" name="has_secondary_docs" value="yes" checked> 
+                                                <span><i class="fas fa-check-circle"></i> Yes, I have them</span>
+                                            </label>
+                                            <label>
+                                                <input type="radio" name="has_secondary_docs" value="no"> 
+                                                <span><i class="fas fa-times-circle"></i> No, not yet</span>
+                                            </label>
                                         </div>
                                     </div>
 
@@ -708,45 +728,96 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                                 <!-- Step 3: Secondary Documents -->
                                 <div class="form-step">
                                     <h3 class="step-title">Secondary Documents</h3>
-                                    <div class="requirement-list">
-                                        <div class="requirement-row">
-                                            <div class="requirement-info">
-                                                <label>Form 138</label>
-                                                <p class="doc-desc">Report Card (Grade Level Completed)</p>
+                                    <div class="doc-grid">
+                                        <!-- Form 138 -->
+                                        <div class="doc-card">
+                                            <div class="doc-header">
+                                                <div class="doc-icon-box" style="background: #ecfdf5; color: #059669;"><i class="fas fa-file-invoice"></i></div>
+                                                <div class="doc-title-box">
+                                                    <label>Form 138</label>
+                                                    <span class="doc-hint">Report Card (Completed Level)</span>
+                                                </div>
                                             </div>
-                                            <div class="requirement-actions">
-                                                <input type="file" name="form_138" class="ocr-input" data-type="form_138">
-                                                <div class="ocr-badge-compact" onclick="triggerScan(this)"><i class="fas fa-magic"></i> Smart Scan</div>
-                                            </div>
-                                        </div>
-                                        <div class="requirement-row">
-                                            <div class="requirement-info">
-                                                <label>Form 137</label>
-                                                <p class="doc-desc">Permanent Record (Transcipt Copy)</p>
-                                            </div>
-                                            <div class="requirement-actions">
-                                                <input type="file" name="form_137" class="ocr-input">
-                                                <div class="ocr-badge-compact" onclick="triggerScan(this)"><i class="fas fa-magic"></i> Smart Scan</div>
-                                            </div>
-                                        </div>
-                                        <div class="requirement-row">
-                                            <div class="requirement-info">
-                                                <label>Good Moral</label>
-                                                <p class="doc-desc">Official Certificate of Conduct</p>
-                                            </div>
-                                            <div class="requirement-actions">
-                                                <input type="file" name="good_moral" class="ocr-input">
-                                                <div class="ocr-badge-compact" onclick="triggerScan(this)"><i class="fas fa-magic"></i> Smart Scan</div>
+                                            <div class="doc-body">
+                                                <div class="custom-file-upload">
+                                                    <input type="file" name="form_138" class="ocr-input file-input-hidden" data-type="form_138">
+                                                    <div class="file-input-trigger">
+                                                        <i class="fas fa-upload"></i> <span>Choose Form 138</span>
+                                                    </div>
+                                                </div>
+                                                <div class="ai-scan-btn" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); shadow: 0 4px 10px rgba(16, 185, 129, 0.2);" onclick="triggerScan(this)">
+                                                    <i class="fas fa-magic"></i> AI Smart Scan
+                                                </div>
+                                                <div class="ocr-status doc-status-pill"></div>
                                             </div>
                                         </div>
-                                        <div class="requirement-row">
-                                            <div class="requirement-info">
-                                                <label>Brgy Clearance</label>
-                                                <p class="doc-desc">Local Residence Verification</p>
+
+                                        <!-- Form 137 -->
+                                        <div class="doc-card">
+                                            <div class="doc-header">
+                                                <div class="doc-icon-box" style="background: #fef3c7; color: #d97706;"><i class="fas fa-file-alt"></i></div>
+                                                <div class="doc-title-box">
+                                                    <label>Form 137</label>
+                                                    <span class="doc-hint">Permanent Academic Record</span>
+                                                </div>
                                             </div>
-                                            <div class="requirement-actions">
-                                                <input type="file" name="barangay_clearance" class="ocr-input">
-                                                <div class="ocr-badge-compact" onclick="triggerScan(this)"><i class="fas fa-magic"></i> Smart Scan</div>
+                                            <div class="doc-body">
+                                                <div class="custom-file-upload">
+                                                    <input type="file" name="form_137" class="ocr-input file-input-hidden">
+                                                    <div class="file-input-trigger">
+                                                        <i class="fas fa-upload"></i> <span>Choose Form 137</span>
+                                                    </div>
+                                                </div>
+                                                <div class="ai-scan-btn" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); shadow: 0 4px 10px rgba(245, 158, 11, 0.2);" onclick="triggerScan(this)">
+                                                    <i class="fas fa-magic"></i> AI Smart Scan
+                                                </div>
+                                                <div class="ocr-status doc-status-pill"></div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Good Moral -->
+                                        <div class="doc-card">
+                                            <div class="doc-header">
+                                                <div class="doc-icon-box" style="background: #fdf2f8; color: #db2777;"><i class="fas fa-award"></i></div>
+                                                <div class="doc-title-box">
+                                                    <label>Good Moral</label>
+                                                    <span class="doc-hint">Official Conduct Certificate</span>
+                                                </div>
+                                            </div>
+                                            <div class="doc-body">
+                                                <div class="custom-file-upload">
+                                                    <input type="file" name="good_moral" class="ocr-input file-input-hidden">
+                                                    <div class="file-input-trigger">
+                                                        <i class="fas fa-upload"></i> <span>Choose Certificate</span>
+                                                    </div>
+                                                </div>
+                                                <div class="ai-scan-btn" style="background: linear-gradient(135deg, #ec4899 0%, #db2777 100%); shadow: 0 4px 10px rgba(236, 72, 153, 0.2);" onclick="triggerScan(this)">
+                                                    <i class="fas fa-magic"></i> AI Smart Scan
+                                                </div>
+                                                <div class="ocr-status doc-status-pill"></div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Brgy Clearance -->
+                                        <div class="doc-card">
+                                            <div class="doc-header">
+                                                <div class="doc-icon-box" style="background: #f0fdf4; color: #16a34a;"><i class="fas fa-home"></i></div>
+                                                <div class="doc-title-box">
+                                                    <label>Brgy Clearance</label>
+                                                    <span class="doc-hint">Local Residence Proof</span>
+                                                </div>
+                                            </div>
+                                            <div class="doc-body">
+                                                <div class="custom-file-upload">
+                                                    <input type="file" name="barangay_clearance" class="ocr-input file-input-hidden">
+                                                    <div class="file-input-trigger">
+                                                        <i class="fas fa-upload"></i> <span>Choose Clearance</span>
+                                                    </div>
+                                                </div>
+                                                <div class="ai-scan-btn" style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); shadow: 0 4px 10px rgba(34, 197, 94, 0.2);" onclick="triggerScan(this)">
+                                                    <i class="fas fa-magic"></i> AI Smart Scan
+                                                </div>
+                                                <div class="ocr-status doc-status-pill"></div>
                                             </div>
                                         </div>
                                     </div>
@@ -994,12 +1065,12 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
         async function triggerScan(badge) {
             if (isScanning) return;
             
-            const container = badge.closest('.input-group') || badge.closest('.requirement-row');
-            const fileInput = container.querySelector('input[type="file"]');
-            const statusDiv = container.querySelector('.ocr-status') || container.querySelector('.ocr-status-compact');
+            const card = badge.closest('.doc-card');
+            const fileInput = card.querySelector('input[type="file"]');
+            const statusDiv = card.querySelector('.doc-status-pill');
 
             if (!fileInput.files || fileInput.files.length === 0) {
-                statusDiv.innerHTML = '<span class="error" style="color: #dc2626; font-size: 0.7rem;"><i class="fas fa-exclamation-circle"></i> Select file first.</span>';
+                statusDiv.innerHTML = '<span style="color: #e11d48;"><i class="fas fa-exclamation-circle"></i> Select file first.</span>';
                 return;
             }
 
@@ -1014,13 +1085,12 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
             formData.append('type', docType);
 
             // UI Feedback
-            badge.classList.add('ocr-scanning');
+            badge.classList.add('scanning');
             badge.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Reading...';
-            statusDiv.innerHTML = '<span class="loading" style="color: #2563eb; font-size: 0.7rem;"><i class="fas fa-sync fa-spin"></i> Reading details...</span>';
+            statusDiv.innerHTML = '<span style="color: #2563eb;"><i class="fas fa-sync fa-spin"></i> Reading details...</span>';
             
             // Clear previous validation states
-            const targetInput = container.querySelector('input');
-            if (targetInput) targetInput.classList.remove('input-success', 'input-error');
+            if (fileInput) fileInput.classList.remove('input-success', 'input-error');
 
             // CLEAR PREVIOUS DATA (Force change on new upload)
             const clearInputs = ['first_name', 'middle_name', 'last_name', 'birthdate'];
@@ -1046,13 +1116,13 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                     // We no longer reset names here so that improved simulation data (e.g. Lowell) 
                     // can be used as a high-quality fallback if Tesseract fails to find anything.
 
-                    statusDiv.innerHTML = '<span class="loading" style="color: #2563eb; font-size: 0.7rem;"><i class="fas fa-microchip"></i> Analyzing image...</span>';
+                    statusDiv.innerHTML = '<span class="loading"><i class="fas fa-microchip"></i> Analyzing image...</span>';
                     
                     try {
                         const { data: { text } } = await Tesseract.recognize(file, 'eng', {
                             logger: m => {
                                 if (m.status === 'recognizing text') {
-                                    statusDiv.innerHTML = `<span class="loading" style="color: #2563eb; font-size: 0.7rem;">Processing: ${Math.round(m.progress * 100)}%</span>`;
+                                    statusDiv.innerHTML = `<span class="loading">Processing: ${Math.round(m.progress * 100)}%</span>`;
                                 }
                             }
                         });
@@ -1281,8 +1351,8 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                 console.error(err);
                 statusDiv.innerHTML = '<span class="error"><i class="fas fa-times-circle"></i> Error processing document.</span>';
             } finally {
-                badge.classList.remove('ocr-scanning');
-                badge.innerHTML = '<i class="fas fa-magic"></i> Smart Scan';
+                badge.classList.remove('scanning');
+                badge.innerHTML = '<i class="fas fa-magic"></i> AI Smart Scan';
                 isScanning = false;
             }
         }
@@ -1336,9 +1406,22 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
 
                 // Only auto-scan if it's the Birth Certificate (PSA)
                 if (docType === 'birth_cert' && this.files.length > 0) {
-                    const container = this.closest('.input-group') || this.closest('.requirement-row');
-                    const badge = container?.querySelector('.ocr-badge-compact') || container?.querySelector('.ocr-badge');
+                    const card = this.closest('.doc-card');
+                    const badge = card?.querySelector('.ai-scan-btn');
                     if (badge) triggerScan(badge);
+                }
+
+                // Update label text when file is selected
+                if (this.files && this.files.length > 0) {
+                    const trigger = this.nextElementSibling;
+                    if (trigger && trigger.classList.contains('file-input-trigger')) {
+                        const fileName = this.files[0].name;
+                        const truncatedName = fileName.length > 20 ? fileName.substring(0, 17) + '...' : fileName;
+                        trigger.querySelector('span').textContent = 'Selected: ' + truncatedName;
+                        trigger.style.borderColor = 'var(--primary-blue)';
+                        trigger.style.color = 'var(--primary-blue)';
+                        trigger.style.background = '#f0f7ff';
+                    }
                 }
             });
         });
