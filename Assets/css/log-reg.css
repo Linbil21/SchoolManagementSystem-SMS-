@@ -878,6 +878,10 @@ form.sign-in-form {
     grid-template-columns: repeat(3, 1fr);
 }
 
+.row-2 {
+    grid-template-columns: repeat(2, 1fr);
+}
+
 .col-2 {
     grid-column: span 2;
 }

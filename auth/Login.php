@@ -654,16 +654,10 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                                         Please upload clear copies of your documents. Use <b style="color: var(--primary-blue);">Smart Scan</b> to automatically verify and extract your information.
                                     </p>
                                     
-                                    <div class="row row-3">
+                                    <div class="row row-2">
                                         <div class="col input-group">
                                             <label>Birth Cert (PSA)</label>
                                             <input type="file" name="birth_cert" class="ocr-input" data-type="birth_cert">
-                                            <div class="ocr-badge" onclick="triggerScan(this)"><i class="fas fa-magic"></i> Smart Scan</div>
-                                            <div class="ocr-status"></div>
-                                        </div>
-                                        <div class="col input-group">
-                                            <label>Form 138</label>
-                                            <input type="file" name="form_138" class="ocr-input" data-type="form_138">
                                             <div class="ocr-badge" onclick="triggerScan(this)"><i class="fas fa-magic"></i> Smart Scan</div>
                                             <div class="ocr-status"></div>
                                         </div>
@@ -701,7 +695,13 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                                 <!-- Step 3: Secondary Documents -->
                                 <div class="form-step">
                                     <h3 class="step-title">Secondary Documents</h3>
-                                    <div class="row row-3">
+                                    <div class="row">
+                                        <div class="col input-group">
+                                            <label>Form 138</label>
+                                            <input type="file" name="form_138" class="ocr-input" data-type="form_138">
+                                            <div class="ocr-badge" onclick="triggerScan(this)"><i class="fas fa-magic"></i> Smart Scan</div>
+                                            <div class="ocr-status"></div>
+                                        </div>
                                         <div class="col input-group">
                                             <label>Form 137</label>
                                             <input type="file" name="form_137" class="ocr-input">
