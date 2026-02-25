@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CRAD System | Center for Research and Development</title>
+    <title>SMS System | Center for Research and Development</title>
     <link rel="icon" type="image/png" href="Assets/image/logo.png">
     
     <!-- Google Fonts -->
@@ -166,8 +166,8 @@
             position: absolute;
             top: 25%;
             right: 20%;
-            width: 200px;
-            height: 200px;
+            width: 140px;
+            height: 140px;
             background: white;
             border-radius: 50%;
             display: flex;
@@ -188,8 +188,8 @@
             position: absolute;
             bottom: 0;
             right: 0;
-            width: 80%;
-            max-width: 600px;
+            width: 70%;
+            max-width: 450px;
             z-index: 1;
         }
 
@@ -217,18 +217,18 @@
             .hero-visuals {
                 position: relative;
                 width: 100%;
-                height: 400px;
+                height: 350px;
                 margin-top: 3rem;
             }
             .circular-logo-wrapper {
                 top: 0;
                 right: 50%;
                 transform: translateX(50%) !important;
-                width: 150px;
-                height: 150px;
+                width: 110px;
+                height: 110px;
             }
             .student-illustration {
-                width: 100%;
+                width: 90%;
                 left: 0;
             }
         }
