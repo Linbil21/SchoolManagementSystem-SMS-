@@ -1058,7 +1058,7 @@ form.sign-in-form {
 }
 
 .ai-scan-btn {
-    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
     color: white !important;
     padding: 12px;
     border-radius: 14px;
@@ -1067,7 +1067,7 @@ form.sign-in-form {
     text-align: center;
     cursor: pointer;
     transition: 0.3s;
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
     border: none;
     display: flex;
     align-items: center;
@@ -1158,10 +1158,30 @@ form.sign-in-form {
 }
 
 .doc-status-msg {
-    font-size: 0.75rem;
+    font-size: 0.8rem;
     font-weight: 700;
     text-align: center;
     margin-top: 10px;
+    padding: 8px;
+    border-radius: 10px;
+}
+
+.doc-status-msg.success {
+    background: #ecfdf5;
+    color: #059669;
+    border: 1px solid #d1fae5;
+}
+
+.doc-status-msg.error {
+    background: #fff1f2;
+    color: #e11d48;
+    border: 1px solid #ffe4e6;
+}
+
+.doc-status-msg.loading {
+    background: #eff6ff;
+    color: #2563eb;
+    border: 1px solid #dbeafe;
 }
 
 /* Dark Mode support */
