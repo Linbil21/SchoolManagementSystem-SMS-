@@ -2,7 +2,7 @@
 session_start();
 require_once '../../Database/config.php';
 
-if (!isset($_SESSION['role']) || ($_SESSION['role'] !== 'admin' && $_SESSION['role'] !== 'superadmin')) {
+if (!isset($_SESSION['role']) || ($_SESSION['role'] !== 'admin' && $_SESSION['role'] !== 'superadmin' && $_SESSION['role'] !== 'admission')) {
     header("Location: ../../auth/Login.php");
     exit();
 }

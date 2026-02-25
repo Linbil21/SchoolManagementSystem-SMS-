@@ -132,6 +132,30 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : 'admission@sms.com';
                     <li class="<?php echo ($current_page == 'Result-Notifications.php') ? 'active' : ''; ?>"><a href="<?php echo $root; ?>Admission/Modules/Result-Notifications.php">Notifications</a></li>
                 </ul>
             </li>
+
+            <!-- Added Management Links from Admin -->
+            <li class="has-dropdown">
+                <a href="javascript:void(0)" class="dropdown-toggle">
+                    <div class="icon-box">
+                        <i class="fas fa-users-cog"></i>
+                    </div>
+                    <span>User Management</span>
+                    <i class="fas fa-chevron-down arrow-icon"></i>
+                </a>
+                <ul class="sub-menu">
+                    <li><a href="<?php echo $root; ?>Admin/Submodules/Admin-Users.php">Admin Users</a></li>
+                    <li><a href="<?php echo $root; ?>Admin/Submodules/Staff-Registration.php">Staff / Registration</a></li>
+                    <li><a href="<?php echo $root; ?>Admin/Submodules/Student-Accounts.php">Student Accounts</a></li>
+                    <li><a href="<?php echo $root; ?>Admin/Submodules/Roles-Permissions.php">Roles & Permissions</a></li>
+                </ul>
+            </li>
+
+            <li>
+                <a href="<?php echo $root; ?>Admin/Modules/Faculty-Masterlist.php">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                    <span>External Faculty</span>
+                </a>
+            </li>
         </ul>
 
         <!-- Reports & Analytics -->

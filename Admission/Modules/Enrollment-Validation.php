@@ -4,7 +4,7 @@
  */
 require_once __DIR__ . '/../../auth/Security.php';
 require_once __DIR__ . '/../../Database/config.php';
-checkRole(['admission', 'superadmin']);
+checkRole(['admission', 'admin', 'superadmin']);
 
 $message = '';
 $error = '';
@@ -228,9 +228,15 @@ try {
                                         </div>
                                     </td>
                                     <td style="text-align: right;">
-                                        <?php if ($row->balance <= 0): ?>
+                                        <?php 
+                                        $is_admin = isset($_SESSION['role']) && in_array($_SESSION['role'], ['admin', 'superadmin']);
+                                        if ($row->balance <= 0 || $is_admin): 
+                                        ?>
                                             <button class="btn-confirm" onclick="confirmEnrollment('<?php echo $row->enrollmentId; ?>', '<?php echo addslashes($row->first_name . ' ' . $row->last_name); ?>')">
                                                 <i class="fas fa-user-check"></i> Validate Enrollment
+                                                <?php if ($row->balance > 0 && $is_admin): ?>
+                                                    <span style="font-size: 0.7rem; opacity: 0.8;">(Admin Bypass)</span>
+                                                <?php endif; ?>
                                             </button>
                                         <?php else: ?>
                                             <button class="btn-confirm" style="background: #cbd5e1; cursor: not-allowed; box-shadow: none;" disabled title="Student has pending balance">

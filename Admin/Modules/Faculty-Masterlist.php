@@ -4,7 +4,7 @@ require_once '../../Database/config.php';
 require_once '../../auth/Security.php';
 
 // Check access
-checkRole(['admin', 'superadmin']);
+checkRole(['admin', 'superadmin', 'admission']);
 ?>
 <!DOCTYPE html>
 <html lang="en">

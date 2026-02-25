@@ -40,6 +40,7 @@ $root = $project_base . '/';
                 </a>
                 <ul class="sub-menu">
                     <li><a href="<?php echo $root; ?>Admin/Modules/Enrollment-Queue.php"><i class="fas fa-list-ol"></i> <span>Enrollment Queue</span></a></li>
+                    <li><a href="<?php echo $root; ?>Admission/Modules/Enrollment-Validation.php"><i class="fas fa-check-double"></i> <span>Enrollment Validation</span></a></li>
                     <li><a href="<?php echo $root; ?>Admin/Modules/Enrollment.php"><i class="fas fa-clipboard-list"></i> <span>Enrollment List</span></a></li>
                     <li><a href="<?php echo $root; ?>Admin/Modules/Subject-Enrollment.php"><i class="fas fa-book"></i> <span>Subject Enrollment</span></a></li>
                     <li><a href="<?php echo $root; ?>Admin/Modules/Section-Assignment.php"><i class="fas fa-users-viewfinder"></i> <span>Section Assignment</span></a></li>
