@@ -165,7 +165,7 @@
         .circular-logo-wrapper {
             position: absolute;
             top: 25%;
-            right: 15%;
+            right: 20%;
             width: 135px;
             height: 135px;
             background: white;
