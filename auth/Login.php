@@ -655,32 +655,41 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                                     </p>
                                     
                                     <div class="row row-2">
-                                        <div class="col input-group">
+                                        <div class="col doc-upload-card">
+                                            <div class="doc-icon"><i class="fas fa-file-contract"></i></div>
                                             <label>Birth Cert (PSA)</label>
+                                            <p class="doc-desc">Official PSA copy for verification.</p>
                                             <input type="file" name="birth_cert" class="ocr-input" data-type="birth_cert">
-                                            <div class="ocr-badge" onclick="triggerScan(this)"><i class="fas fa-magic"></i> Smart Scan</div>
-                                            <div class="ocr-status"></div>
+                                            <div class="ocr-badge ocr-badge-premium" onclick="triggerScan(this)"><i class="fas fa-magic"></i> Smart Scan</div>
+                                            <div class="ocr-status doc-status-premium"></div>
                                         </div>
-                                        <div class="col input-group">
+                                        <div class="col doc-upload-card">
+                                            <div class="doc-icon"><i class="fas fa-user-circle"></i></div>
                                             <label>Passport Size ID <span>*</span></label>
+                                            <p class="doc-desc">Current physical photo (2x2 or 1x1).</p>
                                             <input type="file" name="id_picture" required class="ocr-input" data-type="id_picture" accept="image/*">
-                                            <div class="ocr-badge" onclick="triggerScan(this)"><i class="fas fa-magic"></i> Smart Scan</div>
-                                            <div class="ocr-status"></div>
-                                             <div style="background: #fee2e2; color: #dc2626; padding: 8px; border-radius: 6px; font-size: 0.7rem; font-weight: 800; margin-top: 8px; border: 1px solid #fecaca; text-align: center;">
-                                                <i class="fas fa-exclamation-triangle"></i> PORTRAIT ONLY (Vertical)
+                                            <div class="ocr-badge ocr-badge-premium" onclick="triggerScan(this)"><i class="fas fa-magic"></i> Smart Scan</div>
+                                            <div class="ocr-status doc-status-premium"></div>
+                                             <div class="portrait-warning">
+                                                <i class="fas fa-exclamation-circle"></i> 
+                                                <span><strong>PORTRAIT ONLY:</strong> Vertical orientation is strictly required for ID creation.</span>
                                              </div>
                                         </div>
                                     </div>
 
                                     <div class="row" style="margin-top: 15px;">
                                         <div class="col input-group col-full">
-                                            <label style="color: var(--primary-blue); font-weight: 600;">Secondary Documents Requirements? <span>*</span></label>
-                                            <div style="display: flex; gap: 30px; margin-top: 10px; background: #f8fafc; padding: 15px; border-radius: 10px; border: 1px dashed #e2e8f0; width: fit-content;">
-                                                <label style="font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 10px; margin-bottom: 0;">
-                                                    <input type="radio" name="has_secondary_docs" value="yes" checked style="width: 18px; height: 18px;"> Yes
+                                            <label style="color: var(--primary-blue); font-weight: 700; margin-bottom: 12px; font-size: 1rem;">
+                                                <i class="fas fa-plus-circle" style="margin-right: 8px; opacity: 0.7;"></i> Secondary Documents Requirements? <span>*</span>
+                                            </label>
+                                            <div style="display: flex; gap: 20px; margin-top: 10px; background: #ffffff; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; width: fit-content; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+                                                <label style="font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 12px; margin-bottom: 0; color: #334155; padding: 8px 15px; background: #f8fafc; border-radius: 10px; transition: 0.3s;" onmouseover="this.style.background='#eff6ff'" onmouseout="this.style.background='#f8fafc'">
+                                                    <input type="radio" name="has_secondary_docs" value="yes" checked style="width: 20px; height: 20px; accent-color: var(--primary-blue);"> 
+                                                    <span>YES, I have them</span>
                                                 </label>
-                                                <label style="font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 10px; margin-bottom: 0;">
-                                                    <input type="radio" name="has_secondary_docs" value="no" style="width: 18px; height: 18px;"> No
+                                                <label style="font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 12px; margin-bottom: 0; color: #334155; padding: 8px 15px; background: #f8fafc; border-radius: 10px; transition: 0.3s;" onmouseover="this.style.background='#fff1f2'" onmouseout="this.style.background='#f8fafc'">
+                                                    <input type="radio" name="has_secondary_docs" value="no" style="width: 20px; height: 20px; accent-color: var(--primary-blue);"> 
+                                                    <span>NO, not yet</span>
                                                 </label>
                                             </div>
                                         </div>
@@ -696,29 +705,37 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
                                 <div class="form-step">
                                     <h3 class="step-title">Secondary Documents</h3>
                                     <div class="row">
-                                        <div class="col input-group">
+                                        <div class="col doc-upload-card">
+                                            <div class="doc-icon" style="background: #ecfdf5; color: #059669;"><i class="fas fa-file-invoice"></i></div>
                                             <label>Form 138</label>
+                                            <p class="doc-desc">Report Card (Grade Level Completed)</p>
                                             <input type="file" name="form_138" class="ocr-input" data-type="form_138">
-                                            <div class="ocr-badge" onclick="triggerScan(this)"><i class="fas fa-magic"></i> Smart Scan</div>
-                                            <div class="ocr-status"></div>
+                                            <div class="ocr-badge ocr-badge-premium" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);" onclick="triggerScan(this)"><i class="fas fa-magic"></i> Smart Scan</div>
+                                            <div class="ocr-status doc-status-premium"></div>
                                         </div>
-                                        <div class="col input-group">
+                                        <div class="col doc-upload-card">
+                                            <div class="doc-icon" style="background: #fef3c7; color: #d97706;"><i class="fas fa-file-pdf"></i></div>
                                             <label>Form 137</label>
+                                            <p class="doc-desc">Permanent Record (Transcipt Copy)</p>
                                             <input type="file" name="form_137" class="ocr-input">
-                                            <div class="ocr-badge" onclick="triggerScan(this)"><i class="fas fa-magic"></i> Smart Scan</div>
-                                            <div class="ocr-status"></div>
+                                            <div class="ocr-badge ocr-badge-premium" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);" onclick="triggerScan(this)"><i class="fas fa-magic"></i> Smart Scan</div>
+                                            <div class="ocr-status doc-status-premium"></div>
                                         </div>
-                                        <div class="col input-group">
+                                        <div class="col doc-upload-card">
+                                            <div class="doc-icon" style="background: #fdf2f8; color: #db2777;"><i class="fas fa-award"></i></div>
                                             <label>Good Moral</label>
+                                            <p class="doc-desc">Official Certificate of Conduct</p>
                                             <input type="file" name="good_moral" class="ocr-input">
-                                            <div class="ocr-badge" onclick="triggerScan(this)"><i class="fas fa-magic"></i> Smart Scan</div>
-                                            <div class="ocr-status"></div>
+                                            <div class="ocr-badge ocr-badge-premium" style="background: linear-gradient(135deg, #ec4899 0%, #db2777 100%); box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);" onclick="triggerScan(this)"><i class="fas fa-magic"></i> Smart Scan</div>
+                                            <div class="ocr-status doc-status-premium"></div>
                                         </div>
-                                        <div class="col input-group">
+                                        <div class="col doc-upload-card">
+                                            <div class="doc-icon" style="background: #f0fdf4; color: #16a34a;"><i class="fas fa-house-user"></i></div>
                                             <label>Brgy Clearance</label>
+                                            <p class="doc-desc">Local Residence Verification</p>
                                             <input type="file" name="barangay_clearance" class="ocr-input">
-                                            <div class="ocr-badge" onclick="triggerScan(this)"><i class="fas fa-magic"></i> Smart Scan</div>
-                                            <div class="ocr-status"></div>
+                                            <div class="ocr-badge ocr-badge-premium" style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);" onclick="triggerScan(this)"><i class="fas fa-magic"></i> Smart Scan</div>
+                                            <div class="ocr-status doc-status-premium"></div>
                                         </div>
                                     </div>
 
@@ -1306,7 +1323,8 @@ $show_login = isset($_GET['action']) || isset($_GET['error']);
 
                 // Only auto-scan if it's the Birth Certificate (PSA)
                 if (docType === 'birth_cert' && this.files.length > 0) {
-                    const badge = this.closest('.input-group').querySelector('.ocr-badge');
+                    const container = this.closest('.input-group') || this.closest('.doc-upload-card');
+                    const badge = container?.querySelector('.ocr-badge');
                     if (badge) triggerScan(badge);
                 }
             });
