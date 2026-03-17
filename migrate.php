@@ -14,19 +14,31 @@ try {
     $pdo->exec("ALTER TABLE enrollments ADD COLUMN IF NOT EXISTS passport VARCHAR(255) NULL AFTER form_138");
     echo "✅ Passport column is ready.<br><br>";
 
-    // 2. Ensure 'misc_fee' and 'tuition_fee' exist and have correct types
-    echo "Checking fee columns...<br>";
-    $pdo->exec("ALTER TABLE enrollments MODIFY COLUMN tuition_fee DECIMAL(10,2) DEFAULT 0.00");
-    $pdo->exec("ALTER TABLE enrollments MODIFY COLUMN misc_fee DECIMAL(10,2) DEFAULT 4975.00");
-    echo "✅ Fee columns are optimized.<br><br>";
+    // 2. Fix Swapped Fees (Lowell's case: Tuition was 4975, Misc was 0)
+    echo "Fixing swapped fee values (Tuition vs Miscellaneous)...<br>";
+    $pdo->exec("UPDATE enrollments SET misc_fee = 4975.00, tuition_fee = 0.00 WHERE tuition_fee = 4975.00 AND misc_fee = 0.00");
+    $pdo->exec("UPDATE enrollments SET total_fee = tuition_fee + misc_fee + IFNULL(lab_fee, 0)");
+    echo "✅ Fee values synchronized.<br><br>";
 
-    // 3. Update existing assessment records to the new 4,975 model if they are still 0 or empty
-    echo "Updating existing assessment balances...<br>";
-    $pdo->exec("UPDATE enrollments SET misc_fee = 4975.00, tuition_fee = 0.00, total_fee = 4975.00, balance = 4975.00 WHERE (total_fee IS NULL OR total_fee = 0) AND status = 'Pending Payment'");
-    echo "✅ Existing assessments synced.<br><br>";
+    // 3. Recalculate Balances for everyone accurately
+    echo "Recalculating all student balances based on payments...<br>";
+    $enrollments = $pdo->query("SELECT enrollmentId, email, total_fee FROM enrollments")->fetchAll();
+    
+    foreach ($enrollments as $enr) {
+        // Sum verified payments
+        $stmt = $pdo->prepare("SELECT SUM(amount) as paid FROM payments WHERE (enrollment_id = ? OR (enrollment_id IS NULL AND description LIKE ?)) AND status IN ('Completed', 'Verified', 'Success')");
+        $stmt->execute([$enr->enrollmentId, "%" . $enr->email . "%"]);
+        $total_paid = $stmt->fetch()->paid ?? 0;
+        
+        $new_balance = $enr->total_fee - $total_paid;
+        
+        $update = $pdo->prepare("UPDATE enrollments SET balance = ? WHERE enrollmentId = ?");
+        $update->execute([$new_balance, $enr->enrollmentId]);
+    }
+    echo "✅ All balances recalculated.<br><br>";
 
     echo "<h2 style='color: green;'>Migration Completed Successfully!</h2>";
-    echo "<p><a href='student/Dashboard.php'>Return to Dashboard</a></p>";
+    echo "<p>Please refresh your <a href='student/Modules/Payments/Balance.php'>Balance Page</a> now.</p>";
 
 } catch (Exception $e) {
     echo "<h2 style='color: red;'>Migration Failed!</h2>";
