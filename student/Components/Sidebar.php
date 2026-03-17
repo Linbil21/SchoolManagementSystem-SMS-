@@ -51,8 +51,8 @@ if (isset($_SESSION['email'])) {
             $_SESSION['enrollment_status'] = $fresh->enrollment_status ?? '';
             // Smart fallback: if enrollment exists at payment/validation/enrolled stage, treat as Approved
             $enr_status = $fresh->enrollment_status ?? '';
-            $auto_approved_statuses = ['Pending Payment', 'Validation', 'Enrolled', 'Pending'];
-            if ($fresh->admission_status === 'Approved' || in_array($enr_status, ['Pending Payment', 'Validation', 'Enrolled'])) {
+            // Smart fallback: Only auto-approve session status if explicitly Approved or fully Enrolled
+            if ($fresh->admission_status === 'Approved' || $enr_status === 'Enrolled') {
                 $_SESSION['admission_status'] = 'Approved';
             } else {
                 $_SESSION['admission_status'] = $fresh->admission_status ?? 'Pending';

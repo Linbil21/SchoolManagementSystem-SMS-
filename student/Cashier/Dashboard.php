@@ -37,14 +37,14 @@ try {
     $enrollment = $stmt->fetch();
 
     if ($enrollment) {
-        $total_fee   = $enrollment['total_fee'] ?? 0;
-        $balance     = $enrollment['balance'] ?? 0;
+        $total_fee   = $enrollment->total_fee ?? 0;
+        $balance     = $enrollment->balance ?? 0;
         $total_paid  = $total_fee - $balance;
     }
 
     // Pending uploaded receipts
     $stmt2 = $pdo->prepare("SELECT COUNT(*) FROM payments WHERE (description LIKE ? OR enrollment_id = ?) AND status = 'Pending'");
-    $stmt2->execute(["%{$student_email}%", $enrollment['enrollmentId'] ?? 0]);
+    $stmt2->execute(["%{$student_email}%", $enrollment->enrollmentId ?? 0]);
     $pending_payments = $stmt2->fetchColumn() ?: 0;
 
     // Recent payments
@@ -56,7 +56,7 @@ try {
          ORDER BY p.created_at DESC LIMIT 5"
     );
     $stmt3->execute([$student_email, "%{$student_email}%"]);
-    $recent_payments = $stmt3->fetchAll();
+    $recent_payments = $stmt3->fetchAll(PDO::FETCH_OBJ);
 } catch (PDOException $e) {
     // silently fail
 }
@@ -138,7 +138,7 @@ try {
             font-weight: 800;
             margin-bottom: 8px;
             position: relative;
-            z-index: 1;
+ z-index: 1;
         }
 
         .banner p {
@@ -371,7 +371,7 @@ try {
                         <span>Total Paid</span>
                         <h2 style="color: #059669;">₱<?php echo number_format($total_paid, 2); ?></h2>
                     </div>
-                    <div class="stat-icon" style="background: rgba(5,150,105,0.1); color: #059669;">
+                    <div class="stat-icon" style="background: rgba(5, 150, 105, 0.1); color: #059669;">
                         <i class="fas fa-check-double"></i>
                     </div>
                 </div>
@@ -393,7 +393,7 @@ try {
                         <span>Pending Verification</span>
                         <h2 style="color: #f97316;"><?php echo $pending_payments; ?></h2>
                     </div>
-                    <div class="stat-icon" style="background: rgba(249,115,22,0.1); color: #f97316;">
+                    <div class="stat-icon" style="background: rgba(249, 115, 22, 0.1); color: #f97316;">
                         <i class="fas fa-clock"></i>
                     </div>
                 </div>
@@ -418,13 +418,13 @@ try {
                             <?php foreach ($recent_payments as $tx): ?>
                             <tr>
                                 <td style="color: var(--text-muted); font-size: 0.82rem;">
-                                    <?php echo date('M d, Y', strtotime($tx['created_at'])); ?>
+                                    <?php echo date('M d, Y', strtotime($tx->created_at)); ?>
                                 </td>
-                                <td><?php echo htmlspecialchars($tx['payment_method'] ?? 'N/A'); ?></td>
-                                <td style="font-weight: 700; color: #2563eb;">₱<?php echo number_format($tx['amount'], 2); ?></td>
+                                <td><?php echo htmlspecialchars($tx->payment_method ?? 'N/A'); ?></td>
+                                <td style="font-weight: 700; color: #2563eb;">₱<?php echo number_format($tx->amount, 2); ?></td>
                                 <td>
                                     <?php
-                                    $s = $tx['status'] ?? 'Pending';
+                                    $s = $tx->status ?? 'Pending';
                                     $cls = ($s === 'Completed' || $s === 'Verified') ? 'badge-success'
                                          : (($s === 'Pending') ? 'badge-pending' : 'badge-failed');
                                     ?>
@@ -445,7 +445,6 @@ try {
                 <!-- Quick Actions -->
                 <div class="action-card">
                     <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
-
                     <a href="<?php echo $root; ?>student/Modules/Payments/Make-Payment.php" class="action-btn">
                         <i class="fas fa-credit-card"></i> Make a Payment
                     </a>
@@ -467,4 +466,5 @@ try {
         </div><!-- /content-area -->
     </div><!-- /main-wrapper -->
 </body>
+</html>
 </html>
