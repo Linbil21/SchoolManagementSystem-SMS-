@@ -15,6 +15,7 @@ $role = $_SESSION['role'];
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Enrollment System</title>
     <link rel="icon" type="image/x-icon" href="../Assets/image/logo.png">
+    <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon">
     <!-- Google Fonts: Poppins -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
