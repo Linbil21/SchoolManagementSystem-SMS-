@@ -285,10 +285,24 @@ try {
 
         /* ---- Quick Actions Card ---- */
         .action-card {
-            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
-            padding: 28px;
+            background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
+            padding: 30px;
             border-radius: 24px;
             color: white;
+            box-shadow: 0 12px 24px rgba(30, 64, 175, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-card::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 150px;
+            height: 150px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 50%;
         }
 
         .action-card h3 {
@@ -300,32 +314,41 @@ try {
             gap: 10px;
         }
 
-        .action-btn {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 14px 16px;
-            border-radius: 14px;
-            border: 1px solid rgba(255,255,255,0.15);
-            background: rgba(255,255,255,0.07);
-            color: white;
+        .quick-action-btn {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: flex-start !important;
+            gap: 15px !important;
+            padding: 16px 20px !important;
+            border-radius: 14px !important;
+            border: 1px solid rgba(255,255,255,0.15) !important;
+            background: rgba(255,255,255,0.08) !important;
+            color: white !important;
             cursor: pointer;
-            text-align: left;
-            font-size: 0.88rem;
-            font-weight: 500;
-            transition: all 0.25s;
-            text-decoration: none;
-            margin-bottom: 10px;
+            text-align: left !important;
+            font-size: 0.9rem !important;
+            font-weight: 600 !important;
+            transition: all 0.3s ease !important;
+            text-decoration: none !important;
+            margin-bottom: 12px !important;
+            width: 100% !important;
+            height: auto !important;
+            box-sizing: border-box !important;
         }
 
-        .action-btn:last-child { margin-bottom: 0; }
+        .quick-action-btn:last-child { margin-bottom: 0 !important; }
 
-        .action-btn:hover {
+        .quick-action-btn:hover {
             background: rgba(255,255,255,0.18);
             transform: translateX(5px);
         }
 
-        .action-btn i { font-size: 1.05rem; width: 20px; text-align: center; }
+        .quick-action-btn i { 
+            font-size: 1.1rem; 
+            width: 24px; 
+            text-align: center;
+            opacity: 0.9;
+        }
 
         /* ---- Empty state ---- */
         .empty-state {
@@ -449,19 +472,19 @@ try {
                 <!-- Quick Actions -->
                 <div class="action-card">
                     <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
-                    <a href="<?php echo $root; ?>student/Modules/Payments/Make-Payment.php" class="action-btn">
+                    <a href="<?php echo $root; ?>student/Modules/Payments/Make-Payment.php" class="quick-action-btn">
                         <i class="fas fa-credit-card"></i> Make a Payment
                     </a>
-                    <a href="<?php echo $root; ?>student/Modules/Payments/Upload-Receipt.php" class="action-btn">
+                    <a href="<?php echo $root; ?>student/Modules/Payments/Upload-Receipt.php" class="quick-action-btn">
                         <i class="fas fa-upload"></i> Upload Payment Receipt
                     </a>
-                    <a href="<?php echo $root; ?>student/Modules/Payments/Balance.php" class="action-btn">
+                    <a href="<?php echo $root; ?>student/Modules/Payments/Balance.php" class="quick-action-btn">
                         <i class="fas fa-coins"></i> View My Balance
                     </a>
-                    <a href="<?php echo $root; ?>student/Modules/Payments/History.php" class="action-btn">
+                    <a href="<?php echo $root; ?>student/Modules/Payments/History.php" class="quick-action-btn">
                         <i class="fas fa-list-alt"></i> Payment History
                     </a>
-                    <a href="<?php echo $root; ?>student/Modules/Payments/Print-Receipt.php" class="action-btn">
+                    <a href="<?php echo $root; ?>student/Modules/Payments/Print-Receipt.php" class="quick-action-btn">
                         <i class="fas fa-print"></i> Print Receipt
                     </a>
                 </div>
