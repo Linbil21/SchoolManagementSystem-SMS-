@@ -36,15 +36,17 @@ try {
     $stmt->execute([$student_email]);
     $enrollment = $stmt->fetch();
 
-    if ($enrollment) {
+    $enrollment_id = 0;
+    if ($enrollment && is_object($enrollment)) {
         $total_fee   = $enrollment->total_fee ?? 0;
         $balance     = $enrollment->balance ?? 0;
         $total_paid  = $total_fee - $balance;
+        $enrollment_id = $enrollment->enrollmentId ?? 0;
     }
 
     // Pending uploaded receipts
     $stmt2 = $pdo->prepare("SELECT COUNT(*) FROM payments WHERE (description LIKE ? OR enrollment_id = ?) AND status = 'Pending'");
-    $stmt2->execute(["%{$student_email}%", $enrollment->enrollmentId ?? 0]);
+    $stmt2->execute(["%{$student_email}%", $enrollment_id]);
     $pending_payments = $stmt2->fetchColumn() ?: 0;
 
     // Recent payments
