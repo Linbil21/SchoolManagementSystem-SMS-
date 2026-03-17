@@ -316,39 +316,50 @@ try {
 
         .quick-action-btn {
             display: flex !important;
+            flex-direction: row !important;
             align-items: center !important;
             justify-content: flex-start !important;
-            gap: 15px !important;
-            padding: 16px 20px !important;
-            border-radius: 14px !important;
-            border: 1px solid rgba(255,255,255,0.15) !important;
-            background: rgba(255,255,255,0.08) !important;
+            padding: 18px 22px !important;
+            border-radius: 16px !important;
+            border: 1px solid rgba(255,255,255,0.18) !important;
+            background: rgba(255,255,255,0.1) !important;
             color: white !important;
             cursor: pointer;
             text-align: left !important;
-            font-size: 0.9rem !important;
+            font-size: 0.92rem !important;
             font-weight: 600 !important;
-            transition: all 0.3s ease !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
             text-decoration: none !important;
             margin-bottom: 12px !important;
             width: 100% !important;
+            min-width: 100% !important;
             height: auto !important;
             box-sizing: border-box !important;
             white-space: nowrap !important;
+            overflow: visible !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
         .quick-action-btn:last-child { margin-bottom: 0 !important; }
 
         .quick-action-btn:hover {
-            background: rgba(255,255,255,0.18);
-            transform: translateX(5px);
+            background: rgba(255,255,255,0.2) !important;
+            transform: translateX(8px) !important;
+            border-color: rgba(255,255,255,0.4) !important;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
         }
 
         .quick-action-btn i { 
-            font-size: 1.1rem; 
-            width: 24px; 
-            text-align: center;
-            opacity: 0.9;
+            font-size: 1.2rem !important; 
+            width: 28px !important; 
+            text-align: center !important;
+            margin-right: 15px !important;
+            opacity: 1 !important;
+            transition: transform 0.3s ease;
+        }
+
+        .quick-action-btn:hover i {
+            transform: scale(1.2);
         }
 
         /* ---- Empty state ---- */
@@ -474,19 +485,19 @@ try {
                 <div class="action-card">
                     <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
                     <a href="<?php echo $root; ?>student/Modules/Payments/Make-Payment.php" class="quick-action-btn">
-                        <i class="fas fa-credit-card"></i> Make a Payment
+                        <i class="fas fa-credit-card"></i> <span>Make a Payment</span>
                     </a>
                     <a href="<?php echo $root; ?>student/Modules/Payments/Upload-Receipt.php" class="quick-action-btn">
-                        <i class="fas fa-upload"></i> Upload Payment Receipt
+                        <i class="fas fa-upload"></i> <span>Upload Payment Receipt</span>
                     </a>
                     <a href="<?php echo $root; ?>student/Modules/Payments/Balance.php" class="quick-action-btn">
-                        <i class="fas fa-coins"></i> View My Balance
+                        <i class="fas fa-coins"></i> <span>View My Balance</span>
                     </a>
                     <a href="<?php echo $root; ?>student/Modules/Payments/History.php" class="quick-action-btn">
-                        <i class="fas fa-list-alt"></i> Payment History
+                        <i class="fas fa-list-alt"></i> <span>Payment History</span>
                     </a>
                     <a href="<?php echo $root; ?>student/Modules/Payments/Print-Receipt.php" class="quick-action-btn">
-                        <i class="fas fa-print"></i> Print Receipt
+                        <i class="fas fa-print"></i> <span>Print Receipt</span>
                     </a>
                 </div>
             </div>
