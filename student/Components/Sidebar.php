@@ -34,7 +34,7 @@ $root = $project_base . '/';
 // --- Refresh Enrollment Status & Student ID ---
 if (isset($_SESSION['email'])) {
     try {
-        require_once $_SERVER['DOCUMENT_ROOT'] . $root . 'Database/config.php';
+        require_once __DIR__ . '/../../Database/config.php';
         $stmt = $pdo->prepare("
             SELECT 
                 s.student_id,
