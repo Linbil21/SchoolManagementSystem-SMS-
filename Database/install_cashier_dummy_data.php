@@ -44,9 +44,9 @@ try {
         $stmt->execute([$student['email']]);
         $enrollment = $stmt->fetch();
 
-        $tuition = rand(15000, 25000);
-        $misc = rand(3000, 7000);
-        $lab = rand(1000, 5000);
+        $tuition = 4975.00;
+        $misc = 0.00;
+        $lab = 0.00;
         $total = $tuition + $misc + $lab;
         
         if (!$enrollment) {

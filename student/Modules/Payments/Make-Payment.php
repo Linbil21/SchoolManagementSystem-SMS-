@@ -456,7 +456,7 @@ if ($email) {
                             </div>
                             <div class="form-group" style="margin-bottom: 0;">
                                 <label>Amount (PHP)</label>
-                                <input type="number" id="inputAmt" value="5000" onkeyup="updatePreview()" onchange="updatePreview()" style="font-weight: 800; color: #2563eb;">
+                                <input type="number" id="inputAmt" value="4975" onkeyup="updatePreview()" onchange="updatePreview()" style="font-weight: 800; color: #2563eb;">
                             </div>
                         </div>
                     </div>
@@ -506,7 +506,7 @@ if ($email) {
                             <tbody>
                                 <tr>
                                     <td id="previewDesc">Enrollment Downpayment</td>
-                                    <td style="text-align: right;" id="previewAmt">₱5,000.00</td>
+                                    <td style="text-align: right;" id="previewAmt">₱4,975.00</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -514,7 +514,7 @@ if ($email) {
                         <div class="receipt-total">
                             <div class="total-item">
                                 <span>Subtotal</span>
-                                <span id="previewSub">₱5,000.00</span>
+                                <span id="previewSub">₱4,975.00</span>
                             </div>
                             <div class="total-item">
                                 <span>Gateway Fee</span>
@@ -522,7 +522,7 @@ if ($email) {
                             </div>
                             <div class="total-item grand-total">
                                 <span>TOTAL PAYMENT</span>
-                                <span id="previewTotal">₱5,000.00</span>
+                                <span id="previewTotal">₱4,975.00</span>
                             </div>
                         </div>
 

@@ -239,51 +239,38 @@ $root = $project_base . '/';
                     </thead>
                     <tbody>
                         <tr>
-                            <td>Tuition Fee (17 Units x ₱500.00)</td>
-                            <td class="amount">₱8,500.00</td>
+                            <td>Tuition Fee (Regular Semester Rate)</td>
+                            <td class="amount">₱4,975.00</td>
                         </tr>
                         <tr>
-                            <td>Miscellaneous Fee</td>
-                            <td class="amount">₱2,500.00</td>
-                        </tr>
-                        <tr>
-                            <td>Laboratory Fee</td>
-                            <td class="amount">₱1,500.00</td>
-                        </tr>
-                        <tr>
-                            <td>Library Fee</td>
-                            <td class="amount">₱500.00</td>
-                        </tr>
-                        <tr>
-                            <td>Student Council Fee</td>
-                            <td class="amount">₱200.00</td>
+                            <td>Miscellaneous & Other Fees</td>
+                            <td class="amount">₱0.00</td>
                         </tr>
                     </tbody>
                 </table>
 
                 <div class="total-section">
                     <span class="total-label">TOTAL ASSESSMENT</span>
-                    <span class="total-amount">₱13,200.00</span>
+                    <span class="total-amount">₱4,975.00</span>
                 </div>
 
                 <div class="payment-options">
                     <h4 class="payment-title">Payment Schedule</h4>
                     <div class="payment-grid">
                         <div class="payment-box">
-                            <h5>Upon Enrollment (Downpayment)</h5>
-                            <p>₱4,000.00</p>
+                            <h5>Quarterly Scheme</h5>
+                            <p>₱1,243.75</p>
+                            <p style="font-size: 0.75rem;">(Payable in 4 installments)</p>
                         </div>
                         <div class="payment-box">
-                            <h5>Prelim</h5>
-                            <p>₱3,066.00</p>
+                            <h5>Monthly Scheme</h5>
+                            <p>₱995.00</p>
+                            <p style="font-size: 0.75rem;">(Payable in 5 installments)</p>
                         </div>
-                        <div class="payment-box">
-                            <h5>Midterm</h5>
-                            <p>₱3,066.00</p>
-                        </div>
-                        <div class="payment-box">
-                            <h5>Finals</h5>
-                            <p>₱3,068.00</p>
+                        <div class="payment-box" style="background: #f0fdf4; border-color: #bbf7d0;">
+                            <h5>Full Payment</h5>
+                            <p style="color: #16a34a; font-weight: 800;">₱4,975.00</p>
+                            <p style="font-size: 0.75rem; color: #16a34a;">Best Value</p>
                         </div>
                     </div>
                 </div>

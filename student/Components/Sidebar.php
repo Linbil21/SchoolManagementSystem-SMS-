@@ -84,26 +84,27 @@ if (isset($_SESSION['email'])) {
         <p class="menu-label">ACADEMIC</p>
         <ul class="main-menu">
             <!-- Enrollment -->
-            <?php 
-            $admission_status = $_SESSION['admission_status'] ?? 'Pending';
-            if ($admission_status === 'Approved'): 
-            ?>
             <li
-                class="has-dropdown <?php echo isDropdownOpen(['Subject-Selection', 'Assessment', 'Enrollment-Status', 'Upload-Payment', 'Enrollment-History']); ?>">
+                class="has-dropdown <?php echo isDropdownOpen(['Guide', 'Subject-Selection', 'Assessment', 'Enrollment-Status', 'Upload-Payment', 'Enrollment-History']); ?>">
                 <a href="javascript:void(0)" class="dropdown-toggle">
                     <i class="fas fa-book-open"></i>
                     <span>Enrollment</span>
                     <i class="fas fa-chevron-right arrow-icon"></i>
                 </a>
                 <ul class="sub-menu">
+                    <li><a href="<?php echo $root; ?>student/Modules/Enrollment/Guide.php" style="font-weight: 700; color: #2563eb;"><i class="fas fa-star" style="margin-right: 5px;"></i> Enrollment Guide</a></li>
+                    <?php 
+                    $admission_status = $_SESSION['admission_status'] ?? 'Pending';
+                    if ($admission_status === 'Approved'): 
+                    ?>
                     <li><a href="<?php echo $root; ?>student/Modules/Enrollment/Subject-Selection.php">Subject Selection</a></li>
                     <li><a href="<?php echo $root; ?>student/Modules/Enrollment/View-Assessment.php">View Assessment</a></li>
                     <li><a href="<?php echo $root; ?>student/Modules/Enrollment/Enrollment-Status.php">Enrollment Status</a></li>
                     <li><a href="<?php echo $root; ?>student/Modules/Enrollment/Upload-Payment.php">Upload Payment</a></li>
                     <li><a href="<?php echo $root; ?>student/Modules/Enrollment/History.php">Enrollment History</a></li>
+                    <?php endif; ?>
                 </ul>
             </li>
-            <?php endif; ?>
             <!-- My Studies -->
             <li class="has-dropdown <?php echo isDropdownOpen(['Schedule.php', 'Grades.php', 'Attendance.php']); ?>">
                 <a href="javascript:void(0)" class="dropdown-toggle">

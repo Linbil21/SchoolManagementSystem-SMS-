@@ -401,7 +401,7 @@ if ($current_day !== 'Sunday') {
         ?>
         <div class="welcome-banner" style="margin-bottom: 30px;">
             <h1 style="font-weight: 800;">Welcome to SMS! 🎓</h1>
-            <p>Thank you for registering. Please follow these steps to officially enroll in this institution.</p>
+            <p>Thank you for registering. Please follow <a href="<?php echo $root; ?>student/Modules/Enrollment/Guide.php" style="color: white; font-weight: 700; text-decoration: underline;">this step-by-step guide</a> to officially enroll.</p>
             
             <div style="margin-top: 25px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
                 <!-- Step 1: Payment -->

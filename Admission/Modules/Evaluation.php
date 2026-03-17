@@ -67,8 +67,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 }
 
                 // 3. Create or Update Enrollment & Assign Default Fees
-                $tuition = 15000.00;
-                $misc = 2500.00;
+                $tuition = 4975.00;
+                $misc = 0.00;
                 $total = $tuition + $misc;
                 $ref_code = "";
 
