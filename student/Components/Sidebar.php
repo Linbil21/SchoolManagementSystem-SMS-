@@ -36,25 +36,34 @@ if (isset($_SESSION['email'])) {
     try {
         require_once $_SERVER['DOCUMENT_ROOT'] . $root . 'Database/config.php';
         $stmt = $pdo->prepare("
-            SELECT s.student_id, e.status as enrollment_status, a.status as admission_status 
+            SELECT 
+                s.student_id,
+                (SELECT status FROM enrollments WHERE email = s.email ORDER BY created_at DESC LIMIT 1) as enrollment_status,
+                (SELECT status FROM admission_applications WHERE email = s.email ORDER BY submission_date DESC LIMIT 1) as admission_status
             FROM students s 
-            LEFT JOIN enrollments e ON s.email = e.email 
-            LEFT JOIN admission_applications a ON s.email = a.email 
             WHERE s.email = ?
+            LIMIT 1
         ");
         $stmt->execute([$_SESSION['email']]);
         $fresh = $stmt->fetch(PDO::FETCH_OBJ);
         if ($fresh) {
             $_SESSION['student_id'] = $fresh->student_id;
-            $_SESSION['enrollment_status'] = $fresh->enrollment_status;
-            $_SESSION['admission_status'] = $fresh->admission_status ?? 'Pending';
+            $_SESSION['enrollment_status'] = $fresh->enrollment_status ?? '';
+            // Smart fallback: if enrollment exists at payment/validation/enrolled stage, treat as Approved
+            $enr_status = $fresh->enrollment_status ?? '';
+            $auto_approved_statuses = ['Pending Payment', 'Validation', 'Enrolled', 'Pending'];
+            if ($fresh->admission_status === 'Approved' || in_array($enr_status, ['Pending Payment', 'Validation', 'Enrolled'])) {
+                $_SESSION['admission_status'] = 'Approved';
+            } else {
+                $_SESSION['admission_status'] = $fresh->admission_status ?? 'Pending';
+            }
         }
     } catch (Exception $e) {}
 }
 ?>
 <div class="sidebar">
     <div class="sidebar-brand">
-        <a href="/student/Dashboard.php" class="brand-wrapper">
+        <a href="<?php echo $root; ?>student/Dashboard.php" class="brand-wrapper">
             <i class="fas fa-graduation-cap" style="font-size: 1.8rem; color: #2563eb;"></i>
             <h2>Student<span style="color: #64748b; font-weight: 400; font-size: 1rem; margin-left: 5px;">Portal</span>
             </h2>
@@ -65,7 +74,7 @@ if (isset($_SESSION['email'])) {
         <p class="menu-label">MAIN</p>
         <ul class="main-menu">
             <li class="<?php echo ($current_page == 'Dashboard.php') ? 'active' : ''; ?>">
-                <a href="/student/Dashboard.php">
+                <a href="<?php echo $root; ?>student/Dashboard.php">
                     <i class="fas fa-th-large"></i>
                     <span>Dashboard</span>
                 </a>
@@ -87,11 +96,11 @@ if (isset($_SESSION['email'])) {
                     <i class="fas fa-chevron-right arrow-icon"></i>
                 </a>
                 <ul class="sub-menu">
-                    <li><a href="/student/Modules/Enrollment/Subject-Selection.php">Subject Selection</a></li>
-                    <li><a href="/student/Modules/Enrollment/View-Assessment.php">View Assessment</a></li>
-                    <li><a href="/student/Modules/Enrollment/Enrollment-Status.php">Enrollment Status</a></li>
-                    <li><a href="/student/Modules/Enrollment/Upload-Payment.php">Upload Payment</a></li>
-                    <li><a href="/student/Modules/Enrollment/History.php">Enrollment History</a></li>
+                    <li><a href="<?php echo $root; ?>student/Modules/Enrollment/Subject-Selection.php">Subject Selection</a></li>
+                    <li><a href="<?php echo $root; ?>student/Modules/Enrollment/View-Assessment.php">View Assessment</a></li>
+                    <li><a href="<?php echo $root; ?>student/Modules/Enrollment/Enrollment-Status.php">Enrollment Status</a></li>
+                    <li><a href="<?php echo $root; ?>student/Modules/Enrollment/Upload-Payment.php">Upload Payment</a></li>
+                    <li><a href="<?php echo $root; ?>student/Modules/Enrollment/History.php">Enrollment History</a></li>
                 </ul>
             </li>
             <?php endif; ?>
@@ -104,7 +113,7 @@ if (isset($_SESSION['email'])) {
                 </a>
                 <ul class="sub-menu">
                     <li class="<?php echo ($current_page == 'Schedule.php') ? 'active' : ''; ?>">
-                        <a href="/student/Modules/Academic/Schedule.php">Class Schedule</a>
+                        <a href="<?php echo $root; ?>student/Modules/Academic/Schedule.php">Class Schedule</a>
                     </li>
                     <li><a href="javascript:void(0)" style="opacity: 0.5;">My Grades (Soon)</a></li>
                     <li><a href="javascript:void(0)" style="opacity: 0.5;">Attendance (Soon)</a></li>
@@ -119,26 +128,51 @@ if (isset($_SESSION['email'])) {
                     <i class="fas fa-chevron-right arrow-icon"></i>
                 </a>
                 <ul class="sub-menu">
-                    <li><a href="/student/Modules/Admission/Requirements.php">Student Requirements List</a></li>
+                    <li><a href="<?php echo $root; ?>student/Modules/Admission/Requirements.php">Student Requirements List</a></li>
                 </ul>
             </li>
         </ul>
 
         <p class="menu-label">FINANCIAL</p>
         <ul class="main-menu">
-            <!-- Cashier / Payment -->
-            <li class="has-dropdown <?php echo isDropdownOpen(['Walk-in-Payments', 'Balance', 'History', 'Upload-Receipt', 'Upload-Payment']); ?>">
+            <?php 
+            $enrollment_status = $_SESSION['enrollment_status'] ?? '';
+            $payment_allowed_statuses = ['Pending Payment', 'Validation', 'Enrolled', 'Pending'];
+            if (in_array($enrollment_status, $payment_allowed_statuses)):
+            ?>
+            <!-- Cashier / Payment - Only shown when enrollment record exists -->
+            <li class="has-dropdown <?php echo isDropdownOpen(['Walk-in-Payments', 'Balance', 'History', 'Upload-Receipt', 'Make-Payment', 'Dashboard']); ?>">
                 <a href="javascript:void(0)" class="dropdown-toggle">
                     <i class="fas fa-cash-register"></i>
                     <span>Cashier / Payment</span>
                     <i class="fas fa-chevron-right arrow-icon"></i>
                 </a>
                 <ul class="sub-menu">
-                    <li><a href="/student/Modules/Payments/History.php"><i class="fas fa-receipt" style="margin-right:6px; width:14px;"></i> My Receipts</a></li>
-                    <li><a href="/student/Modules/Payments/Balance.php"><i class="fas fa-coins" style="margin-right:6px; width:14px;"></i> View Balance</a></li>
-                    <li><a href="/student/Modules/Payments/Make-Payment.php"><i class="fas fa-credit-card" style="margin-right:6px; width:14px;"></i> Make Payment</a></li>
+                    <li class="<?php echo ($current_page == 'Dashboard.php' && strpos($_SERVER['SCRIPT_NAME'], '/Cashier/') !== false) ? 'active' : ''; ?>">
+                        <a href="<?php echo $root; ?>student/Cashier/Dashboard.php"><i class="fas fa-tachometer-alt" style="margin-right:6px; width:14px;"></i> My Cashier Dashboard</a>
+                    </li>
+                    <li><a href="<?php echo $root; ?>student/Modules/Payments/History.php"><i class="fas fa-receipt" style="margin-right:6px; width:14px;"></i> My Receipts</a></li>
+                    <li><a href="<?php echo $root; ?>student/Modules/Payments/Balance.php"><i class="fas fa-coins" style="margin-right:6px; width:14px;"></i> View Balance</a></li>
+                    <li><a href="<?php echo $root; ?>student/Modules/Payments/Make-Payment.php"><i class="fas fa-credit-card" style="margin-right:6px; width:14px;"></i> Make Payment</a></li>
                 </ul>
             </li>
+            <?php else: ?>
+            <!-- Pre-enrollment payment guidance -->
+            <li style="padding: 8px 15px;">
+                <a href="<?php echo $root; ?>student/Modules/Payments/Make-Payment.php" style="
+                    display: flex; align-items: flex-start; gap: 10px; padding: 14px;
+                    background: linear-gradient(135deg, #eff6ff, #dbeafe);
+                    border-radius: 14px; text-decoration: none;
+                    border: 1.5px solid #bfdbfe; transition: 0.3s;
+                ">
+                    <i class="fas fa-hand-holding-usd" style="color: #2563eb; font-size: 1.1rem; margin-top: 2px; flex-shrink:0;"></i>
+                    <span style="display: flex; flex-direction: column;">
+                        <span style="font-weight: 800; font-size: 0.82rem; color: #1e40af;">Pay Downpayment</span>
+                        <span style="font-size: 0.72rem; color: #3b82f6; line-height: 1.4; margin-top: 2px;">Required before enrollment can be processed</span>
+                    </span>
+                </a>
+            </li>
+            <?php endif; ?>
         </ul>
 
         <p class="menu-label">SERVICES</p>
@@ -155,9 +189,9 @@ if (isset($_SESSION['email'])) {
                     <i class="fas fa-chevron-right arrow-icon"></i>
                 </a>
                 <ul class="sub-menu">
-                    <li><a href="/student/Modules/ID/View.php">View Student ID</a></li>
-                    <li><a href="/student/Modules/ID/Download.php">Download / Print ID</a></li>
-                    <li><a href="/student/Modules/ID/Replacement.php">Replacement Request</a></li>
+                    <li><a href="<?php echo $root; ?>student/Modules/ID/View.php">View Student ID</a></li>
+                    <li><a href="<?php echo $root; ?>student/Modules/ID/Download.php">Download / Print ID</a></li>
+                    <li><a href="<?php echo $root; ?>student/Modules/ID/Replacement.php">Replacement Request</a></li>
                 </ul>
             </li>
             <?php endif; ?>
@@ -170,9 +204,9 @@ if (isset($_SESSION['email'])) {
                     <i class="fas fa-chevron-right arrow-icon"></i>
                 </a>
                 <ul class="sub-menu">
-                    <li><a href="/student/Modules/Support/Announcements.php">Announcements</a></li>
-                    <li><a href="/student/Modules/Support/Messages.php">Messages</a></li>
-                    <li><a href="/student/Modules/Support/Help.php">Help / FAQs</a></li>
+                    <li><a href="<?php echo $root; ?>student/Modules/Support/Announcements.php">Announcements</a></li>
+                    <li><a href="<?php echo $root; ?>student/Modules/Support/Messages.php">Messages</a></li>
+                    <li><a href="<?php echo $root; ?>student/Modules/Support/Help.php">Help / FAQs</a></li>
                 </ul>
             </li>
         </ul>
@@ -187,9 +221,9 @@ if (isset($_SESSION['email'])) {
                     <i class="fas fa-chevron-right arrow-icon"></i>
                 </a>
                 <ul class="sub-menu">
-                    <li><a href="/student/Submodules/profile.php">Personal Information</a></li>
-                    <li><a href="/student/Submodules/Change-Password.php">Change Password</a></li>
-                    <li><a href="/student/Submodules/Settings.php">Account Settings</a></li>
+                    <li><a href="<?php echo $root; ?>student/Submodules/profile.php">Personal Information</a></li>
+                    <li><a href="<?php echo $root; ?>student/Submodules/Change-Password.php">Change Password</a></li>
+                    <li><a href="<?php echo $root; ?>student/Submodules/Settings.php">Account Settings</a></li>
                 </ul>
             </li>
 
@@ -206,7 +240,7 @@ if (isset($_SESSION['email'])) {
         <div class="profile-card">
             <?php
             $profile_img = isset($_SESSION['profile_image']) && !empty($_SESSION['profile_image'])
-                ? "/" . $_SESSION['profile_image']
+                ? $root . $_SESSION['profile_image']
                 : "https://ui-avatars.com/api/?name=" . urlencode($student_name) . "&background=2563eb&color=fff";
             ?>
             <img src="<?php echo $profile_img; ?>" alt="Profile" style="object-fit: cover;">

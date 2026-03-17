@@ -5,6 +5,18 @@ session_start();
 require_once '../../../auth/Security.php';
 checkRole(['student']);
 
+// Robust absolute-relative path logic
+$script_name = $_SERVER['SCRIPT_NAME'];
+$check_paths = ['/student/', '/Super-admin/', '/Admin/', '/Cashier/', '/Admission/', '/auth/', '/modules/'];
+$project_base = '';
+foreach ($check_paths as $path) {
+    if (($pos = stripos($script_name, $path)) !== false) {
+        $project_base = rtrim(substr($script_name, 0, $pos), '/');
+        break;
+    }
+}
+$root = $project_base . '/';
+
 require_once '../../../Database/config.php';
 
 // Determine status mapping
@@ -35,7 +47,7 @@ if (isset($_SESSION['student_id'])) {
             $notif_fullname = $_SESSION['fullname'] ?? 'A student';
             $notif_stmt->execute([$notif_fullname . " has chosen Walk-in payment."]);
             
-            header("Location: Enrollment-Status.php");
+            header("Location: " . $root . "student/Modules/Enrollment/Enrollment-Status.php");
             exit();
         }
 
@@ -295,7 +307,7 @@ $current_step_index = $status_steps[$current_status] ?? 4;
                         </a>
 
                         <!-- Hello Money -->
-                        <a href="Upload-Payment.php?method=HelloMoney" 
+                        <a href="<?php echo $root; ?>student/Modules/Enrollment/Upload-Payment.php?method=HelloMoney" 
                            style="display: flex; flex-direction: column; align-items: center; padding: 20px; border: 2px solid #e2e8f0; border-radius: 20px; text-decoration: none; transition: 0.3s; background: #fff; text-align: center;">
                             <div style="width: 50px; height: 50px; background: #fff7ed; border-radius: 15px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px;">
                                 <i class="fas fa-mobile-alt" style="font-size: 1.5rem; color: #ea580c;"></i>
@@ -305,7 +317,7 @@ $current_step_index = $status_steps[$current_status] ?? 4;
                         </a>
 
                         <!-- Bank Transfer -->
-                        <a href="Upload-Payment.php?method=BankTransfer" 
+                        <a href="<?php echo $root; ?>student/Modules/Enrollment/Upload-Payment.php?method=BankTransfer" 
                            style="display: flex; flex-direction: column; align-items: center; padding: 20px; border: 2px solid #e2e8f0; border-radius: 20px; text-decoration: none; transition: 0.3s; background: #fff; text-align: center;">
                             <div style="width: 50px; height: 50px; background: #eff6ff; border-radius: 15px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px;">
                                 <i class="fas fa-university" style="font-size: 1.5rem; color: #2563eb;"></i>
@@ -315,7 +327,7 @@ $current_step_index = $status_steps[$current_status] ?? 4;
                         </a>
 
                         <!-- GCash -->
-                        <a href="Upload-Payment.php?method=GCash" 
+                        <a href="<?php echo $root; ?>student/Modules/Enrollment/Upload-Payment.php?method=GCash" 
                            style="display: flex; flex-direction: column; align-items: center; padding: 20px; border: 2px solid #e2e8f0; border-radius: 20px; text-decoration: none; transition: 0.3s; background: #fff; text-align: center;">
                             <div style="width: 50px; height: 50px; background: #fef2f2; border-radius: 15px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px;">
                                 <i class="fas fa-credit-card" style="font-size: 1.5rem; color: #ef4444;"></i>

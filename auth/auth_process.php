@@ -5,6 +5,18 @@ if (session_status() === PHP_SESSION_NONE) {
 require_once '../Database/config.php';
 require_once 'mail_helper.php';
 
+// Robust absolute-relative path logic
+$script_name = $_SERVER['SCRIPT_NAME'];
+$check_paths = ['/student/', '/Super-admin/', '/Admin/', '/Cashier/', '/Admission/', '/auth/', '/modules/'];
+$project_base = '';
+foreach ($check_paths as $path) {
+    if (($pos = stripos($script_name, $path)) !== false) {
+        $project_base = rtrim(substr($script_name, 0, $pos), '/');
+        break;
+    }
+}
+$root = $project_base . '/';
+
 // Check which form was submitted (Login or Register)
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     require_once 'Security.php';
@@ -97,12 +109,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             // File Uploads Handling
             $upload_fields = [
-                'id_picture' => '../Assets/image/uploads/students/',
-                'birth_cert' => '../Assets/image/uploads/documents/psa/',
-                'form_138' => '../Assets/image/uploads/documents/grades/',
-                'form_137' => '../Assets/image/uploads/documents/grades/',
-                'good_moral' => '../Assets/image/uploads/documents/certificates/',
-                'barangay_clearance' => '../Assets/image/uploads/documents/certificates/'
+                'id_picture' => $_SERVER['DOCUMENT_ROOT'] . $root . 'Assets/image/uploads/students/',
+                'birth_cert' => $_SERVER['DOCUMENT_ROOT'] . $root . 'Assets/image/uploads/documents/psa/',
+                'form_138'   => $_SERVER['DOCUMENT_ROOT'] . $root . 'Assets/image/uploads/documents/grades/',
+                'form_137'   => $_SERVER['DOCUMENT_ROOT'] . $root . 'Assets/image/uploads/documents/grades/',
+                'good_moral' => $_SERVER['DOCUMENT_ROOT'] . $root . 'Assets/image/uploads/documents/certificates/',
+                'barangay_clearance' => $_SERVER['DOCUMENT_ROOT'] . $root . 'Assets/image/uploads/documents/certificates/'
             ];
 
             $uploaded_paths = [];
@@ -242,6 +254,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
  */
 function process_login($email, $password, $pdo, $isAjax = false)
 {
+    global $root;
     if (empty($email) || empty($password)) {
         if ($isAjax) {
             header('Content-Type: application/json');
@@ -274,14 +287,14 @@ function process_login($email, $password, $pdo, $isAjax = false)
                 $notif_stmt->execute([$user->userId]);
 
                 $redirects = [
-                    'admin' => '../Admin/Dashboard.php',
-                    'superadmin' => '../super-admin/Dashboard.php',
-                    'admission' => '../Admission/Dashboard.php',
-                    'cashier' => '../Cashier/Dashboard.php',
-                    'student' => '../student/Dashboard.php'
+                    'admin' => $root . 'Admin/Dashboard.php',
+                    'superadmin' => $root . 'super-admin/Dashboard.php',
+                    'admission' => $root . 'Admission/Dashboard.php',
+                    'cashier' => $root . 'Cashier/Dashboard.php',
+                    'student' => $root . 'student/Dashboard.php'
                 ];
                 
-                $redirect = $redirects[$_SESSION['role']] ?? '../auth/Login.php?error=unauthorized';
+                $redirect = $redirects[$_SESSION['role']] ?? $root . 'auth/Login.php?error=unauthorized';
                 if ($isAjax) {
                     header('Content-Type: application/json');
                     echo json_encode(['status' => 'success', 'redirect' => $redirect]);

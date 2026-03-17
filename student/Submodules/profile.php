@@ -1,9 +1,22 @@
 <?php
 session_start();
+
+// Robust absolute-relative path logic
+$script_name = $_SERVER['SCRIPT_NAME'];
+$check_paths = ['/student/', '/Super-admin/', '/Admin/', '/Cashier/', '/Admission/', '/auth/', '/modules/'];
+$project_base = '';
+foreach ($check_paths as $path) {
+    if (($pos = stripos($script_name, $path)) !== false) {
+        $project_base = rtrim(substr($script_name, 0, $pos), '/');
+        break;
+    }
+}
+$root = $project_base . '/';
+
 require_once '../../Database/config.php';
 
 if (!isset($_SESSION['student_id'])) {
-    header("Location: ../auth/Login.php");
+    header("Location: " . $root . "student/auth/Login.php");
     exit();
 }
 
@@ -33,7 +46,7 @@ try {
 
 $student_name = $student->first_name . ' ' . $student->last_name;
 $profile_img = !empty($student->profile_image)
-    ? "/" . $student->profile_image
+    ? $root . $student->profile_image
     : "https://ui-avatars.com/api/?name=" . urlencode($student_name) . "&background=2563eb&color=fff";
 ?>
 <!DOCTYPE html>
@@ -378,7 +391,7 @@ $profile_img = !empty($student->profile_image)
                 const originalIcon = btn.innerHTML;
                 btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
 
-                fetch('../api/upload_profile_image.php', {
+                fetch(window.smsRoot + 'student/api/upload_profile_image.php', {
                     method: 'POST',
                     body: formData
                 })
@@ -387,7 +400,7 @@ $profile_img = !empty($student->profile_image)
                     if (data.success) {
                         // Update image src immediately
                         // Add cache buster to force refresh
-                        document.getElementById('profileImageDisplay').src = data.image_path + '?t=' + new Date().getTime();
+                        document.getElementById('profileImageDisplay').src = window.smsRoot + data.image_path + '?t=' + new Date().getTime();
                         // Also update header if possible, but that's harder without reload
                         alert("Profile photo updated successfully!");
                     } else {

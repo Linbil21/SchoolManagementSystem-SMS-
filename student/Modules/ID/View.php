@@ -2,6 +2,18 @@
 session_start();
 require_once '../../../Database/config.php';
 
+// Robust absolute-relative path logic
+$script_name = $_SERVER['SCRIPT_NAME'];
+$check_paths = ['/student/', '/Super-admin/', '/Admin/', '/Cashier/', '/Admission/', '/auth/', '/modules/'];
+$project_base = '';
+foreach ($check_paths as $path) {
+    if (($pos = stripos($script_name, $path)) !== false) {
+        $project_base = rtrim(substr($script_name, 0, $pos), '/');
+        break;
+    }
+}
+$root = $project_base . '/';
+
 // Security check
 require_once '../../../auth/Security.php';
 checkRole(['student']);
@@ -23,7 +35,7 @@ try {
         'year' => strtoupper($student_data->year_level),
         'school_year' => '2025-2026',
         'profile_image' => $student_data->profile_image
-            ? "/" . $student_data->profile_image
+            ? $root . $student_data->profile_image
             : "https://ui-avatars.com/api/?name=" . urlencode($student_data->first_name . ' ' . $student_data->last_name) . "&background=random&size=128"
     ];
 } catch (PDOException $e) {
@@ -369,10 +381,10 @@ try {
                 </div>
 
                 <div class="action-bar">
-                    <a href="Download.php" class="btn btn-primary">
+                    <a href="<?php echo $root; ?>student/Modules/ID/Download.php" class="btn btn-primary">
                         <i class="fas fa-download"></i> Download ID
                     </a>
-                    <a href="Replacement.php" class="btn btn-secondary">
+                    <a href="<?php echo $root; ?>student/Modules/ID/Replacement.php" class="btn btn-secondary">
                         <i class="fas fa-exclamation-circle"></i> Report Lost Header
                     </a>
                 </div>

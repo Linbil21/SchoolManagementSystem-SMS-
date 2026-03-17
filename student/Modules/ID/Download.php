@@ -2,6 +2,19 @@
 session_start();
 // Security check
 require_once '../../../auth/Security.php';
+
+// Robust absolute-relative path logic
+$script_name = $_SERVER['SCRIPT_NAME'];
+$check_paths = ['/student/', '/Super-admin/', '/Admin/', '/Cashier/', '/Admission/', '/auth/', '/modules/'];
+$project_base = '';
+foreach ($check_paths as $path) {
+    if (($pos = stripos($script_name, $path)) !== false) {
+        $project_base = rtrim(substr($script_name, 0, $pos), '/');
+        break;
+    }
+}
+$root = $project_base . '/';
+
 checkRole(['student']);
 ?>
 <!DOCTYPE html>
@@ -194,13 +207,13 @@ checkRole(['student']);
             $s_name = "STUDENT NAME";
             $s_id = "STUDENT-ID";
             $s_course = "COURSE";
-            $s_photo = "/Assets/image/logo.png";
+            $s_photo = $root . "Assets/image/logo.png";
             
             if ($student_data) {
                 $s_name = strtoupper($student_data->first_name . ' ' . $student_data->last_name);
                 $s_id = $student_data->student_id;
                 $s_course = strtoupper($student_data->course);
-                $s_photo = $student_data->profile_image ? "/" . $student_data->profile_image : "https://ui-avatars.com/api/?name=" . urlencode($s_name);
+                $s_photo = $student_data->profile_image ? $root . $student_data->profile_image : "https://ui-avatars.com/api/?name=" . urlencode($s_name);
             }
             ?>
             <div style="padding: 20px; text-align: center; background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(5px);">

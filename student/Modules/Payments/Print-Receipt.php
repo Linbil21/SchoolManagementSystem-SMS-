@@ -1,5 +1,18 @@
 <?php
 session_start();
+
+// Robust absolute-relative path logic
+$script_name = $_SERVER['SCRIPT_NAME'];
+$check_paths = ['/student/', '/Super-admin/', '/Admin/', '/Cashier/', '/Admission/', '/auth/', '/modules/'];
+$project_base = '';
+foreach ($check_paths as $path) {
+    if (($pos = stripos($script_name, $path)) !== false) {
+        $project_base = rtrim(substr($script_name, 0, $pos), '/');
+        break;
+    }
+}
+$root = $project_base . '/';
+
 require_once '../../../Database/config.php';
 
 if (!isset($_GET['id'])) {
@@ -124,7 +137,7 @@ try {
         <div class="status-watermark"><?php echo $payment->status; ?></div>
         
         <div class="receipt-header">
-            <img src="/Assets/image/logo.png" alt="Logo" class="school-logo">
+            <img src="<?php echo $root; ?>Assets/image/logo.png" alt="Logo" class="school-logo">
             <div class="school-name">SMS ACADEMY</div>
             <div class="receipt-title">Official Electronic Receipt</div>
         </div>

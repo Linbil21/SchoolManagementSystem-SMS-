@@ -1,5 +1,18 @@
 <?php
 session_start();
+
+// Robust absolute-relative path logic
+$script_name = $_SERVER['SCRIPT_NAME'];
+$check_paths = ['/student/', '/Super-admin/', '/Admin/', '/Cashier/', '/Admission/', '/auth/', '/modules/'];
+$project_base = '';
+foreach ($check_paths as $path) {
+    if (($pos = stripos($script_name, $path)) !== false) {
+        $project_base = rtrim(substr($script_name, 0, $pos), '/');
+        break;
+    }
+}
+$root = $project_base . '/';
+
 require_once '../../../Database/config.php';
 
 $email = $_SESSION['email'] ?? '';
@@ -217,10 +230,10 @@ $course = $app ? $app->course_display_name : 'N/A';
                     </div>
 
                     <div class="btn-area" style="display:flex; flex-direction:column; gap:12px; align-items:center;">
-                        <a href="/student/Dashboard.php" class="result-action-btn" style="background: linear-gradient(135deg, #0369a1, #0284c7);">
+                        <a href="<?php echo $root; ?>student/Dashboard.php" class="result-action-btn" style="background: linear-gradient(135deg, #0369a1, #0284c7);">
                             <i class="fas fa-home"></i> Back to Dashboard
                         </a>
-                        <a href="/student/Modules/Payments/Balance.php" style="color: #0369a1; font-weight: 700; text-decoration: none; font-size: 0.9rem; margin-top: 5px; display: flex; align-items: center; gap: 8px;">
+                        <a href="<?php echo $root; ?>student/Modules/Payments/Balance.php" style="color: #0369a1; font-weight: 700; text-decoration: none; font-size: 0.9rem; margin-top: 5px; display: flex; align-items: center; gap: 8px;">
                             <i class="fas fa-file-invoice-dollar"></i> View Projected Fees & Balance
                         </a>
                     </div>
@@ -243,7 +256,7 @@ $course = $app ? $app->course_display_name : 'N/A';
                     </div>
 
                     <div class="btn-area">
-                        <a href="/student/Modules/Enrollment/Enrollment-Status.php" class="result-action-btn" style="background: linear-gradient(135deg, #b45309, #d97706);">
+                        <a href="<?php echo $root; ?>student/Modules/Enrollment/Enrollment-Status.php" class="result-action-btn" style="background: linear-gradient(135deg, #b45309, #d97706);">
                             <i class="fas fa-wallet"></i> Select Payment Method
                         </a>
                     </div>
@@ -271,7 +284,7 @@ $course = $app ? $app->course_display_name : 'N/A';
                     </div>
 
                     <div class="btn-area">
-                        <a href="/student/Modules/Academic/Schedule.php" class="result-action-btn" style="background: linear-gradient(135deg, #15803d, #16a34a);">
+                        <a href="<?php echo $root; ?>student/Modules/Academic/Schedule.php" class="result-action-btn" style="background: linear-gradient(135deg, #15803d, #16a34a);">
                             <i class="fas fa-calendar-alt"></i> View Class Schedule
                         </a>
                     </div>
@@ -287,7 +300,7 @@ $course = $app ? $app->course_display_name : 'N/A';
                         Your application status is currently: <strong><?php echo htmlspecialchars($enrollment_status); ?></strong>.
                     </p>
                     <div class="btn-area">
-                        <a href="/student/Dashboard.php" class="result-action-btn" style="background: linear-gradient(135deg, #dc2626, #ef4444);">
+                        <a href="<?php echo $root; ?>student/Dashboard.php" class="result-action-btn" style="background: linear-gradient(135deg, #dc2626, #ef4444);">
                             <i class="fas fa-home"></i> Back to Dashboard
                         </a>
                     </div>

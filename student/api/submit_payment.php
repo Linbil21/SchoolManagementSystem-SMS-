@@ -2,6 +2,18 @@
 session_start();
 require_once '../../Database/config.php';
 
+// Robust absolute-relative path logic
+$script_name = $_SERVER['SCRIPT_NAME'];
+$check_paths = ['/student/', '/Super-admin/', '/Admin/', '/Cashier/', '/Admission/', '/auth/', '/modules/'];
+$project_base = '';
+foreach ($check_paths as $path) {
+    if (($pos = stripos($script_name, $path)) !== false) {
+        $project_base = rtrim(substr($script_name, 0, $pos), '/');
+        break;
+    }
+}
+$root = $project_base . '/';
+
 header('Content-Type: application/json');
 
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'student') {
@@ -88,8 +100,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $notif_message = $_SESSION['fullname'] . " has submitted a payment of ₱" . number_format($amount, 2);
         $profile_image = $_SESSION['profile_image'] ?? null;
         
-        $notif_stmt = $pdo->prepare("INSERT INTO notifications (type, title, message, link, icon, icon_bg, icon_color, profile_image) VALUES ('payment', ?, ?, '/Cashier/Modules/Online-Payments.php', 'fa-receipt', '#dbeafe', '#2563eb', ?)");
-        $notif_stmt->execute([$notif_title, $notif_message, $profile_image]);
+        $notif_stmt = $pdo->prepare("INSERT INTO notifications (type, title, message, link, icon, icon_bg, icon_color, profile_image) VALUES ('payment', ?, ?, ?, 'fa-receipt', '#dbeafe', '#2563eb', ?)");
+        $notif_stmt->execute([$notif_title, $notif_message, $root . 'Cashier/Modules/Online-Payments.php', $profile_image]);
 
         $pdo->commit();
 

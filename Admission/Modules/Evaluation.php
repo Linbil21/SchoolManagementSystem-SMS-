@@ -570,7 +570,6 @@ $approved_today = $pdo->query("SELECT COUNT(*) FROM admission_applications WHERE
                             <select name="status" id="modalEvalStatus" class="eval-select">
                                 <option value="Approved">Verify & Auto-Transfer to Enrollment</option>
                                 <option value="Processing">Keep for Further Review</option>
-                                <option value="Rejected">Decline Application</option>
                             </select>
                         </div>
 

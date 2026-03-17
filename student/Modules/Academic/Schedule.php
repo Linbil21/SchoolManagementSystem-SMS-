@@ -1,5 +1,18 @@
 <?php
 session_start();
+
+// Robust absolute-relative path logic
+$script_name = $_SERVER['SCRIPT_NAME'];
+$check_paths = ['/student/', '/Super-admin/', '/Admin/', '/Cashier/', '/Admission/', '/auth/', '/modules/'];
+$project_base = '';
+foreach ($check_paths as $path) {
+    if (($pos = stripos($script_name, $path)) !== false) {
+        $project_base = rtrim(substr($script_name, 0, $pos), '/');
+        break;
+    }
+}
+$root = $project_base . '/';
+
 require_once '../../../auth/Security.php';
 // checkRole(['student']); // Temporarily disable strict role check if needed or keep enabled
 
@@ -321,7 +334,7 @@ $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
             <!-- Professional COR Print Layout (Hidden on Screen) -->
             <div class="cor-print-only">
                 <div class="cor-header">
-                    <img src="/Assets/image/logo.png" style="width: 80px; height: 80px; margin-bottom: 10px;" alt="Logo">
+                    <img src="<?php echo $root; ?>Assets/image/logo.png" style="width: 80px; height: 80px; margin-bottom: 10px;" alt="Logo">
                     <h2>Modern State University</h2>
                     <p>University Avenue, Knowledge Link, Philippines</p>
                     <p>Contact: info@msu.edu.ph | Tel: (02) 888-1234</p>

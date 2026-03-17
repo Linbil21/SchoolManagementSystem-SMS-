@@ -3,6 +3,18 @@ session_start();
 require_once '../../Database/config.php';
 require_once '../../auth/mail_helper.php';
 
+// Robust absolute-relative path logic
+$script_name = $_SERVER['SCRIPT_NAME'];
+$check_paths = ['/student/', '/Super-admin/', '/Admin/', '/Cashier/', '/Admission/', '/auth/', '/modules/'];
+$project_base = '';
+foreach ($check_paths as $path) {
+    if (($pos = stripos($script_name, $path)) !== false) {
+        $project_base = rtrim(substr($script_name, 0, $pos), '/');
+        break;
+    }
+}
+$root = $project_base . '/';
+
 $error = '';
 $success = '';
 
@@ -28,7 +40,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 
                 // Send OTP via email
                 if (sendOTP($email, $otp, 'Student Account Password Reset')) {
-                    header("Location: reset_verification.php?email=" . urlencode($email));
+                    header("Location: " . $root . "student/auth/reset_verification.php?email=" . urlencode($email));
                     exit();
                 } else {
                     $error = "System failed to send the reset code. Please try again.";
@@ -70,7 +82,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             display: flex;
             align-items: center;
             justify-content: center;
-            background: var(--bg-gradient), url('../../Assets/image/background.jpg');
+            background: var(--bg-gradient), url('<?php echo $root; ?>Assets/image/background.jpg');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -254,7 +266,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </button>
             </form>
 
-            <a href="Login.php" class="back-link">
+            <a href="<?php echo $root; ?>student/auth/Login.php" class="back-link">
                 <i class="fas fa-arrow-left" style="margin-right: 8px;"></i> Back to Login
             </a>
 

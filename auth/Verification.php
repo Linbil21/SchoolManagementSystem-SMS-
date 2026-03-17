@@ -4,6 +4,18 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 require_once '../Database/config.php';
 
+// Robust absolute-relative path logic
+$script_name = $_SERVER['SCRIPT_NAME'];
+$check_paths = ['/student/', '/Super-admin/', '/Admin/', '/Cashier/', '/Admission/', '/auth/', '/modules/'];
+$project_base = '';
+foreach ($check_paths as $path) {
+    if (($pos = stripos($script_name, $path)) !== false) {
+        $project_base = rtrim(substr($script_name, 0, $pos), '/');
+        break;
+    }
+}
+$root = $project_base . '/';
+
 $email = $_GET['email'] ?? '';
 $type = $_GET['type'] ?? 'login'; // login or register
 $error = $_GET['error'] ?? '';
@@ -48,7 +60,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $notif_stmt = $pdo->prepare("INSERT INTO notifications (user_id, type, title, message, profile_image, icon, icon_bg, icon_color) VALUES (NULL, ?, ?, ?, ?, 'fa-check-circle', '#d1fae5', '#059669')");
             $notif_stmt->execute([$notif_type, $notif_title, $notif_msg, $student->profile_image]);
 
-            header("Location: ../student/Dashboard.php");
+            header("Location: " . $root . "student/Dashboard.php");
             exit();
         } else {
             header("Location: Verification.php?email=" . urlencode($email) . "&type=" . $type . "&error=invalid_otp");

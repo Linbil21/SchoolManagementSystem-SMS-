@@ -4,11 +4,23 @@ session_start();
 require_once '../../../auth/Security.php';
 checkRole(['student']);
 
+// Robust absolute-relative path logic
+$script_name = $_SERVER['SCRIPT_NAME'];
+$check_paths = ['/student/', '/Super-admin/', '/Admin/', '/Cashier/', '/Admission/', '/auth/', '/modules/'];
+$project_base = '';
+foreach ($check_paths as $path) {
+    if (($pos = stripos($script_name, $path)) !== false) {
+        $project_base = rtrim(substr($script_name, 0, $pos), '/');
+        break;
+    }
+}
+$root = $project_base . '/';
+
 // Admission Approval Check
 $enrollment_status = $_SESSION['enrollment_status'] ?? 'Pending';
 $allowed_payment_statuses = ['Pending Payment', 'Validation', 'Enrolled'];
 if (!in_array($enrollment_status, $allowed_payment_statuses)) {
-    header("Location: ../Admission/Result.php");
+    header("Location: " . $root . "student/Modules/Admission/Result.php");
     exit();
 }
 ?>
@@ -514,7 +526,7 @@ if (!in_array($enrollment_status, $allowed_payment_statuses)) {
                     </div>
                     <div class="watermark">PREVIEW</div>
                     <div style="text-align: center; margin-bottom: 25px;">
-                        <img src="/Assets/image/logo.png" style="width: 50px; margin-bottom: 10px;">
+                        <img src="<?php echo $root; ?>Assets/image/logo.png" style="width: 50px; margin-bottom: 10px;">
                         <h4 style="color: #1648bc; text-transform: uppercase; font-weight: 800; letter-spacing: 1px;">SMS Academy</h4>
                         <p style="font-size: 0.65rem; color: #64748b;">OFFICIAL E-RECEIPT PREVIEW</p>
                     </div>
@@ -638,7 +650,7 @@ if (!in_array($enrollment_status, $allowed_payment_statuses)) {
                         text: data.message,
                         confirmButtonColor: '#2563eb'
                     }).then(() => {
-                        window.location.href = 'History.php';
+                        window.location.href = '<?php echo $root; ?>student/Modules/Payments/History.php';
                     });
                 } else {
                     Swal.fire({

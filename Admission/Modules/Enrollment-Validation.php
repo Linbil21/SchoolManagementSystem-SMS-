@@ -59,13 +59,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     exit;
 }
 
-// Fetch students pending final validation (Status: Validation)
+// Fetch students pending final validation (Status: Validation) who have made at least one payment
 try {
     $sql = "SELECT e.*, s.student_id as current_id, s.is_verified, 
-            (SELECT amount FROM payments WHERE enrollment_id = e.enrollmentId ORDER BY created_at DESC LIMIT 1) as last_payment 
+            (SELECT SUM(amount) FROM payments WHERE enrollment_id = e.enrollmentId AND status IN ('Completed', 'Verified')) as total_paid,
+            (SELECT COUNT(*) FROM payments WHERE enrollment_id = e.enrollmentId AND status IN ('Completed', 'Verified')) as payment_count
             FROM enrollments e 
             LEFT JOIN students s ON e.email = s.email 
             WHERE e.status = 'Validation' 
+            HAVING payment_count > 0
             ORDER BY e.created_at DESC";
     $validation_list = $pdo->query($sql)->fetchAll(PDO::FETCH_OBJ);
 } catch (PDOException $e) {

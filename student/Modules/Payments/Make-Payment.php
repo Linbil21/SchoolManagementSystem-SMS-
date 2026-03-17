@@ -1,5 +1,18 @@
 <?php
 session_start();
+
+// Robust absolute-relative path logic
+$script_name = $_SERVER['SCRIPT_NAME'];
+$check_paths = ['/student/', '/Super-admin/', '/Admin/', '/Cashier/', '/Admission/', '/auth/', '/modules/'];
+$project_base = '';
+foreach ($check_paths as $path) {
+    if (($pos = stripos($script_name, $path)) !== false) {
+        $project_base = rtrim(substr($script_name, 0, $pos), '/');
+        break;
+    }
+}
+$root = $project_base . '/';
+
 require_once '../../../auth/Security.php';
 checkRole(['student']);
 require_once '../../../Database/config.php';
@@ -11,6 +24,7 @@ $student_id = "N/A";
 
 if ($email) {
     try {
+        // Try enrollment record first (for students with active enrollment)
         $stmt = $pdo->prepare("SELECT e.first_name, e.last_name, e.reference_code, c.course_name, s.student_id as real_id 
                                FROM enrollments e 
                                LEFT JOIN courses c ON (e.course_id = c.courseId OR e.preferred_course_1 = CAST(c.courseId AS CHAR))
@@ -22,6 +36,16 @@ if ($email) {
             $student_name = trim($student->first_name . " " . $student->last_name);
             $course_name = $student->course_name ?? 'N/A';
             $student_id = $student->real_id ?? $student->reference_code ?? 'N/A';
+        } else {
+            // Fallback: pre-enrolled student (no enrollment record yet) — get from students table
+            $s2 = $pdo->prepare("SELECT first_name, last_name, student_id, course FROM students WHERE email = ? LIMIT 1");
+            $s2->execute([$email]);
+            $sdata = $s2->fetch(PDO::FETCH_OBJ);
+            if ($sdata) {
+                $student_name = trim($sdata->first_name . " " . $sdata->last_name);
+                $course_name = $sdata->course ?? 'N/A';
+                $student_id = $sdata->student_id ?? 'PENDING';
+            }
         }
     } catch (PDOException $e) {}
 }
@@ -454,7 +478,7 @@ if ($email) {
                         <!-- Actual Content inside a container to be blurred -->
                         <div id="receiptContent" style="filter: blur(6px); user-select: none; pointer-events: none; transition: filter 0.4s ease;">
                             <div class="receipt-header">
-                                <img src="/Assets/image/logo.png" alt="Logo">
+                                <img src="<?php echo $root; ?>Assets/image/logo.png" alt="Logo">
                                 <h2>SMS School Management</h2>
                                 <p style="font-size: 0.75rem; color: var(--text-muted); letter-spacing: 0.5px;">Live E-Receipt Preview</p>
                             </div>
@@ -524,7 +548,7 @@ if ($email) {
                 <div style="color: #22c55e; font-size: 4rem; margin-bottom: 15px;"><i class="fas fa-check-circle"></i></div>
                 <h3 style="color: #1e293b; margin-bottom: 10px;">Payment Successful!</h3>
                 <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 25px;">Your official e-receipt has been generated and recorded.</p>
-                <a href="History.php" style="background: #2563eb; color: white; padding: 12px 25px; border-radius: 12px; text-decoration: none; font-weight: 700; display: inline-block;">View Official Receipt</a>
+                <a href="<?php echo $root; ?>student/Modules/Payments/History.php" style="background: #2563eb; color: white; padding: 12px 25px; border-radius: 12px; text-decoration: none; font-weight: 700; display: inline-block;">View Official Receipt</a>
             </div>
         </div>
     </div>
@@ -571,7 +595,7 @@ if ($email) {
 
             // Send actual API request
             try {
-                const response = await fetch('../../api/payment_gateway.php', {
+                const response = await fetch('<?php echo $root; ?>student/api/payment_gateway.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ amount: amount, method: method, description: desc })

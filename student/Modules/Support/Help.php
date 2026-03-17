@@ -1,5 +1,17 @@
 <?php
 session_start();
+
+// Robust absolute-relative path logic
+$script_name = $_SERVER['SCRIPT_NAME'];
+$check_paths = ['/student/', '/Super-admin/', '/Admin/', '/Cashier/', '/Admission/', '/auth/', '/modules/'];
+$project_base = '';
+foreach ($check_paths as $path) {
+    if (($pos = stripos($script_name, $path)) !== false) {
+        $project_base = rtrim(substr($script_name, 0, $pos), '/');
+        break;
+    }
+}
+$root = $project_base . '/';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -9,7 +21,7 @@ session_start();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Help & FAQs</title>
-    <link rel="icon" type="image/x-icon" href="../../Image/logo.png">
+    <link rel="icon" type="image/x-icon" href="<?php echo $root; ?>Assets/image/logo.png">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -240,7 +252,7 @@ session_start();
                 <h3>Still have questions?</h3>
                 <p style="color: #64748b;">Can't find the answer you're looking for? Our support team is here to help.
                 </p>
-                <a href="Messages.php" class="chat-btn-support">Chat with Support</a>
+                <a href="<?php echo $root; ?>student/Modules/Support/Messages.php" class="chat-btn-support">Chat with Support</a>
             </div>
 
         </div>

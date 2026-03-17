@@ -1,5 +1,18 @@
 <?php
 session_start();
+
+// Robust absolute-relative path logic
+$script_name = $_SERVER['SCRIPT_NAME'];
+$check_paths = ['/student/', '/Super-admin/', '/Admin/', '/Cashier/', '/Admission/', '/auth/', '/modules/'];
+$project_base = '';
+foreach ($check_paths as $path) {
+    if (($pos = stripos($script_name, $path)) !== false) {
+        $project_base = rtrim(substr($script_name, 0, $pos), '/');
+        break;
+    }
+}
+$root = $project_base . '/';
+
 // Security check
 require_once '../../../auth/Security.php';
 checkRole(['student']);
@@ -308,8 +321,8 @@ checkRole(['student']);
                                     echo "<td><span class='status-badge {$status_class}'>" . htmlspecialchars($payment->status) . "</span></td>";
                                     echo "<td>
                                         <div style='display: flex; gap: 8px;'>
-                                            <button class='view-btn' onclick=\"openModal('" . htmlspecialchars($payment->transaction_id) . "', '" . htmlspecialchars($payment->payment_method) . "', '" . number_format($payment->amount, 2) . "', '" . htmlspecialchars($date) . "', '" . htmlspecialchars($payment->status) . "', '" . htmlspecialchars($clean_desc) . "', '/" . htmlspecialchars($payment->proof_of_payment) . "')\">View</button>
-                                            <a href='Print-Receipt.php?id=" . htmlspecialchars($payment->transaction_id) . "' target='_blank' class='view-btn' style='text-decoration: none; display: flex; align-items: center; gap: 5px; background: #f8fafc; border-color: #2563eb; color: #2563eb;'>
+                                            <button class='view-btn' onclick=\"openModal('" . htmlspecialchars($payment->transaction_id) . "', '" . htmlspecialchars($payment->payment_method) . "', '" . number_format($payment->amount, 2) . "', '" . htmlspecialchars($date) . "', '" . htmlspecialchars($payment->status) . "', '" . htmlspecialchars($clean_desc) . "', '" . $root . htmlspecialchars($payment->proof_of_payment) . "')\">View</button>
+                                            <a href='<?php echo $root; ?>student/Modules/Payments/Print-Receipt.php?id=" . htmlspecialchars($payment->transaction_id) . "' target='_blank' class='view-btn' style='text-decoration: none; display: flex; align-items: center; gap: 5px; background: #f8fafc; border-color: #2563eb; color: #2563eb;'>
                                                 <i class='fas fa-print'></i> Receipt
                                             </a>
                                         </div>
@@ -507,7 +520,7 @@ checkRole(['student']);
             document.getElementById('modalDate').textContent = date;
             document.getElementById('modalStatus').textContent = status;
             document.getElementById('modalDesc').textContent = desc;
-            document.getElementById('modalPrintBtn').href = 'Print-Receipt.php?id=' + ref;
+            document.getElementById('modalPrintBtn').href = '<?php echo $root; ?>student/Modules/Payments/Print-Receipt.php?id=' + ref;
             
             const preview = document.querySelector('.receipt-preview');
             if (image && image !== '/') {

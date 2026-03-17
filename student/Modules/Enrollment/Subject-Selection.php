@@ -2,6 +2,19 @@
 session_start();
 // Security check
 require_once '../../../auth/Security.php';
+
+// Robust absolute-relative path logic
+$script_name = $_SERVER['SCRIPT_NAME'];
+$check_paths = ['/student/', '/Super-admin/', '/Admin/', '/Cashier/', '/Admission/', '/auth/', '/modules/'];
+$project_base = '';
+foreach ($check_paths as $path) {
+    if (($pos = stripos($script_name, $path)) !== false) {
+        $project_base = rtrim(substr($script_name, 0, $pos), '/');
+        break;
+    }
+}
+$root = $project_base . '/';
+
 checkRole(['student']);
 ?>
 <!DOCTYPE html>
@@ -277,7 +290,7 @@ checkRole(['student']);
                     <h3>Total Units: 17.0</h3>
                     <p>Maximum allowable units: 23.0</p>
                 </div>
-                <a href="View-Assessment.php" class="proceed-btn">
+                <a href="<?php echo $root; ?>student/Modules/Enrollment/View-Assessment.php" class="proceed-btn">
                     Proceed to Assessment <i class="fas fa-arrow-right"
                         style="margin-left: 10px; hover: color: white;"></i>
                 </a>

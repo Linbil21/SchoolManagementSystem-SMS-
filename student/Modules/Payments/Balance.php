@@ -1,5 +1,18 @@
 <?php
 session_start();
+
+// Robust absolute-relative path logic
+$script_name = $_SERVER['SCRIPT_NAME'];
+$check_paths = ['/student/', '/Super-admin/', '/Admin/', '/Cashier/', '/Admission/', '/auth/', '/modules/'];
+$project_base = '';
+foreach ($check_paths as $path) {
+    if (($pos = stripos($script_name, $path)) !== false) {
+        $project_base = rtrim(substr($script_name, 0, $pos), '/');
+        break;
+    }
+}
+$root = $project_base . '/';
+
 // Security check
 require_once '../../../auth/Security.php';
 checkRole(['student']);
@@ -8,7 +21,7 @@ checkRole(['student']);
 $enrollment_status = $_SESSION['enrollment_status'] ?? 'Pending';
 $allowed_payment_statuses = ['Pending', 'Pending Payment', 'Validation', 'Enrolled'];
 if (!in_array($enrollment_status, $allowed_payment_statuses)) {
-    header("Location: ../Admission/Result.php");
+    header("Location: " . $root . "student/Modules/Admission/Result.php");
     exit();
 }
 ?>
@@ -301,10 +314,10 @@ if (!in_array($enrollment_status, $allowed_payment_statuses)) {
                     <i class="fas fa-clock"></i> Last updated: <?php echo date('F d, Y • h:i A'); ?>
                 </div>
                 <div style="display: flex; gap: 12px;">
-                    <a href="History.php" class="pay-btn" style="background: white; color: #1e293b;">
+                    <a href="<?php echo $root; ?>student/Modules/Payments/History.php" class="pay-btn" style="background: white; color: #1e293b;">
                         <i class="fas fa-wallet"></i> My Receipts
                     </a>
-                    <a href="../../Dashboard.php" class="pay-btn" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3);">
+                    <a href="<?php echo $root; ?>student/Dashboard.php" class="pay-btn" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3);">
                         Make Payment
                     </a>
                 </div>

@@ -4,6 +4,18 @@ session_start();
 require_once '../auth/Security.php';
 checkRole(['student']);
 
+// Robust absolute-relative path logic
+$script_name = $_SERVER['SCRIPT_NAME'];
+$check_paths = ['/student/', '/Super-admin/', '/Admin/', '/Cashier/', '/Admission/', '/auth/', '/modules/'];
+$project_base = '';
+foreach ($check_paths as $path) {
+    if (($pos = stripos($script_name, $path)) !== false) {
+        $project_base = rtrim(substr($script_name, 0, $pos), '/');
+        break;
+    }
+}
+$root = $project_base . '/';
+
 require_once '../integration/Student_class.php';
 
 $student_name = $_SESSION['fullname'] ?? 'Student';
@@ -395,7 +407,7 @@ if ($current_day !== 'Sunday') {
                     <div style="font-size: 1.4rem; font-weight: 800; opacity: 0.6;">01</div>
                     <h4 style="font-size: 1rem; margin: 0;">Payment First</h4>
                     <p style="font-size: 0.82rem; opacity: 0.9; line-height: 1.5; flex:1;">Proceed to the school cashier or pay online to process your <strong>Downpayment</strong>, <strong>Half Payment</strong>, or <strong>Full Payment</strong> and secure an Official Receipt.</p>
-                    <a href="/student/Modules/Payments/History.php" style="padding: 8px 16px; background: white; color: #2563eb; border-radius: 10px; font-size: 0.8rem; font-weight: 700; text-decoration: none; display:inline-block; text-align:center;">
+                    <a href="<?php echo $root; ?>student/Modules/Payments/Make-Payment.php" style="padding: 8px 16px; background: white; color: #2563eb; border-radius: 10px; font-size: 0.8rem; font-weight: 700; text-decoration: none; display:inline-block; text-align:center;">
                         <i class="fas fa-credit-card"></i> Make Payment
                     </a>
                 </div>
@@ -413,7 +425,7 @@ if ($current_day !== 'Sunday') {
                     <div style="font-size: 1.4rem; font-weight: 800; opacity: 0.6;">03</div>
                     <h4 style="font-size: 1rem; margin: 0;">Upload Requirements</h4>
                     <p style="font-size: 0.82rem; opacity: 0.9; line-height: 1.5; flex:1;">Submit your pending documentary requirements (PSA, Form 138, ID Picture) to complete your student profile.</p>
-                    <a href="/student/Modules/Admission/Requirements.php" style="padding: 8px 16px; background: white; color: #2563eb; border-radius: 10px; font-size: 0.8rem; font-weight: 700; text-decoration: none; display:inline-block; text-align:center;">
+                    <a href="<?php echo $root; ?>student/Modules/Admission/Requirements.php" style="padding: 8px 16px; background: white; color: #2563eb; border-radius: 10px; font-size: 0.8rem; font-weight: 700; text-decoration: none; display:inline-block; text-align:center;">
                         <i class="fas fa-file-upload"></i> Upload Now
                     </a>
                 </div>
@@ -464,8 +476,8 @@ if ($current_day !== 'Sunday') {
                     <button onclick="document.getElementById('cashierModal').style.display='none'" style="flex:1; padding:14px; background:#f1f5f9; color:#1e293b; border:none; border-radius:14px; font-weight:700; font-size:0.9rem; cursor:pointer;">
                         Close
                     </button>
-                    <a href="/Cashier/Dashboard.php" style="flex:1; padding:14px; background:#2563eb; color:white; border:none; border-radius:14px; font-weight:700; font-size:0.9rem; cursor:pointer; text-decoration:none; display:flex; align-items:center; justify-content:center; gap:8px; text-align:center;">
-                        <i class="fas fa-arrow-right"></i> Go to Cashier Site
+                    <a href="<?php echo $root; ?>student/Cashier/Dashboard.php" style="flex:1; padding:14px; background:#2563eb; color:white; border:none; border-radius:14px; font-weight:700; font-size:0.9rem; cursor:pointer; text-decoration:none; display:flex; align-items:center; justify-content:center; gap:8px; text-align:center;">
+                        <i class="fas fa-arrow-right"></i> View My Payments
                     </a>
                 </div>
             </div>
@@ -483,7 +495,7 @@ if ($current_day !== 'Sunday') {
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title">Today's Schedule (<?php echo $current_day; ?>)</h3>
-                    <a href="/student/Modules/Academic/Schedule.php"
+                    <a href="<?php echo $root; ?>student/Modules/Academic/Schedule.php"
                         style="font-size: 0.85rem; color: var(--primary); text-decoration: none; font-weight: 600;">View
                         Full</a>
                 </div>

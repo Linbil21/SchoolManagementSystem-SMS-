@@ -9,6 +9,18 @@ require_once '../../Database/config.php';
 require_once '../../auth/mail_helper.php';
 require_once '../../auth/Security.php';
 
+// Robust absolute-relative path logic
+$script_name = $_SERVER['SCRIPT_NAME'];
+$check_paths = ['/student/', '/Super-admin/', '/Admin/', '/Cashier/', '/Admission/', '/auth/', '/modules/'];
+$project_base = '';
+foreach ($check_paths as $path) {
+    if (($pos = stripos($script_name, $path)) !== false) {
+        $project_base = rtrim(substr($script_name, 0, $pos), '/');
+        break;
+    }
+}
+$root = $project_base . '/';
+
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
     echo json_encode(['status' => 'error', 'message' => 'Invalid request method.']);
     exit();
@@ -52,12 +64,12 @@ try {
             $update->execute([$user->userId]);
 
             $redirectMap = [
-                'admin' => '../../Admin/Dashboard.php',
-                'superadmin' => '../../super-admin/Dashboard.php',
-                'admission' => '../../Admission/Dashboard.php',
-                'cashier' => '../../Cashier/Dashboard.php'
+                'admin' => $root . 'Admin/Dashboard.php',
+                'superadmin' => $root . 'super-admin/Dashboard.php',
+                'admission' => $root . 'Admission/Dashboard.php',
+                'cashier' => $root . 'Cashier/Dashboard.php'
             ];
-            $redirect = $redirectMap[$_SESSION['role']] ?? '../../auth/Login.php?error=unauthorized';
+            $redirect = $redirectMap[$_SESSION['role']] ?? $root . 'auth/Login.php?error=unauthorized';
             echo json_encode(['status' => 'success', 'redirect' => $redirect]);
             exit();
         }

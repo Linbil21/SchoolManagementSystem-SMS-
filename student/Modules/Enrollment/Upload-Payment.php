@@ -4,11 +4,23 @@ require_once '../../../Database/config.php';
 require_once '../../../auth/Security.php';
 checkRole(['student']);
 
+// Robust absolute-relative path logic
+$script_name = $_SERVER['SCRIPT_NAME'];
+$check_paths = ['/student/', '/Super-admin/', '/Admin/', '/Cashier/', '/Admission/', '/auth/', '/modules/'];
+$project_base = '';
+foreach ($check_paths as $path) {
+    if (($pos = stripos($script_name, $path)) !== false) {
+        $project_base = rtrim(substr($script_name, 0, $pos), '/');
+        break;
+    }
+}
+$root = $project_base . '/';
+
 // Admission Approval Check
 $enrollment_status = $_SESSION['enrollment_status'] ?? 'Pending';
 $allowed_payment_statuses = ['Pending Payment', 'Validation', 'Enrolled'];
 if (!in_array($enrollment_status, $allowed_payment_statuses)) {
-    header("Location: ../Admission/Result.php");
+    header("Location: " . $root . "student/Modules/Admission/Result.php");
     exit();
 }
 
@@ -47,10 +59,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['proof'])) {
             $pdo->commit();
             
             // Notification for Cashier
-            $notif_stmt = $pdo->prepare("INSERT INTO notifications (user_id, type, title, message, icon, icon_bg, icon_color, link) VALUES (NULL, 'online_payment', 'New Online Payment', ?, 'fa-file-invoice-dollar', '#fef2f2', '#ef4444', '/Cashier/Modules/Online-Payments.php')");
-            $notif_stmt->execute([$_SESSION['fullname'] . " has uploaded a payment proof for validation."]);
+            $notif_stmt = $pdo->prepare("INSERT INTO notifications (user_id, type, title, message, icon, icon_bg, icon_color, link) VALUES (NULL, 'online_payment', 'New Online Payment', ?, 'fa-file-invoice-dollar', '#fef2f2', '#ef4444', ?)");
+            $notif_link = $root . 'Cashier/Modules/Online-Payments.php';
+            $notif_stmt->execute([$_SESSION['fullname'] . " has uploaded a payment proof for validation.", $notif_link]);
             
-            header("Location: Enrollment-Status.php?status=payment_uploaded");
+            header("Location: " . $root . "student/Modules/Enrollment/Enrollment-Status.php?status=payment_uploaded");
             exit();
         } else {
             throw new Exception("Failed to upload file.");

@@ -1,6 +1,18 @@
 <?php
 session_start();
 
+// Robust absolute-relative path logic
+$script_name = $_SERVER['SCRIPT_NAME'];
+$check_paths = ['/student/', '/Super-admin/', '/Admin/', '/Cashier/', '/Admission/', '/auth/', '/modules/'];
+$project_base = '';
+foreach ($check_paths as $path) {
+    if (($pos = stripos($script_name, $path)) !== false) {
+        $project_base = rtrim(substr($script_name, 0, $pos), '/');
+        break;
+    }
+}
+$root = $project_base . '/';
+
 // Handle AJAX Delete
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'delete_requirement') {
     require_once dirname(__DIR__, 3) . '/Database/config.php';
@@ -211,7 +223,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                     <div style="font-weight: 700; color: #92400e; font-size: 0.95rem; margin-bottom: 3px;">Payment Required Before Submission</div>
                     <div style="font-size: 0.85rem; color: #78350f; line-height: 1.5;">Please visit the <strong>school cashier</strong> first to pay your <strong>Downpayment, Half Payment, or Full Payment</strong> and secure an <strong>Official Receipt</strong> before submitting your requirements.</div>
                 </div>
-                <a href="/student/Modules/Payments/History.php" style="flex-shrink: 0; padding: 9px 18px; background: #d97706; color: white; border-radius: 10px; font-size: 0.82rem; font-weight: 700; text-decoration: none; display: flex; align-items: center; gap: 7px; white-space: nowrap;">
+                <a href="<?php echo $root; ?>student/Modules/Payments/History.php" style="flex-shrink: 0; padding: 9px 18px; background: #d97706; color: white; border-radius: 10px; font-size: 0.82rem; font-weight: 700; text-decoration: none; display: flex; align-items: center; gap: 7px; white-space: nowrap;">
                     <i class="fas fa-file-invoice"></i> Issue Receipt
                 </a>
             </div>
@@ -256,7 +268,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                             <i class="fas fa-check-circle" style="color: #22c55e; font-size: 1.5rem;"></i>
                             <span class="upload-label" style="color: #16a34a;">File Submitted</span>
                             <div style="display: flex; gap: 10px; justify-content: center; margin-top: 15px;">
-                                <a href="/<?php echo $enrollment->{$doc['field']}; ?>" target="_blank" 
+                                <a href="<?php echo $root . $enrollment->{$doc['field']}; ?>" target="_blank" 
                                    style="padding: 6px 12px; background: #22c55e; color: white; border-radius: 8px; font-size: 0.8rem; font-weight: 600; text-decoration: none; transition: 0.2s;">
                                     <i class="fas fa-eye"></i> View
                                 </a>

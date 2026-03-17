@@ -1,5 +1,17 @@
 <?php
 session_start();
+
+// Robust absolute-relative path logic
+$script_name = $_SERVER['SCRIPT_NAME'];
+$check_paths = ['/student/', '/Super-admin/', '/Admin/', '/Cashier/', '/Admission/', '/auth/', '/modules/'];
+$project_base = '';
+foreach ($check_paths as $path) {
+    if (($pos = stripos($script_name, $path)) !== false) {
+        $project_base = rtrim(substr($script_name, 0, $pos), '/');
+        break;
+    }
+}
+$root = $project_base . '/';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -284,7 +296,7 @@ session_start();
                         style="background: white; border: 1px solid #cbd5e1; padding: 12px 25px; border-radius: 10px; cursor: pointer; color: #475569; font-weight: 600; margin-right: 10px;">
                         <i class="fas fa-print"></i> Print
                     </button>
-                    <a href="Upload-Payment.php"
+                    <a href="<?php echo $root; ?>student/Modules/Enrollment/Upload-Payment.php"
                         style="background: var(--primary); padding: 12px 30px; border-radius: 10px; color: white; text-decoration: none; font-weight: 600; display: inline-block;">
                         Proceed to Payment <i class="fas fa-credit-card" style="margin-left: 8px;"></i>
                     </a>

@@ -2,6 +2,18 @@
 session_start();
 require_once '../../../Database/config.php';
 
+// Robust absolute-relative path logic
+$script_name = $_SERVER['SCRIPT_NAME'];
+$check_paths = ['/student/', '/Super-admin/', '/Admin/', '/Cashier/', '/Admission/', '/auth/', '/modules/'];
+$project_base = '';
+foreach ($check_paths as $path) {
+    if (($pos = stripos($script_name, $path)) !== false) {
+        $project_base = rtrim(substr($script_name, 0, $pos), '/');
+        break;
+    }
+}
+$root = $project_base . '/';
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     try {
         $first_name = $_POST['first_name'];
@@ -32,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $stmt = $pdo->prepare($sql);
         $stmt->execute([$app_no, $first_name, $last_name, $dob, $gender, $email, $phone, $student_type, $course1, $course2, $last_school]);
 
-        header("Location: Result.php?status=success&app_no=" . urlencode($app_no));
+        header("Location: " . $root . "student/Modules/Admission/Result.php?status=success&app_no=" . urlencode($app_no));
         exit();
     } catch (Exception $e) {
         $message = "Error: " . $e->getMessage();

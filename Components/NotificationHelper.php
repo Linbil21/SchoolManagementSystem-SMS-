@@ -59,7 +59,21 @@ function getNotificationBadge($unread_count) {
 }
 
 // Get notifications HTML dropdown body (Standardized for all portals)
-function getNotificationsHtml($notifications) {
+function getNotificationsHtml($notifications, $root = null) {
+    if ($root === null) {
+        // Robust absolute-relative path logic fallback
+        $script_name = $_SERVER['SCRIPT_NAME'];
+        $check_paths = ['/student/', '/Super-admin/', '/Admin/', '/Cashier/', '/Admission/', '/auth/', '/modules/'];
+        $project_base = '';
+        foreach ($check_paths as $path) {
+            if (($pos = stripos($script_name, $path)) !== false) {
+                $project_base = rtrim(substr($script_name, 0, $pos), '/');
+                break;
+            }
+        }
+        $root = $project_base . '/';
+    }
+
     if (empty($notifications)) {
         return '
             <div class="dropdown-item" style="text-align: center; padding: 30px;">
@@ -88,7 +102,7 @@ function getNotificationsHtml($notifications) {
         $imageHtml = '';
         if (!empty($notif->profile_image) && $notif->profile_image !== 'default.jpg') {
             $imageHtml = "
-                <img src=\"/" . htmlspecialchars($notif->profile_image) . "\" 
+                <img src=\"" . $root . htmlspecialchars($notif->profile_image) . "\" 
                      class=\"notif-profile-img\" 
                      onerror=\"this.onerror=null; this.src='" . $fallbackAvatar . "';\"
                      alt=\"Profile\">

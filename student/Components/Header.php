@@ -7,7 +7,7 @@ require_once __DIR__ . '/../../auth/Security.php';
 <?php if (isReadOnly()): ?>
     <div style="background: linear-gradient(90deg, #6366f1 0%, #4f46e5 100%); color: white; padding: 8px 15px; text-align: center; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.5px; display: flex; align-items: center; justify-content: center; gap: 10px;">
         <i class="fas fa-eye"></i> <span>PEEK MODE: You are viewing the Student Portal as a Super Admin. Data modification is disabled.</span>
-        <a href="/super-admin/Dashboard.php" style="color: white; text-decoration: underline; margin-left:10px;">Return to Control Center</a>
+        <a href="<?php echo $root; ?>super-admin/Dashboard.php" style="color: white; text-decoration: underline; margin-left:10px;">Return to Control Center</a>
     </div>
 <?php endif; ?>
 <?php
@@ -79,7 +79,7 @@ if (count($name_parts) >= 2) {
                     <span class="mark-all" onclick="markAllRead()">Mark all</span>
                 </div>
                 <div class="dropdown-body">
-                    <?php echo getNotificationsHtml($notifications); ?>
+                    <?php echo getNotificationsHtml($notifications, $root); ?>
                 </div>
             </div>
         </div>
@@ -93,7 +93,7 @@ if (count($name_parts) >= 2) {
                 </div>
                 <div class="avatar-circle">
                     <?php if (!empty($profile_pic) && $profile_pic !== 'default.jpg'): ?>
-                        <img src="/<?php echo $profile_pic; ?>" alt="Profile">
+                        <img src="<?php echo $root . $profile_pic; ?>" alt="Profile">
                     <?php else: ?>
                         <?php echo $initials; ?>
                     <?php endif; ?>
@@ -103,7 +103,7 @@ if (count($name_parts) >= 2) {
                 <div class="dropdown-header profile-head">
                     <div class="avatar-circle large">
                         <?php if (!empty($profile_pic) && $profile_pic !== 'default.jpg'): ?>
-                            <img src="/<?php echo $profile_pic; ?>" alt="Profile">
+                            <img src="<?php echo $root . $profile_pic; ?>" alt="Profile">
                         <?php else: ?>
                             <?php echo $initials; ?>
                         <?php endif; ?>
@@ -507,7 +507,7 @@ if (count($name_parts) >= 2) {
         });
 
         // Backend sync
-        fetch('/student/api/mark_notifications_read.php')
+        fetch(window.smsRoot + 'student/api/mark_notifications_read.php')
             .catch(err => console.error('Error:', err));
     }
 

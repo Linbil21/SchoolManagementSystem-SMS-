@@ -2,8 +2,20 @@
 session_start();
 require_once '../../Database/config.php';
 
+// Robust absolute-relative path logic
+$script_name = $_SERVER['SCRIPT_NAME'];
+$check_paths = ['/student/', '/Super-admin/', '/Admin/', '/Cashier/', '/Admission/', '/auth/', '/modules/'];
+$project_base = '';
+foreach ($check_paths as $path) {
+    if (($pos = stripos($script_name, $path)) !== false) {
+        $project_base = rtrim(substr($script_name, 0, $pos), '/');
+        break;
+    }
+}
+$root = $project_base . '/';
+
 if (!isset($_SESSION['reset_email']) || !isset($_SESSION['otp_verified'])) {
-    header("Location: forgot_password.php");
+    header("Location: " . $root . "student/auth/forgot_password.php");
     exit();
 }
 
@@ -71,7 +83,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             display: flex;
             align-items: center;
             justify-content: center;
-            background: var(--bg-gradient), url('../../Assets/image/background.jpg');
+            background: var(--bg-gradient), url('<?php echo $root; ?>Assets/image/background.jpg');
             background-size: cover;
             background-position: center;
             padding: 20px;
@@ -163,7 +175,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <i class="fas fa-circle-check" style="margin-right: 10px;"></i>
                 Password Reset Successfully!
             </div>
-            <a href="Login.php" class="submit-btn" style="display: block; text-decoration: none; text-align: center;">Go to Login</a>
+            <a href="<?php echo $root; ?>student/auth/Login.php" class="submit-btn" style="display: block; text-decoration: none; text-align: center;">Go to Login</a>
         <?php else: ?>
             <?php if ($error): ?>
                 <div class="error-msg"><?php echo $error; ?></div>

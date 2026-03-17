@@ -72,7 +72,7 @@ if (move_uploaded_file($fileTmpName, $uploadPath)) {
         echo json_encode([
             'success' => true, 
             'message' => 'Profile image updated successfully',
-            'image_path' => '/' . $dbPath
+            'image_path' => $dbPath
         ]);
     } catch (PDOException $e) {
         // Cleanup file if DB update fails

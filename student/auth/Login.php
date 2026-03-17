@@ -1,6 +1,18 @@
 <?php
 require_once '../../auth/Security.php';
 $csrf_token = generateCsrfToken();
+
+// Robust absolute-relative path logic
+$script_name = $_SERVER['SCRIPT_NAME'];
+$check_paths = ['/student/', '/Super-admin/', '/Admin/', '/Cashier/', '/Admission/', '/auth/', '/modules/'];
+$project_base = '';
+foreach ($check_paths as $path) {
+    if (($pos = stripos($script_name, $path)) !== false) {
+        $project_base = rtrim(substr($script_name, 0, $pos), '/');
+        break;
+    }
+}
+$root = $project_base . '/';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -9,7 +21,7 @@ $csrf_token = generateCsrfToken();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Portal | SMS</title>
-    <link rel="icon" type="image/x-icon" href="../../Assets/image/logo.png">
+    <link rel="icon" type="image/x-icon" href="<?php echo $root; ?>Assets/image/logo.png">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
@@ -50,7 +62,7 @@ $csrf_token = generateCsrfToken();
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(rgba(30, 58, 138, 0.4), rgba(30, 58, 138, 0.4)), url('../../Assets/image/background.jpg');
+            background: linear-gradient(rgba(30, 58, 138, 0.4), rgba(30, 58, 138, 0.4)), url('<?php echo $root; ?>Assets/image/background.jpg');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -353,14 +365,14 @@ $csrf_token = generateCsrfToken();
         <div class="blob blob-3"></div>
     </div>
 
-    <a href="../../auth/Login.php" class="back-to-home">
+    <a href="<?php echo $root; ?>auth/Login.php" class="back-to-home">
         <i class="fas fa-arrow-left"></i> Selection Screen
     </a>
 
     <div class="login-container">
         <div class="login-card">
             <div class="logo-box">
-                <img src="../../Assets/image/logo.png" alt="SMS Logo">
+                <img src="<?php echo $root; ?>Assets/image/logo.png" alt="SMS Logo">
             </div>
 
             <?php if (isset($_GET['registered']) && $_GET['registered'] == 'true'): ?>
@@ -375,7 +387,7 @@ $csrf_token = generateCsrfToken();
             <h1>Student Portal</h1>
             <p class="subtitle">Enter your credentials to manage your studies</p>
 
-            <form action="Login_process.php" method="POST">
+            <form action="<?php echo $root; ?>student/auth/Login_process.php" method="POST">
                 <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
                 
                 <div class="form-group">
@@ -400,8 +412,8 @@ $csrf_token = generateCsrfToken();
                 </button>
 
                 <div class="form-links">
-                    <a href="forgot_password.php">Forgot password?</a>
-                    <a href="../../auth/Login.php?action=register">New? Enroll here</a>
+                    <a href="<?php echo $root; ?>student/auth/forgot_password.php">Forgot password?</a>
+                    <a href="<?php echo $root; ?>auth/Login.php?action=register">New? Enroll here</a>
                 </div>
 
                 <div style="margin-top: 25px; text-align: center; border-top: 1px solid #f1f5f9; padding-top: 20px;">
@@ -417,6 +429,7 @@ $csrf_token = generateCsrfToken();
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
+        window.smsRoot = "<?php echo $root; ?>";
         document.querySelector("form").addEventListener("submit", async function(e) {
             e.preventDefault();
             
@@ -551,7 +564,7 @@ $csrf_token = generateCsrfToken();
             formData.append('type', 'login');
 
             try {
-                const response = await fetch('../../auth/Verification.php', {
+                const response = await fetch(window.smsRoot + 'auth/Verification.php', {
                     method: 'POST',
                     body: formData
                 });
@@ -575,7 +588,7 @@ $csrf_token = generateCsrfToken();
                         });
                     } else {
                         // Assuming success if it contains dashboard or similar
-                         window.location.href = '../Dashboard.php';
+                         window.location.href = window.smsRoot + 'student/Dashboard.php';
                     }
                 }
             } catch (err) {
