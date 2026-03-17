@@ -240,11 +240,11 @@ $root = $project_base . '/';
                     <tbody>
                         <tr>
                             <td>Tuition Fee (Regular Semester Rate)</td>
-                            <td class="amount">₱4,975.00</td>
+                            <td class="amount">₱0.00</td>
                         </tr>
                         <tr>
                             <td>Miscellaneous & Other Fees</td>
-                            <td class="amount">₱0.00</td>
+                            <td class="amount">₱4,975.00</td>
                         </tr>
                     </tbody>
                 </table>

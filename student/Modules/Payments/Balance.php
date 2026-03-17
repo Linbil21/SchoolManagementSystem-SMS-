@@ -246,8 +246,8 @@ if (!in_array($enrollment_status, $allowed_payment_statuses)) {
                 if ($enrollment) {
                     $balance = $enrollment->balance;
                     $total_fee = $enrollment->total_fee;
-                    $tuition = $enrollment->tuition_fee ?? 4975.00;
-                    $misc = $enrollment->misc_fee ?? 0;
+                    $tuition = $enrollment->tuition_fee ?? 0;
+                    $misc = $enrollment->misc_fee ?? 4975.00;
                     $lab = $enrollment->lab_fee ?? 0;
                     $is_projected = ($enrollment->status === 'Pending Review' || $enrollment->status === 'Pending' || $enrollment->status === 'Validation');
                     $enrolled = true;
@@ -262,8 +262,8 @@ if (!in_array($enrollment_status, $allowed_payment_statuses)) {
                     if ($app) {
                         $course_name = $app->course_name ?: $app->preferred_course_1;
                         // Mock assessment based on standard rates
-                        $tuition = 4975; 
-                        $misc = 0;
+                        $tuition = 0; 
+                        $misc = 4975;
                         $lab = 0;
                         $total_fee = $tuition + $misc + $lab;
                         

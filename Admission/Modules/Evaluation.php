@@ -67,8 +67,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 }
 
                 // 3. Create or Update Enrollment & Assign Default Fees
-                $tuition = 4975.00;
-                $misc = 0.00;
+                $tuition = 0.00;
+                $misc = 4975.00;
                 $total = $tuition + $misc;
                 $ref_code = "";
 
@@ -171,7 +171,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 // Fetch pending and processing applications with their documents from enrollments
 $apps = $pdo->query("SELECT a.*, s.is_verified, 
                           COALESCE(c.course_name, a.preferred_course_1) as course_display_name,
-                          e.birth_cert, e.form_138, e.form_137, e.good_moral, e.barangay_clearance, e.id_picture,
+                          e.birth_cert, e.passport, e.form_138, e.form_137, e.good_moral, e.barangay_clearance, e.id_picture,
                           (SELECT 
                               CASE 
                                   WHEN proof_of_payment LIKE 'Assets/%' THEN CONCAT('/', proof_of_payment)
@@ -669,6 +669,7 @@ $approved_today = $pdo->query("SELECT COUNT(*) FROM admission_applications WHERE
                                     '<?php echo addslashes($app->first_name . ' ' . $app->last_name); ?>', 
                                     '<?php echo addslashes($app->course_display_name); ?>',
                                     '<?php echo addslashes($app->birth_cert); ?>',
+                                    '<?php echo addslashes($app->passport); ?>',
                                     '<?php echo addslashes($app->form_138); ?>',
                                     '<?php echo addslashes($app->form_137); ?>',
                                     '<?php echo addslashes($app->good_moral); ?>',
@@ -763,7 +764,7 @@ $approved_today = $pdo->query("SELECT COUNT(*) FROM admission_applications WHERE
             });
         }
 
-        function openReviewModal(id, name, course, psa, f138, f137, moral, brgy, idpic, receipt) {
+        function openReviewModal(id, name, course, psa, passport, f138, f137, moral, brgy, idpic, receipt) {
             document.getElementById('modalAppId').value = id;
             document.getElementById('modalStudentName').textContent = name;
             document.getElementById('modalStudentCourse').textContent = course + ' | Official Applicant';
@@ -773,6 +774,7 @@ $approved_today = $pdo->query("SELECT COUNT(*) FROM admission_applications WHERE
             
             const docs = [
                 { name: 'PSA Birth Certificate', path: psa, icon: 'fa-id-card', color: '#eef2ff', text: '#1d4ed8' },
+                { name: 'Passport (Bio Page)', path: passport, icon: 'fa-passport', color: '#dee2ff', text: '#5a189a' },
                 { name: 'Report Card (F-138)', path: f138, icon: 'fa-file-pdf', color: '#fef2f2', text: '#b91c1c' },
                 { name: 'Form 137 (TOR)', path: f137, icon: 'fa-scroll', color: '#f0fdf4', text: '#15803d' },
                 { name: 'Good Moral Cert.', path: moral, icon: 'fa-certificate', color: '#fff7ed', text: '#c2410c' },

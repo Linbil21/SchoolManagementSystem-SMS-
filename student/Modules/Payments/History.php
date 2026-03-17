@@ -464,7 +464,7 @@ checkRole(['student']);
                 const response = await fetch('../../api/payment_gateway.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ amount, method, description: "Tuition Fee via Gateway" })
+                    body: JSON.stringify({ amount, method, description: "Miscellaneous Fees via Gateway" })
                 });
 
                 const result = await response.json();

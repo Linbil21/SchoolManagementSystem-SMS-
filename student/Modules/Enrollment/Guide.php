@@ -218,7 +218,7 @@ $root = $project_base . '/';
                             Admission Assessment
                         </div>
                         <p class="step-desc">
-                            The admission team reviews your application. Once verified, you will receive an evaluation showing your total fees (Standard: ₱4,975 per semester).
+                            The admission team reviews your application. Once verified, you will receive an evaluation showing your Miscellaneous Fees (Standard: ₱4,975 per semester).
                         </p>
                         <div class="action-box">
                             <a href="<?php echo $root; ?>student/Modules/Admission/Result.php" class="btn-step">
@@ -237,7 +237,7 @@ $root = $project_base . '/';
                             Fee Payment (Settlement)
                         </div>
                         <p class="step-desc">
-                            Pay your Downpayment, Half-payment, or Full-payment (₱4,975) through the school cashier or via our online payment gateway. Secure your proof of payment for verification.
+                            Pay your Miscellaneous Fees (₱4,975) through the school cashier or via our online payment gateway. Secure your proof of payment for verification.
                         </p>
                         <div class="action-box">
                             <a href="<?php echo $root; ?>student/Modules/Payments/Make-Payment.php" class="btn-step">
@@ -265,7 +265,7 @@ $root = $project_base . '/';
                             Document & Receipt Submission
                         </div>
                         <p class="step-desc">
-                            Upload your proof of payment along with other requirements (PSA, Form 138, etc.). The admission team will verify these documents to unlock subject selection.
+                            Upload your documents: <strong>2x2 ID Picture</strong>, <strong>Passport</strong>, <strong>PSA Birth Certificate</strong>, <strong>Form 138</strong>, and <strong>Good Moral Character</strong>. The admission team will verify these to unlock subject selection.
                         </p>
                         <div class="action-box">
                             <a href="<?php echo $root; ?>student/Modules/Admission/Requirements.php" class="btn-step">

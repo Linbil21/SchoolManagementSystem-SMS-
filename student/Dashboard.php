@@ -399,48 +399,90 @@ if ($current_day !== 'Sunday') {
         $enrollment_status = $_SESSION['enrollment_status'] ?? 'Pending';
         if ($enrollment_status !== 'Enrolled'): 
         ?>
-        <div class="welcome-banner" style="margin-bottom: 30px;">
-            <h1 style="font-weight: 800;">Welcome to SMS! 🎓</h1>
-            <p>Thank you for registering. Please follow <a href="<?php echo $root; ?>student/Modules/Enrollment/Guide.php" style="color: white; font-weight: 700; text-decoration: underline;">this step-by-step guide</a> to officially enroll.</p>
-            
-            <div style="margin-top: 25px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
-                <!-- Step 1: Payment -->
-                <div style="background: rgba(255,255,255,0.15); padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(5px); display:flex; flex-direction:column; gap:8px;">
-                    <div style="font-size: 1.4rem; font-weight: 800; opacity: 0.6;">01</div>
-                    <h4 style="font-size: 1rem; margin: 0;">Payment First</h4>
-                    <p style="font-size: 0.82rem; opacity: 0.9; line-height: 1.5; flex:1;">Proceed to the school cashier or pay online to process your semester fee (<strong>₱4,975.00</strong>). You may choose Downpayment, Half or Full payment.</p>
-                    <a href="<?php echo $root; ?>student/Modules/Payments/Make-Payment.php" style="padding: 8px 16px; background: white; color: #2563eb; border-radius: 10px; font-size: 0.8rem; font-weight: 700; text-decoration: none; display:inline-block; text-align:center;">
-                        <i class="fas fa-credit-card"></i> Make Payment
-                    </a>
+        <div class="welcome-banner" style="
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+            padding: 40px;
+            border-radius: 30px;
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(37, 99, 235, 0.15);
+        ">
+            <!-- Decorative Background Elements -->
+            <div style="position: absolute; top: -100px; right: -100px; width: 300px; height: 300px; background: rgba(255,255,255,0.1); border-radius: 50%; blur: 80px;"></div>
+            <div style="position: absolute; bottom: -50px; left: -50px; width: 200px; height: 200px; background: rgba(255,255,255,0.05); border-radius: 50%;"></div>
+
+            <div style="position: relative; z-index: 2;">
+                <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 10px;">
+                    <span style="background: rgba(255,255,255,0.2); padding: 8px 15px; border-radius: 50px; font-size: 0.75rem; font-weight: 700; color: white; border: 1px solid rgba(255,255,255,0.3);">ENROLLMENT HUB</span>
+                    <h1 style="font-weight: 800; font-size: 2.2rem; margin: 0; letter-spacing: -1px;">Welcome to SMS! 🎓</h1>
                 </div>
-                <!-- Step 2: Admission Approval -->
-                <div style="background: rgba(255,255,255,0.15); padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(5px); display:flex; flex-direction:column; gap:8px;">
-                    <div style="font-size: 1.4rem; font-weight: 800; opacity: 0.6;">02</div>
-                    <h4 style="font-size: 1rem; margin: 0;">Admission Approval</h4>
-                    <p style="font-size: 0.82rem; opacity: 0.9; line-height: 1.5; flex:1;">Wait for the Admission team to verify your payment and approve your application to enter subjects.</p>
-                    <button disabled style="padding: 8px 16px; background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); border: 1px solid rgba(255,255,255,0.3); border-radius: 10px; font-size: 0.8rem; font-weight: 600; cursor: not-allowed;">
-                        <i class="fas fa-hourglass-half"></i> Pending
-                    </button>
-                </div>
-                <!-- Step 3: Upload Requirements -->
-                <div style="background: rgba(255,255,255,0.15); padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(5px); display:flex; flex-direction:column; gap:8px;">
-                    <div style="font-size: 1.4rem; font-weight: 800; opacity: 0.6;">03</div>
-                    <h4 style="font-size: 1rem; margin: 0;">Upload Requirements</h4>
-                    <p style="font-size: 0.82rem; opacity: 0.9; line-height: 1.5; flex:1;">Submit your pending documentary requirements (PSA, Form 138, ID Picture) to complete your student profile.</p>
-                    <a href="<?php echo $root; ?>student/Modules/Admission/Requirements.php" style="padding: 8px 16px; background: white; color: #2563eb; border-radius: 10px; font-size: 0.8rem; font-weight: 700; text-decoration: none; display:inline-block; text-align:center;">
-                        <i class="fas fa-file-upload"></i> Upload Now
-                    </a>
-                </div>
-                <!-- Step 4: Subject Enrollment -->
-                <div style="background: rgba(255,255,255,0.15); padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(5px); display:flex; flex-direction:column; gap:8px;">
-                    <div style="font-size: 1.4rem; font-weight: 800; opacity: 0.6;">04</div>
-                    <h4 style="font-size: 1rem; margin: 0;">Subject Enrollment</h4>
-                    <p style="font-size: 0.82rem; opacity: 0.9; line-height: 1.5; flex:1;">Once approved, the Enrollment module will be unlocked. Select your subjects to officially enroll in the semester.</p>
-                    <button disabled style="padding: 8px 16px; background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.5); border: 1px solid rgba(255,255,255,0.3); border-radius: 10px; font-size: 0.8rem; font-weight: 600; cursor: not-allowed;">
-                        <i class="fas fa-lock"></i> Locked
-                    </button>
+                <p style="font-size: 1.1rem; opacity: 0.9; margin-bottom: 35px; max-width: 700px; font-weight: 300;">
+                    Your journey starts here. Please complete the following steps to officially join our academic community. 
+                    <a href="<?php echo $root; ?>student/Modules/Enrollment/Guide.php" style="color: white; font-weight: 700; text-decoration: underline; margin-left: 5px;">View Full Guide</a>
+                </p>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px;">
+                    <!-- Step 1: Payment -->
+                    <div class="roadmap-step" style="background: rgba(255,255,255,0.12); padding: 25px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.15); backdrop-filter: blur(10px); transition: all 0.3s ease;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <div style="width: 45px; height: 45px; background: white; color: #2563eb; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; box-shadow: 0 10px 15px rgba(0,0,0,0.1);">
+                                <i class="fas fa-credit-card"></i>
+                            </div>
+                            <span style="font-weight: 900; font-size: 1.5rem; opacity: 0.2; color: white;">01</span>
+                        </div>
+                        <h4 style="font-size: 1.1rem; margin: 0 0 8px 0; font-weight: 700;">Account Settlement</h4>
+                        <p style="font-size: 0.82rem; opacity: 0.85; line-height: 1.6; margin-bottom: 20px; font-weight: 300;">
+                            Settle your <strong>Miscellaneous Fees</strong> of <strong>₱4,975.00</strong>. You can choose between full or installment options via our secure gateway.
+                        </p>
+                        <a href="<?php echo $root; ?>student/Modules/Payments/Make-Payment.php" style="display: block; width: 100%; padding: 12px; background: white; color: #2563eb; border-radius: 14px; font-size: 0.85rem; font-weight: 800; text-decoration: none; text-align: center; transition: 0.3s; box-shadow: 0 10px 20px rgba(0,0,0,0.1);">
+                            PAY TUITION
+                        </a>
+                    </div>
+
+                    <!-- Step 2: Documents -->
+                    <div class="roadmap-step" style="background: rgba(255,255,255,0.12); padding: 25px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.15); backdrop-filter: blur(10px); transition: all 0.3s ease;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <div style="width: 45px; height: 45px; background: white; color: #7c3aed; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; box-shadow: 0 10px 15px rgba(0,0,0,0.1);">
+                                <i class="fas fa-file-upload"></i>
+                            </div>
+                            <span style="font-weight: 900; font-size: 1.5rem; opacity: 0.2; color: white;">02</span>
+                        </div>
+                        <h4 style="font-size: 1.1rem; margin: 0 0 8px 0; font-weight: 700;">Requirements</h4>
+                        <p style="font-size: 0.82rem; opacity: 0.85; line-height: 1.6; margin-bottom: 20px; font-weight: 300;">
+                            Submit your <strong>2x2 ID Picture</strong>, <strong>Passport</strong>, PSA, and Form 138. Ensure all scans are clear and readable.
+                        </p>
+                        <a href="<?php echo $root; ?>student/Modules/Admission/Requirements.php" style="display: block; width: 100%; padding: 12px; background: white; color: #7c3aed; border-radius: 14px; font-size: 0.85rem; font-weight: 800; text-decoration: none; text-align: center; transition: 0.3s; box-shadow: 0 10px 20px rgba(0,0,0,0.1);">
+                            SUBMIT FILES
+                        </a>
+                    </div>
+
+                    <!-- Step 3: Approval & Subjects -->
+                    <div class="roadmap-step" style="background: rgba(255,255,255,0.12); padding: 25px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.15); backdrop-filter: blur(10px); transition: all 0.3s ease; opacity: 0.8;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <div style="width: 45px; height: 45px; background: rgba(255,255,255,0.2); color: white; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+                                <i class="fas fa-lock"></i>
+                            </div>
+                            <span style="font-weight: 900; font-size: 1.5rem; opacity: 0.2; color: white;">03</span>
+                        </div>
+                        <h4 style="font-size: 1.1rem; margin: 0 0 8px 0; font-weight: 700;">Subject Plotting</h4>
+                        <p style="font-size: 0.82rem; opacity: 0.85; line-height: 1.6; margin-bottom: 20px; font-weight: 300;">
+                            Wait for admission approval. Once verified, you can select your subjects and finalize your class schedule.
+                        </p>
+                        <div style="width: 100%; padding: 12px; background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.6); border-radius: 14px; font-size: 0.85rem; font-weight: 700; text-align: center; border: 1px solid rgba(255,255,255,0.2); cursor: not-allowed;">
+                            LOCKED
+                        </div>
+                    </div>
                 </div>
             </div>
+            
+            <style>
+                .roadmap-step:hover {
+                    transform: translateY(-8px);
+                    background: rgba(255,255,255,0.18) !important;
+                    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+                }
+            </style>
         </div>
 
         <!-- Cashier Info Modal -->

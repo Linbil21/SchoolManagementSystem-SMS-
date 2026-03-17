@@ -86,18 +86,35 @@ if (count($name_parts) >= 2) {
 
         <!-- User Profile -->
         <div class="user-wrapper">
-            <div class="user-profile" onclick="toggleDropdown('userDropdown')">
-                <div class="user-info">
-                    <span class="name"><?php echo htmlspecialchars($student_name); ?></span>
-                    <span class="role">Student</span>
-                </div>
-                <div class="avatar-circle">
+            <div class="user-profile" onclick="toggleDropdown('userDropdown')" style="
+                background: var(--hover-bg);
+                padding: 6px 15px 6px 6px;
+                border-radius: 100px;
+                border: 1px solid var(--border-color);
+                cursor: pointer;
+                transition: 0.3s;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            ">
+                <div class="avatar-circle" style="
+                    width: 38px;
+                    height: 38px;
+                    background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+                    border: none;
+                    box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+                ">
                     <?php if (!empty($profile_pic) && $profile_pic !== 'default.jpg'): ?>
                         <img src="<?php echo $root . $profile_pic; ?>" alt="Profile">
                     <?php else: ?>
-                        <?php echo $initials; ?>
+                        <span style="font-size: 0.8rem; font-weight: 800;"><?php echo $initials; ?></span>
                     <?php endif; ?>
                 </div>
+                <div class="user-info" style="align-items: flex-start; text-align: left;">
+                    <span class="name" style="font-size: 0.85rem; font-weight: 800; color: var(--text-color);"><?php echo htmlspecialchars($student_name); ?></span>
+                    <span class="role" style="font-size: 0.65rem; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Student Portal</span>
+                </div>
+                <i class="fas fa-chevron-down" style="font-size: 0.7rem; color: #94a3b8; margin-left: 5px;"></i>
             </div>
             <div id="userDropdown" class="dropdown-content profile-dropdown">
                 <div class="dropdown-header profile-head">
@@ -145,24 +162,26 @@ if (count($name_parts) >= 2) {
     }
 
     .theme-toggle, .action-btn {
-        width: 40px;
-        height: 40px;
+        width: 42px;
+        height: 42px;
         display: flex;
         align-items: center;
         justify-content: center;
-        background: var(--hover-bg);
+        background: var(--surface-color);
         border: 1px solid var(--border-color);
-        border-radius: 12px;
+        border-radius: 14px;
         cursor: pointer;
         color: var(--text-color);
-        transition: all 0.3s ease;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
     }
 
     .theme-toggle:hover, .action-btn:hover {
-        background: var(--accent-color);
+        background: #2563eb;
         color: white;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(22, 72, 188, 0.2);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 15px rgba(37, 99, 235, 0.2);
+        border-color: #2563eb;
     }
 
     .header-left {
@@ -183,18 +202,25 @@ if (count($name_parts) >= 2) {
     .search-bar {
         display: flex;
         align-items: center;
-        background: var(--hover-bg);
-        padding: 10px 18px;
-        border-radius: 10px;
-        width: 300px;
+        background: var(--surface-color);
+        padding: 10px 20px;
+        border-radius: 14px;
+        width: 320px;
         border: 1px solid var(--border-color);
-        transition: 0.3s;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
     }
 
     .search-bar:focus-within {
-        border-color: var(--accent-color);
-        background: var(--surface-color);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        border-color: #2563eb;
+        background: white;
+        box-shadow: 0 10px 20px rgba(37, 99, 235, 0.08);
+        width: 350px;
+    }
+
+    .search-bar i {
+        color: #94a3b8;
+        font-size: 0.9rem;
     }
 
     .search-bar input {
@@ -205,6 +231,7 @@ if (count($name_parts) >= 2) {
         color: var(--text-color);
         font-size: 0.85rem;
         padding-left: 12px;
+        font-weight: 500;
     }
 
     .header-right {
@@ -411,27 +438,32 @@ if (count($name_parts) >= 2) {
         display: flex;
         flex-direction: column;
         align-items: center;
-        padding: 5px 20px;
-        border-radius: 10px;
+        padding: 8px 25px;
+        background: rgba(37, 99, 235, 0.05);
+        border: 1px solid rgba(37, 99, 235, 0.1);
+        border-radius: 16px;
         position: absolute;
         left: 50%;
         top: 50%;
         transform: translate(-50%, -50%);
+        min-width: 200px;
     }
 
     .clock-time {
-        font-size: 1.1rem;
+        font-size: 1.2rem;
         font-weight: 800;
-        color: var(--accent-color);
-        letter-spacing: 0.5px;
+        color: #2563eb;
+        letter-spacing: 1px;
+        font-variant-numeric: tabular-nums;
     }
 
     .clock-date {
-        font-size: 0.65rem;
-        font-weight: 600;
-        color: var(--text-muted);
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: #64748b;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
+        letter-spacing: 1.2px;
+        margin-top: 2px;
     }
 
 

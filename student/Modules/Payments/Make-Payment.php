@@ -443,11 +443,11 @@ if ($email) {
                             <div class="form-group" style="margin-bottom: 0;">
                                 <label>Payment Description</label>
                                 <select id="inputDesc" onchange="updatePreview()">
-                                    <option value="Enrollment Downpayment">Enrollment Downpayment</option>
-                                    <option value="Partial Tuition Fee">Partial Tuition Fee</option>
-                                    <option value="Full Tuition Fee">Full Tuition Fee</option>
-                                    <option value="Miscellaneous Fees">Miscellaneous Fees</option>
+                                    <option value="Miscellaneous Fees" selected>Miscellaneous Fees</option>
+                                    <option value="Enrollment Downpayment">Enrollment Downpayment (Misc)</option>
                                     <option value="Laboratory Fees">Laboratory Fees</option>
+                                    <option value="Full Tuition Fee">Full Tuition Fee (₱0.00)</option>
+                                    <option value="Partial Tuition Fee">Partial Tuition Fee</option>
                                     <option value="Uniforms / PE">Uniforms / PE Requirements</option>
                                     <option value="Books and Modules">Books and Modules</option>
                                     <option value="Clearance / Graduation Fee">Clearance / Graduation Fee</option>
@@ -505,7 +505,7 @@ if ($email) {
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td id="previewDesc">Enrollment Downpayment</td>
+                                    <td id="previewDesc">Miscellaneous Fees</td>
                                     <td style="text-align: right;" id="previewAmt">₱4,975.00</td>
                                 </tr>
                             </tbody>

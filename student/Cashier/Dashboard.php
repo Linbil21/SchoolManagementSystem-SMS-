@@ -50,7 +50,7 @@ try {
             $balance = $total_fee - $actual_paid;
             
             // Sync this to the database silently for consistency
-            $upd = $pdo->prepare("UPDATE enrollments SET tuition_fee = ?, misc_fee = 0, lab_fee = 0, total_fee = ?, balance = ? WHERE enrollmentId = ?");
+            $upd = $pdo->prepare("UPDATE enrollments SET tuition_fee = 0, misc_fee = ?, lab_fee = 0, total_fee = ?, balance = ? WHERE enrollmentId = ?");
             $upd->execute([$total_fee, $total_fee, $balance, $enrollment->enrollmentId]);
             $total_paid = $actual_paid;
         } else {
@@ -109,46 +109,72 @@ try {
             // Show roadmap if not yet fully Enrolled
             if ($enrollment_status !== 'Enrolled'): 
             ?>
-            <div style="background: linear-gradient(135deg, #1e40af, #3b82f6); color: white; padding: 30px; border-radius: 24px; margin-bottom: 30px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);">
-                <div style="display: flex; align-items: flex-start; gap: 15px; margin-bottom: 20px;">
-                    <div style="background: rgba(255,255,255,0.2); width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
-                        <i class="fas fa-route"></i>
+            <div style="
+                background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+                padding: 35px;
+                border-radius: 24px;
+                margin-bottom: 35px;
+                position: relative;
+                overflow: hidden;
+                box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+                border: 1px solid rgba(255,255,255,0.05);
+            ">
+                <div style="position: absolute; top: -50px; right: -50px; width: 150px; height: 150px; background: rgba(37,99,235,0.1); border-radius: 50%; filter: blur(40px);"></div>
+                
+                <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 25px; position: relative; z-index: 2;">
+                    <div style="background: #2563eb; width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: white;">
+                        <i class="fas fa-tasks"></i>
                     </div>
                     <div>
-                        <h2 style="font-weight: 800; margin: 0;">Enrollment Roadmap 🎓</h2>
-                        <p style="opacity: 0.9; font-size: 0.9rem;">Complete these steps to officially enroll in this institution.</p>
+                        <h2 style="font-weight: 800; color: white; margin: 0; font-size: 1.4rem;">Enrollment Roadmap</h2>
+                        <p style="color: #94a3b8; font-size: 0.85rem; margin: 0;">Follow these steps to complete your registration.</p>
                     </div>
                 </div>
 
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; position: relative; z-index: 2;">
                     <!-- Step 1 -->
-                    <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.1); position: relative;">
-                        <span style="position: absolute; top: 10px; right: 15px; font-weight: 800; font-size: 1.2rem; opacity: 0.3;">01</span>
-                        <h4 style="margin: 0 0 5px 0; font-size: 0.95rem;">Pay & Seal</h4>
-                        <p style="font-size: 0.75rem; line-height: 1.4; opacity: 0.8; margin-bottom: 12px;">Settle the per-sem fee (₱4,975). Secure your official e-receipt.</p>
-                        <a href="<?php echo $root; ?>student/Modules/Payments/Make-Payment.php" style="display: block; text-align: center; padding: 8px; background: white; color: #2563eb; border-radius: 8px; font-weight: 700; font-size: 0.75rem; text-decoration: none;">
-                            <i class="fas fa-credit-card" style="margin-right: 4px;"></i> Pay Now
+                    <div style="background: rgba(255,255,255,0.03); padding: 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <span style="font-weight: 800; font-size: 0.75rem; color: #2563eb; text-transform: uppercase; letter-spacing: 1px;">Step 01</span>
+                            <i class="fas fa-check-circle" style="color: #2563eb; opacity: 0.5;"></i>
+                        </div>
+                        <h4 style="color: white; margin: 0 0 10px 0; font-size: 1rem;">Settlement</h4>
+                        <p style="color: #94a3b8; font-size: 0.78rem; line-height: 1.5; margin-bottom: 18px;">
+                            Pay the <strong>Miscellaneous Fees</strong> of <strong>₱4,975.00</strong>. Secure your receipt for verification.
+                        </p>
+                        <a href="<?php echo $root; ?>student/Modules/Payments/Make-Payment.php" style="display: block; text-align: center; padding: 10px; background: #2563eb; color: white; border-radius: 12px; font-weight: 700; font-size: 0.78rem; text-decoration: none; transition: 0.3s;">
+                            PAY NOW
                         </a>
                     </div>
                     
                     <!-- Step 2 -->
-                    <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.1); position: relative;">
-                        <span style="position: absolute; top: 10px; right: 15px; font-weight: 800; font-size: 1.2rem; opacity: 0.3;">02</span>
-                        <h4 style="margin: 0 0 5px 0; font-size: 0.95rem;">Approval</h4>
-                        <p style="font-size: 0.75rem; line-height: 1.4; opacity: 0.8; margin-bottom: 12px;">Wait for the admission team to verify your payment and details.</p>
-                        <div style="display: block; text-align: center; padding: 8px; background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.6); border-radius: 8px; font-weight: 600; font-size: 0.75rem;">
-                            <i class="fas fa-hourglass" style="margin-right: 4px;"></i> Wait Verification
+                    <div style="background: rgba(255,255,255,0.03); padding: 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <span style="font-weight: 800; font-size: 0.75rem; color: #7c3aed; text-transform: uppercase; letter-spacing: 1px;">Step 02</span>
+                            <i class="fas fa-clock" style="color: #7c3aed; opacity: 0.5;"></i>
                         </div>
+                        <h4 style="color: white; margin: 0 0 10px 0; font-size: 1rem;">Submission</h4>
+                        <p style="color: #94a3b8; font-size: 0.78rem; line-height: 1.5; margin-bottom: 18px;">
+                            Upload your <strong>2x2 Picture</strong>, <strong>Passport</strong>, PSA, and Grade 12 Report Card.
+                        </p>
+                        <a href="<?php echo $root; ?>student/Modules/Admission/Requirements.php" style="display: block; text-align: center; padding: 10px; background: #7c3aed; color: white; border-radius: 12px; font-weight: 700; font-size: 0.78rem; text-decoration: none; transition: 0.3s;">
+                            UPLOAD FILES
+                        </a>
                     </div>
 
                     <!-- Step 3 -->
-                    <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.1); position: relative;">
-                        <span style="position: absolute; top: 10px; right: 15px; font-weight: 800; font-size: 1.2rem; opacity: 0.3;">03</span>
-                        <h4 style="margin: 0 0 5px 0; font-size: 0.95rem;">Requirements</h4>
-                        <p style="font-size: 0.75rem; line-height: 1.4; opacity: 0.8; margin-bottom: 12px;">Ensure all documents (PSA, Form 138) are correctly uploaded.</p>
-                        <a href="<?php echo $root; ?>student/Modules/Admission/Requirements.php" style="display: block; text-align: center; padding: 8px; background: white; color: #2563eb; border-radius: 8px; font-weight: 700; font-size: 0.75rem; text-decoration: none;">
-                            <i class="fas fa-upload" style="margin-right: 4px;"></i> Upload Files
-                        </a>
+                    <div style="background: rgba(255,255,255,0.03); padding: 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); opacity: 0.6;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <span style="font-weight: 800; font-size: 0.75rem; color: #10b981; text-transform: uppercase; letter-spacing: 1px;">Step 03</span>
+                            <i class="fas fa-lock" style="color: #94a3b8;"></i>
+                        </div>
+                        <h4 style="color: white; margin: 0 0 10px 0; font-size: 1rem;">Verification</h4>
+                        <p style="color: #94a3b8; font-size: 0.78rem; line-height: 1.5; margin-bottom: 18px;">
+                            Wait for the registrar to verify your submissions. Once cleared, you can finalize your subjects.
+                        </p>
+                        <div style="text-align: center; padding: 10px; background: rgba(255,255,255,0.05); color: #94a3b8; border-radius: 12px; font-weight: 600; font-size: 0.78rem; border: 1px solid rgba(255,255,255,0.1);">
+                            PENDING APPROVAL
+                        </div>
                     </div>
                 </div>
             </div>
