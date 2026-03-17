@@ -334,6 +334,7 @@ try {
             width: 100% !important;
             height: auto !important;
             box-sizing: border-box !important;
+            white-space: nowrap !important;
         }
 
         .quick-action-btn:last-child { margin-bottom: 0 !important; }
