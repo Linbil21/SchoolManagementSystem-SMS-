@@ -396,8 +396,8 @@ if ($current_day !== 'Sunday') {
         <div class="content-area">
 
         <?php 
-        $admission_status = $_SESSION['admission_status'] ?? 'Pending';
-        if ($admission_status !== 'Approved'): 
+        $enrollment_status = $_SESSION['enrollment_status'] ?? 'Pending';
+        if ($enrollment_status !== 'Enrolled'): 
         ?>
         <div class="welcome-banner" style="margin-bottom: 30px;">
             <h1 style="font-weight: 800;">Welcome to SMS! 🎓</h1>
@@ -408,7 +408,7 @@ if ($current_day !== 'Sunday') {
                 <div style="background: rgba(255,255,255,0.15); padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(5px); display:flex; flex-direction:column; gap:8px;">
                     <div style="font-size: 1.4rem; font-weight: 800; opacity: 0.6;">01</div>
                     <h4 style="font-size: 1rem; margin: 0;">Payment First</h4>
-                    <p style="font-size: 0.82rem; opacity: 0.9; line-height: 1.5; flex:1;">Proceed to the school cashier or pay online to process your <strong>Downpayment</strong>, <strong>Half Payment</strong>, or <strong>Full Payment</strong> and secure an Official Receipt.</p>
+                    <p style="font-size: 0.82rem; opacity: 0.9; line-height: 1.5; flex:1;">Proceed to the school cashier or pay online to process your semester fee (<strong>₱4,975.00</strong>). You may choose Downpayment, Half or Full payment.</p>
                     <a href="<?php echo $root; ?>student/Modules/Payments/Make-Payment.php" style="padding: 8px 16px; background: white; color: #2563eb; border-radius: 10px; font-size: 0.8rem; font-weight: 700; text-decoration: none; display:inline-block; text-align:center;">
                         <i class="fas fa-credit-card"></i> Make Payment
                     </a>

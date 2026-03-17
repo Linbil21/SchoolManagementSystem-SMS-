@@ -34,13 +34,30 @@ try {
     // Enrollment record
     $stmt = $pdo->prepare("SELECT * FROM enrollments WHERE email = ? ORDER BY created_at DESC LIMIT 1");
     $stmt->execute([$student_email]);
-    $enrollment = $stmt->fetch();
+    $enrollment = $stmt->fetch(PDO::FETCH_OBJ);
 
     $enrollment_id = 0;
     if ($enrollment && is_object($enrollment)) {
-        $total_fee   = $enrollment->total_fee ?? 0;
-        $balance     = $enrollment->balance ?? 0;
-        $total_paid  = $total_fee - $balance;
+        // Force update to 4,975 if it's an old dummy record (approximate detection)
+        if ($enrollment->total_fee > 6000 || $enrollment->total_fee <= 0) {
+            $total_fee = 4975.00;
+            
+            // Calculate total paid from payments table for accurate balance
+            $pay_sum_stmt = $pdo->prepare("SELECT SUM(amount) FROM payments WHERE (enrollment_id = ? OR description LIKE ?) AND (status = 'Completed' OR status = 'Verified' OR status = 'Verified (Online)')");
+            $pay_sum_stmt->execute([$enrollment->enrollmentId ?? 0, "%$student_email%"]);
+            $actual_paid = $pay_sum_stmt->fetchColumn() ?: 0;
+            
+            $balance = $total_fee - $actual_paid;
+            
+            // Sync this to the database silently for consistency
+            $upd = $pdo->prepare("UPDATE enrollments SET tuition_fee = ?, misc_fee = 0, lab_fee = 0, total_fee = ?, balance = ? WHERE enrollmentId = ?");
+            $upd->execute([$total_fee, $total_fee, $balance, $enrollment->enrollmentId]);
+            $total_paid = $actual_paid;
+        } else {
+            $total_fee   = $enrollment->total_fee ?? 0;
+            $balance     = $enrollment->balance ?? 0;
+            $total_paid  = $total_fee - $balance;
+        }
         $enrollment_id = $enrollment->enrollmentId ?? 0;
     }
 
@@ -86,6 +103,56 @@ try {
                 <h1><i class="fas fa-cash-register" style="margin-right:10px;"></i> My Financial Overview</h1>
                 <p>Welcome, <?php echo htmlspecialchars($student_name); ?>! Here's a summary of your tuition fees, payments, and account balance.</p>
             </div>
+
+            <!-- Enrollment Progress Step-by-Step Guidance -->
+            <?php 
+            // Show roadmap if not yet fully Enrolled
+            if ($enrollment_status !== 'Enrolled'): 
+            ?>
+            <div style="background: linear-gradient(135deg, #1e40af, #3b82f6); color: white; padding: 30px; border-radius: 24px; margin-bottom: 30px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);">
+                <div style="display: flex; align-items: flex-start; gap: 15px; margin-bottom: 20px;">
+                    <div style="background: rgba(255,255,255,0.2); width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                        <i class="fas fa-route"></i>
+                    </div>
+                    <div>
+                        <h2 style="font-weight: 800; margin: 0;">Enrollment Roadmap 🎓</h2>
+                        <p style="opacity: 0.9; font-size: 0.9rem;">Complete these steps to officially enroll in this institution.</p>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px;">
+                    <!-- Step 1 -->
+                    <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.1); position: relative;">
+                        <span style="position: absolute; top: 10px; right: 15px; font-weight: 800; font-size: 1.2rem; opacity: 0.3;">01</span>
+                        <h4 style="margin: 0 0 5px 0; font-size: 0.95rem;">Pay & Seal</h4>
+                        <p style="font-size: 0.75rem; line-height: 1.4; opacity: 0.8; margin-bottom: 12px;">Settle the per-sem fee (₱4,975). Secure your official e-receipt.</p>
+                        <a href="<?php echo $root; ?>student/Modules/Payments/Make-Payment.php" style="display: block; text-align: center; padding: 8px; background: white; color: #2563eb; border-radius: 8px; font-weight: 700; font-size: 0.75rem; text-decoration: none;">
+                            <i class="fas fa-credit-card" style="margin-right: 4px;"></i> Pay Now
+                        </a>
+                    </div>
+                    
+                    <!-- Step 2 -->
+                    <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.1); position: relative;">
+                        <span style="position: absolute; top: 10px; right: 15px; font-weight: 800; font-size: 1.2rem; opacity: 0.3;">02</span>
+                        <h4 style="margin: 0 0 5px 0; font-size: 0.95rem;">Approval</h4>
+                        <p style="font-size: 0.75rem; line-height: 1.4; opacity: 0.8; margin-bottom: 12px;">Wait for the admission team to verify your payment and details.</p>
+                        <div style="display: block; text-align: center; padding: 8px; background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.6); border-radius: 8px; font-weight: 600; font-size: 0.75rem;">
+                            <i class="fas fa-hourglass" style="margin-right: 4px;"></i> Wait Verification
+                        </div>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.1); position: relative;">
+                        <span style="position: absolute; top: 10px; right: 15px; font-weight: 800; font-size: 1.2rem; opacity: 0.3;">03</span>
+                        <h4 style="margin: 0 0 5px 0; font-size: 0.95rem;">Requirements</h4>
+                        <p style="font-size: 0.75rem; line-height: 1.4; opacity: 0.8; margin-bottom: 12px;">Ensure all documents (PSA, Form 138) are correctly uploaded.</p>
+                        <a href="<?php echo $root; ?>student/Modules/Admission/Requirements.php" style="display: block; text-align: center; padding: 8px; background: white; color: #2563eb; border-radius: 8px; font-weight: 700; font-size: 0.75rem; text-decoration: none;">
+                            <i class="fas fa-upload" style="margin-right: 4px;"></i> Upload Files
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <?php endif; ?>
 
             <!-- Stats -->
             <div class="stats-grid">
