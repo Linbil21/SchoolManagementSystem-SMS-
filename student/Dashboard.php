@@ -536,15 +536,51 @@ if ($current_day !== 'Sunday') {
 
         <div class="dashboard-grid">
             <!-- Schedule -->
-            <div class="card">
+            <div class="card" style="position: relative;">
                 <div class="card-header">
                     <h3 class="card-title">Today's Schedule (<?php echo $current_day; ?>)</h3>
+                    <?php if ($enrollment_status === 'Enrolled'): ?>
                     <a href="<?php echo $root; ?>student/Modules/Academic/Schedule.php"
                         style="font-size: 0.85rem; color: var(--primary); text-decoration: none; font-weight: 600;">View
                         Full</a>
+                    <?php endif; ?>
                 </div>
 
-                <?php if (empty($schedule)): ?>
+                <?php if ($enrollment_status !== 'Enrolled'): ?>
+                    <!-- Locked/Clock State -->
+                    <div style="text-align: center; padding: 40px 20px; filter: grayscale(1); opacity: 0.7;">
+                        <div style="
+                            width: 60px; 
+                            height: 60px; 
+                            background: #fff7ed; 
+                            color: #ea580c; 
+                            border-radius: 50%; 
+                            display: flex; 
+                            align-items: center; 
+                            justify-content: center; 
+                            margin: 0 auto 15px;
+                            font-size: 1.5rem;
+                            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+                        ">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <h4 style="color: #1e293b; font-weight: 700; font-size: 1rem;">Schedule Restricted</h4>
+                        <p style="color: #64748b; font-size: 0.82rem; line-height: 1.5; margin-bottom: 20px;">
+                            Please settle your <strong>Miscellaneous Fees</strong> first to unlock your subjects and schedule.
+                        </p>
+                        <a href="<?php echo $root; ?>student/Modules/Payments/Make-Payment.php" style="
+                            display: inline-block;
+                            padding: 10px 20px;
+                            background: var(--primary);
+                            color: white;
+                            border-radius: 12px;
+                            font-size: 0.85rem;
+                            font-weight: 700;
+                            text-decoration: none;
+                            transition: 0.3s;
+                        ">Settle Payment <i class="fas fa-arrow-right" style="margin-left: 5px;"></i></a>
+                    </div>
+                <?php elseif (empty($schedule)): ?>
                     <div style="text-align: center; padding: 40px 20px;">
                         <i class="fas fa-calendar-day"
                             style="font-size: 3rem; color: #e2e8f0; margin-bottom: 15px; display: block;"></i>

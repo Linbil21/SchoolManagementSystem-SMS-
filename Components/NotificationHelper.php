@@ -86,7 +86,18 @@ function getNotificationsHtml($notifications, $root = null) {
     $html = '';
     foreach ($notifications as $notif) {
         $unreadClass = (isset($notif->is_read) && $notif->is_read == 0) ? 'unread' : '';
-        $onclick = !empty($notif->link) ? "onclick=\"window.location.href='" . htmlspecialchars($notif->link) . "'\"" : "";
+        
+        // Prepare data for JS modal
+        $title = htmlspecialchars($notif->title);
+        $message = htmlspecialchars($notif->message);
+        $link = !empty($notif->link) ? htmlspecialchars($notif->link) : '';
+        $id = $notif->id ?? 0;
+
+        $onclick = "onclick=\"viewNotification(this)\" 
+                    data-id=\"{$id}\" 
+                    data-title=\"{$title}\" 
+                    data-message=\"{$message}\" 
+                    data-link=\"{$link}\"";
         
         // Extract name for fallback avatar if profile_image is missing
         $fallbackName = "User";

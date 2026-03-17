@@ -529,6 +529,37 @@ if (count($name_parts) >= 2) {
         if(element) element.classList.toggle('show');
     }
 
+    function viewNotification(element) {
+        const id = element.getAttribute('data-id');
+        const title = element.getAttribute('data-title');
+        const message = element.getAttribute('data-message');
+        const link = element.getAttribute('data-link');
+
+        // Populate Modal
+        document.getElementById('notifModalTitle').innerText = title;
+        document.getElementById('notifModalMessage').innerText = message;
+        
+        const linkBtn = document.getElementById('notifModalLink');
+        if (link) {
+            linkBtn.style.display = 'block';
+            linkBtn.onclick = () => window.location.href = link;
+        } else {
+            linkBtn.style.display = 'none';
+        }
+
+        // Show Modal
+        document.getElementById('notifDetailModal').classList.add('active');
+        element.classList.remove('unread');
+
+        // Mark as read in DB
+        fetch(window.smsRoot + 'student/api/mark_notifications_read.php?notification_id=' + id)
+            .catch(err => console.error('Error marking as read:', err));
+    }
+
+    function closeNotifModal() {
+        document.getElementById('notifDetailModal').classList.remove('active');
+    }
+
     function markAllRead() {
         // Instant UI feedback
         const badge = document.querySelector('.notification-btn .badge');
@@ -547,8 +578,81 @@ if (count($name_parts) >= 2) {
         if (!e.target.closest('.notification-wrapper') && !e.target.closest('.user-wrapper') && !e.target.closest('.theme-toggle')) {
             document.querySelectorAll('.dropdown-content').forEach(d => d.classList.remove('show'));
         }
+        
+        const modal = document.getElementById('notifDetailModal');
+        if (e.target === modal) closeNotifModal();
     });
 </script>
+
+<!-- Notification Detail Modal -->
+<div id="notifDetailModal" class="notif-detail-modal">
+    <div class="notif-modal-content">
+        <div class="notif-modal-icon">
+            <i class="fas fa-bell"></i>
+        </div>
+        <h3 id="notifModalTitle">Notification Detail</h3>
+        <p id="notifModalMessage">Loading message...</p>
+        <div class="notif-modal-footer">
+            <button class="notif-btn-main" id="notifModalLink">Go to Link</button>
+            <button class="notif-btn-secondary" onclick="closeNotifModal()">Close</button>
+        </div>
+    </div>
+</div>
+
+<style>
+    .notif-detail-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(8px);
+        z-index: 9999;
+        align-items: center;
+        justify-content: center;
+    }
+    .notif-detail-modal.active {
+        display: flex;
+    }
+    .notif-modal-content {
+        background: white;
+        padding: 35px;
+        border-radius: 24px;
+        width: 90%;
+        max-width: 450px;
+        text-align: center;
+        box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+        animation: modalFadeUp 0.3s ease;
+    }
+    @keyframes modalFadeUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .notif-modal-icon {
+        width: 60px;
+        height: 60px;
+        background: #eff6ff;
+        color: #2563eb;
+        border-radius: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin: 0 auto 20px;
+    }
+    .notif-modal-content h3 { font-size: 1.2rem; font-weight: 800; color: #1e293b; margin-bottom: 10px; }
+    .notif-modal-content p { color: #64748b; font-size: 0.95rem; line-height: 1.6; margin-bottom: 30px; }
+    .notif-modal-footer { display: flex; flex-direction: column; gap: 10px; }
+    .notif-btn-main { padding: 14px; background: #2563eb; color: white; border: none; border-radius: 14px; font-weight: 700; cursor: pointer; }
+    .notif-btn-secondary { padding: 14px; background: #f1f5f9; color: #64748b; border: none; border-radius: 14px; font-weight: 700; cursor: pointer; }
+    
+    [data-theme="dark"] .notif-modal-content { background: #1e293b; border: 1px solid #334155; }
+    [data-theme="dark"] .notif-modal-content h3 { color: white; }
+    [data-theme="dark"] .notif-modal-content p { color: #94a3b8; }
+    [data-theme="dark"] .notif-modal-icon { background: #0c1c36; }
+</style>
 <script>
     // Config for global search
     window.smsRoot = "<?php echo $root; ?>";

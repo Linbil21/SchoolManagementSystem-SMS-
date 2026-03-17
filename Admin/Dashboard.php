@@ -1,11 +1,27 @@
-<?php
-session_start();
-
 // Check if user is logged in
 require_once '../auth/Security.php';
-checkRole(['admin']);
+require_once '../Database/config.php';
+checkRole(['admin', 'superadmin']);
 
 $role = $_SESSION['role'];
+
+// Fetch Real Statistics
+try {
+    $total_students = $pdo->query("SELECT COUNT(*) FROM students")->fetchColumn() ?: 0;
+    $pending_review = $pdo->query("SELECT COUNT(*) FROM enrollments WHERE status = 'Pending Review'")->fetchColumn() ?: 0;
+    $pending_payment = $pdo->query("SELECT COUNT(*) FROM enrollments WHERE status = 'Pending Payment'")->fetchColumn() ?: 0;
+    $enrolled = $pdo->query("SELECT COUNT(*) FROM enrollments WHERE status = 'Enrolled'")->fetchColumn() ?: 0;
+    
+    // Recent Payments
+    $stmt = $pdo->query("SELECT p.*, e.first_name, e.last_name 
+                         FROM payments p 
+                         LEFT JOIN enrollments e ON p.enrollment_id = e.enrollmentId 
+                         ORDER BY p.created_at DESC LIMIT 5");
+    $recent_payments = $stmt->fetchAll();
+} catch (PDOException $e) {
+    $total_students = $pending_review = $pending_payment = $enrolled = 0;
+    $recent_payments = [];
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -23,6 +39,39 @@ $role = $_SESSION['role'];
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="Assets/layout.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="Assets/Dashboard.css">
+    <style>
+        .recent-box {
+            background: white;
+            padding: 25px;
+            border-radius: 24px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            margin-top: 30px;
+        }
+        .recent-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        .recent-table th {
+            text-align: left;
+            padding: 12px;
+            color: #718096;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            border-bottom: 2px solid #f1f5f9;
+        }
+        .recent-table td {
+            padding: 15px 12px;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 0.9rem;
+        }
+        .status-pill {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+    </style>
 </head>
 
 <body>
@@ -51,7 +100,7 @@ $role = $_SESSION['role'];
                 <div class="stat-card card-total" style="background: white; padding: 25px; border-radius: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); border-left: 5px solid #1648bc; display: flex; justify-content: space-between; align-items: center;">
                     <div class="stat-info">
                         <span style="font-size: 0.85rem; color: #718096; font-weight: 600;">Total Students</span>
-                        <h2 style="font-size: 1.8rem; font-weight: 800; color: #2d3748; margin-top: 5px;">1,280</h2>
+                        <h2 style="font-size: 1.8rem; font-weight: 800; color: #2d3748; margin-top: 5px;"><?php echo number_format($total_students); ?></h2>
                     </div>
                     <div class="stat-icon" style="width: 50px; height: 50px; background: #ebf8ff; color: #4299e1; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
                         <i class="fas fa-users"></i>
@@ -61,7 +110,7 @@ $role = $_SESSION['role'];
                 <div class="stat-card card-pending-review" style="background: white; padding: 25px; border-radius: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); border-left: 5px solid #ecc94b; display: flex; justify-content: space-between; align-items: center;">
                     <div class="stat-info">
                         <span style="font-size: 0.85rem; color: #718096; font-weight: 600;">Pending Review</span>
-                        <h2 style="font-size: 1.8rem; font-weight: 800; color: #2d3748; margin-top: 5px;">45</h2>
+                        <h2 style="font-size: 1.8rem; font-weight: 800; color: #2d3748; margin-top: 5px;"><?php echo number_format($pending_review); ?></h2>
                     </div>
                     <div class="stat-icon" style="width: 50px; height: 50px; background: #fffaf0; color: #ecc94b; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
                         <i class="fas fa-clock"></i>
@@ -71,7 +120,7 @@ $role = $_SESSION['role'];
                 <div class="stat-card card-pending-payment" style="background: white; padding: 25px; border-radius: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); border-left: 5px solid #ed8936; display: flex; justify-content: space-between; align-items: center;">
                     <div class="stat-info">
                         <span style="font-size: 0.85rem; color: #718096; font-weight: 600;">Pending Payment</span>
-                        <h2 style="font-size: 1.8rem; font-weight: 800; color: #2d3748; margin-top: 5px;">12</h2>
+                        <h2 style="font-size: 1.8rem; font-weight: 800; color: #2d3748; margin-top: 5px;"><?php echo number_format($pending_payment); ?></h2>
                     </div>
                     <div class="stat-icon" style="width: 50px; height: 50px; background: #fff5eb; color: #ed8936; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
                         <i class="fas fa-wallet"></i>
@@ -81,7 +130,7 @@ $role = $_SESSION['role'];
                 <div class="stat-card card-enrolled" style="background: white; padding: 25px; border-radius: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); border-left: 5px solid #48bb78; display: flex; justify-content: space-between; align-items: center;">
                     <div class="stat-info">
                         <span style="font-size: 0.85rem; color: #718096; font-weight: 600;">Enrolled</span>
-                        <h2 style="font-size: 1.8rem; font-weight: 800; color: #2d3748; margin-top: 5px;">1,223</h2>
+                        <h2 style="font-size: 1.8rem; font-weight: 800; color: #2d3748; margin-top: 5px;"><?php echo number_format($enrolled); ?></h2>
                     </div>
                     <div class="stat-icon" style="width: 50px; height: 50px; background: #f0fff4; color: #48bb78; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
                         <i class="fas fa-user-check"></i>
@@ -99,6 +148,61 @@ $role = $_SESSION['role'];
                             <option>Last Year</option>
                         </select>
                     </div>
+                    <div class="chart-wrapper" style="flex: 1; min-height: 300px; position: relative;">
+                        <canvas id="enrollmentTrendChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-container" style="background: white; padding: 25px; border-radius: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); display: flex; flex-direction: column;">
+                    <div class="chart-header" style="margin-bottom: 20px;">
+                        <h3 style="font-size: 1.1rem; font-weight: 700; color: #1e293b;">Course Distribution</h3>
+                    </div>
+                    <div class="chart-wrapper" style="flex: 1; min-height: 300px; position: relative;">
+                        <canvas id="courseDistChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Payments Section -->
+            <div class="recent-box">
+                <h3 style="font-size: 1.1rem; font-weight: 700; color: #1e293b;"><i class="fas fa-receipt" style="color: #4c51bf; margin-right: 10px;"></i> Recent Student Payments</h3>
+                <table class="recent-table">
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Amount</th>
+                            <th>Method</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php if ($recent_payments): ?>
+                            <?php foreach ($recent_payments as $pay): ?>
+                                <tr>
+                                    <td style="font-weight: 600;"><?php echo htmlspecialchars($pay->first_name . ' ' . $pay->last_name); ?></td>
+                                    <td style="font-weight: 700; color: #2f855a;">₱<?php echo number_format($pay->amount, 2); ?></td>
+                                    <td><?php echo htmlspecialchars($pay->payment_method); ?></td>
+                                    <td>
+                                        <?php 
+                                            $pill_style = "background: #ebf8ff; color: #3182ce;";
+                                            if($pay->status == 'Completed' || $pay->status == 'Verified') $pill_style = "background: #f0fff4; color: #38a169;";
+                                            if($pay->status == 'Rejected') $pill_style = "background: #fff5f5; color: #e53e3e;";
+                                        ?>
+                                        <span class="status-pill" style="<?php echo $pill_style; ?>"><?php echo $pay->status; ?></span>
+                                    </td>
+                                    <td style="color: #a0aec0; font-size: 0.8rem;"><?php echo date('M d, Y', strtotime($pay->created_at)); ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <tr><td colspan="5" style="text-align:center; padding: 30px; color: #a0aec0;">No recent payments found.</td></tr>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+                <div style="margin-top: 15px; text-align: right;">
+                    <a href="Modules/Payments-Fees.php" style="color: #4a5568; font-size: 0.85rem; font-weight: 600; text-decoration: none;">View All Payments <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
                     <div class="chart-wrapper" style="flex: 1; min-height: 300px; position: relative;">
                         <canvas id="enrollmentTrendChart"></canvas>
                     </div>

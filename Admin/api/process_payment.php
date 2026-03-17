@@ -36,20 +36,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $updateStmt = $pdo->prepare("UPDATE payments SET status = 'Completed' WHERE paymentId = ?");
             $updateStmt->execute([$payment_id]);
             
-            // Create notification for student
-            // We need student_id or enrollment email
+            // 1. Deduct from balance
+            $deduct = $pdo->prepare("UPDATE enrollments SET balance = balance - ? WHERE enrollmentId = ?");
+            $deduct->execute([$payment->amount, $payment->enrollment_id]);
+
+            // 2. Create notification for student
             $stmt = $pdo->prepare("SELECT email FROM enrollments WHERE enrollmentId = ?");
             $stmt->execute([$payment->enrollment_id]);
             $student_mail = $stmt->fetch()->email ?? null;
             
             if ($student_mail) {
-                $notif_stmt = $pdo->prepare("INSERT INTO notifications (type, title, message, link, icon, icon_bg, icon_color) VALUES ('payment', 'Payment Verified', 'Your payment with Ref: " . $payment->transaction_id . " has been verified.', '/student/Modules/Payments/History.php', 'fa-check-circle', '#dcfce7', '#16a34a')");
-                // Wait, notifications usually link to a user. In this system, user_id might be used.
-                // Let's check notifications table structure.
+                // Try to get user_id from students table
+                $userStmt = $pdo->prepare("SELECT id FROM students WHERE email = ?");
+                $userStmt->execute([$student_mail]);
+                $user_id = $userStmt->fetch()->id ?? NULL;
+
+                $notif_stmt = $pdo->prepare("INSERT INTO notifications (user_id, type, title, message, link, icon, icon_bg, icon_color) VALUES (?, 'payment', 'Payment Verified', ?, '/student/Modules/Payments/History.php', 'fa-check-circle', '#dcfce7', '#16a34a')");
+                $notif_msg = "Your payment of ₱" . number_format($payment->amount, 2) . " (Ref: " . $payment->transaction_id . ") has been verified.";
+                $notif_stmt->execute([$user_id, $notif_msg]);
+
+                // Send Email Receipt
+                try {
+                    require_once '../../auth/mail_helper.php';
+                    $enroll_stmt = $pdo->prepare("SELECT first_name, last_name, balance FROM enrollments WHERE enrollmentId = ?");
+                    $enroll_stmt->execute([$payment->enrollment_id]);
+                    $enr = $enroll_stmt->fetch();
+
+                    sendPaymentReceiptEmail($student_mail, [
+                        'first_name' => $enr->first_name ?? 'Student',
+                        'last_name' => $enr->last_name ?? '',
+                        'amount' => $payment->amount,
+                        'method' => $payment->payment_method,
+                        'transaction_id' => $payment->transaction_id,
+                        'description' => $payment->description,
+                        'new_balance' => $enr->balance ?? 0
+                    ]);
+                } catch (Exception $e) { /* Email error shouldn't stop the process */ }
             }
 
             $pdo->commit();
-            echo json_encode(['success' => true, 'message' => 'Payment approved and verified.']);
+            echo json_encode(['success' => true, 'message' => 'Payment approved and balance updated.']);
 
         } elseif ($action === 'reject') {
             // Mark as Rejected
