@@ -74,6 +74,133 @@ try {
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="<?php echo $root; ?>Assets/css/theme.css">
+</head>
+<body>
+    <?php include __DIR__ . '/Components/Sidebar.php'; ?>
+    <div class="main-wrapper">
+        <?php include __DIR__ . '/Components/Header.php'; ?>
+        <div class="content-area">
+
+            <!-- Banner -->
+            <div class="banner">
+                <h1><i class="fas fa-cash-register" style="margin-right:10px;"></i> My Financial Overview</h1>
+                <p>Welcome, <?php echo htmlspecialchars($student_name); ?>! Here's a summary of your tuition fees, payments, and account balance.</p>
+            </div>
+
+            <!-- Stats -->
+            <div class="stats-grid">
+                <!-- Total Assessment -->
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <span>Total Assessment</span>
+                        <h2 style="color: #1648bc;">₱<?php echo number_format($total_fee, 2); ?></h2>
+                    </div>
+                    <div class="stat-icon" style="background: rgba(22,72,188,0.1); color: #1648bc;">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                    </div>
+                </div>
+
+                <!-- Total Paid -->
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <span>Total Paid</span>
+                        <h2 style="color: #059669;">₱<?php echo number_format($total_paid, 2); ?></h2>
+                    </div>
+                    <div class="stat-icon" style="background: rgba(5, 150, 105, 0.1); color: #059669;">
+                        <i class="fas fa-check-double"></i>
+                    </div>
+                </div>
+
+                <!-- Outstanding Balance -->
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <span>Outstanding Balance</span>
+                        <h2 style="color: #dc2626;">₱<?php echo number_format($balance, 2); ?></h2>
+                    </div>
+                    <div class="stat-icon" style="background: rgba(220,38,38,0.1); color: #dc2626;">
+                        <i class="fas fa-exclamation-circle"></i>
+                    </div>
+                </div>
+
+                <!-- Pending Receipts -->
+                <div class="stat-card">
+                    <div class="stat-info">
+                        <span>Pending Verification</span>
+                        <h2 style="color: #f97316;"><?php echo $pending_payments; ?></h2>
+                    </div>
+                    <div class="stat-icon" style="background: rgba(249, 115, 22, 0.1); color: #f97316;">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Grid -->
+            <div class="dashboard-grid">
+                <!-- Recent Transactions -->
+                <div class="data-card">
+                    <h3><i class="fas fa-history" style="color: #2563eb;"></i> Recent Payments</h3>
+                    <?php if (!empty($recent_payments)): ?>
+                    <table class="tx-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Method</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($recent_payments as $tx): ?>
+                            <tr>
+                                <td style="color: var(--text-muted); font-size: 0.82rem;">
+                                    <?php echo date('M d, Y', strtotime($tx->created_at)); ?>
+                                </td>
+                                <td><?php echo htmlspecialchars($tx->payment_method ?? 'N/A'); ?></td>
+                                <td style="font-weight: 700; color: #2563eb;">₱<?php echo number_format($tx->amount, 2); ?></td>
+                                <td>
+                                    <?php
+                                    $s = $tx->status ?? 'Pending';
+                                    $cls = ($s === 'Completed' || $s === 'Verified') ? 'badge-success'
+                                         : (($s === 'Pending') ? 'badge-pending' : 'badge-failed');
+                                    ?>
+                                    <span class="status-badge <?php echo $cls; ?>"><?php echo htmlspecialchars($s); ?></span>
+                                </td>
+                            </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                    <?php else: ?>
+                    <div class="empty-state">
+                        <i class="fas fa-receipt"></i>
+                        <p>No payment records found yet.</p>
+                    </div>
+                    <?php endif; ?>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="action-card">
+                    <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
+                    <a href="<?php echo $root; ?>student/Modules/Payments/Make-Payment.php" class="dashboard-action-item">
+                        <i class="fas fa-credit-card"></i> <span>Make a Payment</span>
+                    </a>
+                    <a href="<?php echo $root; ?>student/Modules/Payments/Upload-Receipt.php" class="dashboard-action-item">
+                        <i class="fas fa-upload"></i> <span>Upload Payment Receipt</span>
+                    </a>
+                    <a href="<?php echo $root; ?>student/Modules/Payments/Balance.php" class="dashboard-action-item">
+                        <i class="fas fa-coins"></i> <span>View My Balance</span>
+                    </a>
+                    <a href="<?php echo $root; ?>student/Modules/Payments/History.php" class="dashboard-action-item">
+                        <i class="fas fa-list-alt"></i> <span>Payment History</span>
+                    </a>
+                    <a href="<?php echo $root; ?>student/Modules/Payments/Print-Receipt.php" class="dashboard-action-item">
+                        <i class="fas fa-print"></i> <span>Print Receipt</span>
+                    </a>
+                </div>
+            </div>
+
+        </div><!-- /content-area -->
+    </div><!-- /main-wrapper -->
+
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
 
@@ -142,7 +269,7 @@ try {
             font-weight: 800;
             margin-bottom: 8px;
             position: relative;
- z-index: 1;
+            z-index: 1;
         }
 
         .banner p {
@@ -314,7 +441,7 @@ try {
             gap: 10px;
         }
 
-        .quick-action-btn {
+        .dashboard-action-item {
             display: flex !important;
             flex-direction: row !important;
             align-items: center !important;
@@ -340,16 +467,16 @@ try {
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
-        .quick-action-btn:last-child { margin-bottom: 0 !important; }
+        .dashboard-action-item:last-child { margin-bottom: 0 !important; }
 
-        .quick-action-btn:hover {
+        .dashboard-action-item:hover {
             background: rgba(255,255,255,0.2) !important;
             transform: translateX(8px) !important;
             border-color: rgba(255,255,255,0.4) !important;
             box-shadow: 0 8px 20px rgba(0,0,0,0.2);
         }
 
-        .quick-action-btn i { 
+        .dashboard-action-item i { 
             font-size: 1.2rem !important; 
             width: 28px !important; 
             text-align: center !important;
@@ -358,7 +485,7 @@ try {
             transition: transform 0.3s ease;
         }
 
-        .quick-action-btn:hover i {
+        .dashboard-action-item:hover i {
             transform: scale(1.2);
         }
 
@@ -378,131 +505,5 @@ try {
 
         .empty-state p { font-size: 0.9rem; }
     </style>
-</head>
-<body>
-    <?php include __DIR__ . '/Components/Sidebar.php'; ?>
-    <div class="main-wrapper">
-        <?php include __DIR__ . '/Components/Header.php'; ?>
-        <div class="content-area">
-
-            <!-- Banner -->
-            <div class="banner">
-                <h1><i class="fas fa-cash-register" style="margin-right:10px;"></i> My Financial Overview</h1>
-                <p>Welcome, <?php echo htmlspecialchars($student_name); ?>! Here's a summary of your tuition fees, payments, and account balance.</p>
-            </div>
-
-            <!-- Stats -->
-            <div class="stats-grid">
-                <!-- Total Assessment -->
-                <div class="stat-card">
-                    <div class="stat-info">
-                        <span>Total Assessment</span>
-                        <h2 style="color: #1648bc;">₱<?php echo number_format($total_fee, 2); ?></h2>
-                    </div>
-                    <div class="stat-icon" style="background: rgba(22,72,188,0.1); color: #1648bc;">
-                        <i class="fas fa-file-invoice-dollar"></i>
-                    </div>
-                </div>
-
-                <!-- Total Paid -->
-                <div class="stat-card">
-                    <div class="stat-info">
-                        <span>Total Paid</span>
-                        <h2 style="color: #059669;">₱<?php echo number_format($total_paid, 2); ?></h2>
-                    </div>
-                    <div class="stat-icon" style="background: rgba(5, 150, 105, 0.1); color: #059669;">
-                        <i class="fas fa-check-double"></i>
-                    </div>
-                </div>
-
-                <!-- Outstanding Balance -->
-                <div class="stat-card">
-                    <div class="stat-info">
-                        <span>Outstanding Balance</span>
-                        <h2 style="color: #dc2626;">₱<?php echo number_format($balance, 2); ?></h2>
-                    </div>
-                    <div class="stat-icon" style="background: rgba(220,38,38,0.1); color: #dc2626;">
-                        <i class="fas fa-exclamation-circle"></i>
-                    </div>
-                </div>
-
-                <!-- Pending Receipts -->
-                <div class="stat-card">
-                    <div class="stat-info">
-                        <span>Pending Verification</span>
-                        <h2 style="color: #f97316;"><?php echo $pending_payments; ?></h2>
-                    </div>
-                    <div class="stat-icon" style="background: rgba(249, 115, 22, 0.1); color: #f97316;">
-                        <i class="fas fa-clock"></i>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Dashboard Grid -->
-            <div class="dashboard-grid">
-                <!-- Recent Transactions -->
-                <div class="data-card">
-                    <h3><i class="fas fa-history" style="color: #2563eb;"></i> Recent Payments</h3>
-                    <?php if (!empty($recent_payments)): ?>
-                    <table class="tx-table">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Method</th>
-                                <th>Amount</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($recent_payments as $tx): ?>
-                            <tr>
-                                <td style="color: var(--text-muted); font-size: 0.82rem;">
-                                    <?php echo date('M d, Y', strtotime($tx->created_at)); ?>
-                                </td>
-                                <td><?php echo htmlspecialchars($tx->payment_method ?? 'N/A'); ?></td>
-                                <td style="font-weight: 700; color: #2563eb;">₱<?php echo number_format($tx->amount, 2); ?></td>
-                                <td>
-                                    <?php
-                                    $s = $tx->status ?? 'Pending';
-                                    $cls = ($s === 'Completed' || $s === 'Verified') ? 'badge-success'
-                                         : (($s === 'Pending') ? 'badge-pending' : 'badge-failed');
-                                    ?>
-                                    <span class="status-badge <?php echo $cls; ?>"><?php echo htmlspecialchars($s); ?></span>
-                                </td>
-                            </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                    <?php else: ?>
-                    <div class="empty-state">
-                        <i class="fas fa-receipt"></i>
-                        <p>No payment records found yet.</p>
-                    </div>
-                    <?php endif; ?>
-                </div>
-
-                <!-- Quick Actions -->
-                <div class="action-card">
-                    <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
-                    <a href="<?php echo $root; ?>student/Modules/Payments/Make-Payment.php" class="quick-action-btn">
-                        <i class="fas fa-credit-card"></i> <span>Make a Payment</span>
-                    </a>
-                    <a href="<?php echo $root; ?>student/Modules/Payments/Upload-Receipt.php" class="quick-action-btn">
-                        <i class="fas fa-upload"></i> <span>Upload Payment Receipt</span>
-                    </a>
-                    <a href="<?php echo $root; ?>student/Modules/Payments/Balance.php" class="quick-action-btn">
-                        <i class="fas fa-coins"></i> <span>View My Balance</span>
-                    </a>
-                    <a href="<?php echo $root; ?>student/Modules/Payments/History.php" class="quick-action-btn">
-                        <i class="fas fa-list-alt"></i> <span>Payment History</span>
-                    </a>
-                    <a href="<?php echo $root; ?>student/Modules/Payments/Print-Receipt.php" class="quick-action-btn">
-                        <i class="fas fa-print"></i> <span>Print Receipt</span>
-                    </a>
-                </div>
-            </div>
-
-        </div><!-- /content-area -->
-    </div><!-- /main-wrapper -->
 </body>
 </html>
