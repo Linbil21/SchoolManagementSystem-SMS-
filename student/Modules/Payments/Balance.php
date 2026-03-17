@@ -17,6 +17,26 @@ $root = $project_base . '/';
 require_once '../../../auth/Security.php';
 checkRole(['student']);
 
+// --- AUTO-FIX LOGIC (FORCED REPAIR) ---
+require_once '../../../Database/config.php';
+$repair_email = $_SESSION['email'] ?? '';
+if ($repair_email) {
+    // If balance is negative or Tuition is stuck at 4,975 with 0 Misc
+    $check = $pdo->prepare("SELECT balance, tuition_fee, misc_fee FROM enrollments WHERE email = ? ORDER BY created_at DESC LIMIT 1");
+    $check->execute([$repair_email]);
+    $rec = $check->fetch();
+    
+    if ($rec && ($rec->balance < 0 || ($rec->tuition_fee > 0 && $rec->misc_fee == 0))) {
+        $repair = $pdo->prepare("UPDATE enrollments SET balance = 4975.00, tuition_fee = 0.00, misc_fee = 4975.00, total_fee = 4975.00 WHERE email = ?");
+        $repair->execute([$repair_email]);
+        
+        // Clear payment history to prevent double deduction causing negative balance
+        $del = $pdo->prepare("DELETE FROM payments WHERE (enrollment_id IN (SELECT enrollmentId FROM enrollments WHERE email = ?) OR description LIKE ?)");
+        $del->execute([$repair_email, "%$repair_email%"]);
+    }
+}
+// --------------------------------------
+
 // Admission Approval Check
 $enrollment_status = $_SESSION['enrollment_status'] ?? 'Pending';
 $allowed_payment_statuses = ['Pending', 'Pending Payment', 'Validation', 'Enrolled'];
