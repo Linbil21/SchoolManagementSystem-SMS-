@@ -132,7 +132,7 @@ try {
         $dummy1->enrollmentId = 9991;
         $dummy1->reference_code = 'REF-2024-001';
         $dummy1->first_name = 'Juan';
-        $dummy1->middle_name = 'A.';
+        $dummy1->mid_name = 'A.';
         $dummy1->last_name = 'Dela Cruz';
         $dummy1->status = 'Pending Payment';
         $dummy1->email = 'juan.delacruz@example.com';
@@ -162,7 +162,7 @@ try {
         $dummy2->enrollmentId = 9992;
         $dummy2->reference_code = 'REF-2024-002';
         $dummy2->first_name = 'Maria';
-        $dummy2->middle_name = 'B.';
+        $dummy2->mid_name = 'B.';
         $dummy2->last_name = 'Santos';
         $dummy2->status = 'Enrolled';
         $dummy2->email = 'maria.santos@example.com';
@@ -249,7 +249,7 @@ try {
                                     <tr>
                                         <td class="ref-code"><?php echo htmlspecialchars($enroll->reference_code); ?></td>
                                         <td class="student-name">
-                                            <?php echo htmlspecialchars($enroll->last_name . ", " . $enroll->first_name . " " . ($enroll->middle_name ?? '')); ?>
+                                            <?php echo htmlspecialchars($enroll->last_name . ", " . $enroll->first_name . " " . ($enroll->mid_name ?? '')); ?>
                                         </td>
                                         <td>
                                             <?php
@@ -381,7 +381,7 @@ try {
                 <div class="info-item"><div class="info-label">Year Level</div><div class="info-value">${data.year_level}</div></div>
                 
                 <div class="section-title">STUDENT INFORMATION</div>
-                <div class="info-item"><div class="info-label">Full Name</div><div class="info-value">${data.last_name}, ${data.first_name} ${data.middle_name || ''}</div></div>
+                <div class="info-item"><div class="info-label">Full Name</div><div class="info-value">${data.last_name}, ${data.first_name} ${data.mid_name || ''}</div></div>
                 <div class="info-item"><div class="info-label">Gender</div><div class="info-value">${data.gender}</div></div>
                 <div class="info-item"><div class="info-label">Birthdate</div><div class="info-value">${data.birthdate}</div></div>
                 
