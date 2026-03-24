@@ -1,3 +1,4 @@
+<?php
 // Check if user is logged in
 require_once '../auth/Security.php';
 require_once '../Database/config.php';
