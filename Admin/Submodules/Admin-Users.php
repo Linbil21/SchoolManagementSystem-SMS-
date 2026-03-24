@@ -1,14 +1,16 @@
 <?php
 session_start();
 require_once '../../Database/config.php';
+require_once '../../auth/Security.php';
 
-if (!isset($_SESSION['role']) || ($_SESSION['role'] !== 'admin' && $_SESSION['role'] !== 'superadmin' && $_SESSION['role'] !== 'admission')) {
-    header("Location: ../../auth/Login.php");
-    exit();
-}
+checkRole(['admin', 'superadmin']);
 
 // 1. Handle Add Admin POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_admin'])) {
+    if (isReadOnly()) {
+        header("Location: Admin-Users.php?error=read_only");
+        exit();
+    }
     $username = $_POST['username'];
     $email = $_POST['email'];
     $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
@@ -25,6 +27,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_admin'])) {
 
 // 2. Handle Edit Admin POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_admin'])) {
+    if (isReadOnly()) {
+        header("Location: Admin-Users.php?error=read_only");
+        exit();
+    }
     $id = $_POST['userId'];
     $username = $_POST['username'];
     $email = $_POST['email'];
@@ -47,6 +53,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_admin'])) {
 
 // 3. Handle Delete Admin
 if (isset($_GET['delete'])) {
+    if (isReadOnly()) {
+        header("Location: Admin-Users.php?error=read_only");
+        exit();
+    }
     try {
         // Prevent self-deletion
         if ($_GET['delete'] == $_SESSION['userId']) {
@@ -102,6 +112,9 @@ try {
             <?php endif; ?>
             <?php if (isset($_GET['error']) && $_GET['error'] == 'self_delete'): ?>
                 <script>Swal.fire('Error!', 'You cannot archive your own account.', 'error');</script>
+            <?php endif; ?>
+            <?php if (isset($_GET['error']) && $_GET['error'] == 'read_only'): ?>
+                <script>Swal.fire('View-Only Mode!', 'You are currently in View-Only mode. Data modification is disabled.', 'warning');</script>
             <?php endif; ?>
 
             <div class="table-container">

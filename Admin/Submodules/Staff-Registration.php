@@ -1,14 +1,16 @@
 <?php
 session_start();
 require_once '../../Database/config.php';
+require_once '../../auth/Security.php';
 
-if (!isset($_SESSION['role']) || ($_SESSION['role'] !== 'admin' && $_SESSION['role'] !== 'superadmin' && $_SESSION['role'] !== 'admission')) {
-    header("Location: ../../auth/Login.php");
-    exit();
-}
+checkRole(['admin', 'superadmin', 'admission']);
 
 // 1. Handle Add Staff POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_staff'])) {
+    if (isReadOnly()) {
+        header("Location: Staff-Registration.php?error=read_only");
+        exit();
+    }
     $username = $_POST['username'];
     $email = $_POST['email'];
     $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
@@ -25,6 +27,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_staff'])) {
 
 // 2. Handle Edit Staff POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_staff'])) {
+    if (isReadOnly()) {
+        header("Location: Staff-Registration.php?error=read_only");
+        exit();
+    }
     $id = $_POST['userId'];
     $username = $_POST['username'];
     $email = $_POST['email'];
@@ -47,6 +53,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_staff'])) {
 
 // 3. Handle Delete Staff
 if (isset($_GET['delete'])) {
+    if (isReadOnly()) {
+        header("Location: Staff-Registration.php?error=read_only");
+        exit();
+    }
     try {
         $stmt = $pdo->prepare("DELETE FROM users WHERE userId = ?");
         $stmt->execute([$_GET['delete']]);
@@ -94,6 +104,9 @@ try {
             <?php endif; ?>
             <?php if (isset($_GET['deleted'])): ?>
                 <script>Swal.fire('Deleted!', 'Staff account has been removed.', 'success');</script>
+            <?php endif; ?>
+            <?php if (isset($_GET['error']) && $_GET['error'] == 'read_only'): ?>
+                <script>Swal.fire('View-Only Mode!', 'You are currently in View-Only mode. Data modification is disabled.', 'warning');</script>
             <?php endif; ?>
 
             <div class="table-container">

@@ -1,15 +1,15 @@
 <?php
 session_start();
 require_once '../../Database/config.php';
+require_once '../../auth/Security.php';
 
+$action = $_GET['action'] ?? '';
 header('Content-Type: application/json');
 
 if (!isset($_SESSION['role']) || ($_SESSION['role'] !== 'admin' && $_SESSION['role'] !== 'superadmin')) {
     echo json_encode(['success' => false, 'message' => 'Unauthorized access.']);
     exit();
 }
-
-$action = $_GET['action'] ?? '';
 
 if ($action === 'get_role_permissions') {
     $role_id = $_GET['role_id'] ?? null;
@@ -28,6 +28,10 @@ if ($action === 'get_role_permissions') {
     }
 } 
 elseif ($action === 'save_role') {
+    if (isReadOnly()) {
+        echo json_encode(['success' => false, 'message' => 'View-Only Mode: Data modification is disabled.']);
+        exit();
+    }
     $role_id = $_POST['role_id'] ?? null;
     $role_name = $_POST['role_name'] ?? '';
     $description = $_POST['description'] ?? '';
@@ -80,6 +84,10 @@ elseif ($action === 'save_role') {
     }
 }
 elseif ($action === 'delete_role') {
+    if (isReadOnly()) {
+        echo json_encode(['success' => false, 'message' => 'View-Only Mode: Data modification is disabled.']);
+        exit();
+    }
     $role_id = $_POST['role_id'] ?? null;
     if (!$role_id) {
         echo json_encode(['success' => false, 'message' => 'Role ID is required.']);

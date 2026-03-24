@@ -71,6 +71,36 @@ try {
             font-size: 0.75rem;
             font-weight: 700;
         }
+        
+        /* Subtle Entrance Animations */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .stat-card {
+            animation: fadeInUp 0.5s ease forwards;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            cursor: pointer;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.08) !important;
+        }
+
+        .stat-card:nth-child(1) { animation-delay: 0.1s; }
+        .stat-card:nth-child(2) { animation-delay: 0.2s; }
+        .stat-card:nth-child(3) { animation-delay: 0.3s; }
+        .stat-card:nth-child(4) { animation-delay: 0.4s; }
+
+        .recent-table tbody tr {
+            transition: all 0.2s ease;
+        }
+        .recent-table tbody tr:hover {
+            background-color: #f8fafc;
+            transform: translateX(5px);
+        }
     </style>
 </head>
 
@@ -201,20 +231,6 @@ try {
                 </table>
                 <div style="margin-top: 15px; text-align: right;">
                     <a href="Modules/Payments-Fees.php" style="color: #4a5568; font-size: 0.85rem; font-weight: 600; text-decoration: none;">View All Payments <i class="fas fa-arrow-right"></i></a>
-                </div>
-            </div>
-                    <div class="chart-wrapper" style="flex: 1; min-height: 300px; position: relative;">
-                        <canvas id="enrollmentTrendChart"></canvas>
-                    </div>
-                </div>
-
-                <div class="chart-container" style="background: white; padding: 25px; border-radius: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); display: flex; flex-direction: column;">
-                    <div class="chart-header" style="margin-bottom: 20px;">
-                        <h3 style="font-size: 1.1rem; font-weight: 700; color: #1e293b;">Course Distribution</h3>
-                    </div>
-                    <div class="chart-wrapper" style="flex: 1; min-height: 300px; position: relative;">
-                        <canvas id="courseDistChart"></canvas>
-                    </div>
                 </div>
             </div>
         </div>

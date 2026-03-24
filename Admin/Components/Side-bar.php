@@ -84,10 +84,10 @@ $root = $project_base . '/';
         <p class="menu-label">ACCOUNT</p>
         <ul>
             <li class="<?php echo ($current_page == 'Profile.php') ? 'active' : ''; ?>">
-                <a href="<?php echo $root; ?>Admin/Modules/Profile.php"><i class="fas fa-user-circle"></i> <span>Profile</span></a>
+                <a href="<?php echo $root; ?>modules/Profile.php"><i class="fas fa-user-circle"></i> <span>Profile</span></a>
             </li>
             <li class="<?php echo ($current_page == 'Settings.php') ? 'active' : ''; ?>">
-                <a href="<?php echo $root; ?>Admin/Modules/Settings.php"><i class="fas fa-sliders-h"></i> <span>Settings</span></a>
+                <a href="<?php echo $root; ?>modules/Settings.php"><i class="fas fa-sliders-h"></i> <span>Settings</span></a>
             </li>
             <li>
                 <a href="javascript:void(0)" onclick="openLogoutModal()" style="color: #ef4444;"><i
