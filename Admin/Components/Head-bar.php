@@ -193,7 +193,7 @@ if (!empty($root) && $root[0] !== '/') {
         });
 
         // Backend Sync
-        fetch('/Admin/api/mark_notifications_read.php', {
+        fetch(window.smsRoot + 'Admin/api/mark_notifications_read.php', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'}
         }).catch(error => console.error('Error:', error));
