@@ -6,20 +6,25 @@ checkRole(['cashier', 'superadmin']);
 $role = $_SESSION['role'];
 
 // Fetch Statistics
-$total_collections = $pdo->query("SELECT SUM(amount) FROM payments WHERE status = 'Completed'")->fetchColumn() ?: 0;
-$pending_verification = $pdo->query("SELECT COUNT(*) FROM payments WHERE status = 'Pending'")->fetchColumn() ?: 0;
-$new_assessments = $pdo->query("SELECT COUNT(*) FROM enrollments WHERE DATE(created_at) = CURDATE()")->fetchColumn() ?: 0;
-
-// New Financial Estimates
-$total_revenue_estimate = $pdo->query("SELECT SUM(total_fee) FROM enrollments")->fetchColumn() ?: 0;
-$total_outstanding = $pdo->query("SELECT SUM(balance) FROM enrollments")->fetchColumn() ?: 0;
-
-// Fetch Recent Transactions
-$stmt = $pdo->query("SELECT p.*, e.first_name, e.last_name 
-                     FROM payments p 
-                     JOIN enrollments e ON p.enrollment_id = e.enrollmentId 
-                     ORDER BY p.created_at DESC LIMIT 5");
-$recent_transactions = $stmt->fetchAll();
+try {
+    $total_collections = $pdo->query("SELECT SUM(amount) FROM payments WHERE status = 'Completed'")->fetchColumn() ?: 0;
+    $pending_verification = $pdo->query("SELECT COUNT(*) FROM payments WHERE status = 'Pending'")->fetchColumn() ?: 0;
+    $new_assessments = $pdo->query("SELECT COUNT(*) FROM enrollments WHERE DATE(created_at) = CURDATE()")->fetchColumn() ?: 0;
+    
+    // New Financial Estimates
+    $total_revenue_estimate = $pdo->query("SELECT SUM(total_fee) FROM enrollments")->fetchColumn() ?: 0;
+    $total_outstanding = $pdo->query("SELECT SUM(balance) FROM enrollments")->fetchColumn() ?: 0;
+    
+    // Fetch Recent Transactions
+    $stmt = $pdo->query("SELECT p.*, e.first_name, e.last_name 
+                         FROM payments p 
+                         JOIN enrollments e ON p.enrollment_id = e.enrollmentId 
+                         ORDER BY p.created_at DESC LIMIT 5");
+    $recent_transactions = $stmt->fetchAll();
+} catch (PDOException $e) {
+    $total_collections = $pending_verification = $new_assessments = $total_revenue_estimate = $total_outstanding = 0;
+    $recent_transactions = [];
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">

@@ -54,6 +54,8 @@ CREATE TABLE IF NOT EXISTS students (
     year_level VARCHAR(50) DEFAULT 'First Year',
     status ENUM('Regular', 'Irregular', 'Transferee') DEFAULT 'Regular',
     profile_image VARCHAR(255) DEFAULT 'default.jpg',
+    verification_code VARCHAR(10) DEFAULT NULL,
+    is_verified TINYINT(1) DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -89,6 +91,11 @@ CREATE TABLE IF NOT EXISTS enrollments (
     secondary_school VARCHAR(255) NOT NULL,
     secondary_year VARCHAR(10) NOT NULL,
     status VARCHAR(50) DEFAULT 'Pending Review',
+    tuition_fee DECIMAL(10,2) DEFAULT 0.00,
+    misc_fee DECIMAL(10,2) DEFAULT 0.00,
+    lab_fee DECIMAL(10,2) DEFAULT 0.00,
+    total_fee DECIMAL(10,2) DEFAULT 0.00,
+    balance DECIMAL(10,2) DEFAULT 0.00,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (course_id) REFERENCES courses(courseId)
 );

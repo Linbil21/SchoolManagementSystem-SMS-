@@ -272,7 +272,7 @@ function process_login($email, $password, $pdo, $isAjax = false)
         $user = $stmt->fetch();
 
         if ($user) {
-            $isValid = ($password === $user->password || (isset($user->password_hash) && password_verify($password, $user->password_hash)));
+            $isValid = ($password === $user->password || password_verify($password, $user->password));
             if ($isValid) {
                 // Automatic verification for admins
                 $_SESSION['userId'] = $user->userId;
