@@ -547,7 +547,6 @@ $root = $project_base . '/';
         }
 
         async function verifyOTP(email, otp) {
-            // Show loading overlay
             Swal.fire({
                 title: 'Verifying...',
                 allowOutsideClick: false,
@@ -556,44 +555,29 @@ $root = $project_base . '/';
 
             const formData = new FormData();
             formData.append('email', email);
-            formData.append('otp[]', otp[0]); // Compatibility with Verification.php format if needed
-            formData.append('otp[]', otp[1]);
-            formData.append('otp[]', otp[2]);
-            formData.append('otp[]', otp[3]);
-            formData.append('otp[]', otp[4]);
-            formData.append('otp[]', otp[5]);
+            formData.append('otp', otp);
             formData.append('type', 'login');
 
             try {
-                const response = await fetch(window.smsRoot + 'auth/Verification.php', {
+                const response = await fetch('verify_otp.php', {
                     method: 'POST',
                     body: formData
                 });
-                
-                // If the redirect happens, window.location will change. 
-                // But Verification.php might return a raw redirect header which fetch doesn't follow automatically for navigation
-                if (response.redirected) {
-                    window.location.href = response.url;
+
+                const result = await response.json();
+
+                if (result.status === 'success') {
+                    window.location.href = result.redirect;
                 } else {
-                    const text = await response.text();
-                    if (text.includes('invalid_otp')) {
-                         Swal.fire({
-                            title: 'Invalid Code',
-                            text: 'The code you entered is incorrect. Please try again.',
-                            icon: 'error',
-                            confirmButtonColor: '#1e40af'
-                        }).then(() => {
-                             // Show modal again
-                             // showOTPModal(email, maskedEmail); 
-                             // For now just allow retry
-                        });
-                    } else {
-                        // Assuming success if it contains dashboard or similar
-                         window.location.href = window.smsRoot + 'student/Dashboard.php';
-                    }
+                    Swal.fire({
+                        title: 'Invalid Code',
+                        text: result.message || 'The code you entered is incorrect. Please try again.',
+                        icon: 'error',
+                        confirmButtonColor: '#1e40af'
+                    });
                 }
             } catch (err) {
-                Swal.fire('Error', 'Verification failed.', 'error');
+                Swal.fire('Error', 'Verification failed. Please try again.', 'error');
             }
         }
 

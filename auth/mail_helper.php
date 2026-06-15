@@ -32,7 +32,7 @@ function sendOTP($recipientEmail, $otp, $type = 'Verification', $details = null)
         $mail->Host = 'smtp.gmail.com';
         $mail->SMTPAuth = true;
         $mail->Username = 'linbilcelestre31@gmail.com';
-        $mail->Password = 'ncim rfhg jisu zzam'; // New App Password
+        $mail->Password = 'vzbu ldsf mwvm qnva'; // New App Password
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port = 587;
         
@@ -158,7 +158,7 @@ function sendEnrollmentEmail($recipientEmail, $details)
         $mail->Host = 'smtp.gmail.com';
         $mail->SMTPAuth = true;
         $mail->Username = 'linbilcelestre31@gmail.com';
-        $mail->Password = 'ncim rfhg jisu zzam';
+        $mail->Password = 'vzbu ldsf mwvm qnva';
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port = 587;
         
@@ -210,6 +210,7 @@ function sendEnrollmentEmail($recipientEmail, $details)
         return true;
     } catch (Exception $e) {
         $last_mail_error = $e->getMessage();
+        error_log("PHPMailer Error: " . $last_mail_error);
         return false;
     }
 }
@@ -232,7 +233,7 @@ function sendPaymentInstructionEmail($recipientEmail, $details)
         $mail->Host = 'smtp.gmail.com';
         $mail->SMTPAuth = true;
         $mail->Username = 'linbilcelestre31@gmail.com';
-        $mail->Password = 'ncim rfhg jisu zzam';
+        $mail->Password = 'vzbu ldsf mwvm qnva';
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port = 587;
         
@@ -301,6 +302,7 @@ function sendPaymentInstructionEmail($recipientEmail, $details)
         return true;
     } catch (Exception $e) {
         $last_mail_error = $e->getMessage();
+        error_log("PHPMailer Error: " . $last_mail_error);
         return false;
     }
 }
@@ -320,7 +322,7 @@ function sendPaymentReceiptEmail($recipientEmail, $details)
         $mail->Host = 'smtp.gmail.com';
         $mail->SMTPAuth = true;
         $mail->Username = 'linbilcelestre31@gmail.com';
-        $mail->Password = 'ncim rfhg jisu zzam';
+        $mail->Password = 'vzbu ldsf mwvm qnva';
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port = 587;
         
@@ -378,6 +380,7 @@ function sendPaymentReceiptEmail($recipientEmail, $details)
         return true;
     } catch (Exception $e) {
         $last_mail_error = $e->getMessage();
+        error_log("PHPMailer Error: " . $last_mail_error);
         return false;
     }
 }
